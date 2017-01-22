@@ -1,0 +1,122 @@
+/*
+Copyright (c) 2015 Shotgun Software Inc.
+ 
+CONFIDENTIAL AND PROPRIETARY
+ 
+This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit 
+Source Code License included in this distribution package. See LICENSE.
+By accessing, using, copying or modifying this work you indicate your 
+agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
+not expressly granted therein are reserved by Shotgun Software Inc.
+*/
+
+/* ----------------------- GLOBAL STYLE SETTINGS ----------------------- */
+
+/* Get rid of borders for main Listing Views */
+QListView, QTableView, QScrollArea, QFrame {
+    border: none;
+}
+
+/* Use open sans font across the app if core supports it */
+QWidget {
+    font-family: Open Sans;
+    font-style: Regular;
+}
+
+
+/* need this to kick QT into 'style mode' for labels otherwise things are not formatted correctly */
+QLabel {
+    margin-top: 1px;
+}
+
+#bottom_frame { border-top: 1px solid rgb(255, 255, 255, 20); }
+
+/* ----------------------- MAIN DIALOG WIDGET ----------------------- */
+
+
+/* top headers */
+
+#left_header_label, #right_header_label {
+    font-size: 22px;
+    font-weight: 100;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+
+
+/* ----------------------- ITEM WIDGET ----------------------- */
+
+
+/* icon */
+#left_scroll QLabel[mode="neutral"] {
+    border: none;
+    border-left: 3px solid rgb(255, 255, 255, 0);
+    padding-left: 3px;
+}
+
+#left_scroll QLabel[mode="validation_error"] {
+    border: none;
+    border-left: 3px solid orange;
+    padding-left: 3px;
+}
+
+#left_scroll QLabel[mode="validation_complete"] {
+    border: none;
+    border-left: 3px solid green;
+    padding-left: 3px;
+}
+
+#left_scroll QLabel[mode="publish_error"] {
+    border: none;
+    border-left: 3px solid red;
+    padding-left: 3px;
+}
+
+#left_scroll QLabel[mode="publish_complete"] {
+    border: none;
+    border-left: 3px solid #18A7E3;
+    padding-left: 3px;
+}
+
+
+/* lef hand side hover behaviour for all items */
+#left_scroll .Item:hover {
+
+
+    /* border: 3px solid #18A7E3; */
+
+}
+
+#left_scroll .Item {
+
+    padding-right: 10px;
+
+}
+
+/* lef hand side hover behaviour for all items */
+#left_scroll .Item[selected=true] {
+    background-color: rgb(255, 255, 255, 20);
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+
+}
+
+/* ----------------------- DETAILS PANE ----------------------- */
+
+
+/* all frames inside the details scroll area should be gray bg */
+#details_stack .QFrame {
+    background-color: rgb(255, 255, 255, 20);
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 10px;
+}
+
+/* test headers in details pane*/
+
+#header_context, #header_thumbnail, #header_description, #information_header, #options_header, #status_header, #config_header {
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 1px;
+    margin-top: 6px;
+}
