@@ -19,94 +19,11 @@ logger = sgtk.platform.get_logger(__name__)
 from .errors import PluginValidationError, PluginNotFoundError, ValidationFailure, PublishFailure
 from sgtk import TankError
 
+from .connection import StaticValue, PluginOutput
+
+from .setting import Setting
+
 REFERENCE_TOKEN_REGEX = "^{([^}^{]*)}$"
-
-class Setting(object):
-
-
-    def __init__(self, setting_name, setting_params):
-        self._name = setting_name
-        self._params = setting_params
-
-    @property
-    def name(self):
-        return self._name
-
-    @property
-    def description(self):
-        return self._params.get("description") or ""
-
-    @property
-    def default_value(self):
-        return self._params.get("default")
-
-    @property
-    def type(self):
-        return self._params["type"]
-
-
-
-class Connection(object):
-
-    def __init__(self):
-        pass
-
-    @property
-    def phase(self):
-        raise NotImplementedError
-
-    def evaluate(self, item):
-        raise NotImplementedError
-
-
-class StaticValue(Connection):
-
-    def __init__(self, value):
-        super(StaticValue, self).__init__()
-        self._value = value
-        self._bundle = sgtk.platform.current_bundle()
-
-    def __repr__(self):
-        return "<Static value %s>" % self._value
-
-    @property
-    def phase(self):
-        # static values are valid in both validate and publish phases
-        return self._bundle.VALIDATE
-
-    def evaluate(self, item):
-        return self._value
-
-
-class PluginOutput(Connection):
-
-    def __init__(self, name, manifest, plugin):
-        super(PluginOutput, self).__init__()
-        self._name = name
-        self._manifest = manifest
-        self._plugin = plugin
-
-    def __repr__(self):
-        return "<Plugin %r output %s (type %s, phase %s)>" % (
-            self._plugin,
-            self._name,
-            self.type,
-            self.phase
-        )
-
-    @property
-    def type(self):
-        return self._manifest["type"]
-
-    @property
-    def phase(self):
-        return self._manifest["phase"]
-
-    def evaluate(self, item):
-        # add debug
-        return self._plugin.get_output_value(self._name, item)
-
-
 
 class Plugin(object):
 
