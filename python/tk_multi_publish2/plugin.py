@@ -143,7 +143,7 @@ class Plugin(object):
         self._scan_scene_data = {}
 
         # init the plugin
-        self._plugin = self._bundle.execute_hook_expression(self._path, "get_instance")
+        self._plugin = self._bundle.create_hook_instance(self._path)
 
         # read in the output definitions that this plugin exposes
         #
