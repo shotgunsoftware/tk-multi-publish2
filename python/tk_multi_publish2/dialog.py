@@ -1,4 +1,4 @@
-# Copyright (c) 2015 Shotgun Software Inc.
+# Copyright (c) 2017 Shotgun Software Inc.
 #
 # CONFIDENTIAL AND PROPRIETARY
 #
@@ -15,10 +15,10 @@ from sgtk.platform.qt import QtCore, QtGui
 
 from .ui.dialog import Ui_Dialog
 
-from .plugin_manager import PluginManager
+from .processing import PluginManager
 from .publish_details import PublishDetails
 
-from .errors import ValidationFailure, PublishFailure
+from .processing import ValidationFailure, PublishFailure
 
 # import frameworks
 #shotgun_model = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_model")

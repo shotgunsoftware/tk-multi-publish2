@@ -8,4 +8,6 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-from . import tk_multi_publish2
+from .plugin_manager import PluginManager
+
+from .errors import PublishError, PluginNotFoundError, PluginError, PluginValidationError, PublishFailure, ValidationFailure

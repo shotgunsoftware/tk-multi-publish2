@@ -8,28 +8,33 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-
 import sgtk
-from sgtk.platform.qt import QtCore, QtGui
-
-from .ui.publish_details import Ui_PublishDetails
 
 logger = sgtk.platform.get_logger(__name__)
 
-class PublishDetails(QtGui.QWidget):
-    """
-    Represents an item in the left hand side list
-    """
 
-    def __init__(self, parent=None):
-        """
-        Constructor
-        
-        :param parent:          The parent QWidget for this control
-        """
-        QtGui.QWidget.__init__(self, parent)
+class Setting(object):
 
-        # set up the UI
-        self.ui = Ui_PublishDetails()
-        self.ui.setupUi(self)
-        
+
+    def __init__(self, setting_name, setting_params):
+        self._name = setting_name
+        self._params = setting_params
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def description(self):
+        return self._params.get("description") or ""
+
+    @property
+    def default_value(self):
+        return self._params.get("default")
+
+    @property
+    def type(self):
+        return self._params["type"]
+
+
+
