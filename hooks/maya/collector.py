@@ -10,15 +10,24 @@
 import sgtk
 import os
 import time
+import maya.cmds as cmds
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
-class MayaDocumentScanner(HookBaseClass):
+class MayaSceneCollector(HookBaseClass):
     """
-    Doc scan hook for maya
+    Collector that operates on the maya scene
     """
 
-    def scan_scene(self, log, settings):
-        log.warning("yep! Settings: %s" % settings)
-        return {}
+    def collect(self, subscriptions, item_handler):
+
+
+
+        # item: {type: maya_dag, options: {type: camera}}
+
+
+        if cmds.ls(geometry=True, long=True, noIntermediate=True):
+            items.append({"type":"geometry", "name":"All Scene Geometry"})
+
+        item  = item_handler.create_item(parent=item)
 

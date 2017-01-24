@@ -13,6 +13,10 @@
 # expected fields in the configuration file for this app
 configuration:
 
+    collector:
+        type: hook
+        description: "Logic for enumerating things"
+        default_value: "{self}/maya/collector.py"
 
 
     publish_plugins:
@@ -23,36 +27,17 @@ configuration:
             items:
                 hook:
                     type: hook
-                name:
-                    type: str
-                inputs:
-                    type: dict
                 settings:
                     type: dict
 
         default_value:
 
-            - name: first_task
-              hook: "{self}/maya/snapshot.py"
-              settings: {}
-              inputs: {}
-
-            - name: snapshot_maya_scene
-              hook: "{self}/maya/test.py"
+            - hook: "{self}/maya/test.py"
               settings:
                 setting_a: 6
-              inputs:
-                input_a: 11111
-                depends_on: "{first_task.publish_id}"
-                input_b: 22222
 
-            - name: snapshot_maya_scene_2
-              hook: "{self}/maya/test.py"
+            - hook: "{self}/maya/test.py"
               settings: {}
-              inputs:
-                input_a: "{snapshot_maya_scene.output_a}"
-                depends_on: "{first_task.publish_id}"
-                input_b: 14
 
 
             
