@@ -120,7 +120,7 @@ class ItemIcon(QtGui.QLabel):
         painter.setRenderHint(QtGui.QPainter.Antialiasing)
         painter.setBrush(brush)
 
-        pen = QtGui.QPen(QtGui.QColor("#2C93E2"))
+        pen = QtGui.QPen(QtGui.QColor(self._bundle.style_constants["SG_HIGHLIGHT_COLOR"]))
         pen.setWidth(3)
         painter.setPen(pen)
 

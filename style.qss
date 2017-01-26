@@ -30,6 +30,10 @@ QLabel {
 }
 
 
+DropAreaFrame[dragging="true"] {
+    border: 1px solid {{SG_HIGHLIGHT_COLOR}};
+}
+
 
 ItemIcon { background-color: gray; }
 

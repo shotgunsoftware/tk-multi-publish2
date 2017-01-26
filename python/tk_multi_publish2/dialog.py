@@ -56,21 +56,32 @@ class AppDialog(QtGui.QWidget):
         self.ui.splitter.setStretchFactor(0, 0)
         self.ui.splitter.setStretchFactor(1, 1)
 
-        #self.ui.reload.clicked.connect(self.do_reload)
-
-        #self.do_reload()
-
-
+        # set up tree view to look slick
         self.ui.items_tree.setRootIsDecorated(False)
         self.ui.items_tree.setItemsExpandable(False)
-        self.ui.items_tree.setIndentation(10)
+        self.ui.items_tree.setIndentation(20)
 
 
+        self.ui.frame.something_dropped.connect(self._on_drop)
+
+
+        self.ui.reload.clicked.connect(self.do_reload)
+        self.do_reload()
+
+
+
+
+
+    def do_reload(self):
+        """
+
+        @return:
+        """
+        self.ui.items_tree.clear()
 
         item = QtGui.QTreeWidgetItem(self.ui.items_tree)
 
         child_item = QtGui.QTreeWidgetItem(item)
-
 
         pd = Item(self)
         pd.set_header("foo bar baz")
@@ -90,18 +101,13 @@ class AppDialog(QtGui.QWidget):
         self.ui.items_tree.expandItem(item)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+    def _on_drop(self, data):
+        """
+        When someone drops stuff into the publish.
+        @param data:
+        @return:
+        """
+        print "DROP %s" % data
 
 
     def is_first_launch(self):

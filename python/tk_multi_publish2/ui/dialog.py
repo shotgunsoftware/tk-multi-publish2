@@ -25,11 +25,20 @@ class Ui_Dialog(object):
         self.label = QtGui.QLabel(self.verticalLayoutWidget)
         self.label.setObjectName("label")
         self.verticalLayout.addWidget(self.label)
-        self.items_tree = QtGui.QTreeWidget(self.verticalLayoutWidget)
+        self.frame = DropAreaFrame(self.verticalLayoutWidget)
+        self.frame.setFrameShape(QtGui.QFrame.StyledPanel)
+        self.frame.setFrameShadow(QtGui.QFrame.Raised)
+        self.frame.setObjectName("frame")
+        self.verticalLayout_2 = QtGui.QVBoxLayout(self.frame)
+        self.verticalLayout_2.setSpacing(1)
+        self.verticalLayout_2.setContentsMargins(1, 1, 1, 1)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.items_tree = QtGui.QTreeWidget(self.frame)
         self.items_tree.setObjectName("items_tree")
         self.items_tree.headerItem().setText(0, "1")
         self.items_tree.header().setVisible(False)
-        self.verticalLayout.addWidget(self.items_tree)
+        self.verticalLayout_2.addWidget(self.items_tree)
+        self.verticalLayout.addWidget(self.frame)
         self.tabWidget = QtGui.QTabWidget(self.splitter)
         self.tabWidget.setObjectName("tabWidget")
         self.details_tab = QtGui.QWidget()
@@ -85,4 +94,5 @@ class Ui_Dialog(object):
         self.validate.setText(QtGui.QApplication.translate("Dialog", "Validate", None, QtGui.QApplication.UnicodeUTF8))
         self.publish.setText(QtGui.QApplication.translate("Dialog", "Publish", None, QtGui.QApplication.UnicodeUTF8))
 
+from ..drop_area import DropAreaFrame
 from . import resources_rc

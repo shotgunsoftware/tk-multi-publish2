@@ -70,7 +70,7 @@ class TestHook(HookBaseClass):
         log.info("This is publish for item %s" % item)
         log.info("Settings %s" % settings)
 
-        item.find_parent("type": "maya-scene")
+        item.parent.data["foo"]
 
         time.sleep(0.4)
 
