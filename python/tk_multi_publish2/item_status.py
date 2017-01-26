@@ -12,11 +12,9 @@
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
 
-from .ui.item import Ui_Item
-
 logger = sgtk.platform.get_logger(__name__)
 
-class PublishStatus(QtGui.QWidget):
+class ItemStatus(QtGui.QWidget):
     """
     Publish Status Widget
     """
@@ -122,7 +120,6 @@ class PublishStatus(QtGui.QWidget):
                 r = QtCore.QRectF(0.0, 0.0, 14.0, 14.0)
 
                 painter.drawEllipse(r)
-
 
         finally:
             painter.end()

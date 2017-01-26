@@ -16,7 +16,6 @@ from sgtk.platform.qt import QtCore, QtGui
 from .ui.dialog import Ui_Dialog
 
 from .processing import PluginManager
-from .publish_details import PublishDetails
 from .item import Item
 
 from .processing import ValidationFailure, PublishFailure
@@ -57,7 +56,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.splitter.setStretchFactor(0, 0)
         self.ui.splitter.setStretchFactor(1, 1)
 
-        self.ui.reload.clicked.connect(self.do_reload)
+        #self.ui.reload.clicked.connect(self.do_reload)
 
         #self.do_reload()
 
@@ -74,8 +73,12 @@ class AppDialog(QtGui.QWidget):
 
 
         pd = Item(self)
+        pd.set_header("foo bar baz")
+        pd.set_mode(Item.ITEM)
 
         pd2 = Item(self)
+        pd2.set_header("yeah baby")
+        pd2.set_mode(Item.PLUGIN)
 
         self.ui.items_tree.addTopLevelItem(item)
 
@@ -85,54 +88,17 @@ class AppDialog(QtGui.QWidget):
         self.ui.items_tree.expandItem(item)
 
 
-    def do_reload(self):
-
-        self._plugins = []
-
-        self._plugin_manager = PluginManager()
-
-        # first create the special mandatory ui
-        (self._publish_item, self._publish_details) = self.ui.plugin_selector.create_plugin(PublishDetails)
-
-        # test of fixed sg header thingie
-        self._publish_item.set_header(
-            "Shotgun Details",
-            "Information about your publish"
-        )
-        self._publish_item.set_icon(QtGui.QPixmap(":/tk_multi_publish2/shotgun.png"))
-        self._publish_item.select()
 
 
-        # now load up all plugins from hooks
-        for plugin in self._plugin_manager.plugins:
-            (item, details) = self.ui.plugin_selector.create_plugin()
-
-            item.set_header(
-                plugin.title,
-                plugin.summary
-            )
-
-            item.set_icon(plugin.icon_pixmap)
-
-            details.set_description(plugin.description)
 
 
-            # tell item ui to render settings UI
-            details.add_settings(plugin.required_settings)
 
-            # analyze the scene
-            tasks = plugin.scan_scene(
-                details.get_logger(),
-                runtime_settings=details.get_settings()
-            )
-            for task in tasks:
-                item.add_task(task)
 
-            self._plugins.append(
-                {"item": item, "details": details, "plugin": plugin}
-            )
 
-        self.ui.plugin_selector.finalize_list()
+
+
+
+
 
 
 

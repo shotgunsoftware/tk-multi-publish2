@@ -41,8 +41,8 @@ class ItemIcon(QtGui.QLabel):
         @param pixmap:
         @return:
         """
-        self.ui.icon.setMaximumSize(20, 20)
-        self.ui.icon.setMinimumSize(20, 20)
+        self.setMaximumSize(20, 20)
+        self.setMinimumSize(20, 20)
         self.setScaledContents(True)
         self.setPixmap(pixmap)
 
@@ -51,8 +51,8 @@ class ItemIcon(QtGui.QLabel):
         Set up the widget as a thumb
         """
         # 16:9 aspect ratio
-        self.ui.icon.setMaximumSize(80, 45)
-        self.ui.icon.setMinimumSize(80, 45)
+        self.setMaximumSize(80, 45)
+        self.setMinimumSize(80, 45)
         self.setCursor(QtCore.Qt.PointingHandCursor)
         if pixmap:
             self._set_screenshot_pixmap(pixmap)

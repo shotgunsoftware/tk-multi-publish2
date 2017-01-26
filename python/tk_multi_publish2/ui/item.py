@@ -25,7 +25,7 @@ class Ui_Item(object):
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.widget = PublishStatus(self.widget_2)
+        self.widget = ItemStatus(self.widget_2)
         self.widget.setObjectName("widget")
         self.verticalLayout.addWidget(self.widget)
         self.left_stack.addWidget(self.widget_2)
@@ -59,7 +59,7 @@ class Ui_Item(object):
         self.horizontalLayout.addWidget(self.header)
 
         self.retranslateUi(Item)
-        self.left_stack.setCurrentIndex(1)
+        self.left_stack.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(Item)
 
     def retranslateUi(self, Item):
@@ -67,5 +67,5 @@ class Ui_Item(object):
         self.header.setText(QtGui.QApplication.translate("Item", "<big>Alembic Caches</big>", None, QtGui.QApplication.UnicodeUTF8))
 
 from ..item_icon import ItemIcon
-from ..publish_status import PublishStatus
+from ..item_status import ItemStatus
 from . import resources_rc

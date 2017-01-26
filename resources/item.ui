@@ -29,7 +29,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="widget_2">
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -40,7 +40,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="PublishStatus" name="widget" native="true"/>
+        <widget class="ItemStatus" name="widget" native="true"/>
        </item>
       </layout>
      </widget>
@@ -108,9 +108,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>PublishStatus</class>
+   <class>ItemStatus</class>
    <extends>QWidget</extends>
-   <header>..publish_status</header>
+   <header>..item_status</header>
    <container>1</container>
   </customwidget>
   <customwidget>

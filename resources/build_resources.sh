@@ -39,8 +39,6 @@ echo "building user interfaces..."
 build_ui dialog
 build_ui item
 build_ui details
-build_ui plugin_selector
-build_ui publish_details
 
 # build resources
 echo "building resources..."
