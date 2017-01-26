@@ -19,38 +19,6 @@ from .ui.details import Ui_Details
 logger = sgtk.platform.get_logger(__name__)
 
 
-class PublishLogHandler(logging.Handler):
-    """
-    Log handling for engines that are using the
-    new logging system introduced in 0.18. This will
-    intercept all log messages in the stream to which
-    it is connected and execute the :meth:`Engine._emit_log_message`
-    on each of them, in a thread safe manner.
-    """
-
-    def __init__(self, list_widget):
-        """
-        :param engine: Engine to which log messages should be forwarded.
-        :type engine: :class:`Engine`
-        """
-        # avoiding super in order to be py25-compatible
-        logging.Handler.__init__(self)
-        self._list_widget = list_widget
-
-    def emit(self, record):
-        """
-        Emit a log message back to the engine logging callback.
-
-        :param record: std log record to handle logging for
-        """
-        # for simplicity, add a 'basename' property to the record to
-        # only contain the leaf part of the logging name
-        # sgtk.env.asset.tk-maya -> tk-maya
-        # sgtk.env.asset.tk-maya.tk-multi-publish -> tk-multi-publish
-        record.basename = record.name.rsplit(".", 1)[-1]
-
-        self._list_widget.addItem(record.msg)
-
 
 class Details(QtGui.QWidget):
     """

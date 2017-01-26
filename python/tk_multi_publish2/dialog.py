@@ -58,11 +58,15 @@ class AppDialog(QtGui.QWidget):
         self.ui.items_tree.setItemsExpandable(False)
         self.ui.items_tree.setIndentation(20)
 
-
+        # drag and drop
         self.ui.frame.something_dropped.connect(self._on_drop)
 
-
+        # buttons
         self.ui.reload.clicked.connect(self.do_reload)
+        self.ui.validate.clicked.connect(self.do_validate)
+        self.ui.publish.clicked.connect(self.do_publish)
+
+        # start it up
         self.do_reload()
 
 
@@ -96,6 +100,14 @@ class AppDialog(QtGui.QWidget):
         self.ui.items_tree.setItemWidget(child_item, 0, pd2)
 
         self.ui.items_tree.expandItem(item)
+
+    def do_validate(self):
+        self.log_debug("Validate")
+
+    def do_publish(self):
+        self.log_debug("Publish")
+
+
 
 
     def _on_drop(self, data):
