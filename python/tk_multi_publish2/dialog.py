@@ -17,6 +17,7 @@ from .ui.dialog import Ui_Dialog
 
 from .processing import PluginManager
 from .publish_details import PublishDetails
+from .item import Item
 
 from .processing import ValidationFailure, PublishFailure
 
@@ -47,15 +48,41 @@ class AppDialog(QtGui.QWidget):
         # prefs in this manager are shared
         self._settings_manager = settings.UserSettings(sgtk.platform.current_bundle())
 
+
         # set up the UI
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
 
-        self.ui.publish.clicked.connect(self.do_publish)
-        self.ui.validate.clicked.connect(self.do_validation)
+        # make sure the splitter expands the detail area only
+        self.ui.splitter.setStretchFactor(0, 0)
+        self.ui.splitter.setStretchFactor(1, 1)
+
         self.ui.reload.clicked.connect(self.do_reload)
 
-        self.do_reload()
+        #self.do_reload()
+
+
+        self.ui.items_tree.setRootIsDecorated(False)
+        self.ui.items_tree.setItemsExpandable(False)
+        self.ui.items_tree.setIndentation(10)
+
+
+
+        item = QtGui.QTreeWidgetItem(self.ui.items_tree)
+
+        child_item = QtGui.QTreeWidgetItem(item)
+
+
+        pd = Item(self)
+
+        pd2 = Item(self)
+
+        self.ui.items_tree.addTopLevelItem(item)
+
+        self.ui.items_tree.setItemWidget(item, 0, pd)
+        self.ui.items_tree.setItemWidget(child_item, 0, pd2)
+
+        self.ui.items_tree.expandItem(item)
 
 
     def do_reload(self):
@@ -107,77 +134,6 @@ class AppDialog(QtGui.QWidget):
 
         self.ui.plugin_selector.finalize_list()
 
-    def do_validation(self):
-
-        logger.debug("Starting validation")
-
-        for plugin in self._plugins:
-
-            self.ui.plugin_selector.select(plugin["item"])
-
-            all_success = True
-
-            for task in plugin["item"].get_tasks():
-
-                try:
-                    plugin["plugin"].validate(
-                        plugin["details"].get_logger(),
-                        task,
-                        runtime_settings=plugin["details"].get_settings()
-                    )
-                except ValidationFailure:
-                    validation_ok = False
-                else:
-                    validation_ok = True
-
-                all_success &= validation_ok
-
-                if validation_ok:
-                    plugin["item"].set_task_mode(task, plugin["item"].VALIDATION_COMPLETE)
-                else:
-                    plugin["item"].set_task_mode(task, plugin["item"].VALIDATION_ERROR)
-
-            if all_success:
-                plugin["item"].set_mode(plugin["item"].VALIDATION_COMPLETE)
-            else:
-                plugin["item"].set_mode(plugin["item"].VALIDATION_ERROR)
-
-
-    def do_publish(self):
-
-        self.do_validation()
-
-        logger.debug("Starting publish")
-
-        for plugin in self._plugins:
-
-            self.ui.plugin_selector.select(plugin["item"])
-
-            all_success = True
-
-            for task in plugin["item"].get_tasks():
-
-                try:
-                    plugin["plugin"].publish(
-                        plugin["details"].get_logger(),
-                        task,
-                        runtime_settings=plugin["details"].get_settings()
-                    )
-                except PublishFailure:
-                    publish_ok = False
-                else:
-                    publish_ok = True
-
-                all_success &= publish_ok
-                if publish_ok:
-                    plugin["item"].set_task_mode(task, plugin["item"].PUBLISH_COMPLETE)
-                else:
-                    plugin["item"].set_task_mode(task, plugin["item"].PUBLISH_ERROR)
-
-            if all_success:
-                plugin["item"].set_mode(plugin["item"].PUBLISH_COMPLETE)
-            else:
-                plugin["item"].set_mode(plugin["item"].PUBLISH_ERROR)
 
 
     def is_first_launch(self):

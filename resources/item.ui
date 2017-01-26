@@ -6,73 +6,119 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>346</width>
-    <height>81</height>
+    <width>319</width>
+    <height>54</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
-     <item>
-      <widget class="QLabel" name="item_icon">
-       <property name="minimumSize">
-        <size>
-         <width>38</width>
-         <height>32</height>
-        </size>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="spacing">
+    <number>4</number>
+   </property>
+   <property name="margin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QStackedWidget" name="left_stack">
+     <property name="maximumSize">
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="currentIndex">
+      <number>1</number>
+     </property>
+     <widget class="QWidget" name="widget_2">
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="spacing">
+        <number>0</number>
        </property>
-       <property name="maximumSize">
-        <size>
-         <width>38</width>
-         <height>32</height>
-        </size>
+       <property name="margin">
+        <number>0</number>
        </property>
-       <property name="text">
-        <string/>
+       <item>
+        <widget class="PublishStatus" name="widget" native="true"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="chk_page">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="spacing">
+        <number>0</number>
        </property>
-       <property name="pixmap">
-        <pixmap resource="resources.qrc">:/tk_multi_publish2/item.png</pixmap>
+       <property name="margin">
+        <number>0</number>
        </property>
-       <property name="scaledContents">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="header">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>&lt;big&gt;Alembic Caches&lt;/big&gt;&lt;br&gt;
-Publish Alembic Caches</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+       <item>
+        <widget class="QCheckBox" name="item_chk">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="tristate">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QCheckBox" name="header_chk">
+   <item>
+    <widget class="ItemIcon" name="icon">
+     <property name="minimumSize">
+      <size>
+       <width>80</width>
+       <height>45</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>80</width>
+       <height>45</height>
+      </size>
+     </property>
      <property name="text">
       <string/>
      </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="hidden_header">
+   <item>
+    <widget class="QLabel" name="header">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="text">
-      <string>Hidden header</string>
+      <string>&lt;big&gt;Alembic Caches&lt;/big&gt;</string>
      </property>
     </widget>
    </item>
   </layout>
+  <zorder>icon</zorder>
+  <zorder>header</zorder>
+  <zorder>left_stack</zorder>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PublishStatus</class>
+   <extends>QWidget</extends>
+   <header>..publish_status</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ItemIcon</class>
+   <extends>QLabel</extends>
+   <header>..item_icon</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="resources.qrc"/>
  </resources>

@@ -55,11 +55,7 @@ class TestHook(HookBaseClass):
         log.info("This is scan scene waking up")
         log.info("Settings %s" % settings)
 
-        return {
-            "Character Manne": {"checked": True, "required": True},
-            "Character Foo": {"checked": True},
-            "Character Bar": {"checked": True},
-        }
+        return True
 
     def validate(self, log, settings, item):
 

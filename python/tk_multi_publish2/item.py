@@ -23,8 +23,6 @@ class Item(QtGui.QFrame):
 
     (NEUTRAL, VALIDATION_COMPLETE, VALIDATION_ERROR, PUBLISH_ERROR, PUBLISH_COMPLETE) = range(5)
 
-    clicked = QtCore.Signal()
-
     def __init__(self, parent=None):
         """
         Constructor
@@ -39,19 +37,18 @@ class Item(QtGui.QFrame):
         # set up the UI
         self.ui = Ui_Item()
         self.ui.setupUi(self)
-        self.set_mode(self.NEUTRAL)
-        self.ui.header_chk.setChecked(True)
+        #self.set_mode(self.NEUTRAL)
+        #self.ui.header_chk.setChecked(True)
 
-        self._tasks = []
-        self._current_row = 1
-        self.ui.hidden_header.setVisible(False)
+        #self._tasks = []
+        #self._current_row = 1
+        #self.ui.hidden_header.setVisible(False)
 
-    def mousePressEvent(self, event):
-        """
-        Fires when the mouse is pressed
-        """
-        QtGui.QFrame.mousePressEvent(self, event)
-        self.clicked.emit()
+        self.ui.left_stack.setCurrentIndex(1)
+
+
+
+
 
     def select(self):
         """
