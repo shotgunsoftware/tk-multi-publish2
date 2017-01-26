@@ -39,7 +39,7 @@ class Item(QtGui.QFrame):
         self.ui = Ui_Item()
         self.ui.setupUi(self)
 
-        self.ui.left_stack.setCurrentIndex(0)
+        self.set_status(self.NEUTRAL)
 
 
     def set_mode(self, mode):
@@ -63,6 +63,31 @@ class Item(QtGui.QFrame):
         @param status:
         @return:
         """
+        # reset
+        self.ui.status.show_nothing()
+        self.ui.stack.setCurrentIndex(0)
+
+        if status == self.NEUTRAL:
+            self.ui.stack.setCurrentIndex(1)
+
+        elif status == self.PROCESSING:
+            self.ui.status.show_spin()
+
+        elif status == self.PUBLISH_COMPLETE:
+            self.ui.status.show_dot("#18A7E3")
+
+        elif status == self.PUBLISH_ERROR:
+            self.ui.status.show_dot("red")
+
+        elif status == self.VALIDATION_COMPLETE:
+            self.ui.status.show_dot("green")
+
+        elif status == self.VALIDATION_ERROR:
+            self.ui.status.show_dot("orange")
+
+        else:
+            raise sgtk.TankError("Invalid item status!")
+
 
     def set_header(self, title):
         """

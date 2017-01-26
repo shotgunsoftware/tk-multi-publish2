@@ -21,7 +21,7 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QStackedWidget" name="left_stack">
+    <widget class="QStackedWidget" name="stack">
      <property name="maximumSize">
       <size>
        <width>20</width>
@@ -40,7 +40,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="ItemStatus" name="widget" native="true"/>
+        <widget class="ItemStatus" name="status" native="true"/>
        </item>
       </layout>
      </widget>
@@ -53,7 +53,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QCheckBox" name="item_chk">
+        <widget class="QCheckBox" name="checkbox">
          <property name="text">
           <string/>
          </property>
@@ -104,7 +104,7 @@
   </layout>
   <zorder>icon</zorder>
   <zorder>header</zorder>
-  <zorder>left_stack</zorder>
+  <zorder>stack</zorder>
  </widget>
  <customwidgets>
   <customwidget>

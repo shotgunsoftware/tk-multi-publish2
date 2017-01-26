@@ -75,10 +75,12 @@ class AppDialog(QtGui.QWidget):
         pd = Item(self)
         pd.set_header("foo bar baz")
         pd.set_mode(Item.ITEM)
+        #pd.set_status(pd.VALIDATION_ERROR)
 
         pd2 = Item(self)
         pd2.set_header("yeah baby")
         pd2.set_mode(Item.PLUGIN)
+        #pd2.set_status(pd2.PROCESSING)
 
         self.ui.items_tree.addTopLevelItem(item)
 
