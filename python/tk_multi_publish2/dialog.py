@@ -21,12 +21,8 @@ from .item import Item
 from .processing import ValidationFailure, PublishFailure
 
 # import frameworks
-#shotgun_model = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_model")
 settings = sgtk.platform.import_framework("tk-framework-shotgunutils", "settings")
 help_screen = sgtk.platform.import_framework("tk-framework-qtwidgets", "help_screen")
-#overlay_widget = sgtk.platform.import_framework("tk-framework-qtwidgets", "overlay_widget")
-#task_manager = sgtk.platform.import_framework("tk-framework-shotgunutils", "task_manager")
-#shotgun_globals = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_globals")
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -47,6 +43,7 @@ class AppDialog(QtGui.QWidget):
         # prefs in this manager are shared
         self._settings_manager = settings.UserSettings(sgtk.platform.current_bundle())
 
+        self._bundle = sgtk.platform.current_bundle()
 
         # set up the UI
         self.ui = Ui_Dialog()
@@ -104,11 +101,9 @@ class AppDialog(QtGui.QWidget):
     def _on_drop(self, data):
         """
         When someone drops stuff into the publish.
-        @param data:
-        @return:
         """
-        print "DROP %s" % data
-
+        self._bundle.add_external_files(data)
+        self.do_reload()
 
     def is_first_launch(self):
         """

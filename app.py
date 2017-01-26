@@ -31,6 +31,8 @@ class MultiPublish2(sgtk.platform.Application):
         menu_options = {"short_name": "publish", "description": "Publishing of data into Shotgun"}
         self.engine.register_command(menu_caption, cb, menu_options)
 
+        self._dropped_files = []
+
     @property
     def context_change_allowed(self):
         """
@@ -41,3 +43,9 @@ class MultiPublish2(sgtk.platform.Application):
     def destroy_app(self):
 
         self.log_debug("Destroying tk-multi-publish")
+
+
+    def add_external_files(self, files):
+        self.log_debug("Adding external files: %s" % files)
+        self._dropped_files.extend(files)
+

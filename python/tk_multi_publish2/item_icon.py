@@ -16,7 +16,6 @@ logger = sgtk.platform.get_logger(__name__)
 
 screen_grab = sgtk.platform.import_framework("tk-framework-qtwidgets", "screen_grab")
 
-
 class ItemIcon(QtGui.QLabel):
     """
     A specialized, custom widget that either displays a
