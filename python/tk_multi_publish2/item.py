@@ -42,17 +42,15 @@ class Item(QtGui.QFrame):
         self.set_status(self.NEUTRAL)
 
 
-    def set_mode(self, mode):
+    def set_mode(self, mode, pixmap=None):
         """
         Specifies if this item should be a plugin or a item
         """
         if mode == self.ITEM:
-            self.ui.icon.set_thumbnail()
+            self.ui.icon.set_thumbnail(pixmap)
 
         elif mode == self.PLUGIN:
-            self.ui.icon.set_static_thumb(
-                QtGui.QPixmap(":/tk_multi_publish2/item.png")
-            )
+            self.ui.icon.set_static_thumb(pixmap)
 
         else:
             raise sgtk.TankError("Unknown item mode!")

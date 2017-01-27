@@ -28,7 +28,7 @@ class PublishTreeWidgetConnection(QtGui.QTreeWidgetItem):
 
         pd = Item(tree_widget)
         pd.set_header(connection.plugin.title)
-        pd.set_mode(Item.PLUGIN)
+        pd.set_mode(Item.PLUGIN, connection.plugin.icon_pixmap)
         #pd.set_status(pd.VALIDATION_ERROR)
 
         tree_widget = self.treeWidget()
@@ -50,8 +50,10 @@ class PublishTreeWidgetItem(QtGui.QTreeWidgetItem):
 
         pd = Item(tree_widget)
         pd.set_header(item.name)
-        pd.set_mode(Item.ITEM)
+        pd.set_mode(Item.ITEM, item.icon_pixmap)
         #pd.set_status(pd.VALIDATION_ERROR)
+
+
 
 
         tree_widget.setItemWidget(self, 0, pd)

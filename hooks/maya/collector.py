@@ -43,6 +43,8 @@ class MayaSceneCollector(HookBaseClass):
                 file_item = create_item("file", file_name_no_ext)
                 file_item.properties["extension"] = file_extension
                 file_item.properties["path"] = path
+                if file_extension == ".png":
+                    file_item.set_thumbnail(path)
 
         if "current_maya_scene" in types or "maya_node" in types:
             current_scene = create_item("current_maya_scene", "Current Maya Scene")

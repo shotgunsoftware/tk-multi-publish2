@@ -12,6 +12,7 @@ import sgtk
 
 logger = sgtk.platform.get_logger(__name__)
 
+from sgtk.platform.qt import QtCore, QtGui
 
 class Item(object):
     """
@@ -22,6 +23,7 @@ class Item(object):
         self._name = name
         self._type = type
         self._parent = parent
+        self._thumb_path = None
         self._children = []
         self._connections = []
         self._properties = {}
@@ -36,6 +38,21 @@ class Item(object):
 
     def _add_child(self, child):
         self._children.append(child)
+
+    def set_thumbnail(self, path):
+        self._thumb_path = path
+
+    @property
+    def icon_pixmap(self):
+        if self._thumb_path:
+            try:
+                pixmap = QtGui.QPixmap(self._thumb_path)
+                return pixmap
+            except Exception, e:
+                logger.warning(
+                    "%r: Could not load icon '%s': %s" % (self, self._thumb_path, e)
+                )
+        return None
 
     @property
     def children(self):
