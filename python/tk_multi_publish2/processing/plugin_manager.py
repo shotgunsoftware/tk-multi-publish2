@@ -10,8 +10,6 @@
 
 
 import sgtk
-from sgtk.platform.qt import QtCore, QtGui
-
 from .plugin import Plugin
 from .errors import PluginNotFoundError
 from .item import Item
@@ -20,19 +18,17 @@ from .connection import Connection
 logger = sgtk.platform.get_logger(__name__)
 
 
-class PluginManager(QtCore.QObject):
+class PluginManager(object):
     """
     Handles hook execution
     """
 
-    def __init__(self, parent=None):
+    def __init__(self):
         """
         Constructor
 
         :param parent: The parent QWidget for this control
         """
-        QtCore.QObject.__init__(self, parent)
-
         logger.debug("plugin manager waking up")
 
         self._bundle = sgtk.platform.current_bundle()
