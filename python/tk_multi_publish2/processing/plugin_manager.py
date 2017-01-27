@@ -96,8 +96,12 @@ class PluginManager(QtCore.QObject):
                         yield item
 
 
-
-
+    def _create_connection(self, plugin, item):
+        connection = Connection(plugin, item)
+        plugin.add_connection(connection)
+        item.add_connection(connection)
+        logger.debug("Created %s" % connection)
+        return connection
 
     def collect(self):
         """
@@ -130,12 +134,12 @@ class PluginManager(QtCore.QObject):
                 if accept_data.get("accepted"):
                     # this item was accepted by the plugin!
                     # create a connection
-                    connection = Connection(plugin, item)
+
+                    connection = self._create_connection(plugin, item)
                     is_required = accept_data.get("required") is True
                     is_enabled = accept_data.get("enabled") is True
                     connection.set_plugin_defaults(is_required, is_enabled)
                     self._connections.append(connection)
-
 
         # now do a cull to get the tree of plugins which
 

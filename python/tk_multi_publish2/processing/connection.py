@@ -36,6 +36,9 @@ class Connection(object):
         self._required = False
 
 
+    def __repr__(self):
+        return "<Connection %s -- %s >" % (self._plugin, self._item)
+
     def set_plugin_defaults(self, required, enabled):
         self._required = required
         self._enabled = enabled

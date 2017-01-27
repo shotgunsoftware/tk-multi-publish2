@@ -39,6 +39,7 @@ class Plugin(object):
 
         self._configured_settings = {}
         self._required_runtime_settings = {}
+        self._connections = []
 
         self._logger = logger
 
@@ -69,6 +70,10 @@ class Plugin(object):
                 # this setting needs to be pulled from the UI
                 # todo - ensure all keys are set
                 self._required_runtime_settings[settings_def_name] = settings_def_params
+
+    @property
+    def connections(self):
+        return self._connections
 
     @property
     def title(self):
@@ -126,6 +131,9 @@ class Plugin(object):
             settings.append(Setting(setting_name, setting_params))
         return settings
 
+
+    def add_connection(self, connection):
+        self._connections.append(connection)
 
     def run_accept(self, item):
 

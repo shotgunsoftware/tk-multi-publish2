@@ -22,6 +22,7 @@ class Item(object):
         self._name = name
         self._type = type
         self._parent = parent
+        self._connections = []
         self._properties = {}
 
     def __repr__(self):
@@ -46,3 +47,9 @@ class Item(object):
     def properties(self):
         return self._properties
 
+    @property
+    def connections(self):
+        return self._connections
+
+    def add_connection(self, connection):
+        self._connections.append(connection)
