@@ -32,6 +32,9 @@ configuration:
 
         default_value:
 
+            - hook: "{self}/maya/scene.py"
+              settings: {}
+
             - hook: "{self}/maya/test.py"
               settings:
                 setting_a: 6

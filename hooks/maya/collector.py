@@ -8,8 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
 # not expressly granted therein are reserved by Shotgun Software Inc.
 import sgtk
-import os
-import time
+import pprint
 import maya.cmds as cmds
 
 HookBaseClass = sgtk.get_hook_baseclass()
@@ -19,15 +18,19 @@ class MayaSceneCollector(HookBaseClass):
     Collector that operates on the maya scene
     """
 
-    def collect(self, subscriptions, item_handler):
+    def collect(self, subscriptions, create_item):
+
+        self.logger.debug("Executing collect hook")
+        self.logger.debug("Subscriptions: %s" % pprint.pformat(subscriptions))
 
 
+        # current scene
+        scene = create_item("maya_scene", "Current Scene")
 
-        # item: {type: maya_dag, options: {type: camera}}
+        for dag_path in cmds.ls(long=True, noIntermediate=True):
+            create_item("maya_dag", dag_path, parent=scene)
 
 
-        if cmds.ls(geometry=True, long=True, noIntermediate=True):
-            items.append({"type":"geometry", "name":"All Scene Geometry"})
-
-        item  = item_handler.create_item(parent=item)
-
+        # files!
+        for path in self.parent.get_external_files():
+            scene = create_item("file", path)

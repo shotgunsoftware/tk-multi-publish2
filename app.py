@@ -49,3 +49,5 @@ class MultiPublish2(sgtk.platform.Application):
         self.log_debug("Adding external files: %s" % files)
         self._dropped_files.extend(files)
 
+    def get_external_files(self):
+        return self._dropped_files

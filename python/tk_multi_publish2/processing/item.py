@@ -13,31 +13,33 @@ import sgtk
 logger = sgtk.platform.get_logger(__name__)
 
 
-class Setting(object):
+class Item(object):
     """
-    A setting for a plugin or item
+    An object representing an item that should be processed
     """
 
+    def __init__(self, type, name, parent=None):
+        self._name = name
+        self._type = type
+        self._parent = parent
 
-    def __init__(self, setting_name, setting_params):
-        self._name = setting_name
-        self._params = setting_params
+    def __repr__(self):
+        if self._parent:
+            return "<Item %s|%s:%s>" % (self._parent, self._type, self._name)
+        else:
+            return "<Item %s:%s>" % (self._type, self._name)
 
     @property
     def name(self):
         return self._name
 
     @property
-    def description(self):
-        return self._params.get("description") or ""
-
-    @property
-    def default_value(self):
-        return self._params.get("default")
-
-    @property
     def type(self):
-        return self._params["type"]
+        return self._type
+
+    @property
+    def parent(self):
+        return self._parent
 
 
 

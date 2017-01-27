@@ -14,6 +14,7 @@ from sgtk.platform.qt import QtCore, QtGui
 
 from .plugin import Plugin
 from .errors import PluginNotFoundError
+from .item import Item
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -42,34 +43,47 @@ class PluginManager(QtCore.QObject):
 
         for plugin_def in plugin_defs:
             logger.debug("Find config chunk %s" % plugin_def)
+
+            hook_path = plugin_def["hook"]
+            settings = plugin_def["settings"]
+
             # maintain a ordered list
-            self._plugins.append(Plugin(plugin_def, self))
+            plugin = Plugin(hook_path, settings)
+            logger.debug("Created %s" % plugin)
+            self._plugins.append(plugin)
 
-        # now in a second pass validate and resolve
-        for plugin in self.plugins:
-            plugin.validate_and_resolve_config()
+        self._root_items = []
+        self._all_items = []
 
-    @property
-    def plugins(self):
+    def _create_item(self, item_type, name, parent=None):
         """
-        Returns a list of plugins, in the order they were defined
+        Callback to create item
         """
-        for plugin in self._plugins:
-            yield plugin
+        item = Item(item_type, name, parent)
+        self._all_items.append(item)
+        if parent is None:
+            self._root_items.append(item)
+        logger.debug("created %s" % item)
+        return item
 
-    def get_plugin(self, name):
+
+
+    def collect(self):
         """
-        Find a plugin given its name
-
-        :param name: name of a plugin
-        :returns: :class:`Plugin` instance
-        :raises: :class:`PluginNotFoundError`
+        Runs the collector and generates fresh items.
+        @return:
         """
-        for plugin in self._plugins:
 
-            if plugin.name == name:
-                return plugin
+        # pass 1 - collect stuff from the scene and other places
 
-        raise PluginNotFoundError("Plugin %s does not exist as part of the configuration" % name)
+        self._bundle.execute_hook_method(
+            "collector",
+            "collect",
+            subscriptions=[],
+            create_item=self._create_item
+        )
+
+
+        # now we have a series of items from the scene, see which ones are interesting for plugins
 
 

@@ -66,6 +66,9 @@ class AppDialog(QtGui.QWidget):
         self.ui.validate.clicked.connect(self.do_validate)
         self.ui.publish.clicked.connect(self.do_publish)
 
+        # start up our plugin manager
+        self._plugin_manager = PluginManager()
+
         # start it up
         self.do_reload()
 
@@ -78,6 +81,9 @@ class AppDialog(QtGui.QWidget):
 
         @return:
         """
+
+
+
         self.ui.items_tree.clear()
 
         item = QtGui.QTreeWidgetItem(self.ui.items_tree)
@@ -100,6 +106,9 @@ class AppDialog(QtGui.QWidget):
         self.ui.items_tree.setItemWidget(child_item, 0, pd2)
 
         self.ui.items_tree.expandItem(item)
+
+        # run the hooks
+        self._plugin_manager.collect()
 
     def do_validate(self):
         self.log_debug("Validate")
