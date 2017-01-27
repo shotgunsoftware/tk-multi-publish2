@@ -15,6 +15,7 @@ from sgtk.platform.qt import QtCore, QtGui
 from .plugin import Plugin
 from .errors import PluginNotFoundError
 from .item import Item
+from .connection import Connection
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -48,12 +49,13 @@ class PluginManager(QtCore.QObject):
             settings = plugin_def["settings"]
 
             # maintain a ordered list
-            plugin = Plugin(hook_path, settings)
+            plugin = Plugin(hook_path, settings, logger)
             logger.debug("Created %s" % plugin)
             self._plugins.append(plugin)
 
         self._root_items = []
         self._all_items = []
+        self._connections = []
 
     def _create_item(self, item_type, name, parent=None):
         """
@@ -67,6 +69,35 @@ class PluginManager(QtCore.QObject):
         return item
 
 
+    def _get_matching_items(self, subscriptions):
+        """
+        Given a list of subscriptions from a plugin,
+        yield a series of matching items. Items are
+        randomly ordered.
+        """
+        for subscription in subscriptions:
+            logger.debug("Checking matches for subscription %s" % subscription)
+            # {"type": "maya_node", "maya_type": "camera"},
+            for item in self._all_items:
+                if item.type == subscription["type"]:
+                    # right type!
+                    # check rest of properties
+                    properties = subscription.keys()
+                    item_matching = True
+                    for property_name in properties:
+                        if property_name == "type":
+                            continue
+                        if property_name not in item.properties or subscription[property_name] != item.properties[property_name]:
+                            # not matching
+                            item_matching = False
+                            break
+                    if item_matching:
+                        logger.debug("    match: %s (%s)" % (item, item.properties))
+                        yield item
+
+
+
+
 
     def collect(self):
         """
@@ -75,12 +106,14 @@ class PluginManager(QtCore.QObject):
         """
 
         # pass 1 - collect stuff from the scene and other places
+        logger.debug("Collecting subscriptions from plugins")
         subscriptions = []
         for plugin in self._plugins:
             subscriptions.extend(plugin.subscriptions)
 
         # pass 2 - run the collector to generate item to match all
         # subscriptions
+        logger.debug("Executing collector")
         self._bundle.execute_hook_method(
             "collector",
             "collect",
@@ -88,6 +121,22 @@ class PluginManager(QtCore.QObject):
             create_item=self._create_item
         )
 
-        # now we have a series of items from the scene, see which ones are interesting for plugins
+        # now we have a series of items from the scene, pass it back to the plugins to see which are interesting
+        logger.debug("Visting all items")
+        for plugin in self._plugins:
+            logger.debug("visting %s" % plugin)
+            for item in self._get_matching_items(plugin.subscriptions):
+                accept_data = plugin.run_accept(item)
+                if accept_data.get("accepted"):
+                    # this item was accepted by the plugin!
+                    # create a connection
+                    connection = Connection(plugin, item)
+                    is_required = accept_data.get("required") is True
+                    is_enabled = accept_data.get("enabled") is True
+                    connection.set_plugin_defaults(is_required, is_enabled)
+                    self._connections.append(connection)
+
+
+        # now do a cull to get the tree of plugins which
 
 

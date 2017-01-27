@@ -26,7 +26,7 @@ from .setting import Setting
 
 class Plugin(object):
 
-    def __init__(self, path, settings):
+    def __init__(self, path, settings, logger):
 
         # all plugins need a hook and a name
         self._path = path
@@ -40,7 +40,10 @@ class Plugin(object):
         self._configured_settings = {}
         self._required_runtime_settings = {}
 
+        self._logger = logger
+
         self._validate_and_resolve_config()
+
 
     def __repr__(self):
         return "<Publish Plugin %s>" % self._path
@@ -66,8 +69,6 @@ class Plugin(object):
                 # this setting needs to be pulled from the UI
                 # todo - ensure all keys are set
                 self._required_runtime_settings[settings_def_name] = settings_def_params
-
-
 
     @property
     def title(self):
@@ -105,6 +106,14 @@ class Plugin(object):
             return None
 
     @property
+    def resolved_settings(self):
+        """
+        returns a dict of resolved raw settings given the current state
+        """
+        return {}
+
+
+    @property
     def required_settings(self):
         """
         Settings required to be specified by a UI or external process
@@ -118,18 +127,12 @@ class Plugin(object):
         return settings
 
 
-    # def scan_scene(self, log, runtime_settings):
-    #
-    #     # get the full settings merged together
-    #     full_settings = runtime_settings.copy()
-    #     full_settings.update(self._configured_settings)
-    #
-    #     self._scan_scene_data = self._plugin.scan_scene(
-    #         log,
-    #         full_settings
-    #     )
-    #
-    #     return self._scan_scene_data.keys()
+    def run_accept(self, item):
+
+        resolved_settings = {}
+
+        return self._plugin.accept(self._logger, resolved_settings, item)
+
     #
     # def validate(self, log, item, runtime_settings):
     #

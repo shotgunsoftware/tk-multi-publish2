@@ -48,10 +48,8 @@ class SceneHook(HookBaseClass):
 
     def accept(self, log, settings, item):
 
-        log.info("This is scan scene waking up")
-        log.info("Settings %s" % settings)
-
-        return True
+        log.info("%s: Running accept for %s with settings %s" % (self, item, settings))
+        return {"accepted": True, "required": True, "enabled": True}
 
     def validate(self, log, settings, item):
 

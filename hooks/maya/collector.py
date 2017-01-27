@@ -55,5 +55,6 @@ class MayaSceneCollector(HookBaseClass):
 
                 for dag_path in cmds.ls(type=type, long=True):
                     dag_item = create_item("maya_node", dag_path, parent=current_scene)
-                    dag_item.properties["maya_type"] = dag_path
+                    dag_item.properties["maya_type"] = type
+                    dag_item.properties["dag_path"] = dag_path
 
