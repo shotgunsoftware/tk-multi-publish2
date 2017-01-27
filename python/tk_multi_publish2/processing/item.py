@@ -22,14 +22,24 @@ class Item(object):
         self._name = name
         self._type = type
         self._parent = parent
+        self._children = []
         self._connections = []
         self._properties = {}
+        if parent:
+            self._parent._add_child(self)
 
     def __repr__(self):
         if self._parent:
             return "<Item %s|%s:%s>" % (self._parent, self._type, self._name)
         else:
             return "<Item %s:%s>" % (self._type, self._name)
+
+    def _add_child(self, child):
+        self._children.append(child)
+
+    @property
+    def children(self):
+        return self._children
 
     @property
     def name(self):

@@ -45,7 +45,7 @@ class MayaSceneCollector(HookBaseClass):
                 file_item.properties["path"] = path
 
         if "current_maya_scene" in types or "maya_node" in types:
-            current_scene = create_item("current_maya_scene", "Current Scene")
+            current_scene = create_item("current_maya_scene", "Current Maya Scene")
 
         if "maya_node" in types:
             # get a list of maya types to scan for
@@ -54,7 +54,9 @@ class MayaSceneCollector(HookBaseClass):
                 self.logger.debug("Getting nodes from maya of type %s" % type)
 
                 for dag_path in cmds.ls(type=type, long=True):
-                    dag_item = create_item("maya_node", dag_path, parent=current_scene)
+                    short_name = dag_path.split("|")[-1]
+                    item_name = "%s %s" % (type, short_name)
+                    dag_item = create_item("maya_node", item_name, parent=current_scene)
                     dag_item.properties["maya_type"] = type
                     dag_item.properties["dag_path"] = dag_path
 

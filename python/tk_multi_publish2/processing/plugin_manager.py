@@ -53,6 +53,12 @@ class PluginManager(object):
         self._all_items = []
         self._connections = []
 
+
+
+    @property
+    def top_level_items(self):
+        return self._root_items
+
     def _create_item(self, item_type, name, parent=None):
         """
         Callback to create item

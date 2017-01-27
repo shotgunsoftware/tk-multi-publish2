@@ -17,6 +17,7 @@ from .ui.dialog import Ui_Dialog
 
 from .processing import PluginManager
 from .item import Item
+from .tree_item import PublishTreeWidgetItem, PublishTreeWidgetConnection
 
 from .processing import ValidationFailure, PublishFailure
 
@@ -54,8 +55,8 @@ class AppDialog(QtGui.QWidget):
         self.ui.splitter.setStretchFactor(1, 1)
 
         # set up tree view to look slick
-        self.ui.items_tree.setRootIsDecorated(False)
-        self.ui.items_tree.setItemsExpandable(False)
+        #self.ui.items_tree.setRootIsDecorated(False)
+        #self.ui.items_tree.setItemsExpandable(False)
         self.ui.items_tree.setIndentation(20)
 
         # drag and drop
@@ -74,47 +75,54 @@ class AppDialog(QtGui.QWidget):
 
 
 
+    def _build_tree_r(self, parent, item):
 
+        ui_item = PublishTreeWidgetItem(item, parent)
+        ui_item.setExpanded(True)
+
+        for connection in item.connections:
+            connection = PublishTreeWidgetConnection(connection, ui_item)
+
+        for child in item.children:
+            self._build_tree_r(ui_item, child)
+
+
+
+        return ui_item
 
     def do_reload(self):
         """
 
         @return:
         """
-
-
-
         self.ui.items_tree.clear()
-
-        item = QtGui.QTreeWidgetItem(self.ui.items_tree)
-
-        child_item = QtGui.QTreeWidgetItem(item)
-
-        pd = Item(self)
-        pd.set_header("foo bar baz")
-        pd.set_mode(Item.ITEM)
-        #pd.set_status(pd.VALIDATION_ERROR)
-
-        pd2 = Item(self)
-        pd2.set_header("yeah baby")
-        pd2.set_mode(Item.PLUGIN)
-        #pd2.set_status(pd2.PROCESSING)
-
-        self.ui.items_tree.addTopLevelItem(item)
-
-        self.ui.items_tree.setItemWidget(item, 0, pd)
-        self.ui.items_tree.setItemWidget(child_item, 0, pd2)
-
-        self.ui.items_tree.expandItem(item)
 
         # run the hooks
         self._plugin_manager.collect()
+
+
+
+        for item in self._plugin_manager.top_level_items:
+
+            ui_item = self._build_tree_r(self.ui.items_tree, item)
+            self.ui.items_tree.addTopLevelItem(ui_item)
+
+
+
+
+
 
     def do_validate(self):
         self.log_debug("Validate")
 
     def do_publish(self):
         self.log_debug("Publish")
+
+
+
+
+
+
 
 
 
