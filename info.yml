@@ -42,6 +42,8 @@ configuration:
             - hook: "{self}/maya/test.py"
               settings: {}
 
+            - hook: "{self}/maya/file_publisher.py"
+              settings: {}
 
             
 # the Shotgun fields that this app needs in order to operate correctly

@@ -21,31 +21,28 @@ class SceneHook(HookBaseClass):
 
     @property
     def icon(self):
-        return os.path.join(self.disk_location, "icons", "maya.png")
+        return os.path.join(self.disk_location, "icons", "file.png")
 
     @property
     def title(self):
-        return "Maya Scene"
+        return "File Publisher"
 
     @property
     def description_html(self):
-        return """Thundercats <i>venmo</i> taxidermy, succulents next level poutine tacos pour-over jean shorts four
-        loko gluten-free shabby chic lyft pinterest. Tilde drinking vinegar brunch, salvia seitan vinyl
-        PBR&B sartorial mlkshk pop-up vegan pickled bitters wayfarers."""
+        return """Publishes files to shotgun"""
 
 
     @property
     def settings(self):
         return {
-            "setting_a": {"type": "int", "default": 5, "description": "foo bar baz"},
-            "setting_b": {"type": "bool", "default": True, "description": "Should we do stuff?"}
+            #"setting_a": {"type": "int", "default": 5, "description": "foo bar baz"},
         }
 
 
     @property
     def subscriptions(self):
         return [
-            {"type": "current_maya_scene"}
+            {"type": "file"}
         ]
 
 

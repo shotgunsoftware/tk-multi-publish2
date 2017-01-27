@@ -22,6 +22,7 @@ class Item(object):
         self._name = name
         self._type = type
         self._parent = parent
+        self._properties = {}
 
     def __repr__(self):
         if self._parent:
@@ -41,5 +42,7 @@ class Item(object):
     def parent(self):
         return self._parent
 
-
+    @property
+    def properties(self):
+        return self._properties
 

@@ -75,14 +75,18 @@ class PluginManager(QtCore.QObject):
         """
 
         # pass 1 - collect stuff from the scene and other places
+        subscriptions = []
+        for plugin in self._plugins:
+            subscriptions.extend(plugin.subscriptions)
 
+        # pass 2 - run the collector to generate item to match all
+        # subscriptions
         self._bundle.execute_hook_method(
             "collector",
             "collect",
-            subscriptions=[],
+            subscriptions=subscriptions,
             create_item=self._create_item
         )
-
 
         # now we have a series of items from the scene, see which ones are interesting for plugins
 
