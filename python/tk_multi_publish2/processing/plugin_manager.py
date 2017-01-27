@@ -41,11 +41,12 @@ class PluginManager(object):
         for plugin_def in plugin_defs:
             logger.debug("Find config chunk %s" % plugin_def)
 
+            plugin_instance_name = plugin_def["name"]
             hook_path = plugin_def["hook"]
             settings = plugin_def["settings"]
 
             # maintain a ordered list
-            plugin = Plugin(hook_path, settings, logger)
+            plugin = Plugin(plugin_instance_name, hook_path, settings, logger)
             logger.debug("Created %s" % plugin)
             self._plugins.append(plugin)
 

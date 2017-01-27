@@ -25,6 +25,8 @@ configuration:
         values:
             type: dict
             items:
+                name:
+                    type: str
                 hook:
                     type: hook
                 settings:
@@ -32,17 +34,21 @@ configuration:
 
         default_value:
 
-            - hook: "{self}/maya/scene.py"
+            - name: Publish Maya Scene
+              hook: "{self}/maya/scene.py"
               settings: {}
 
-            - hook: "{self}/maya/test.py"
+            - name: Normalized Alembic Camera
+              hook: "{self}/maya/test.py"
               settings:
                 setting_a: 6
 
-            - hook: "{self}/maya/test.py"
+            - name: Publish Alembic Camera
+              hook: "{self}/maya/test.py"
               settings: {}
 
-            - hook: "{self}/maya/file_publisher.py"
+            - name: Publish File to Shotgun
+              hook: "{self}/maya/file_publisher.py"
               settings: {}
 
             

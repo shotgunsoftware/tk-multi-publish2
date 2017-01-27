@@ -26,9 +26,10 @@ from .setting import Setting
 
 class Plugin(object):
 
-    def __init__(self, path, settings, logger):
+    def __init__(self, name, path, settings, logger):
 
         # all plugins need a hook and a name
+        self._name = name
         self._path = path
         self._raw_config_settings = settings
 
@@ -70,6 +71,11 @@ class Plugin(object):
                 # this setting needs to be pulled from the UI
                 # todo - ensure all keys are set
                 self._required_runtime_settings[settings_def_name] = settings_def_params
+
+    @property
+    def name(self):
+        # name as defined in the env config
+        return self._name
 
     @property
     def connections(self):
