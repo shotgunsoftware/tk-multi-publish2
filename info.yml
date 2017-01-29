@@ -16,7 +16,7 @@ configuration:
     collector:
         type: hook
         description: "Logic for enumerating things"
-        default_value: "{self}/maya/collector.py"
+        default_value: "{self}/collector.py:{self}/maya/collector.py"
 
 
     publish_plugins:

@@ -14,15 +14,14 @@ import maya.cmds as cmds
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
-class MayaSceneCollector(HookBaseClass):
+class GenericSceneCollector(HookBaseClass):
     """
     Collector that operates on the maya scene
     """
 
     def collect(self, subscriptions, create_item):
 
-        print "collect maya"
-        super(MayaSceneCollector, self).collect(subscriptions, create_item)
+        print "collect generic"
 
         self.logger.debug("Executing collect hook")
         self.logger.debug("Subscriptions: %s" % pprint.pformat(subscriptions))
@@ -47,20 +46,4 @@ class MayaSceneCollector(HookBaseClass):
                 file_item.properties["path"] = path
                 if file_extension == ".png":
                     file_item.set_thumbnail(path)
-
-        if "current_maya_scene" in types or "maya_node" in types:
-            current_scene = create_item("current_maya_scene", "Current Maya Scene")
-
-        if "maya_node" in types:
-            # get a list of maya types to scan for
-            types = set([x["maya_type"] for x in subscriptions if x["type"] == "maya_node"])
-            for type in types:
-                self.logger.debug("Getting nodes from maya of type %s" % type)
-
-                for dag_path in cmds.ls(type=type, long=True):
-                    short_name = dag_path.split("|")[-1]
-                    item_name = "%s %s" % (type, short_name)
-                    dag_item = create_item("maya_node", item_name, parent=current_scene)
-                    dag_item.properties["maya_type"] = type
-                    dag_item.properties["dag_path"] = dag_path
 
