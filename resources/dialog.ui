@@ -177,6 +177,14 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="swap">
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/tk_multi_publish2/yinyang.png</normaloff>:/tk_multi_publish2/yinyang.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="validate">
         <property name="text">
          <string>Validate</string>

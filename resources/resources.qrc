@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="tk_multi_publish2">
+    <file>yinyang.png</file>
     <file>shotgun.png</file>
     <file>failure.png</file>
     <file>item.png</file>

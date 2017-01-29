@@ -38,7 +38,6 @@ function build_res {
 echo "building user interfaces..."
 build_ui dialog
 build_ui item
-build_ui plugin_info
 
 # build resources
 echo "building resources..."
