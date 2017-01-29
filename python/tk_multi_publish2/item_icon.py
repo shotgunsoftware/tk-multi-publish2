@@ -50,11 +50,16 @@ class ItemIcon(QtGui.QLabel):
         Set up the widget as a thumb
         """
         # 16:9 aspect ratio
-        self.setMaximumSize(80, 45)
-        self.setMinimumSize(80, 45)
+        self.setMaximumSize(64, 36)
+        self.setMinimumSize(64, 36)
         self.setCursor(QtCore.Qt.PointingHandCursor)
         if pixmap:
             self._set_screenshot_pixmap(pixmap)
+
+        self.setProperty("thumbnail", True)
+        self.style().unpolish(self)
+        self.style().polish(self)
+
 
     def mousePressEvent(self, event):
         """

@@ -17,11 +17,13 @@ QListView, QTableView, QScrollArea, QFrame {
     border: none;
 }
 
+
 /* Use open sans font across the app if core supports it */
 QWidget {
     font-family: Open Sans;
     font-style: Regular;
 }
+
 
 
 /* need this to kick QT into 'style mode' for labels otherwise things are not formatted correctly */
@@ -35,8 +37,11 @@ DropAreaFrame[dragging="true"] {
 }
 
 
-ItemIcon { background-color: gray; }
+ItemIcon[thumbnail="true"] { background-color: #555; border: 1px solid #777; }
 
 Item { padding: 10px; }
 
 QTreeView::branch { background: none; }
+
+
+QTreeView { background-color: #444;  padding: 4px;}

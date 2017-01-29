@@ -102,6 +102,8 @@ class AppDialog(QtGui.QWidget):
 
 
 
+
+
         for item in self._plugin_manager.top_level_items:
 
             ui_item = self._build_tree_r(self.ui.items_tree, item)
