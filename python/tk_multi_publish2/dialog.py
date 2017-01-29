@@ -80,8 +80,8 @@ class AppDialog(QtGui.QWidget):
         ui_item = PublishTreeWidgetItem(item, parent)
         ui_item.setExpanded(True)
 
-        for connection in item.connections:
-            connection = PublishTreeWidgetConnection(connection, ui_item)
+        for task in item.tasks:
+            task = PublishTreeWidgetConnection(task, ui_item)
 
         for child in item.children:
             self._build_tree_r(ui_item, child)

@@ -13,7 +13,7 @@ import sgtk
 from .plugin import Plugin
 from .errors import PluginNotFoundError
 from .item import Item
-from .connection import Connection
+from .task import Task
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -52,7 +52,7 @@ class PluginManager(object):
 
         self._root_items = []
         self._all_items = []
-        self._connections = []
+        self._tasks = []
 
 
 
@@ -99,12 +99,12 @@ class PluginManager(object):
                         yield item
 
 
-    def _create_connection(self, plugin, item):
-        connection = Connection(plugin, item)
-        plugin.add_connection(connection)
-        item.add_connection(connection)
-        logger.debug("Created %s" % connection)
-        return connection
+    def _create_task(self, plugin, item):
+        task = Task(plugin, item)
+        plugin.add_task(task)
+        item.add_task(task)
+        logger.debug("Created %s" % task)
+        return task
 
     def collect(self):
         """
@@ -136,13 +136,13 @@ class PluginManager(object):
                 accept_data = plugin.run_accept(item)
                 if accept_data.get("accepted"):
                     # this item was accepted by the plugin!
-                    # create a connection
+                    # create a task
 
-                    connection = self._create_connection(plugin, item)
+                    task = self._create_task(plugin, item)
                     is_required = accept_data.get("required") is True
                     is_enabled = accept_data.get("enabled") is True
-                    connection.set_plugin_defaults(is_required, is_enabled)
-                    self._connections.append(connection)
+                    task.set_plugin_defaults(is_required, is_enabled)
+                    self._tasks.append(task)
 
         # now do a cull to get the tree of plugins which
 

@@ -25,7 +25,7 @@ class Item(object):
         self._parent = parent
         self._thumb_path = None
         self._children = []
-        self._connections = []
+        self._tasks = []
         self._properties = {}
         if parent:
             self._parent._add_child(self)
@@ -75,8 +75,8 @@ class Item(object):
         return self._properties
 
     @property
-    def connections(self):
-        return self._connections
+    def tasks(self):
+        return self._tasks
 
-    def add_connection(self, connection):
-        self._connections.append(connection)
+    def add_task(self, task):
+        self._tasks.append(task)

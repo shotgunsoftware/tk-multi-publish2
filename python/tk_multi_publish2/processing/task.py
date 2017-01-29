@@ -8,24 +8,16 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-import re
 import sgtk
-import collections
-
-from sgtk.platform.qt import QtCore, QtGui
 
 logger = sgtk.platform.get_logger(__name__)
 
-from .errors import PluginValidationError, PluginNotFoundError, ValidationFailure, PublishFailure
-from sgtk import TankError
 
 
-from .setting import Setting
-
-
-class Connection(object):
+class Task(object):
     """
-    The connection between a plugin and an item
+    A plugin instance or the particular action that
+    should be carried out by a plugin on an item.
     """
 
     def __init__(self, plugin, item):
@@ -37,7 +29,7 @@ class Connection(object):
 
 
     def __repr__(self):
-        return "<Connection %s -- %s >" % (self._plugin, self._item)
+        return "<Task: %s for %s >" % (self._plugin, self._item)
 
     def set_plugin_defaults(self, required, enabled):
         self._required = required

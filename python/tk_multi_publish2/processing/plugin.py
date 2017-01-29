@@ -40,7 +40,7 @@ class Plugin(object):
 
         self._configured_settings = {}
         self._required_runtime_settings = {}
-        self._connections = []
+        self._tasks = []
 
         self._logger = logger
 
@@ -78,8 +78,8 @@ class Plugin(object):
         return self._name
 
     @property
-    def connections(self):
-        return self._connections
+    def tasks(self):
+        return self._tasks
 
     @property
     def title(self):
@@ -138,8 +138,8 @@ class Plugin(object):
         return settings
 
 
-    def add_connection(self, connection):
-        self._connections.append(connection)
+    def add_task(self, task):
+        self._tasks.append(task)
 
     def run_accept(self, item):
 
@@ -156,10 +156,10 @@ class Plugin(object):
     #
     #     # evaluate all input values
     #     evaluated_inputs = {}
-    #     for input_name, connection in self._inputs.iteritems():
-    #         # we cannot evaluate publish time connections at this stage
-    #         if connection.phase == self._bundle.VALIDATE:
-    #             evaluated_inputs[input_name] = connection.evaluate(item)
+    #     for input_name, task in self._inputs.iteritems():
+    #         # we cannot evaluate publish time tasks at this stage
+    #         if task.phase == self._bundle.VALIDATE:
+    #             evaluated_inputs[input_name] = task.evaluate(item)
     #
     #     try:
     #         output_data = self._plugin.validate(
@@ -184,8 +184,9 @@ class Plugin(object):
     #
     #     # evaluate all input values
     #     evaluated_inputs = {}
-    #     for input_name, connection in self._inputs.iteritems():
-    #         evaluated_inputs[input_name] = connection.evaluate(item)
+    #     for input_name, task in self._inputs.iteritems():
+    #         evaluated_inputs[input_name] = task.evaluate(item)
+    #         evaluated_inputs[input_name] = task.evaluate(item)
     #
     #     try:
     #         output_data = self._plugin.publish(
