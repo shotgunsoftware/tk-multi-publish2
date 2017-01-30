@@ -11,7 +11,7 @@ from tank.platform.qt import QtCore, QtGui
 class Ui_Item(object):
     def setupUi(self, Item):
         Item.setObjectName("Item")
-        Item.resize(288, 30)
+        Item.resize(253, 26)
         self.horizontalLayout = QtGui.QHBoxLayout(Item)
         self.horizontalLayout.setSpacing(4)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
@@ -43,8 +43,8 @@ class Ui_Item(object):
         self.stack.addWidget(self.chk_page)
         self.horizontalLayout.addWidget(self.stack)
         self.icon = QtGui.QLabel(Item)
-        self.icon.setMinimumSize(QtCore.QSize(30, 30))
-        self.icon.setMaximumSize(QtCore.QSize(30, 30))
+        self.icon.setMinimumSize(QtCore.QSize(26, 26))
+        self.icon.setMaximumSize(QtCore.QSize(26, 26))
         self.icon.setText("")
         self.icon.setScaledContents(True)
         self.icon.setObjectName("icon")
