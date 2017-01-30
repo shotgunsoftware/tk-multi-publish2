@@ -50,6 +50,8 @@ class PluginManager(object):
             logger.debug("Created %s" % plugin)
             self._plugins.append(plugin)
 
+        self._root_item = Item("_root", "_root", parent=None)
+
         self._root_items = []
         self._all_items = []
         self._tasks = []
@@ -65,16 +67,6 @@ class PluginManager(object):
     def top_level_items(self):
         return self._root_items
 
-    def _create_item(self, item_type, name, parent=None):
-        """
-        Callback to create item
-        """
-        item = Item(item_type, name, parent)
-        self._all_items.append(item)
-        if parent is None:
-            self._root_items.append(item)
-        logger.debug("created %s" % item)
-        return item
 
 
     def _get_matching_items(self, subscriptions):
@@ -114,26 +106,24 @@ class PluginManager(object):
     def collect(self):
         """
         Runs the collector and generates fresh items.
-        @return:
         """
 
         # pass 1 - collect stuff from the scene and other places
-
         logger.debug("Executing collector")
         self._bundle.execute_hook_method(
             "collector",
             "process_current_scene",
-
-            create_item=self._create_item
+            parent_item=self._root_item
         )
 
         for path in self._external_files:
             self._bundle.execute_hook_method(
                 "collector",
                 "process_file",
-                create_item=self._create_item,
+                parent_item=self._root_item,
                 path=path
             )
+
 
         # now we have a series of items from the scene, pass it back to the plugins to see which are interesting
         logger.debug("Visting all items")

@@ -17,22 +17,23 @@ class GenericSceneCollector(HookBaseClass):
     Collector that operates on the maya scene
     """
 
-    def process_current_scene(self, create_item):
-        return
+    def process_current_scene(self, parent_item):
+        return None
 
-    def process_file(self, create_item, path):
+    def process_file(self, parent_item, path):
 
         file_name = os.path.basename(path)
         (file_name_no_ext, file_extension) = os.path.splitext(file_name)
 
         if file_extension in [".jpeg", ".jpg", ".png"]:
-            file_item = create_item("image_file", file_name_no_ext)
+            file_item = parent_item.create_item("image_file", file_name_no_ext)
             file_item.set_thumbnail(path)
         else:
-            file_item = create_item("file", file_name_no_ext)
+            file_item = parent_item.create_item("file", file_name_no_ext)
 
         file_item.properties["extension"] = file_extension
         file_item.properties["path"] = path
 
+        return file_item
 
 

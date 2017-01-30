@@ -19,7 +19,7 @@ class Item(object):
     An object representing an item that should be processed
     """
 
-    def __init__(self, type, name, parent=None):
+    def __init__(self, type, name, parent):
         self._name = name
         self._type = type
         self._parent = parent
@@ -27,8 +27,7 @@ class Item(object):
         self._children = []
         self._tasks = []
         self._properties = {}
-        if parent:
-            self._parent._add_child(self)
+        self._parent = None
 
     def __repr__(self):
         if self._parent:
@@ -36,8 +35,15 @@ class Item(object):
         else:
             return "<Item %s:%s>" % (self._type, self._name)
 
-    def _add_child(self, child):
-        self._children.append(child)
+    def create_item(self, item_type, item_name):
+        """
+        Create a new item
+        """
+        child_item = Item(item_type, item_name, parent=self)
+        self._children.append(child_item)
+        child_item._parent = self
+        logger.debug("Created %s" % child_item)
+        return child_item
 
     def set_thumbnail(self, path):
         self._thumb_path = path
