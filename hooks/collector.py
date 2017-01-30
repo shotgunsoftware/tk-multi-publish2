@@ -26,7 +26,7 @@ class GenericSceneCollector(HookBaseClass):
         (file_name_no_ext, file_extension) = os.path.splitext(file_name)
 
         if file_extension in [".jpeg", ".jpg", ".png"]:
-            file_item = parent_item.create_item("image_file", file_name_no_ext)
+            file_item = parent_item.create_item("file.image", file_name_no_ext)
             file_item.set_thumbnail(path)
         else:
             file_item = parent_item.create_item("file", file_name_no_ext)

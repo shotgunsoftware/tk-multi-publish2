@@ -44,9 +44,7 @@ class TestHook(HookBaseClass):
 
     @property
     def subscriptions(self):
-        return [
-            {"type": "maya_node", "maya_type": "camera"},
-        ]
+        return ["maya.camera"]
 
     def accept(self, log, settings, item):
 

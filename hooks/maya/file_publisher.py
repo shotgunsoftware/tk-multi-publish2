@@ -41,10 +41,7 @@ class SceneHook(HookBaseClass):
 
     @property
     def subscriptions(self):
-        return [
-            {"type": "file"}
-        ]
-
+        return ["file.*"]
 
     def accept(self, log, settings, item):
 
@@ -64,7 +61,7 @@ class SceneHook(HookBaseClass):
         log.info("This is publish for item %s" % item)
         log.info("Settings %s" % settings)
 
-        item.parent.data["foo"]
+
 
         time.sleep(0.4)
 
