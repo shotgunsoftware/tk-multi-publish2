@@ -21,7 +21,7 @@ class SceneHook(HookBaseClass):
 
     @property
     def icon(self):
-        return os.path.join(self.disk_location, "icons", "file.png")
+        return os.path.join(self.disk_location, "icons", "shotgun.png")
 
     @property
     def title(self):
