@@ -10,6 +10,7 @@
 
 
 import sgtk
+import fnmatch
 from .plugin import Plugin
 from .errors import PluginNotFoundError
 from .item import Item
@@ -51,23 +52,18 @@ class PluginManager(object):
             self._plugins.append(plugin)
 
         self._root_item = Item("_root", "_root", parent=None)
-
-        self._root_items = []
         self._all_items = []
-        self._tasks = []
 
+        self._tasks = []
         self._external_files = []
 
     def add_external_file(self, path):
         logger.debug("Adding external file '%s'" % path)
         self._external_files.append(path)
 
-
     @property
     def top_level_items(self):
-        return self._root_items
-
-
+        return self._root_item.children
 
     def _get_matching_items(self, subscriptions):
         """
@@ -75,25 +71,13 @@ class PluginManager(object):
         yield a series of matching items. Items are
         randomly ordered.
         """
+        logger.debug("Finding matching items for subscription %s" % subscriptions)
         for subscription in subscriptions:
             logger.debug("Checking matches for subscription %s" % subscription)
-            # {"type": "maya_node", "maya_type": "camera"},
+            # "maya.*"
             for item in self._all_items:
-                if item.type == subscription["type"]:
-                    # right type!
-                    # check rest of properties
-                    properties = subscription.keys()
-                    item_matching = True
-                    for property_name in properties:
-                        if property_name == "type":
-                            continue
-                        if property_name not in item.properties or subscription[property_name] != item.properties[property_name]:
-                            # not matching
-                            item_matching = False
-                            break
-                    if item_matching:
-                        logger.debug("    match: %s (%s)" % (item, item.properties))
-                        yield item
+                if fnmatch.fnmatch(item.type, subscription):
+                    yield item
 
 
     def _create_task(self, plugin, item):
@@ -102,6 +86,12 @@ class PluginManager(object):
         item.add_task(task)
         logger.debug("Created %s" % task)
         return task
+
+    def _populate_items_list(self, parent):
+        items = []
+        for child in parent.children:
+            items.append(child)
+            self._populate_items_list(child)
 
     def collect(self):
         """
@@ -124,23 +114,25 @@ class PluginManager(object):
                 path=path
             )
 
+        # flatten list of items for easier processing
+        self._populate_items_list(self._root_item)
 
         # now we have a series of items from the scene, pass it back to the plugins to see which are interesting
-        logger.debug("Visting all items")
+        logger.debug("Visiting all plugins and offering items")
         for plugin in self._plugins:
-            logger.debug("visting %s" % plugin)
+
             for item in self._get_matching_items(plugin.subscriptions):
+                logger.debug("seeing if %s is interested in %s" % (plugin, item))
                 accept_data = plugin.run_accept(item)
                 if accept_data.get("accepted"):
                     # this item was accepted by the plugin!
                     # create a task
-
                     task = self._create_task(plugin, item)
                     is_required = accept_data.get("required") is True
                     is_enabled = accept_data.get("enabled") is True
                     task.set_plugin_defaults(is_required, is_enabled)
                     self._tasks.append(task)
 
-        # now do a cull to get the tree of plugins which
+        # TODO: need to do a cull to remove any items in the tree which do not have tasks
 
 
