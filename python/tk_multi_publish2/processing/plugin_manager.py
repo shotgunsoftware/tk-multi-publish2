@@ -71,7 +71,6 @@ class PluginManager(object):
         yield a series of matching items. Items are
         randomly ordered.
         """
-        logger.debug("Finding matching items for subscription %s" % subscriptions)
         for subscription in subscriptions:
             logger.debug("Checking matches for subscription %s" % subscription)
             # "maya.*"
@@ -88,9 +87,8 @@ class PluginManager(object):
         return task
 
     def _populate_items_list(self, parent):
-        items = []
         for child in parent.children:
-            items.append(child)
+            self._all_items.append(child)
             self._populate_items_list(child)
 
     def collect(self):

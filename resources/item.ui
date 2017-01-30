@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>319</width>
-    <height>54</height>
+    <width>288</width>
+    <height>30</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -67,17 +67,17 @@
     </widget>
    </item>
    <item>
-    <widget class="ItemIcon" name="icon">
+    <widget class="QLabel" name="icon">
      <property name="minimumSize">
       <size>
-       <width>80</width>
-       <height>45</height>
+       <width>30</width>
+       <height>30</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>80</width>
-       <height>45</height>
+       <width>30</width>
+       <height>30</height>
       </size>
      </property>
      <property name="text">
@@ -112,11 +112,6 @@
    <extends>QWidget</extends>
    <header>..item_status</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ItemIcon</class>
-   <extends>QLabel</extends>
-   <header>..item_icon</header>
   </customwidget>
  </customwidgets>
  <resources>

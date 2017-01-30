@@ -21,7 +21,6 @@ class Item(QtGui.QFrame):
     Represents a right hand side details pane in the UI
     """
 
-    (ITEM, PLUGIN) = range(2)
     (NEUTRAL, PROCESSING, VALIDATION_COMPLETE, VALIDATION_ERROR, PUBLISH_ERROR, PUBLISH_COMPLETE) = range(6)
 
     def __init__(self, parent=None):
@@ -41,19 +40,11 @@ class Item(QtGui.QFrame):
 
         self.set_status(self.NEUTRAL)
 
-
-    def set_mode(self, mode, pixmap=None):
+    def set_icon(self, pixmap):
         """
         Specifies if this item should be a plugin or a item
         """
-        if mode == self.ITEM:
-            self.ui.icon.set_thumbnail(pixmap)
-
-        elif mode == self.PLUGIN:
-            self.ui.icon.set_static_thumb(pixmap)
-
-        else:
-            raise sgtk.TankError("Unknown item mode!")
+        self.ui.icon.setPixmap(pixmap)
 
     def set_status(self, status):
         """

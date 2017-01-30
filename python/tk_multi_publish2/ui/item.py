@@ -11,7 +11,7 @@ from tank.platform.qt import QtCore, QtGui
 class Ui_Item(object):
     def setupUi(self, Item):
         Item.setObjectName("Item")
-        Item.resize(319, 54)
+        Item.resize(288, 30)
         self.horizontalLayout = QtGui.QHBoxLayout(Item)
         self.horizontalLayout.setSpacing(4)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
@@ -42,9 +42,9 @@ class Ui_Item(object):
         self.verticalLayout_2.addWidget(self.checkbox)
         self.stack.addWidget(self.chk_page)
         self.horizontalLayout.addWidget(self.stack)
-        self.icon = ItemIcon(Item)
-        self.icon.setMinimumSize(QtCore.QSize(80, 45))
-        self.icon.setMaximumSize(QtCore.QSize(80, 45))
+        self.icon = QtGui.QLabel(Item)
+        self.icon.setMinimumSize(QtCore.QSize(30, 30))
+        self.icon.setMaximumSize(QtCore.QSize(30, 30))
         self.icon.setText("")
         self.icon.setScaledContents(True)
         self.icon.setObjectName("icon")
@@ -66,6 +66,5 @@ class Ui_Item(object):
         Item.setWindowTitle(QtGui.QApplication.translate("Item", "Form", None, QtGui.QApplication.UnicodeUTF8))
         self.header.setText(QtGui.QApplication.translate("Item", "<big>Alembic Caches</big>", None, QtGui.QApplication.UnicodeUTF8))
 
-from ..item_icon import ItemIcon
 from ..item_status import ItemStatus
 from . import resources_rc

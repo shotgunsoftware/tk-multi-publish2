@@ -27,6 +27,8 @@ class MayaSceneCollector(HookBaseClass):
             file_item.properties["extension"] = file_extension
             file_item.properties["path"] = path
 
+            file_item.set_icon(os.path.join(self.disk_location, "icons", "file.png"))
+
             # experimental
             file_item.properties["workspace_root"] = path
 
@@ -59,6 +61,8 @@ class MayaSceneCollector(HookBaseClass):
         current_scene.properties["path"] = scene_file
         current_scene.properties["workspace_root"] = cmds.workspace( q=True, rootDirectory=True )
 
+        current_scene.set_icon(os.path.join(self.disk_location, "icons", "file.png"))
+
         return current_scene
 
 
@@ -72,6 +76,7 @@ class MayaSceneCollector(HookBaseClass):
             item = parent_item.create_item("maya.camera", item_name)
             item.properties["maya_type"] = "camera"
             item.properties["dag_path"] = dag_path
+            item.set_icon(os.path.join(self.disk_location, "icons", "camera.png"))
             items.append(item)
 
         return items
@@ -90,6 +95,7 @@ class MayaSceneCollector(HookBaseClass):
                     path = os.path.join(playblast_dir, filename)
                     item = parent_item.create_item("maya.playblast", filename)
                     item.properties["path"] = path
+                    item.set_icon(os.path.join(self.disk_location, "icons", "camera.png"))
                     items.append(item)
 
         return items

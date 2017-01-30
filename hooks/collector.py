@@ -34,6 +34,8 @@ class GenericSceneCollector(HookBaseClass):
         file_item.properties["extension"] = file_extension
         file_item.properties["path"] = path
 
+        file_item.set_icon(os.path.join(self.disk_location, "maya", "icons", "file.png"))
+
         return file_item
 
 

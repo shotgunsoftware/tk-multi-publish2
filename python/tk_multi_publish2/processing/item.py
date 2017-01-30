@@ -28,6 +28,7 @@ class Item(object):
         self._tasks = []
         self._properties = {}
         self._parent = None
+        self._icon_path = None
 
     def __repr__(self):
         if self._parent:
@@ -48,15 +49,30 @@ class Item(object):
     def set_thumbnail(self, path):
         self._thumb_path = path
 
+    def set_icon(self, path):
+        self._icon_path = path
+
     @property
     def icon_pixmap(self):
+        if self._icon_path:
+            try:
+                pixmap = QtGui.QPixmap(self._icon_path)
+                return pixmap
+            except Exception, e:
+                logger.warning(
+                    "%r: Could not load icon '%s': %s" % (self, self._icon_path, e)
+                )
+        return None
+
+    @property
+    def thumbnail_pixmap(self):
         if self._thumb_path:
             try:
                 pixmap = QtGui.QPixmap(self._thumb_path)
                 return pixmap
             except Exception, e:
                 logger.warning(
-                    "%r: Could not load icon '%s': %s" % (self, self._thumb_path, e)
+                    "%r: Could not load thumbnail '%s': %s" % (self, self._thumb_path, e)
                 )
         return None
 

@@ -19,7 +19,7 @@ logger = sgtk.platform.get_logger(__name__)
 
 class PublishTreeWidgetConnection(QtGui.QTreeWidgetItem):
 
-    def __init__(self, connection, parent):
+    def __init__(self, task, parent):
         """
         """
         QtGui.QTreeWidgetItem.__init__(self, parent)
@@ -27,8 +27,8 @@ class PublishTreeWidgetConnection(QtGui.QTreeWidgetItem):
         tree_widget = self.treeWidget()
 
         pd = Item(tree_widget)
-        pd.set_header(connection.plugin.name)
-        pd.set_mode(Item.PLUGIN, connection.plugin.icon_pixmap)
+        pd.set_header(task.plugin.name)
+        pd.set_icon(task.plugin.icon_pixmap)
         #pd.set_status(pd.VALIDATION_ERROR)
 
         tree_widget = self.treeWidget()
@@ -50,10 +50,8 @@ class PublishTreeWidgetItem(QtGui.QTreeWidgetItem):
 
         pd = Item(tree_widget)
         pd.set_header(item.name)
-        pd.set_mode(Item.ITEM, item.icon_pixmap)
+        pd.set_icon(item.icon_pixmap)
         #pd.set_status(pd.VALIDATION_ERROR)
-
-
 
 
         tree_widget.setItemWidget(self, 0, pd)
