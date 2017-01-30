@@ -19,48 +19,51 @@ class MayaSceneCollector(HookBaseClass):
     Collector that operates on the maya scene
     """
 
-    def collect(self, subscriptions, create_item):
+    def process_current_scene(self, create_item):
 
-        print "collect maya"
-        super(MayaSceneCollector, self).collect(subscriptions, create_item)
+        scene = self.create_current_maya_scene(create_item)
+        self.create_cameras(create_item, scene)
 
-        self.logger.debug("Executing collect hook")
-        self.logger.debug("Subscriptions: %s" % pprint.pformat(subscriptions))
 
-        # # Shotgun DEBUG (0.002s): collector: Subscriptions: [
-        # {'type': 'current_maya_scene'},
-        # {'maya_type': 'camera', 'type': 'maya_node'},
-        # {'maya_type': 'camera', 'type': 'maya_node'}]  #
 
-        # this collector handles maya stuff and files
 
-        types = [x["type"] for x in subscriptions]
+    def process_file(self, create_item, path):
 
-        if "file" in types:
-            # we have plugins which need files
-            for path in self.parent.get_external_files():
+        if path.endswith(".ma") or path.endswith(".mb"):
+            file_name = os.path.basename(path)
+            (file_name_no_ext, file_extension) = os.path.splitext(file_name)
+            file_item = create_item("maya_file", file_name_no_ext)
+            file_item.properties["extension"] = file_extension
+            file_item.properties["path"] = path
 
-                file_name = os.path.basename(path)
-                (file_name_no_ext, file_extension) = os.path.splitext(file_name)
-                file_item = create_item("file", file_name_no_ext)
-                file_item.properties["extension"] = file_extension
-                file_item.properties["path"] = path
-                if file_extension == ".png":
-                    file_item.set_thumbnail(path)
+        else:
+            super(MayaSceneCollector, self).process_file(create_item, path)
 
-        if "current_maya_scene" in types or "maya_node" in types:
-            current_scene = create_item("current_maya_scene", "Current Maya Scene")
 
-        if "maya_node" in types:
-            # get a list of maya types to scan for
-            types = set([x["maya_type"] for x in subscriptions if x["type"] == "maya_node"])
-            for type in types:
-                self.logger.debug("Getting nodes from maya of type %s" % type)
+    def create_current_maya_scene(self, create_item):
 
-                for dag_path in cmds.ls(type=type, long=True):
-                    short_name = dag_path.split("|")[-1]
-                    item_name = "%s %s" % (type, short_name)
-                    dag_item = create_item("maya_node", item_name, parent=current_scene)
-                    dag_item.properties["maya_type"] = type
-                    dag_item.properties["dag_path"] = dag_path
+        scene_file = cmds.file(query=True, sn=True)
+        if scene_file:
+            scene_file = os.path.abspath(scene_file)
+            file_name = os.path.basename(scene_file)
+            (file_name_no_ext, file_extension) = os.path.splitext(file_name)
+            current_scene = create_item("current_maya_scene", file_name_no_ext)
+
+        else:
+            current_scene = create_item("current_maya_scene", "<Untitled>")
+
+        current_scene.properties["path"] = scene_file
+
+        return current_scene
+
+
+
+    def create_cameras(self, create_item, parent):
+
+        for dag_path in cmds.ls(type="camera", long=True):
+            short_name = dag_path.split("|")[-1]
+            item_name = "Camera %s" % short_name
+            dag_item = create_item("maya_camera", item_name, parent=parent)
+            dag_item.properties["maya_type"] = "camera"
+            dag_item.properties["dag_path"] = dag_path
 

@@ -133,7 +133,8 @@ class AppDialog(QtGui.QWidget):
         """
         When someone drops stuff into the publish.
         """
-        self._bundle.add_external_files(data)
+        for file in data:
+            self._plugin_manager.add_external_file(file)
         self.do_reload()
 
     def is_first_launch(self):

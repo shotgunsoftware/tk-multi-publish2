@@ -54,6 +54,11 @@ class PluginManager(object):
         self._all_items = []
         self._tasks = []
 
+        self._external_files = []
+
+    def add_external_file(self, path):
+        logger.debug("Adding external file '%s'" % path)
+        self._external_files.append(path)
 
 
     @property
@@ -113,20 +118,22 @@ class PluginManager(object):
         """
 
         # pass 1 - collect stuff from the scene and other places
-        logger.debug("Collecting subscriptions from plugins")
-        subscriptions = []
-        for plugin in self._plugins:
-            subscriptions.extend(plugin.subscriptions)
 
-        # pass 2 - run the collector to generate item to match all
-        # subscriptions
         logger.debug("Executing collector")
         self._bundle.execute_hook_method(
             "collector",
-            "collect",
-            subscriptions=subscriptions,
+            "process_current_scene",
+
             create_item=self._create_item
         )
+
+        for path in self._external_files:
+            self._bundle.execute_hook_method(
+                "collector",
+                "process_file",
+                create_item=self._create_item,
+                path=path
+            )
 
         # now we have a series of items from the scene, pass it back to the plugins to see which are interesting
         logger.debug("Visting all items")
