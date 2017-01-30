@@ -12,7 +12,6 @@
 import sgtk
 import fnmatch
 from .plugin import Plugin
-from .errors import PluginNotFoundError
 from .item import Item
 from .task import Task
 
@@ -52,20 +51,26 @@ class PluginManager(object):
             self._plugins.append(plugin)
 
         self._root_item = Item("_root", "_root", parent=None)
-        self._all_items = []
-
         self._tasks = []
-        self._external_files = []
 
-    def add_external_file(self, path):
-        logger.debug("Adding external file '%s'" % path)
-        self._external_files.append(path)
+        # do the current scene
+        self._collect(collect_current_scene=True)
+
+
+    def add_external_files(self, paths):
+        logger.debug("Adding external files '%s'" % paths)
+        # and update the data model
+        self._collect(collect_current_scene=False, paths=paths)
 
     @property
     def top_level_items(self):
         return self._root_item.children
 
-    def _get_matching_items(self, subscriptions):
+    @property
+    def plugins(self):
+        return self._plugins
+
+    def _get_matching_items(self, subscriptions, all_items):
         """
         Given a list of subscriptions from a plugin,
         yield a series of matching items. Items are
@@ -74,7 +79,7 @@ class PluginManager(object):
         for subscription in subscriptions:
             logger.debug("Checking matches for subscription %s" % subscription)
             # "maya.*"
-            for item in self._all_items:
+            for item in all_items:
                 if fnmatch.fnmatch(item.type, subscription):
                     yield item
 
@@ -86,40 +91,51 @@ class PluginManager(object):
         logger.debug("Created %s" % task)
         return task
 
-    def _populate_items_list(self, parent):
+    def _get_items(self, parent):
+        items = []
         for child in parent.children:
-            self._all_items.append(child)
-            self._populate_items_list(child)
+            items.append(child)
+            items.extend(self._get_items(child))
+        return items
 
-    def collect(self):
+    def _collect(self, collect_current_scene, paths=None):
         """
         Runs the collector and generates fresh items.
         """
 
+        # get existing items
+        all_items_before = self._get_items(self._root_item)
+
         # pass 1 - collect stuff from the scene and other places
         logger.debug("Executing collector")
-        self._bundle.execute_hook_method(
-            "collector",
-            "process_current_scene",
-            parent_item=self._root_item
-        )
 
-        for path in self._external_files:
+        if collect_current_scene:
             self._bundle.execute_hook_method(
                 "collector",
-                "process_file",
-                parent_item=self._root_item,
-                path=path
+                "process_current_scene",
+                parent_item=self._root_item
             )
 
-        # flatten list of items for easier processing
-        self._populate_items_list(self._root_item)
+        if paths:
+            for path in paths:
+                self._bundle.execute_hook_method(
+                    "collector",
+                    "process_file",
+                    parent_item=self._root_item,
+                    path=path
+                )
+
+        # get all items after scan
+        all_items_after = self._get_items(self._root_item)
+
+        # get list of new things
+        all_new_items = list(set(all_items_after) - set(all_items_before))
 
         # now we have a series of items from the scene, pass it back to the plugins to see which are interesting
         logger.debug("Visiting all plugins and offering items")
         for plugin in self._plugins:
 
-            for item in self._get_matching_items(plugin.subscriptions):
+            for item in self._get_matching_items(plugin.subscriptions, all_new_items):
                 logger.debug("seeing if %s is interested in %s" % (plugin, item))
                 accept_data = plugin.run_accept(item)
                 if accept_data.get("accepted"):

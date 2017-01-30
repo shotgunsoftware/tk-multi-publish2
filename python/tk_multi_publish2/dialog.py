@@ -17,7 +17,7 @@ from .ui.dialog import Ui_Dialog
 
 from .processing import PluginManager
 from .item import Item
-from .tree_item import PublishTreeWidgetItem, PublishTreeWidgetConnection
+from .tree_item import PublishTreeWidgetItem, PublishTreeWidgetTask, PublishTreeWidgetPlugin
 
 from .processing import ValidationFailure, PublishFailure
 
@@ -31,6 +31,8 @@ class AppDialog(QtGui.QWidget):
     """
     Main dialog window for the App
     """
+
+    (ITEM_CENTRIC, PLUGIN_CENTRIC) = range(2)
 
     def __init__(self, parent=None):
         """
@@ -55,7 +57,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.splitter.setStretchFactor(1, 1)
 
         # set up tree view to look slick
-        #self.ui.items_tree.setRootIsDecorated(False)
+        self.ui.items_tree.setRootIsDecorated(False)
         #self.ui.items_tree.setItemsExpandable(False)
         self.ui.items_tree.setIndentation(20)
 
@@ -63,53 +65,84 @@ class AppDialog(QtGui.QWidget):
         self.ui.frame.something_dropped.connect(self._on_drop)
 
         # buttons
-        self.ui.reload.clicked.connect(self.do_reload)
+        self.ui.reload.clicked.connect(self._on_refresh_clicked)
+        self.ui.swap.clicked.connect(self._on_swap_clicked)
         self.ui.validate.clicked.connect(self.do_validate)
         self.ui.publish.clicked.connect(self.do_publish)
+
+        # mode
+        self._display_mode = self.ITEM_CENTRIC
 
         # start up our plugin manager
         self._plugin_manager = PluginManager()
 
         # start it up
-        self.do_reload()
+        self._on_refresh_clicked()
 
 
 
-    def _build_tree_r(self, parent, item):
+    def _build_item_tree_r(self, parent, item):
 
         ui_item = PublishTreeWidgetItem(item, parent)
         ui_item.setExpanded(True)
 
         for task in item.tasks:
-            task = PublishTreeWidgetConnection(task, ui_item)
+            task = PublishTreeWidgetTask(task, ui_item)
 
         for child in item.children:
-            self._build_tree_r(ui_item, child)
-
-
+            self._build_item_tree_r(ui_item, child)
 
         return ui_item
 
-    def do_reload(self):
+    def _build_plugin_tree_r(self, parent, plugin):
+
+        ui_item = PublishTreeWidgetPlugin(plugin, parent)
+        ui_item.setExpanded(True)
+
+        for task in plugin.tasks:
+            item = PublishTreeWidgetItem(task.item, ui_item)
+
+        return ui_item
+
+
+
+    def _on_refresh_clicked(self):
+
+        self._do_reload()
+        self._build_tree()
+
+
+    def _on_swap_clicked(self):
+
+        if self._display_mode == self.ITEM_CENTRIC:
+            self._display_mode = self.PLUGIN_CENTRIC
+        else:
+            self._display_mode = self.ITEM_CENTRIC
+
+        self._build_tree()
+
+
+    def _build_tree(self):
+
+        self.ui.items_tree.clear()
+
+        if self._display_mode == self.ITEM_CENTRIC:
+            for item in self._plugin_manager.top_level_items:
+                ui_item = self._build_item_tree_r(self.ui.items_tree, item)
+                self.ui.items_tree.addTopLevelItem(ui_item)
+
+        else:
+            for item in self._plugin_manager.plugins:
+                ui_item = self._build_plugin_tree_r(self.ui.items_tree, item)
+                self.ui.items_tree.addTopLevelItem(ui_item)
+
+    def _do_reload(self):
         """
 
         @return:
         """
-        self.ui.items_tree.clear()
-
         # run the hooks
-        self._plugin_manager.collect()
-
-
-
-
-
-        for item in self._plugin_manager.top_level_items:
-
-            ui_item = self._build_tree_r(self.ui.items_tree, item)
-            self.ui.items_tree.addTopLevelItem(ui_item)
-
-
+        self._plugin_manager = PluginManager()
 
 
 
@@ -126,16 +159,17 @@ class AppDialog(QtGui.QWidget):
 
 
 
-
-
-
-    def _on_drop(self, data):
+    def _on_drop(self, files):
         """
         When someone drops stuff into the publish.
         """
-        for file in data:
-            self._plugin_manager.add_external_file(file)
-        self.do_reload()
+        self._plugin_manager.add_external_files(files)
+        self._build_tree()
+
+
+
+
+
 
     def is_first_launch(self):
         """

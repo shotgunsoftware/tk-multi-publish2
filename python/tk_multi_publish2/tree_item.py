@@ -17,12 +17,12 @@ from .item import Item
 logger = sgtk.platform.get_logger(__name__)
 
 
-class PublishTreeWidgetConnection(QtGui.QTreeWidgetItem):
+class PublishTreeWidgetTask(QtGui.QTreeWidgetItem):
 
     def __init__(self, task, parent):
         """
         """
-        QtGui.QTreeWidgetItem.__init__(self, parent)
+        super(PublishTreeWidgetTask, self).__init__(parent)
 
         tree_widget = self.treeWidget()
 
@@ -35,6 +35,26 @@ class PublishTreeWidgetConnection(QtGui.QTreeWidgetItem):
         tree_widget.setItemWidget(self, 0, pd)
 
 
+class PublishTreeWidgetPlugin(QtGui.QTreeWidgetItem):
+
+    def __init__(self, plugin, parent):
+        """
+        """
+        super(PublishTreeWidgetPlugin, self).__init__(parent)
+
+
+        tree_widget = self.treeWidget()
+
+        pd = Item(tree_widget)
+        pd.set_header(plugin.name)
+        pd.set_icon(plugin.icon_pixmap)
+        #pd.set_status(pd.VALIDATION_ERROR)
+
+        tree_widget = self.treeWidget()
+        tree_widget.setItemWidget(self, 0, pd)
+
+
+
 class PublishTreeWidgetItem(QtGui.QTreeWidgetItem):
 
 
@@ -44,7 +64,7 @@ class PublishTreeWidgetItem(QtGui.QTreeWidgetItem):
 
         :param parent:          The parent QWidget for this control
         """
-        QtGui.QTreeWidgetItem.__init__(self, parent)
+        super(PublishTreeWidgetItem, self).__init__(parent)
 
         tree_widget = self.treeWidget()
 
