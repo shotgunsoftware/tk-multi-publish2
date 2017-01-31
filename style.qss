@@ -50,7 +50,7 @@ Item { padding: 10px; }
 
 QTreeView::branch { background: none; }
 
-QFrame#line{
+#summary_divider, #task_divider, #item_divider, #plugin_divider{
     border-top: 1px solid rgba(255, 255, 255, 20);
 
 }

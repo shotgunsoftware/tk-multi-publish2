@@ -72,7 +72,7 @@
         <item>
          <widget class="QStackedWidget" name="details_stack">
           <property name="currentIndex">
-           <number>0</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="details_summary">
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -113,7 +113,7 @@
              </layout>
             </item>
             <item>
-             <widget class="Line" name="line">
+             <widget class="Line" name="summary_divider">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -234,7 +234,7 @@
              </layout>
             </item>
             <item>
-             <widget class="Line" name="line_2">
+             <widget class="Line" name="task_divider">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -301,7 +301,7 @@
              </layout>
             </item>
             <item>
-             <widget class="Line" name="line_3">
+             <widget class="Line" name="plugin_divider">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -368,7 +368,7 @@
              </layout>
             </item>
             <item>
-             <widget class="Line" name="line_4">
+             <widget class="Line" name="item_divider">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
