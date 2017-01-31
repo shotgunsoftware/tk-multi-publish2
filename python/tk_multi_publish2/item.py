@@ -21,7 +21,7 @@ class Item(QtGui.QFrame):
     Represents a right hand side details pane in the UI
     """
 
-    (NEUTRAL, PROCESSING, VALIDATION_COMPLETE, VALIDATION_ERROR, PUBLISH_ERROR, PUBLISH_COMPLETE) = range(6)
+    (NO_CHECKBOX, NEUTRAL, PROCESSING, VALIDATION_COMPLETE, VALIDATION_ERROR, PUBLISH_ERROR, PUBLISH_COMPLETE) = range(7)
 
     def __init__(self, parent=None):
         """
@@ -46,6 +46,10 @@ class Item(QtGui.QFrame):
         """
         self.ui.icon.setPixmap(pixmap)
 
+    @property
+    def checkbox(self):
+        return self.ui.checkbox
+
     def set_status(self, status):
         """
         Set the status for the plugin
@@ -58,6 +62,11 @@ class Item(QtGui.QFrame):
 
         if status == self.NEUTRAL:
             self.ui.stack.setCurrentIndex(1)
+            self.ui.checkbox.show()
+
+        elif status == self.NO_CHECKBOX:
+            self.ui.stack.setCurrentIndex(1)
+            self.ui.checkbox.hide()
 
         elif status == self.PROCESSING:
             self.ui.status.show_spin()
