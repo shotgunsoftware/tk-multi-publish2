@@ -151,11 +151,40 @@ class AppDialog(QtGui.QWidget):
     def _create_item_details(self, item):
         self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
 
+
+        self.ui.item_icon.setPixmap(item.icon_pixmap)
+        self.ui.item_name.setText(item.name)
+
+        text = ""
+        text += "<b>Type:</b> %s<br>" % item.type
+        self.ui.item_description.setText(text)
+
+
+
     def _create_task_details(self, task):
         self.ui.details_stack.setCurrentIndex(self.TASK_DETAILS)
 
+        self.ui.task_icon.setPixmap(task.plugin.icon_pixmap)
+        self.ui.task_name.setText(task.plugin.name)
+
+        text = ""
+        text += "<b>Plugin:</b> %s<br>" % task.plugin.title
+        text += "<b>Subscribes to:</b> %s<br>" % ",".join(task.plugin.subscriptions)
+        text += "<b>Details:</b> %s<br>" % task.plugin.description
+        self.ui.task_description.setText(text)
+
+
     def _create_plugin_details(self, plugin):
         self.ui.details_stack.setCurrentIndex(self.PLUGIN_DETAILS)
+        self.ui.plugin_icon.setPixmap(plugin.icon_pixmap)
+
+        self.ui.plugin_name.setText(plugin.name)
+
+        text = ""
+        text += "<b>Plugin:</b> %s<br>" % plugin.title
+        text += "<b>Subscribes to:</b> %s<br>" % ",".join(plugin.subscriptions)
+        text += "<b>Details:</b> %s<br>" % plugin.description
+        self.ui.plugin_description.setText(text)
 
 
 

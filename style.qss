@@ -24,7 +24,10 @@ QWidget {
     font-style: Regular;
 }
 
-
+#plugin_name {
+    font-size: 22px;
+    font-weight: 100;
+}
 
 /* need this to kick QT into 'style mode' for labels otherwise things are not formatted correctly */
 QLabel {
