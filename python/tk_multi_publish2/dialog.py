@@ -151,8 +151,7 @@ class AppDialog(QtGui.QWidget):
         self._current_item = item
         self.ui.details_stack.setCurrentIndex(self.SUMMARY_DETAILS)
         self.ui.summary_icon.setPixmap(item.icon_pixmap)
-        if item.thumbnail_pixmap:
-            self.ui.summary_thumbnail.set_thumbnail(item.thumbnail_pixmap)
+        self.ui.summary_thumbnail.set_thumbnail(item.thumbnail_pixmap)
         self.ui.summary_header.setText("Publish summary for %s" % item.name)
 
 
@@ -164,9 +163,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_icon.setPixmap(item.icon_pixmap)
         self.ui.item_name.setText(item.name)
         self.ui.item_type.setText(item.display_type)
-
-        if item.thumbnail_pixmap:
-            self.ui.item_thumbnail.set_thumbnail(item.thumbnail_pixmap)
+        self.ui.item_thumbnail.set_thumbnail(item.thumbnail_pixmap)
 
 
         text = ""

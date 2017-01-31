@@ -35,14 +35,18 @@ class Thumbnail(QtGui.QLabel):
         self._thumbnail = None
         self._bundle = sgtk.platform.current_bundle()
         self.setCursor(QtCore.Qt.PointingHandCursor)
+        self._no_thumb_pixmap = QtGui.QPixmap(":/tk_multi_publish2/camera.png")
 
-        self.set_thumbnail(QtGui.QPixmap(":/tk_multi_publish2/camera.png"))
+        self.set_thumbnail(self._no_thumb_pixmap)
 
     def set_thumbnail(self, pixmap):
         """
         Set up the widget as a thumb
         """
-        self._set_screenshot_pixmap(pixmap)
+        if pixmap is None:
+            self._set_screenshot_pixmap(self._no_thumb_pixmap)
+        else:
+            self._set_screenshot_pixmap(pixmap)
 
     def mousePressEvent(self, event):
         """
