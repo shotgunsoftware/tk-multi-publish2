@@ -88,6 +88,10 @@ class AppDialog(QtGui.QWidget):
         self._refresh_action.triggered.connect(self._refresh)
         self._menu.addAction(self._refresh_action)
 
+        self._separator_1= QtGui.QAction(self)
+        self._separator_1.setSeparator(True)
+        self._menu.addAction(self._separator_1)
+
         self._expand_action = QtGui.QAction("Expand All", self)
         self._expand_action.triggered.connect(self._expand_tree)
         self._menu.addAction(self._expand_action)
@@ -95,6 +99,18 @@ class AppDialog(QtGui.QWidget):
         self._collapse_action = QtGui.QAction("Collapse All", self)
         self._collapse_action.triggered.connect(self._collapse_tree)
         self._menu.addAction(self._collapse_action)
+
+        self._separator_2 = QtGui.QAction(self)
+        self._separator_2.setSeparator(True)
+        self._menu.addAction(self._separator_2)
+
+        self._check_all_action = QtGui.QAction("Check All", self)
+        #self._check_all_action.triggered.connect(self._expand_tree)
+        self._menu.addAction(self._check_all_action)
+
+        self._uncheck_all_action = QtGui.QAction("Unckeck All", self)
+        #self._uncheck_all_action.triggered.connect(self._expand_tree)
+        self._menu.addAction(self._uncheck_all_action)
 
 
         # selection in tree view
