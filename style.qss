@@ -60,3 +60,11 @@ QTreeView::branch { background: none; }
     border-top: 1px solid rgba(255, 255, 255, 20);
 
 }
+
+
+#log_tree {
+
+    font-size: 12px;
+
+
+}

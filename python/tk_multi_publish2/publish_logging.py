@@ -42,6 +42,7 @@ class PublishLogHandler(logging.Handler):
         else:
             self._logging_parent_item.addChild(item)
 
+        self._tree_widget.setCurrentItem(item)
         self._logging_parent_item = item
 
     def pop(self):
@@ -70,6 +71,8 @@ class PublishLogHandler(logging.Handler):
         else:
             # root level
             self._tree_widget.addTopLevelItem(item)
+
+        self._tree_widget.setCurrentItem(item)
 
         QtCore.QCoreApplication.processEvents()
 
