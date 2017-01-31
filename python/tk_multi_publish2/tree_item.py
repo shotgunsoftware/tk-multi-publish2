@@ -16,62 +16,87 @@ from .item import Item
 
 logger = sgtk.platform.get_logger(__name__)
 
+class PublishTreeWidget(QtGui.QTreeWidgetItem):
+    """
+    Base class for all tree widgets
+    """
+    def __init__(self, parent):
+        super(PublishTreeWidget, self).__init__(parent)
+
 
 class PublishTreeWidgetTask(QtGui.QTreeWidgetItem):
+    """
+    Tree item for a task
+    """
 
     def __init__(self, task, parent):
         """
         """
         super(PublishTreeWidgetTask, self).__init__(parent)
+        self._task = task
 
         tree_widget = self.treeWidget()
-
         pd = Item(tree_widget)
-        pd.set_header(task.plugin.name)
-        pd.set_icon(task.plugin.icon_pixmap)
+        pd.set_header(self._task.plugin.name)
+        pd.set_icon(self._task.plugin.icon_pixmap)
         #pd.set_status(pd.VALIDATION_ERROR)
 
         tree_widget = self.treeWidget()
         tree_widget.setItemWidget(self, 0, pd)
 
+    @property
+    def task(self):
+        return self._task
+
 
 class PublishTreeWidgetPlugin(QtGui.QTreeWidgetItem):
+    """
+    Tree item for a plugin
+    """
+
 
     def __init__(self, plugin, parent):
         """
         """
         super(PublishTreeWidgetPlugin, self).__init__(parent)
-
+        self._plugin = plugin
 
         tree_widget = self.treeWidget()
 
         pd = Item(tree_widget)
-        pd.set_header(plugin.name)
-        pd.set_icon(plugin.icon_pixmap)
+        pd.set_header(self._plugin.name)
+        pd.set_icon(self._plugin.icon_pixmap)
         #pd.set_status(pd.VALIDATION_ERROR)
 
         tree_widget = self.treeWidget()
         tree_widget.setItemWidget(self, 0, pd)
+
+    @property
+    def plugin(self):
+        return self._plugin
 
 
 
 class PublishTreeWidgetItem(QtGui.QTreeWidgetItem):
-
+    """
+    Tree item for a publish item
+    """
 
     def __init__(self, item, parent):
-        """
-        Constructor
-
-        :param parent:          The parent QWidget for this control
-        """
         super(PublishTreeWidgetItem, self).__init__(parent)
+        self._item = item
 
         tree_widget = self.treeWidget()
 
         pd = Item(tree_widget)
-        pd.set_header(item.name)
-        pd.set_icon(item.icon_pixmap)
+        pd.set_header(self._item.name)
+        pd.set_icon(self._item.icon_pixmap)
         #pd.set_status(pd.VALIDATION_ERROR)
 
 
         tree_widget.setItemWidget(self, 0, pd)
+
+    @property
+    def item(self):
+        return self._item
+

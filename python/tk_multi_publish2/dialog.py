@@ -34,6 +34,9 @@ class AppDialog(QtGui.QWidget):
 
     (ITEM_CENTRIC, PLUGIN_CENTRIC) = range(2)
 
+    (SUMMARY_DETAILS, TASK_DETAILS, PLUGIN_DETAILS, ITEM_DETAILS, BLANK_DETAILS) = range(5)
+
+
     def __init__(self, parent=None):
         """
         Constructor
@@ -70,6 +73,10 @@ class AppDialog(QtGui.QWidget):
         self.ui.validate.clicked.connect(self.do_validate)
         self.ui.publish.clicked.connect(self.do_publish)
 
+        # selection in tree view
+
+        self.ui.items_tree.itemSelectionChanged.connect(self._on_tree_selection_change)
+
         # mode
         self._display_mode = self.ITEM_CENTRIC
 
@@ -103,6 +110,54 @@ class AppDialog(QtGui.QWidget):
             item = PublishTreeWidgetItem(task.item, ui_item)
 
         return ui_item
+
+    def _on_tree_selection_change(self):
+        logger.debug("Tree selection changed!")
+        items = self.ui.items_tree.selectedItems()
+        logger.debug("items: %s" % items)
+        if len(items) == 0:
+            selected_item = None
+        else:
+            selected_item = items[0]
+
+        logger.debug("selected: %s" % selected_item)
+
+        print selected_item.parent()
+        print self.ui.items_tree.invisibleRootItem()
+
+        if selected_item is None:
+            self.ui.details_stack.setCurrentIndex(self.BLANK_DETAILS)
+
+        elif selected_item.parent() is None and isinstance(selected_item, PublishTreeWidgetItem):
+            # top level item
+            self._create_summary_details(selected_item.item)
+
+        elif isinstance(selected_item, PublishTreeWidgetItem):
+            self._create_item_details(selected_item.item)
+
+        elif isinstance(selected_item, PublishTreeWidgetTask):
+            self._create_task_details(selected_item.task)
+
+        elif isinstance(selected_item, PublishTreeWidgetPlugin):
+            self._create_plugin_details(selected_item.plugin)
+
+        else:
+            raise TankError("Uknownn selection")
+
+
+    def _create_summary_details(self, item):
+        self.ui.details_stack.setCurrentIndex(self.SUMMARY_DETAILS)
+
+    def _create_item_details(self, item):
+        self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
+
+    def _create_task_details(self, task):
+        self.ui.details_stack.setCurrentIndex(self.TASK_DETAILS)
+
+    def _create_plugin_details(self, plugin):
+        self.ui.details_stack.setCurrentIndex(self.PLUGIN_DETAILS)
+
+
 
 
 

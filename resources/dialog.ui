@@ -144,6 +144,21 @@
             </property>
            </widget>
           </widget>
+          <widget class="QWidget" name="details_select">
+           <widget class="QLabel" name="label_6">
+            <property name="geometry">
+             <rect>
+              <x>70</x>
+              <y>130</y>
+              <width>221</width>
+              <height>91</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>YO YO PLEASE SELECT AN ITEM</string>
+            </property>
+           </widget>
+          </widget>
          </widget>
         </item>
        </layout>
