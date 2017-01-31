@@ -72,7 +72,7 @@ class MayaSceneCollector(HookBaseClass):
         items = []
         for dag_path in cmds.ls(type="camera", long=True):
             short_name = dag_path.split("|")[-1]
-            item = parent_item.create_item("maya.camera", "Camera", short_name)
+            item = parent_item.create_item("maya.camera", "Maya Camera", short_name)
             item.properties["maya_type"] = "camera"
             item.properties["dag_path"] = dag_path
             item.set_icon(os.path.join(self.disk_location, "icons", "camera.png"))

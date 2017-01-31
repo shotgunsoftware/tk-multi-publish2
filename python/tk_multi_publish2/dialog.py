@@ -160,8 +160,10 @@ class AppDialog(QtGui.QWidget):
 
 
         text = ""
-        text += "<b>Type:</b> %s<br>" % item.type
+        for (property_name, property_value) in item.properties.iteritems():
+            text += "<b>%s:</b> %s<br>" % (property_name, property_value)
         self.ui.item_description.setText(text)
+
 
 
 

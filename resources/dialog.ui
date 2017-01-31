@@ -72,7 +72,7 @@
         <item>
          <widget class="QStackedWidget" name="details_stack">
           <property name="currentIndex">
-           <number>4</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="details_summary">
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -386,33 +386,52 @@
              </widget>
             </item>
             <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
+              <item>
+               <widget class="Thumbnail" name="item_thumbnail">
+                <property name="minimumSize">
+                 <size>
+                  <width>160</width>
+                  <height>90</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>160</width>
+                  <height>90</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="scaledContents">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="item_description_2">
+                <property name="text">
+                 <string>The thumbnail will be associated
+ with all related publishes.
+Click to take a screen grab.</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
              <widget class="QLabel" name="item_description">
               <property name="text">
                <string>Item description</string>
               </property>
               <property name="wordWrap">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="Thumbnail" name="item_thumbnail">
-              <property name="minimumSize">
-               <size>
-                <width>160</width>
-                <height>90</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>160</width>
-                <height>90</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="scaledContents">
                <bool>true</bool>
               </property>
              </widget>
@@ -425,7 +444,7 @@
               <property name="sizeHint" stdset="0">
                <size>
                 <width>20</width>
-                <height>172</height>
+                <height>168</height>
                </size>
               </property>
              </spacer>
