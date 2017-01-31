@@ -72,7 +72,7 @@
         <item>
          <widget class="QStackedWidget" name="details_stack">
           <property name="currentIndex">
-           <number>0</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="details_summary">
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -136,9 +136,6 @@
                     <width>160</width>
                     <height>90</height>
                    </size>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">background-color:red</string>
                   </property>
                   <property name="text">
                    <string/>
@@ -384,9 +381,6 @@
               <width>160</width>
               <height>90</height>
              </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">background-color:red</string>
             </property>
             <property name="text">
              <string/>

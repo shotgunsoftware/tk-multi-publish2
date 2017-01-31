@@ -45,11 +45,8 @@ DropAreaFrame[dragging="true"] {
 }
 
 
-ItemIcon[thumbnail="true"] { background-color: #555; border: 1px solid #777; }
 
 Item { padding: 10px; }
 
 QTreeView::branch { background: none; }
 
-
-QTreeView { background-color: #444;  padding: 4px;}

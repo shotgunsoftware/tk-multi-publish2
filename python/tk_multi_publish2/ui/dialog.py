@@ -75,7 +75,6 @@ class Ui_Dialog(object):
         self.label_4 = Thumbnail(self.details_summary)
         self.label_4.setMinimumSize(QtCore.QSize(160, 90))
         self.label_4.setMaximumSize(QtCore.QSize(160, 90))
-        self.label_4.setStyleSheet("background-color:red")
         self.label_4.setText("")
         self.label_4.setScaledContents(True)
         self.label_4.setObjectName("label_4")
@@ -149,7 +148,6 @@ class Ui_Dialog(object):
         self.label_5 = Thumbnail(self.details_item)
         self.label_5.setGeometry(QtCore.QRect(200, 20, 160, 90))
         self.label_5.setMinimumSize(QtCore.QSize(160, 90))
-        self.label_5.setStyleSheet("background-color:red")
         self.label_5.setText("")
         self.label_5.setScaledContents(True)
         self.label_5.setObjectName("label_5")
@@ -208,7 +206,7 @@ class Ui_Dialog(object):
 
         self.retranslateUi(Dialog)
         self.tabWidget.setCurrentIndex(0)
-        self.details_stack.setCurrentIndex(0)
+        self.details_stack.setCurrentIndex(3)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):

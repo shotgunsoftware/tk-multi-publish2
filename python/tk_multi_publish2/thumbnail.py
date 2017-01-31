@@ -23,7 +23,7 @@ class Thumbnail(QtGui.QLabel):
     using screen capture and other methods.
     """
 
-
+    screen_grabbed = QtCore.Signal(object)
 
     def __init__(self, parent=None):
         """
@@ -68,6 +68,7 @@ class Thumbnail(QtGui.QLabel):
             self._bundle.log_debug(
                 "Got screenshot %sx%s" % (pixmap.width(), pixmap.height())
             )
+            self.screen_grabbed.emit(pixmap)
             self._set_screenshot_pixmap(pixmap)
 
     def _set_screenshot_pixmap(self, pixmap):
@@ -91,7 +92,6 @@ class Thumbnail(QtGui.QLabel):
         """
         CANVAS_WIDTH = 320
         CANVAS_HEIGHT = 180
-        CORNER_RADIUS = 10
 
         # get the 512 base image
         base_image = QtGui.QPixmap(CANVAS_WIDTH, CANVAS_HEIGHT)
@@ -112,17 +112,12 @@ class Thumbnail(QtGui.QLabel):
         painter.setRenderHint(QtGui.QPainter.Antialiasing)
         painter.setBrush(brush)
 
-        pen = QtGui.QPen(QtGui.QColor(self._bundle.style_constants["SG_HIGHLIGHT_COLOR"]))
-        pen.setWidth(3)
+        pen = QtGui.QPen()
+        pen.setWidth(0)
         painter.setPen(pen)
 
         # note how we have to compensate for the corner radius
-        painter.drawRoundedRect(0,
-                                0,
-                                CANVAS_WIDTH,
-                                CANVAS_HEIGHT,
-                                CORNER_RADIUS,
-                                CORNER_RADIUS)
+        painter.drawRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
 
         painter.end()
 

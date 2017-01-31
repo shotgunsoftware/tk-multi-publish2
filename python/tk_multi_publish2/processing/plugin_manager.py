@@ -56,7 +56,6 @@ class PluginManager(object):
         # do the current scene
         self._collect(collect_current_scene=True)
 
-
     def add_external_files(self, paths):
         logger.debug("Adding external files '%s'" % paths)
         # and update the data model

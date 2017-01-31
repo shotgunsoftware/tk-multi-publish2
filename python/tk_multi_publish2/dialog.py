@@ -86,31 +86,6 @@ class AppDialog(QtGui.QWidget):
         # start it up
         self._on_refresh_clicked()
 
-
-
-    def _build_item_tree_r(self, parent, item):
-
-        ui_item = PublishTreeWidgetItem(item, parent)
-        ui_item.setExpanded(True)
-
-        for task in item.tasks:
-            task = PublishTreeWidgetTask(task, ui_item)
-
-        for child in item.children:
-            self._build_item_tree_r(ui_item, child)
-
-        return ui_item
-
-    def _build_plugin_tree_r(self, parent, plugin):
-
-        ui_item = PublishTreeWidgetPlugin(plugin, parent)
-        ui_item.setExpanded(True)
-
-        for task in plugin.tasks:
-            item = PublishTreeWidgetItem(task.item, ui_item)
-
-        return ui_item
-
     def _on_tree_selection_change(self):
         logger.debug("Tree selection changed!")
         items = self.ui.items_tree.selectedItems()
@@ -206,6 +181,31 @@ class AppDialog(QtGui.QWidget):
         self._build_tree()
 
 
+
+    def _build_item_tree_r(self, parent, item):
+
+        ui_item = PublishTreeWidgetItem(item, parent)
+        ui_item.setExpanded(True)
+
+        for task in item.tasks:
+            task = PublishTreeWidgetTask(task, ui_item)
+
+        for child in item.children:
+            self._build_item_tree_r(ui_item, child)
+
+        return ui_item
+
+    def _build_plugin_tree_r(self, parent, plugin):
+
+        ui_item = PublishTreeWidgetPlugin(plugin, parent)
+        ui_item.setExpanded(True)
+
+        for task in plugin.tasks:
+            item = PublishTreeWidgetItem(task.item, ui_item)
+
+        return ui_item
+
+
     def _build_tree(self):
 
         self.ui.items_tree.clear()
@@ -232,11 +232,27 @@ class AppDialog(QtGui.QWidget):
 
 
     def do_validate(self):
-        self.log_debug("Validate")
+        logger.debug("Publish")
+
+        parent = self.ui.items_tree.invisibleRootItem()
+        self._validate_r(parent)
+
+    def _validate_r(self, parent):
+
+        for child_index in xrange(parent.childCount()):
+            child = parent.child(child_index)
+            child.validate()
+
+            self._validate_r(child)
+
+
+
+
 
     def do_publish(self):
-        self.log_debug("Publish")
+        logger.debug("Publish")
 
+        self._plugin_manager.publish(logger)
 
 
 

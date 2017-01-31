@@ -147,3 +147,15 @@ class Plugin(object):
 
         return self._plugin.accept(self._logger, resolved_settings, item)
 
+
+    def run_validate(self, settings, item):
+
+        return self._plugin.validate(self._logger, settings, item)
+
+    def run_publish(self, settings, item):
+
+        return self._plugin.publish(self._logger, settings, item)
+
+    def run_finalize(self, settings, item):
+
+        return self._plugin.finalize(self._logger, settings, item)

@@ -54,3 +54,16 @@ class Task(object):
     @property
     def enabled(self):
         return True
+
+    def validate(self):
+
+        return self.plugin.run_validate(self.settings, self.item)
+
+
+    def publish(self):
+
+        return self.plugin.run_publish(self.settings, self.item)
+
+    def finalize(self):
+
+        return self.plugin.run_finalize(self.settings, self.item)
