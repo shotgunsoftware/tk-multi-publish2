@@ -24,7 +24,7 @@ class Item(object):
         self._type = type
         self._display_type = display_type
         self._parent = parent
-        self._thumb_path = None
+        self._thumb_pixmap = None
         self._children = []
         self._tasks = []
         self._properties = {}
@@ -48,7 +48,16 @@ class Item(object):
         return child_item
 
     def set_thumbnail(self, path):
-        self._thumb_path = path
+        try:
+            self._thumb_pixmap = QtGui.QPixmap(path)
+        except Exception, e:
+            self._thumb_pixmap = None
+            logger.warning(
+                "%r: Could not load icon '%s': %s" % (self, path, e)
+            )
+
+    def set_thumbnail_pixmap(self, pixmap):
+        self._thumb_pixmap = pixmap
 
     def set_icon(self, path):
         self._icon_path = path
@@ -61,23 +70,20 @@ class Item(object):
                 return pixmap
             except Exception, e:
                 logger.warning(
-                    "%r: Could not load icon '%s': %s" % (self, self._icon_path, e)
+                    "%r: Could not load thumbnail '%s': %s" % (self, self._icon_path, e)
                 )
-        return None
+        elif self.parent:
+            return self.parent.thumbnail_pixmap()
+        else:
+            return None
 
     @property
     def thumbnail_pixmap(self):
         """
         Return parent thumb if nothing else found
         """
-        if self._thumb_path:
-            try:
-                pixmap = QtGui.QPixmap(self._thumb_path)
-                return pixmap
-            except Exception, e:
-                logger.warning(
-                    "%r: Could not load thumbnail '%s': %s" % (self, self._thumb_path, e)
-                )
+        if self._thumb_pixmap:
+            return self._thumb_pixmap
         elif self.parent:
             return self.parent.thumbnail_pixmap()
         else:

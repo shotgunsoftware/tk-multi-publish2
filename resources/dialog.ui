@@ -124,7 +124,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="Thumbnail" name="label_4">
+                 <widget class="Thumbnail" name="summary_thumbnail">
                   <property name="minimumSize">
                    <size>
                     <width>160</width>
@@ -170,7 +170,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPlainTextEdit" name="plainTextEdit"/>
+                 <widget class="QPlainTextEdit" name="summary_comments"/>
                 </item>
                </layout>
               </item>
@@ -367,7 +367,7 @@
              <string>PLUGIN</string>
             </property>
            </widget>
-           <widget class="Thumbnail" name="label_5">
+           <widget class="Thumbnail" name="item_thumbnail">
             <property name="geometry">
              <rect>
               <x>200</x>

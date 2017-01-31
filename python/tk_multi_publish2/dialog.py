@@ -74,11 +74,17 @@ class AppDialog(QtGui.QWidget):
         self.ui.publish.clicked.connect(self.do_publish)
 
         # selection in tree view
-
         self.ui.items_tree.itemSelectionChanged.connect(self._on_tree_selection_change)
+
+        # thumbnails
+        self.ui.summary_thumbnail.screen_grabbed.connect(self._on_summary_thumbnail_captured)
+        self.ui.item_thumbnail.screen_grabbed.connect(self._on_item_thumbnail_captured)
 
         # mode
         self._display_mode = self.ITEM_CENTRIC
+
+        # currently displayed item
+        self._current_item = None
 
         # start up our plugin manager
         self._plugin_manager = PluginManager()
@@ -117,18 +123,40 @@ class AppDialog(QtGui.QWidget):
             raise TankError("Uknownn selection")
 
 
+
+    def _on_summary_thumbnail_captured(self, pixmap):
+        logger.debug("Captured summary thumb")
+        if not self._current_item:
+            raise TankError("No current item set!")
+        self._current_item.set_thumbnail_pixmap(pixmap)
+
+    def _on_item_thumbnail_captured(self, pixmap):
+        logger.debug("item thumb captured")
+        if not self._current_item:
+            raise TankError("No current item set!")
+        self._current_item.set_thumbnail_pixmap(pixmap)
+
     def _create_summary_details(self, item):
+
+        self._current_item = item
         self.ui.details_stack.setCurrentIndex(self.SUMMARY_DETAILS)
         self.ui.summary_icon.setPixmap(item.icon_pixmap)
-        print "asdasdasd"
+        if item.thumbnail_pixmap:
+            self.ui.summary_thumbnail.set_thumbnail(item.thumbnail_pixmap)
         self.ui.summary_header.setText("Publish summary for %s" % item.name)
 
-    def _create_item_details(self, item):
-        self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
 
+    def _create_item_details(self, item):
+
+        self._current_item = item
+        self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
 
         self.ui.item_icon.setPixmap(item.icon_pixmap)
         self.ui.item_name.setText(item.name)
+
+        if item.thumbnail_pixmap:
+            self.ui.item_thumbnail.set_thumbnail(item.thumbnail_pixmap)
+
 
         text = ""
         text += "<b>Type:</b> %s<br>" % item.type
@@ -137,6 +165,8 @@ class AppDialog(QtGui.QWidget):
 
 
     def _create_task_details(self, task):
+
+        self._current_item = None
         self.ui.details_stack.setCurrentIndex(self.TASK_DETAILS)
 
         self.ui.task_icon.setPixmap(task.plugin.icon_pixmap)
@@ -150,6 +180,8 @@ class AppDialog(QtGui.QWidget):
 
 
     def _create_plugin_details(self, plugin):
+
+        self._current_item = None
         self.ui.details_stack.setCurrentIndex(self.PLUGIN_DETAILS)
         self.ui.plugin_icon.setPixmap(plugin.icon_pixmap)
 
