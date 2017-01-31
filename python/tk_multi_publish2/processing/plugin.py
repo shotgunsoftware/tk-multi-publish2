@@ -117,45 +117,23 @@ class Plugin(object):
             return None
 
     @property
-    def resolved_settings(self):
+    def settings(self):
         """
         returns a dict of resolved raw settings given the current state
         """
-        return {}
-
-
-    @property
-    def required_settings(self):
-        """
-        Settings required to be specified by a UI or external process
-        {
-            "version_number": {"type": "int", "default": 5, "description": "foo bar baz"}
-        }
-        """
-        settings = []
-        for (setting_name, setting_params) in self._required_runtime_settings.iteritems():
-            settings.append(Setting(setting_name, setting_params))
-        return settings
-
+        return [Setting("Foo bar", {})]
 
     def add_task(self, task):
         self._tasks.append(task)
 
     def run_accept(self, item):
-
-        resolved_settings = {}
-
-        return self._plugin.accept(self._logger, resolved_settings, item)
-
+        return self._plugin.accept(self._logger, self.settings, item)
 
     def run_validate(self, settings, item):
-
         return self._plugin.validate(self._logger, settings, item)
 
     def run_publish(self, settings, item):
-
         return self._plugin.publish(self._logger, settings, item)
 
     def run_finalize(self, settings, item):
-
         return self._plugin.finalize(self._logger, settings, item)

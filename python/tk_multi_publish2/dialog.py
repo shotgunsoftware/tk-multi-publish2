@@ -179,11 +179,9 @@ class AppDialog(QtGui.QWidget):
         self.ui.task_icon.setPixmap(task.plugin.icon_pixmap)
         self.ui.task_name.setText(task.plugin.name)
 
-        text = ""
-        text += "<b>Plugin:</b> %s<br>" % task.plugin.title
-        text += "<b>Subscribes to:</b> %s<br>" % ",".join(task.plugin.subscriptions)
-        text += "<b>Details:</b> %s<br>" % task.plugin.description
-        self.ui.task_description.setText(text)
+        self.ui.task_description.setText(task.plugin.description)
+
+        self.ui.task_settings.set_data(task.settings)
 
 
     def _create_plugin_details(self, plugin):
@@ -194,11 +192,9 @@ class AppDialog(QtGui.QWidget):
 
         self.ui.plugin_name.setText(plugin.name)
 
-        text = ""
-        text += "<b>Plugin:</b> %s<br>" % plugin.title
-        text += "<b>Subscribes to:</b> %s<br>" % ",".join(plugin.subscriptions)
-        text += "<b>Details:</b> %s<br>" % plugin.description
-        self.ui.plugin_description.setText(text)
+        self.ui.plugin_description.setText(plugin.description)
+        self.ui.plugin_settings.set_data(plugin.settings)
+
 
 
     def _refresh(self):

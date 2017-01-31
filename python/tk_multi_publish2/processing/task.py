@@ -12,7 +12,7 @@ import sgtk
 
 logger = sgtk.platform.get_logger(__name__)
 
-
+from .setting import Setting
 
 class Task(object):
     """
@@ -54,6 +54,10 @@ class Task(object):
     @property
     def enabled(self):
         return True
+
+    @property
+    def settings(self):
+        return [Setting("Task Foo bar", {})]
 
     def validate(self):
 
