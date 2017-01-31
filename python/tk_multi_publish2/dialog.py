@@ -75,7 +75,7 @@ class AppDialog(QtGui.QWidget):
         self._log_wrapper = PublishLogWrapper(self.ui.log_tree)
 
         # buttons
-        self.ui.reload.clicked.connect(self._on_refresh_clicked)
+        self.ui.reload.clicked.connect(self._refresh)
         self.ui.swap.clicked.connect(self._swap_view)
         self.ui.validate.clicked.connect(self.do_validate)
         self.ui.publish.clicked.connect(self.do_publish)
@@ -97,7 +97,7 @@ class AppDialog(QtGui.QWidget):
         self._plugin_manager = PluginManager(self._log_wrapper.logger)
 
         # start it up
-        self._on_refresh_clicked()
+        self._refresh()
 
     def _on_tree_selection_change(self):
         logger.debug("Tree selection changed!")
@@ -207,10 +207,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.plugin_description.setText(text)
 
 
-
-
-
-    def _on_refresh_clicked(self):
+    def _refresh(self):
 
         self._do_reload()
         self._build_tree()
@@ -264,6 +261,12 @@ class AppDialog(QtGui.QWidget):
             for item in self._plugin_manager.plugins:
                 ui_item = self._build_plugin_tree_r(self.ui.items_tree, item)
                 self.ui.items_tree.addTopLevelItem(ui_item)
+
+        # select the top item
+        if self.ui.items_tree.topLevelItemCount() > 0:
+            self.ui.items_tree.setCurrentItem(
+                self.ui.items_tree.topLevelItem(0)
+            )
 
     def _do_reload(self):
         """
