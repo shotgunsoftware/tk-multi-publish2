@@ -16,17 +16,16 @@ from sgtk.platform.qt import QtCore, QtGui
 from .ui.dialog import Ui_Dialog
 
 from .processing import PluginManager
-from .publish_details import PublishDetails
+from .item import Item
+from .tree_item import PublishTreeWidgetItem, PublishTreeWidgetTask, PublishTreeWidgetPlugin
+
+from .publish_logging import PublishLogWrapper
 
 from .processing import ValidationFailure, PublishFailure
 
 # import frameworks
-#shotgun_model = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_model")
 settings = sgtk.platform.import_framework("tk-framework-shotgunutils", "settings")
 help_screen = sgtk.platform.import_framework("tk-framework-qtwidgets", "help_screen")
-#overlay_widget = sgtk.platform.import_framework("tk-framework-qtwidgets", "overlay_widget")
-#task_manager = sgtk.platform.import_framework("tk-framework-shotgunutils", "task_manager")
-#shotgun_globals = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_globals")
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -34,6 +33,13 @@ class AppDialog(QtGui.QWidget):
     """
     Main dialog window for the App
     """
+
+    (ITEM_CENTRIC, PLUGIN_CENTRIC) = range(2)
+
+    (SUMMARY_DETAILS, TASK_DETAILS, PLUGIN_DETAILS, ITEM_DETAILS, BLANK_DETAILS) = range(5)
+
+    (DETAILS_TAB, PROGRESS_TAB) = range(2)
+
 
     def __init__(self, parent=None):
         """
@@ -47,137 +53,340 @@ class AppDialog(QtGui.QWidget):
         # prefs in this manager are shared
         self._settings_manager = settings.UserSettings(sgtk.platform.current_bundle())
 
+        self._bundle = sgtk.platform.current_bundle()
+
         # set up the UI
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
 
+        # make sure the splitter expands the detail area only
+        self.ui.splitter.setStretchFactor(0, 0)
+        self.ui.splitter.setStretchFactor(1, 1)
+
+        # set up tree view to look slick
+        #self.ui.items_tree.setRootIsDecorated(False)
+        #self.ui.items_tree.setItemsExpandable(False)
+        self.ui.items_tree.setIndentation(20)
+
+        # drag and drop
+        self.ui.frame.something_dropped.connect(self._on_drop)
+
+        # create a special logger for progress
+        self._log_wrapper = PublishLogWrapper(self.ui.log_tree)
+
+        # buttons
+        self.ui.swap.clicked.connect(self._swap_view)
+        self.ui.validate.clicked.connect(self.do_validate)
         self.ui.publish.clicked.connect(self.do_publish)
-        self.ui.validate.clicked.connect(self.do_validation)
-        self.ui.reload.clicked.connect(self.do_reload)
-
-        self.do_reload()
 
 
-    def do_reload(self):
+        self._menu = QtGui.QMenu()
+        self._actions = []
+        self.ui.reload.setMenu(self._menu)
+        self._refresh_action = QtGui.QAction("Refresh", self)
+        self._refresh_action.setIcon(QtGui.QIcon(QtGui.QPixmap(":/tk_multi_publish2/reload.png")))
+        self._refresh_action.triggered.connect(self._refresh)
+        self._menu.addAction(self._refresh_action)
 
-        self._plugins = []
+        self._separator_1= QtGui.QAction(self)
+        self._separator_1.setSeparator(True)
+        self._menu.addAction(self._separator_1)
 
-        self._plugin_manager = PluginManager()
+        self._expand_action = QtGui.QAction("Expand All", self)
+        self._expand_action.triggered.connect(self._expand_tree)
+        self._menu.addAction(self._expand_action)
 
-        # first create the special mandatory ui
-        (self._publish_item, self._publish_details) = self.ui.plugin_selector.create_plugin(PublishDetails)
+        self._collapse_action = QtGui.QAction("Collapse All", self)
+        self._collapse_action.triggered.connect(self._collapse_tree)
+        self._menu.addAction(self._collapse_action)
 
-        # test of fixed sg header thingie
-        self._publish_item.set_header(
-            "Shotgun Details",
-            "Information about your publish"
+        self._separator_2 = QtGui.QAction(self)
+        self._separator_2.setSeparator(True)
+        self._menu.addAction(self._separator_2)
+
+        self._check_all_action = QtGui.QAction("Check All", self)
+        #self._check_all_action.triggered.connect(self._expand_tree)
+        self._menu.addAction(self._check_all_action)
+
+        self._uncheck_all_action = QtGui.QAction("Unckeck All", self)
+        #self._uncheck_all_action.triggered.connect(self._expand_tree)
+        self._menu.addAction(self._uncheck_all_action)
+
+
+        # selection in tree view
+        self.ui.items_tree.itemSelectionChanged.connect(self._on_tree_selection_change)
+
+        # thumbnails
+        self.ui.summary_thumbnail.screen_grabbed.connect(self._on_summary_thumbnail_captured)
+        self.ui.item_thumbnail.screen_grabbed.connect(self._on_item_thumbnail_captured)
+
+        # mode
+        self._display_mode = self.ITEM_CENTRIC
+
+        # currently displayed item
+        self._current_item = None
+
+        # start up our plugin manager
+        self._plugin_manager = PluginManager(self._log_wrapper.logger)
+
+        # start it up
+        self._refresh()
+
+    def _on_tree_selection_change(self):
+        logger.debug("Tree selection changed!")
+        items = self.ui.items_tree.selectedItems()
+        logger.debug("items: %s" % items)
+
+        self.ui.right_tabs.setCurrentIndex(self.DETAILS_TAB)
+
+        if len(items) == 0:
+            selected_item = None
+        else:
+            selected_item = items[0]
+
+        logger.debug("selected: %s" % selected_item)
+
+        if selected_item is None:
+            self.ui.details_stack.setCurrentIndex(self.BLANK_DETAILS)
+
+        elif selected_item.parent() is None and isinstance(selected_item, PublishTreeWidgetItem):
+            # top level item
+            self._create_summary_details(selected_item.item)
+
+        elif isinstance(selected_item, PublishTreeWidgetItem):
+            self._create_item_details(selected_item.item)
+
+        elif isinstance(selected_item, PublishTreeWidgetTask):
+            self._create_task_details(selected_item.task)
+
+        elif isinstance(selected_item, PublishTreeWidgetPlugin):
+            self._create_plugin_details(selected_item.plugin)
+
+        else:
+            raise TankError("Uknown selection")
+
+
+
+    def _on_summary_thumbnail_captured(self, pixmap):
+        logger.debug("Captured summary thumb")
+        if not self._current_item:
+            raise TankError("No current item set!")
+        self._current_item.set_thumbnail_pixmap(pixmap)
+
+    def _on_item_thumbnail_captured(self, pixmap):
+        logger.debug("item thumb captured")
+        if not self._current_item:
+            raise TankError("No current item set!")
+        self._current_item.set_thumbnail_pixmap(pixmap)
+
+    def _create_summary_details(self, item):
+
+        self._current_item = item
+        self.ui.details_stack.setCurrentIndex(self.SUMMARY_DETAILS)
+        self.ui.summary_icon.setPixmap(item.icon_pixmap)
+        self.ui.summary_thumbnail.set_thumbnail(item.thumbnail_pixmap)
+        self.ui.summary_header.setText("Publish summary for %s" % item.name)
+
+
+    def _create_item_details(self, item):
+
+        self._current_item = item
+        self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
+
+        self.ui.item_icon.setPixmap(item.icon_pixmap)
+        self.ui.item_name.setText(item.name)
+        self.ui.item_type.setText(item.display_type)
+        self.ui.item_thumbnail.set_thumbnail(item.thumbnail_pixmap)
+
+        self.ui.item_settings.set_static_data(
+            [(p, item.properties[p]) for p in item.properties]
         )
-        self._publish_item.set_icon(QtGui.QPixmap(":/tk_multi_publish2/shotgun.png"))
-        self._publish_item.select()
 
 
-        # now load up all plugins from hooks
-        for plugin in self._plugin_manager.plugins:
-            (item, details) = self.ui.plugin_selector.create_plugin()
 
-            item.set_header(
-                plugin.title,
-                plugin.summary
+    def _create_task_details(self, task):
+
+        self._current_item = None
+        self.ui.details_stack.setCurrentIndex(self.TASK_DETAILS)
+
+        self.ui.task_icon.setPixmap(task.plugin.icon_pixmap)
+        self.ui.task_name.setText(task.plugin.name)
+
+        self.ui.task_description.setText(task.plugin.description)
+
+        self.ui.task_settings.set_data(task.settings.values())
+
+
+    def _create_plugin_details(self, plugin):
+
+        self._current_item = None
+        self.ui.details_stack.setCurrentIndex(self.PLUGIN_DETAILS)
+        self.ui.plugin_icon.setPixmap(plugin.icon_pixmap)
+
+        self.ui.plugin_name.setText(plugin.name)
+
+        self.ui.plugin_description.setText(plugin.description)
+        self.ui.plugin_settings.set_data(plugin.settings.values())
+
+
+
+    def _refresh(self):
+
+        self._do_reload()
+        self._build_tree()
+
+
+    def _collapse_tree(self):
+
+        for item_index in xrange(self.ui.items_tree.topLevelItemCount()):
+            item = self.ui.items_tree.topLevelItem(item_index)
+            self.ui.items_tree.collapseItem(item)
+
+    def _expand_tree(self):
+
+        for item_index in xrange(self.ui.items_tree.topLevelItemCount()):
+            item = self.ui.items_tree.topLevelItem(item_index)
+            self.ui.items_tree.expandItem(item)
+
+
+
+
+    def _swap_view(self):
+
+        if self._display_mode == self.ITEM_CENTRIC:
+            self._display_mode = self.PLUGIN_CENTRIC
+        else:
+            self._display_mode = self.ITEM_CENTRIC
+
+        self._build_tree()
+
+
+
+    def _build_item_tree_r(self, parent, item):
+
+        ui_item = PublishTreeWidgetItem(item, parent)
+        ui_item.setExpanded(True)
+
+        for task in item.tasks:
+            task = PublishTreeWidgetTask(task, ui_item)
+
+        for child in item.children:
+            self._build_item_tree_r(ui_item, child)
+
+        return ui_item
+
+    def _build_plugin_tree_r(self, parent, plugin):
+
+        ui_item = PublishTreeWidgetPlugin(plugin, parent)
+        ui_item.setExpanded(True)
+
+        for task in plugin.tasks:
+            item = PublishTreeWidgetItem(task.item, ui_item)
+
+        return ui_item
+
+
+    def _build_tree(self):
+
+        self.ui.items_tree.clear()
+
+        if self._display_mode == self.ITEM_CENTRIC:
+            for item in self._plugin_manager.top_level_items:
+                ui_item = self._build_item_tree_r(self.ui.items_tree, item)
+                self.ui.items_tree.addTopLevelItem(ui_item)
+
+        else:
+            for item in self._plugin_manager.plugins:
+                ui_item = self._build_plugin_tree_r(self.ui.items_tree, item)
+                self.ui.items_tree.addTopLevelItem(ui_item)
+
+        # select the top item
+        if self.ui.items_tree.topLevelItemCount() > 0:
+            self.ui.items_tree.setCurrentItem(
+                self.ui.items_tree.topLevelItem(0)
             )
 
-            item.set_icon(plugin.icon_pixmap)
+    def _do_reload(self):
+        """
 
-            details.set_description(plugin.description)
+        @return:
+        """
+        # run the hooks
+        self._plugin_manager = PluginManager(self._log_wrapper.logger)
 
 
-            # tell item ui to render settings UI
-            details.add_settings(plugin.required_settings)
 
-            # analyze the scene
-            tasks = plugin.scan_scene(
-                details.get_logger(),
-                runtime_settings=details.get_settings()
-            )
-            for task in tasks:
-                item.add_task(task)
 
-            self._plugins.append(
-                {"item": item, "details": details, "plugin": plugin}
-            )
+    def do_validate(self):
 
-        self.ui.plugin_selector.finalize_list()
+        # make sure we swap the tree
+        if self._display_mode != self.ITEM_CENTRIC:
+            self._swap_view()
 
-    def do_validation(self):
+        # and expand it
+        self._expand_tree()
 
-        logger.debug("Starting validation")
-
-        for plugin in self._plugins:
-
-            self.ui.plugin_selector.select(plugin["item"])
-
-            all_success = True
-
-            for task in plugin["item"].get_tasks():
-
-                try:
-                    plugin["plugin"].validate(
-                        plugin["details"].get_logger(),
-                        task,
-                        runtime_settings=plugin["details"].get_settings()
-                    )
-                except ValidationFailure:
-                    validation_ok = False
-                else:
-                    validation_ok = True
-
-                all_success &= validation_ok
-
-                if validation_ok:
-                    plugin["item"].set_task_mode(task, plugin["item"].VALIDATION_COMPLETE)
-                else:
-                    plugin["item"].set_task_mode(task, plugin["item"].VALIDATION_ERROR)
-
-            if all_success:
-                plugin["item"].set_mode(plugin["item"].VALIDATION_COMPLETE)
-            else:
-                plugin["item"].set_mode(plugin["item"].VALIDATION_ERROR)
-
+        self.ui.right_tabs.setCurrentIndex(self.PROGRESS_TAB)
+        parent = self.ui.items_tree.invisibleRootItem()
+        self._visit_tree_r(parent, "Validating", lambda child: child.validate())
 
     def do_publish(self):
 
-        self.do_validation()
+        # make sure we swap the tree
+        if self._display_mode != self.ITEM_CENTRIC:
+            self._swap_view()
 
-        logger.debug("Starting publish")
+        # and expand it
+        self._expand_tree()
 
-        for plugin in self._plugins:
+        self.ui.right_tabs.setCurrentIndex(self.PROGRESS_TAB)
 
-            self.ui.plugin_selector.select(plugin["item"])
+        parent = self.ui.items_tree.invisibleRootItem()
 
-            all_success = True
+        self._log_wrapper.push("Running validation pass")
+        try:
+            self._visit_tree_r(parent, "Validating", lambda child: child.validate())
+        finally:
+            self._log_wrapper.pop()
 
-            for task in plugin["item"].get_tasks():
+        self._log_wrapper.push("Running publishing pass")
+        try:
+            self._visit_tree_r(parent, "Publishing", lambda child: child.publish())
+        finally:
+            self._log_wrapper.pop()
 
+        self._log_wrapper.push("Running finalizing pass")
+        try:
+            self._visit_tree_r(parent, "Finalizing", lambda child: child.finalize())
+        finally:
+            self._log_wrapper.pop()
+
+
+    def _visit_tree_r(self, parent, action_name, action):
+
+        for child_index in xrange(parent.childCount()):
+            child = parent.child(child_index)
+            if child.enabled:
+                self._log_wrapper.push("%s %s" % (action_name, child), child.icon)
                 try:
-                    plugin["plugin"].publish(
-                        plugin["details"].get_logger(),
-                        task,
-                        runtime_settings=plugin["details"].get_settings()
-                    )
-                except PublishFailure:
-                    publish_ok = False
-                else:
-                    publish_ok = True
+                    action(child) # eg. child.validate(), child.publish() etc.
+                    self._visit_tree_r(child, action_name, action)
+                finally:
+                    self._log_wrapper.pop()
 
-                all_success &= publish_ok
-                if publish_ok:
-                    plugin["item"].set_task_mode(task, plugin["item"].PUBLISH_COMPLETE)
-                else:
-                    plugin["item"].set_task_mode(task, plugin["item"].PUBLISH_ERROR)
 
-            if all_success:
-                plugin["item"].set_mode(plugin["item"].PUBLISH_COMPLETE)
-            else:
-                plugin["item"].set_mode(plugin["item"].PUBLISH_ERROR)
+
+
+    def _on_drop(self, files):
+        """
+        When someone drops stuff into the publish.
+        """
+        self._plugin_manager.add_external_files(files)
+        self._build_tree()
+
+
+
+
 
 
     def is_first_launch(self):

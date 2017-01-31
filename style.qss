@@ -17,106 +17,86 @@ QListView, QTableView, QScrollArea, QFrame {
     border: none;
 }
 
+
 /* Use open sans font across the app if core supports it */
 QWidget {
     font-family: Open Sans;
     font-style: Regular;
 }
 
+#plugin_name, #task_name, #item_name, #summary_header {
+    font-size: 22px;
+    font-weight: 100;
+}
+
+/* subheading under the item name in the details */
+#item_type {
+    font-size: 16px;
+    font-weight: 100;
+}
+
+#please_select_an_item {
+    font-size: 16px;
+    font-weight: 100;
+}
 
 /* need this to kick QT into 'style mode' for labels otherwise things are not formatted correctly */
 QLabel {
     margin-top: 1px;
 }
 
-#bottom_frame { border-top: 1px solid rgb(255, 255, 255, 20); }
 
-/* ----------------------- MAIN DIALOG WIDGET ----------------------- */
+DropAreaFrame[dragging="true"] {
+    border: 1px solid {{SG_HIGHLIGHT_COLOR}};
+}
 
 
-/* top headers */
 
-#left_header_label, #right_header_label {
-    font-size: 22px;
+Item { padding: 10px; }
+
+QTreeView::branch { background: none; }
+
+#summary_divider, #task_divider, #item_divider, #plugin_divider {
+    border-top: 1px solid rgba(255, 255, 255, 20);
+
+}
+
+
+#log_tree {
+
+    font-size: 12px;
+
+
+}
+
+
+#item_settings_label, #task_settings_label, #plugin_settings_label {
+    font-size: 16px;
     font-weight: 100;
-    margin-top: 20px;
-    margin-bottom: 10px;
+    padding-top: 18px;
 }
 
 
 
-/* ----------------------- ITEM WIDGET ----------------------- */
+
+/****************************************************************/
+/* Info tab showing all shotgun fields 							*/
 
 
-/* icon */
-#left_scroll QLabel[mode="neutral"] {
-    border: none;
-    border-left: 3px solid rgb(255, 255, 255, 0);
-    padding-left: 3px;
+FieldNameLabel {
+
+    padding: 8px;
+    /* there seems to be an odd bug where border-bottom isn't evaluated
+       unless there is a border top, so add a transparent line... */
+    border-top: 1px dotted rgba(0,0,0,0%);
+    color: rgba(200, 200, 200, 40%);
+    border-bottom: 1px dotted rgba(200, 200, 200, 18%);
 }
 
-#left_scroll QLabel[mode="validation_error"] {
-    border: none;
-    border-left: 3px solid orange;
-    padding-left: 3px;
-}
-
-#left_scroll QLabel[mode="validation_complete"] {
-    border: none;
-    border-left: 3px solid green;
-    padding-left: 3px;
-}
-
-#left_scroll QLabel[mode="publish_error"] {
-    border: none;
-    border-left: 3px solid red;
-    padding-left: 3px;
-}
-
-#left_scroll QLabel[mode="publish_complete"] {
-    border: none;
-    border-left: 3px solid #18A7E3;
-    padding-left: 3px;
-}
-
-
-/* lef hand side hover behaviour for all items */
-#left_scroll .Item:hover {
-
-
-    /* border: 3px solid #18A7E3; */
-
-}
-
-#left_scroll .Item {
-
-    padding-right: 10px;
-
-}
-
-/* lef hand side hover behaviour for all items */
-#left_scroll .Item[selected=true] {
-    background-color: rgb(255, 255, 255, 20);
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
-
-}
-
-/* ----------------------- DETAILS PANE ----------------------- */
-
-
-/* all frames inside the details scroll area should be gray bg */
-#details_stack .QFrame {
-    background-color: rgb(255, 255, 255, 20);
-    border-top-right-radius: 20px;
-    border-bottom-right-radius: 10px;
-}
-
-/* test headers in details pane*/
-
-#header_context, #header_thumbnail, #header_description, #information_header, #options_header, #status_header, #config_header {
-    font-size: 14px;
-    font-weight: 400;
-    margin-bottom: 1px;
-    margin-top: 6px;
+FieldValueLabel {
+    padding: 8px;
+    /* there seems to be an odd bug where border-bottom isn't evaluated
+       unless there is a border top, so add a transparent line... */
+    border-top: 1px dotted rgba(0,0,0,0%);
+    border-bottom: 1px dotted rgba(200, 200, 200, 18%);
 }

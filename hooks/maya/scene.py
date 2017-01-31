@@ -14,35 +14,18 @@ import time
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
-
-class TestHook(HookBaseClass):
+class SceneHook(HookBaseClass):
     """
     Testing the new awesome hooks
     """
-    @property
-    def settings(self):
-        return {
-            "work_template": {"type": "template", "description": "Publish file template"},
-        }
-
-    @property
-    def inputs(self):
-        return {
-            "version": {"type": "int", "description": "version number for current scene", "phase": self.parent.VALIDATE},
-            "name": {"type": "str", "description": "foo bar baz", "phase": self.parent.VALIDATE},
-        }
 
     @property
     def icon(self):
-        return os.path.join(self.disk_location, "nuke.png")
+        return os.path.join(self.disk_location, "icons", "shotgun.png")
 
     @property
     def title(self):
-        return "Version up"
-
-    @property
-    def summary(self):
-        return "Version up your current scene"
+        return "Maya Scene"
 
     @property
     def description_html(self):
@@ -50,30 +33,46 @@ class TestHook(HookBaseClass):
         loko gluten-free shabby chic lyft pinterest. Tilde drinking vinegar brunch, salvia seitan vinyl
         PBR&B sartorial mlkshk pop-up vegan pickled bitters wayfarers."""
 
-    def scan_scene(self, log, settings):
 
+    @property
+    def settings(self):
         return {
-            "Current Scene": {"checked": True, "required": True},
+            "setting_a": {"type": "int", "default": 5, "description": "foo bar baz"},
+            "setting_b": {"type": "bool", "default": True, "description": "Should we do stuff?"}
         }
 
-    def validate(self, log, item, settings, inputs):
+
+    @property
+    def subscriptions(self):
+        return ["maya.scene"]
+
+    def accept(self, log, settings, item):
+
+        log.debug("%s: Running accept for %s with settings %s" % (self, item, settings))
+        return {"accepted": True, "required": False, "enabled": False}
+
+    def validate(self, log, settings, item):
 
         log.info("This is validate for item %s" % item)
         log.info("Settings %s" % settings)
-        log.info("Inputs %s" % inputs)
         time.sleep(0.4)
+        # raise sgtk.TankError("validation failed!")
 
 
-
-
-    def publish(self, log, item, settings, inputs):
+    def publish(self, log, settings, item):
 
         log.info("This is publish for item %s" % item)
         log.info("Settings %s" % settings)
-        log.info("Inputs %s" % inputs)
+
+        item.parent.data["foo"]
 
         time.sleep(0.4)
 
+    def finalize(self, log, settings, item):
+
+        log.info("This is finalize for item %s" % item)
+        log.info("Settings %s" % settings)
+        time.sleep(0.4)
 
 
 

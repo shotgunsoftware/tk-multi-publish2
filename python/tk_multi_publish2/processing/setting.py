@@ -14,27 +14,44 @@ logger = sgtk.platform.get_logger(__name__)
 
 
 class Setting(object):
+    """
+    A setting for a plugin or item
+    """
 
 
-    def __init__(self, setting_name, setting_params):
+    def __init__(self, setting_name, data_type, default_value, description=None):
         self._name = setting_name
-        self._params = setting_params
+        self._type = data_type
+        self._default_value = default_value
+        self._value = default_value
+        self._description = description or ""
+
+    def set_value(self, value):
+        self._value = value
 
     @property
     def name(self):
         return self._name
 
     @property
+    def value(self):
+        return self._value
+
+    @property
+    def string_value(self):
+        return str(self._value)
+
+    @property
     def description(self):
-        return self._params.get("description") or ""
+        return self._description
 
     @property
     def default_value(self):
-        return self._params.get("default")
+        return self._default_value
 
     @property
     def type(self):
-        return self._params["type"]
+        return self._type
 
 
 

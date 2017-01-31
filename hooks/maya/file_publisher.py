@@ -14,37 +14,34 @@ import time
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
-class TestHook(HookBaseClass):
+class SceneHook(HookBaseClass):
     """
     Testing the new awesome hooks
     """
 
     @property
     def icon(self):
-        return os.path.join(self.disk_location, "icons", "alembic.png")
+        return os.path.join(self.disk_location, "icons", "shotgun.png")
 
     @property
     def title(self):
-        return "Testing Testing 1,2,3"
+        return "File Publisher"
 
     @property
     def description_html(self):
-        return """Thundercats <i>venmo</i> taxidermy, succulents next level poutine tacos pour-over jean shorts four
-        loko gluten-free shabby chic lyft pinterest. Tilde drinking vinegar brunch, salvia seitan vinyl
-        PBR&B sartorial mlkshk pop-up vegan pickled bitters wayfarers."""
+        return """Publishes files to shotgun"""
 
 
     @property
     def settings(self):
         return {
-            "setting_a": {"type": "int", "default": 5, "description": "foo bar baz"},
-            "setting_b": {"type": "bool", "default": True, "description": "Should we do stuff?"}
+            "File Type": {"type": "int", "default": 5, "description": "foo bar baz"},
         }
 
 
     @property
     def subscriptions(self):
-        return ["maya.camera"]
+        return ["file*"]
 
     def accept(self, log, settings, item):
 
@@ -54,7 +51,8 @@ class TestHook(HookBaseClass):
     def validate(self, log, settings, item):
 
         log.info("This is validate for item %s" % item)
-        log.info("Settings %s" % settings)
+        log.warning("warning!")
+        log.error("error!")
         time.sleep(0.4)
         # raise sgtk.TankError("validation failed!")
 
@@ -62,16 +60,11 @@ class TestHook(HookBaseClass):
     def publish(self, log, settings, item):
 
         log.info("This is publish for item %s" % item)
-        log.info("Settings %s" % settings)
-
-        item.parent.data["foo"]
-
         time.sleep(0.4)
 
     def finalize(self, log, settings, item):
 
         log.info("This is finalize for item %s" % item)
-        log.info("Settings %s" % settings)
         time.sleep(0.4)
 
 

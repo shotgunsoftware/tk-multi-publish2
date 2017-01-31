@@ -41,3 +41,5 @@ class MultiPublish2(sgtk.platform.Application):
     def destroy_app(self):
 
         self.log_debug("Destroying tk-multi-publish")
+
+

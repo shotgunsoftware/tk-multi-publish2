@@ -21,9 +21,7 @@ class Item(QtGui.QFrame):
     Represents a right hand side details pane in the UI
     """
 
-    (NEUTRAL, VALIDATION_COMPLETE, VALIDATION_ERROR, PUBLISH_ERROR, PUBLISH_COMPLETE) = range(5)
-
-    clicked = QtCore.Signal()
+    (NO_CHECKBOX, NEUTRAL, PROCESSING, VALIDATION_COMPLETE, VALIDATION_ERROR, PUBLISH_ERROR, PUBLISH_COMPLETE) = range(7)
 
     def __init__(self, parent=None):
         """
@@ -33,108 +31,66 @@ class Item(QtGui.QFrame):
         """
         QtGui.QFrame.__init__(self, parent)
 
-        self.setFrameShape(QtGui.QFrame.StyledPanel)
-        self.setFrameShadow(QtGui.QFrame.Raised)
+        #self.setFrameShape(QtGui.QFrame.StyledPanel)
+        #self.setFrameShadow(QtGui.QFrame.Raised)
 
         # set up the UI
         self.ui = Ui_Item()
         self.ui.setupUi(self)
-        self.set_mode(self.NEUTRAL)
-        self.ui.header_chk.setChecked(True)
 
-        self._tasks = []
-        self._current_row = 1
-        self.ui.hidden_header.setVisible(False)
+        self.set_status(self.NEUTRAL)
 
-    def mousePressEvent(self, event):
+    def set_icon(self, pixmap):
         """
-        Fires when the mouse is pressed
+        Specifies if this item should be a plugin or a item
         """
-        QtGui.QFrame.mousePressEvent(self, event)
-        self.clicked.emit()
+        self.ui.icon.setPixmap(pixmap)
 
-    def select(self):
-        """
-        Mark as selected
-        """
-        self.setProperty("selected", True)
-        self.style().unpolish(self)
-        self.style().polish(self)
+    @property
+    def checkbox(self):
+        return self.ui.checkbox
 
-    def deselect(self):
+    def set_status(self, status):
         """
-        Mark as deselected
+        Set the status for the plugin
+        @param status:
+        @return:
         """
-        self.setProperty("selected", False)
-        self.style().unpolish(self)
-        self.style().polish(self)
+        # reset
+        self.ui.status.show_nothing()
+        self.ui.stack.setCurrentIndex(0)
 
-    def set_mode(self, mode):
-        """
-        Specify which main mode the item should be in
-        """
-        self._set_mode(mode, self.ui.item_icon)
+        if status == self.NEUTRAL:
+            self.ui.stack.setCurrentIndex(1)
+            self.ui.checkbox.show()
 
-    def set_icon(self, icon):
-        """
-        Sets the icon to use. Should be a square pixmap, at least 64px
-        """
-        self.ui.item_icon.setPixmap(icon)
+        elif status == self.NO_CHECKBOX:
+            self.ui.stack.setCurrentIndex(1)
+            self.ui.checkbox.hide()
 
-    def set_header(self, title, description):
+        elif status == self.PROCESSING:
+            self.ui.status.show_spin()
+
+        elif status == self.PUBLISH_COMPLETE:
+            self.ui.status.show_dot("#18A7E3")
+
+        elif status == self.PUBLISH_ERROR:
+            self.ui.status.show_dot("red")
+
+        elif status == self.VALIDATION_COMPLETE:
+            self.ui.status.show_dot("green")
+
+        elif status == self.VALIDATION_ERROR:
+            self.ui.status.show_dot("orange")
+
+        else:
+            raise sgtk.TankError("Invalid item status!")
+
+
+    def set_header(self, title):
         """
         Set the title of the item
         """
-        self.ui.header.setText("<big>%s</big><br>%s" % (title, description))
+        self.ui.header.setText(title)
 
-    def add_task(self, name):
-        """
-        Add a task object
-        """
-        label = QtGui.QLabel(self)
-        label.setObjectName("item_icon")
-        label.setText(name)
-        self.ui.gridLayout.addWidget(label, self._current_row, 0, 1, 1)
 
-        checkbox = QtGui.QCheckBox(self)
-        checkbox.setText("")
-        checkbox.setChecked(True)
-        checkbox.setObjectName("list_chk")
-        self.ui.gridLayout.addWidget(checkbox, self._current_row, 1, 1, 1)
-
-        self._current_row += 1
-
-        self._tasks.append({"name": name, "label": label, "checkbox": checkbox})
-
-        self.set_task_mode(name, self.NEUTRAL)
-
-    def get_tasks(self):
-        # todo - handle checkbox state
-        return [x["name"] for x in self._tasks]
-
-    def set_task_mode(self, task_name, mode):
-        """
-        Control the mode indication for a task
-        @param task_name:
-        @param mode:
-        @return:
-        """
-        for task in self._tasks:
-            if task["name"] == task_name:
-                widget = task["label"]
-                self._set_mode(mode, widget)
-
-    def _set_mode(self, mode, widget):
-        """
-        Specify which main mode the item should be in
-        """
-        qss_lookup = {
-            self.NEUTRAL: "neutral",
-            self.VALIDATION_COMPLETE: "validation_complete",
-            self.VALIDATION_ERROR: "validation_error",
-            self.PUBLISH_COMPLETE: "publish_complete",
-            self.PUBLISH_ERROR: "publish_error"
-        }
-        widget.setProperty("mode", qss_lookup[mode])
-        widget.style().unpolish(widget)
-        widget.style().polish(widget)
