@@ -144,6 +144,9 @@ class AppDialog(QtGui.QWidget):
 
     def _create_summary_details(self, item):
         self.ui.details_stack.setCurrentIndex(self.SUMMARY_DETAILS)
+        self.ui.summary_icon.setPixmap(item.icon_pixmap)
+        print "asdasdasd"
+        self.ui.summary_header.setText("Publish summary for %s" % item.name)
 
     def _create_item_details(self, item):
         self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)

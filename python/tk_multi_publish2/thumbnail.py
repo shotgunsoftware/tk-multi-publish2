@@ -23,6 +23,8 @@ class Thumbnail(QtGui.QLabel):
     using screen capture and other methods.
     """
 
+
+
     def __init__(self, parent=None):
         """
         Constructor
@@ -50,7 +52,12 @@ class Thumbnail(QtGui.QLabel):
 
         # no pixmap exists - screengrab mode
         self._bundle.log_debug("Prompting for screenshot...")
-        pixmap = screen_grab.ScreenGrabber.screen_capture()
+
+        self.window().hide()
+        try:
+            pixmap = screen_grab.ScreenGrabber.screen_capture()
+        finally:
+            self.window().show()
 
         # It's possible that there's custom screencapture logic
         # happening and we won't get a pixmap back right away.

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>823</width>
+    <width>1019</width>
     <height>546</height>
    </rect>
   </property>
@@ -72,57 +72,127 @@
         <item>
          <widget class="QStackedWidget" name="details_stack">
           <property name="currentIndex">
-           <number>3</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="details_summary">
-           <widget class="QLabel" name="label_2">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>30</y>
-              <width>101</width>
-              <height>20</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>SUMMARY</string>
-            </property>
-           </widget>
-           <widget class="QPlainTextEdit" name="plainTextEdit">
-            <property name="geometry">
-             <rect>
-              <x>180</x>
-              <y>70</y>
-              <width>181</width>
-              <height>91</height>
-             </rect>
-            </property>
-           </widget>
-           <widget class="Thumbnail" name="label_4">
-            <property name="geometry">
-             <rect>
-              <x>60</x>
-              <y>210</y>
-              <width>160</width>
-              <height>90</height>
-             </rect>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>160</width>
-              <height>90</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">background-color:red</string>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="scaledContents">
-             <bool>true</bool>
-            </property>
-           </widget>
+           <layout class="QVBoxLayout" name="verticalLayout_9">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QLabel" name="summary_icon">
+                <property name="minimumSize">
+                 <size>
+                  <width>60</width>
+                  <height>60</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>60</width>
+                  <height>60</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="scaledContents">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="summary_header">
+                <property name="text">
+                 <string>SUMMARY</string>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout_7">
+                <item>
+                 <widget class="QLabel" name="label_2">
+                  <property name="text">
+                   <string>Thumbnail</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="Thumbnail" name="label_4">
+                  <property name="minimumSize">
+                   <size>
+                    <width>160</width>
+                    <height>90</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>160</width>
+                    <height>90</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">background-color:red</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="scaledContents">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="verticalSpacer_2">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout_8">
+                <item>
+                 <widget class="QLabel" name="label_3">
+                  <property name="text">
+                   <string>Description</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPlainTextEdit" name="plainTextEdit"/>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </widget>
           <widget class="QWidget" name="details_task">
            <widget class="QLabel" name="task_icon">
@@ -247,8 +317,8 @@
             <property name="geometry">
              <rect>
               <x>90</x>
-              <y>50</y>
-              <width>271</width>
+              <y>20</y>
+              <width>101</width>
               <height>111</height>
              </rect>
             </property>
@@ -303,8 +373,8 @@
            <widget class="Thumbnail" name="label_5">
             <property name="geometry">
              <rect>
-              <x>60</x>
-              <y>190</y>
+              <x>200</x>
+              <y>20</y>
               <width>160</width>
               <height>90</height>
              </rect>

@@ -24,7 +24,7 @@ QWidget {
     font-style: Regular;
 }
 
-#plugin_name, #task_name, #item_name {
+#plugin_name, #task_name, #item_name, #summary_header {
     font-size: 22px;
     font-weight: 100;
 }
