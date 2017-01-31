@@ -115,7 +115,7 @@ class SettingsWidget(QtGui.QWidget):
                 field_label.setAlignment(QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
                 
                 value_label = FieldValueLabel(self)
-                value_label.setText(setting.value)
+                value_label.setText(setting.string_value)
                 value_label.setWordWrap(True)
                 value_label.setAlignment(QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
                 
@@ -164,7 +164,7 @@ class SettingsWidget(QtGui.QWidget):
                 field_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
 
                 value_label = FieldValueLabel(self)
-                value_label.setText(value)
+                value_label.setText(str(value))
                 value_label.setWordWrap(True)
                 value_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
 

@@ -44,7 +44,10 @@ class Plugin(object):
 
         self._logger = logger
 
+        self._settings = []
         self._validate_and_resolve_config()
+
+
 
 
     def __repr__(self):
@@ -61,16 +64,24 @@ class Plugin(object):
             logger.debug("no settings property defined by hook")
             settings_defs = {}
 
+        # "setting_a": {"type": "int", "default": 5, "description": "foo bar baz"},
+
         for settings_def_name, settings_def_params in settings_defs.iteritems():
             # todo - validate that the hook provides the relevant params
+
+            setting = Setting(
+                settings_def_name,
+                data_type=settings_def_params["type"],
+                default_value=settings_def_params["default"],
+                description=settings_def_params["description"]
+            )
+
             if settings_def_name in self._raw_config_settings:
                 # this setting was provided by the config
                 # todo - validate
-                self._configured_settings[settings_def_name] = self._raw_config_settings[settings_def_name]
-            else:
-                # this setting needs to be pulled from the UI
-                # todo - ensure all keys are set
-                self._required_runtime_settings[settings_def_name] = settings_def_params
+                setting.set_value(self._raw_config_settings[settings_def_name])
+
+            self._settings.append(setting)
 
     @property
     def name(self):
@@ -121,7 +132,7 @@ class Plugin(object):
         """
         returns a dict of resolved raw settings given the current state
         """
-        return [Setting("Foo bar", {})]
+        return self._settings
 
     def add_task(self, task):
         self._tasks.append(task)

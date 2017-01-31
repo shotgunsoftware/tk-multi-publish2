@@ -57,7 +57,9 @@ class Task(object):
 
     @property
     def settings(self):
-        return [Setting("Task Foo bar", {})]
+
+        # TODO - writable per task settings pleeeease!
+        return self.plugin.settings
 
     def validate(self):
 
