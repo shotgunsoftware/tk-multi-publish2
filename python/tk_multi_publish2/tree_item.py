@@ -43,6 +43,9 @@ class PublishTreeWidgetTask(QtGui.QTreeWidgetItem):
         tree_widget = self.treeWidget()
         tree_widget.setItemWidget(self, 0, self._item_widget)
 
+    def __str__(self):
+        return self._task.plugin.name
+
     @property
     def task(self):
         return self._task
@@ -78,6 +81,9 @@ class PublishTreeWidgetPlugin(QtGui.QTreeWidgetItem):
         tree_widget = self.treeWidget()
         tree_widget.setItemWidget(self, 0, self._item_widget)
 
+    def __str__(self):
+        return self._plugin.name
+
     @property
     def plugin(self):
         return self._plugin
@@ -100,8 +106,11 @@ class PublishTreeWidgetItem(QtGui.QTreeWidgetItem):
         self._item_widget.set_header("<b>%s</b><br>%s" % (self._item.name, self._item.display_type))
         self._item_widget.set_icon(self._item.icon_pixmap)
 
-
         tree_widget.setItemWidget(self, 0, self._item_widget)
+
+
+    def __str__(self):
+        return "%s %s" % (self._item.display_type, self._item.name)
 
     @property
     def item(self):
