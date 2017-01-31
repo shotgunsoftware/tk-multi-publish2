@@ -141,7 +141,7 @@ class Plugin(object):
         try:
             return self._plugin.accept(self._logger, self.settings, item)
         except Exception, e:
-                self._logger.exception("Error running accept for %s" % self)
+            self._logger.exception("Error running accept for %s" % self)
             return {"accepted": False}
 
     def run_validate(self, settings, item):
