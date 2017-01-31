@@ -277,57 +277,31 @@ class AppDialog(QtGui.QWidget):
 
 
     def do_validate(self):
-        logger.debug("Validate")
 
         self.ui.right_tabs.setCurrentIndex(self.PROGRESS_TAB)
-
         parent = self.ui.items_tree.invisibleRootItem()
-        self._validate_r(parent)
+        self._visit_tree_r(parent, "Validating", lambda child: child.validate())
 
     def do_publish(self):
-        logger.debug("Da full Publish")
 
         self.ui.right_tabs.setCurrentIndex(self.PROGRESS_TAB)
 
         parent = self.ui.items_tree.invisibleRootItem()
-        self._validate_r(parent)
-        self._publish_r(parent)
-        self._finalize_r(parent)
+        self._visit_tree_r(parent, "Validating", lambda child: child.validate())
+        self._visit_tree_r(parent, "Publishing", lambda child: child.publish())
+        self._visit_tree_r(parent, "Finalizing", lambda child: child.finalize())
 
-    def _validate_r(self, parent):
 
-        for child_index in xrange(parent.childCount()):
-            child = parent.child(child_index)
-            self._log_wrapper.push("Validating %s" % child, child.icon)
-            try:
-                child.validate()
-                self._validate_r(child)
-            finally:
-                self._log_wrapper.pop()
-
-    def _publish_r(self, parent):
+    def _visit_tree_r(self, parent, action_name, action):
 
         for child_index in xrange(parent.childCount()):
             child = parent.child(child_index)
-            self._log_wrapper.push("Publishing %s" % child)
+            self._log_wrapper.push("%s %s" % (action_name, child), child.icon)
             try:
-                child.publish()
-                self._publish_r(child)
+                action(child) # eg. child.validate(), child.publish() etc.
+                self._visit_tree_r(child, action_name, action)
             finally:
                 self._log_wrapper.pop()
-
-    def _finalize_r(self, parent):
-
-        for child_index in xrange(parent.childCount()):
-            child = parent.child(child_index)
-            self._log_wrapper.push("Finalizing %s" % child)
-            try:
-                child.finalize()
-                self._finalize_r(child)
-            finally:
-                self._log_wrapper.pop()
-
-
 
 
 
