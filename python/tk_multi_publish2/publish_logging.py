@@ -33,6 +33,12 @@ class PublishLogHandler(logging.Handler):
 
         self._logging_parent_item = None # none means root
 
+        self._debug_brush = QtGui.QBrush(QtGui.QColor("#508937"))  # green
+        self._warning_brush = QtGui.QBrush(QtGui.QColor("#FFD786"))  # orange
+        self._error_brush = QtGui.QBrush(QtGui.QColor("#FF383F"))  # red
+
+
+
     def push(self, text):
 
         item = QtGui.QTreeWidgetItem()
@@ -71,6 +77,14 @@ class PublishLogHandler(logging.Handler):
         else:
             # root level
             self._tree_widget.addTopLevelItem(item)
+
+        # assign color
+        if record.levelno < logging.ERROR and record.levelno > logging.INFO:
+            item.setForeground(0, self._warning_brush)
+        elif record.levelno > logging.WARNING:
+            item.setForeground(0, self._error_brush)
+        elif record.levelno < logging.INFO:
+            item.setForeground(0, self._debug_brush)
 
         self._tree_widget.setCurrentItem(item)
 

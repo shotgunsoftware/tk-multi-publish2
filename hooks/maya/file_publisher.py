@@ -45,13 +45,14 @@ class SceneHook(HookBaseClass):
 
     def accept(self, log, settings, item):
 
-        log.info("%s: Running accept for %s with settings %s" % (self, item, settings))
+        log.debug("%s: Running accept for %s with settings %s" % (self, item, settings))
         return {"accepted": True, "required": True, "enabled": True}
 
     def validate(self, log, settings, item):
 
         log.info("This is validate for item %s" % item)
-        log.info("Settings %s" % settings)
+        log.warning("warning!")
+        log.error("error!")
         time.sleep(0.4)
         # raise sgtk.TankError("validation failed!")
 
@@ -59,16 +60,11 @@ class SceneHook(HookBaseClass):
     def publish(self, log, settings, item):
 
         log.info("This is publish for item %s" % item)
-        log.info("Settings %s" % settings)
-
-
-
         time.sleep(0.4)
 
     def finalize(self, log, settings, item):
 
         log.info("This is finalize for item %s" % item)
-        log.info("Settings %s" % settings)
         time.sleep(0.4)
 
 
