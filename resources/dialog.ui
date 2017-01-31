@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>875</width>
-    <height>546</height>
+    <width>884</width>
+    <height>639</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -199,7 +199,7 @@
            </layout>
           </widget>
           <widget class="QWidget" name="details_task">
-           <layout class="QVBoxLayout" name="verticalLayout_10">
+           <layout class="QVBoxLayout" name="verticalLayout_11">
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_4">
               <item>
@@ -234,13 +234,6 @@
              </layout>
             </item>
             <item>
-             <widget class="Line" name="task_divider">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QLabel" name="task_description">
               <property name="text">
                <string>task desc</string>
@@ -251,22 +244,33 @@
              </widget>
             </item>
             <item>
-             <spacer name="verticalSpacer_3">
+             <widget class="QLabel" name="task_settings_label">
+              <property name="text">
+               <string>Settings</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="Line" name="task_divider">
               <property name="orientation">
-               <enum>Qt::Vertical</enum>
+               <enum>Qt::Horizontal</enum>
               </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
+             </widget>
+            </item>
+            <item>
+             <widget class="SettingsWidget" name="task_settings" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
-             </spacer>
+             </widget>
             </item>
            </layout>
           </widget>
           <widget class="QWidget" name="details_plugin">
-           <layout class="QVBoxLayout" name="verticalLayout_11">
+           <layout class="QVBoxLayout" name="verticalLayout_10">
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_5">
               <item>
@@ -301,16 +305,9 @@
              </layout>
             </item>
             <item>
-             <widget class="Line" name="plugin_divider">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QLabel" name="plugin_description">
               <property name="text">
-               <string>PLUGIN</string>
+               <string>Description</string>
               </property>
               <property name="wordWrap">
                <bool>true</bool>
@@ -318,17 +315,28 @@
              </widget>
             </item>
             <item>
-             <spacer name="verticalSpacer_4">
+             <widget class="QLabel" name="plugin_settings_label">
+              <property name="text">
+               <string>Settings</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="Line" name="plugin_divider">
               <property name="orientation">
-               <enum>Qt::Vertical</enum>
+               <enum>Qt::Horizontal</enum>
               </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>270</height>
-               </size>
+             </widget>
+            </item>
+            <item>
+             <widget class="SettingsWidget" name="plugin_settings" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
-             </spacer>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -379,6 +387,13 @@
              </layout>
             </item>
             <item>
+             <widget class="QLabel" name="item_settings_label">
+              <property name="text">
+               <string>Settings</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="Line" name="item_divider">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -413,7 +428,7 @@
                <widget class="QLabel" name="item_description_2">
                 <property name="text">
                  <string>The thumbnail will be associated
- with all related publishes.
+with all related publishes.
 Click to take a screen grab.</string>
                 </property>
                 <property name="alignment">
@@ -427,27 +442,14 @@ Click to take a screen grab.</string>
              </layout>
             </item>
             <item>
-             <widget class="QLabel" name="item_description">
-              <property name="text">
-               <string>Item description</string>
-              </property>
-              <property name="wordWrap">
-               <bool>true</bool>
+             <widget class="SettingsWidget" name="item_settings" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
              </widget>
-            </item>
-            <item>
-             <spacer name="verticalSpacer_5">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>168</height>
-               </size>
-              </property>
-             </spacer>
             </item>
            </layout>
           </widget>
@@ -507,6 +509,14 @@ for more details</string>
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QToolButton" name="toolButton">
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/tk_multi_publish2/reload.png</normaloff>:/tk_multi_publish2/reload.png</iconset>
+        </property>
+       </widget>
+      </item>
       <item>
        <widget class="QPushButton" name="reload">
         <property name="text">
@@ -569,6 +579,12 @@ for more details</string>
    <class>Thumbnail</class>
    <extends>QLabel</extends>
    <header>..thumbnail</header>
+  </customwidget>
+  <customwidget>
+   <class>SettingsWidget</class>
+   <extends>QWidget</extends>
+   <header>..settings_widget</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

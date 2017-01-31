@@ -165,12 +165,15 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_type.setText(item.display_type)
         self.ui.item_thumbnail.set_thumbnail(item.thumbnail_pixmap)
 
+        from .processing.setting import Setting
 
-        text = ""
+        xxx = []
         for (property_name, property_value) in item.properties.iteritems():
-            text += "<b>%s:</b> %s<br>" % (property_name, property_value)
-        self.ui.item_description.setText(text)
+            s = Setting(property_name, {})
+            s.set_value(property_value)
+            xxx.append(s)
 
+        self.ui.item_settings.set_data(xxx)
 
 
 

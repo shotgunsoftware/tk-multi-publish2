@@ -21,11 +21,19 @@ class Setting(object):
 
     def __init__(self, setting_name, setting_params):
         self._name = setting_name
+        self._value = None
         self._params = setting_params
+
+    def set_value(self, value):
+        self._value = value
 
     @property
     def name(self):
         return self._name
+
+    @property
+    def value(self):
+        return self._value
 
     @property
     def description(self):

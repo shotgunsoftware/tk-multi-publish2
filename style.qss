@@ -56,7 +56,7 @@ Item { padding: 10px; }
 
 QTreeView::branch { background: none; }
 
-#summary_divider, #task_divider, #item_divider, #plugin_divider{
+#summary_divider, #task_divider, #item_divider, #plugin_divider {
     border-top: 1px solid rgba(255, 255, 255, 20);
 
 }
@@ -67,4 +67,36 @@ QTreeView::branch { background: none; }
     font-size: 12px;
 
 
+}
+
+
+#item_settings_label, #task_settings_label, #plugin_settings_label {
+    font-size: 16px;
+    font-weight: 100;
+    padding-top: 18px;
+}
+
+
+
+
+/****************************************************************/
+/* Info tab showing all shotgun fields 							*/
+
+
+FieldNameLabel {
+
+    padding: 8px;
+    /* there seems to be an odd bug where border-bottom isn't evaluated
+       unless there is a border top, so add a transparent line... */
+    border-top: 1px dotted rgba(0,0,0,0%);
+    color: rgba(200, 200, 200, 40%);
+    border-bottom: 1px dotted rgba(200, 200, 200, 18%);
+}
+
+FieldValueLabel {
+    padding: 8px;
+    /* there seems to be an odd bug where border-bottom isn't evaluated
+       unless there is a border top, so add a transparent line... */
+    border-top: 1px dotted rgba(0,0,0,0%);
+    border-bottom: 1px dotted rgba(200, 200, 200, 18%);
 }
