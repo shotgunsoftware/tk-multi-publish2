@@ -98,7 +98,7 @@ class PublishLogWrapper(object):
     def __init__(self, tree_widget):
 
         # set up a logger
-        full_log_path = "%s.ui" % logger.name
+        full_log_path = "%s.publish" % logger.name
 
         self._logger = logging.getLogger(full_log_path)
 
