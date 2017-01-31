@@ -73,7 +73,7 @@ class Item(object):
                     "%r: Could not load thumbnail '%s': %s" % (self, self._icon_path, e)
                 )
         elif self.parent:
-            return self.parent.thumbnail_pixmap()
+            return self.parent.icon_pixmap
         else:
             return None
 
@@ -85,7 +85,7 @@ class Item(object):
         if self._thumb_pixmap:
             return self._thumb_pixmap
         elif self.parent:
-            return self.parent.thumbnail_pixmap()
+            return self.parent.thumbnail_pixmap
         else:
             return None
 

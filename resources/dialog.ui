@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1019</width>
+    <width>875</width>
     <height>546</height>
    </rect>
   </property>
@@ -72,7 +72,7 @@
         <item>
          <widget class="QStackedWidget" name="details_stack">
           <property name="currentIndex">
-           <number>3</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="details_summary">
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -111,6 +111,13 @@
                </widget>
               </item>
              </layout>
+            </item>
+            <item>
+             <widget class="Line" name="line">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -192,203 +199,227 @@
            </layout>
           </widget>
           <widget class="QWidget" name="details_task">
-           <widget class="QLabel" name="task_icon">
-            <property name="geometry">
-             <rect>
-              <x>20</x>
-              <y>20</y>
-              <width>60</width>
-              <height>60</height>
-             </rect>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>60</width>
-              <height>60</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>60</width>
-              <height>60</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="scaledContents">
-             <bool>true</bool>
-            </property>
-           </widget>
-           <widget class="QLabel" name="task_description">
-            <property name="geometry">
-             <rect>
-              <x>100</x>
-              <y>50</y>
-              <width>271</width>
-              <height>111</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>task desc</string>
-            </property>
-            <property name="wordWrap">
-             <bool>true</bool>
-            </property>
-           </widget>
-           <widget class="QLabel" name="task_name">
-            <property name="geometry">
-             <rect>
-              <x>100</x>
-              <y>20</y>
-              <width>261</width>
-              <height>16</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>PLUGIN</string>
-            </property>
-           </widget>
+           <layout class="QVBoxLayout" name="verticalLayout_10">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <item>
+               <widget class="QLabel" name="task_icon">
+                <property name="minimumSize">
+                 <size>
+                  <width>60</width>
+                  <height>60</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>60</width>
+                  <height>60</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="scaledContents">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="task_name">
+                <property name="text">
+                 <string>Task Name</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="Line" name="line_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="task_description">
+              <property name="text">
+               <string>task desc</string>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </widget>
           <widget class="QWidget" name="details_plugin">
-           <widget class="QLabel" name="plugin_name">
-            <property name="geometry">
-             <rect>
-              <x>100</x>
-              <y>20</y>
-              <width>261</width>
-              <height>16</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>PLUGIN</string>
-            </property>
-           </widget>
-           <widget class="QLabel" name="plugin_icon">
-            <property name="geometry">
-             <rect>
-              <x>20</x>
-              <y>10</y>
-              <width>60</width>
-              <height>60</height>
-             </rect>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>60</width>
-              <height>60</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>60</width>
-              <height>60</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="scaledContents">
-             <bool>true</bool>
-            </property>
-           </widget>
-           <widget class="QLabel" name="plugin_description">
-            <property name="geometry">
-             <rect>
-              <x>100</x>
-              <y>60</y>
-              <width>271</width>
-              <height>111</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>PLUGIN</string>
-            </property>
-            <property name="wordWrap">
-             <bool>true</bool>
-            </property>
-           </widget>
+           <layout class="QVBoxLayout" name="verticalLayout_11">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_5">
+              <item>
+               <widget class="QLabel" name="plugin_icon">
+                <property name="minimumSize">
+                 <size>
+                  <width>60</width>
+                  <height>60</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>60</width>
+                  <height>60</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="scaledContents">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="plugin_name">
+                <property name="text">
+                 <string>Plugin Name</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="Line" name="line_3">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="plugin_description">
+              <property name="text">
+               <string>PLUGIN</string>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>270</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </widget>
           <widget class="QWidget" name="details_item">
-           <widget class="QLabel" name="item_description">
-            <property name="geometry">
-             <rect>
-              <x>90</x>
-              <y>20</y>
-              <width>101</width>
-              <height>111</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>Item description</string>
-            </property>
-            <property name="wordWrap">
-             <bool>true</bool>
-            </property>
-           </widget>
-           <widget class="QLabel" name="item_icon">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>10</y>
-              <width>60</width>
-              <height>60</height>
-             </rect>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>60</width>
-              <height>60</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>60</width>
-              <height>60</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="scaledContents">
-             <bool>true</bool>
-            </property>
-           </widget>
-           <widget class="QLabel" name="item_name">
-            <property name="geometry">
-             <rect>
-              <x>90</x>
-              <y>10</y>
-              <width>261</width>
-              <height>16</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>PLUGIN</string>
-            </property>
-           </widget>
-           <widget class="Thumbnail" name="item_thumbnail">
-            <property name="geometry">
-             <rect>
-              <x>200</x>
-              <y>20</y>
-              <width>160</width>
-              <height>90</height>
-             </rect>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>160</width>
-              <height>90</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="scaledContents">
-             <bool>true</bool>
-            </property>
-           </widget>
+           <layout class="QVBoxLayout" name="verticalLayout_12">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <item>
+               <widget class="QLabel" name="item_icon">
+                <property name="minimumSize">
+                 <size>
+                  <width>60</width>
+                  <height>60</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>60</width>
+                  <height>60</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="scaledContents">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="item_name">
+                <property name="text">
+                 <string>PLUGIN</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="Line" name="line_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="item_description">
+              <property name="text">
+               <string>Item description</string>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="Thumbnail" name="item_thumbnail">
+              <property name="minimumSize">
+               <size>
+                <width>160</width>
+                <height>90</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>160</width>
+                <height>90</height>
+               </size>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="scaledContents">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_5">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>172</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </widget>
           <widget class="QWidget" name="details_select">
            <layout class="QVBoxLayout" name="verticalLayout_6">
