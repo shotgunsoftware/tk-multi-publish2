@@ -49,7 +49,7 @@ class TestHook(HookBaseClass):
     def accept(self, log, settings, item):
 
         log.debug("%s: Running accept for %s with settings %s" % (self, item, settings))
-        return {"accepted": True, "required": False, "enabled": False}
+        return {"accepted": True, "required": False, "enabled": True}
 
     def validate(self, log, settings, item):
 

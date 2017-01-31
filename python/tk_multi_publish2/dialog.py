@@ -82,7 +82,7 @@ class AppDialog(QtGui.QWidget):
 
         self._menu = QtGui.QMenu()
         self._actions = []
-        self.ui.reload.setMenu(self._menu)
+        self.ui.options.setMenu(self._menu)
         self._refresh_action = QtGui.QAction("Refresh", self)
         self._refresh_action.setIcon(QtGui.QIcon(QtGui.QPixmap(":/tk_multi_publish2/reload.png")))
         self._refresh_action.triggered.connect(self._refresh)
