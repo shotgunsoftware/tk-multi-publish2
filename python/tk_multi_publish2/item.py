@@ -31,8 +31,8 @@ class Item(QtGui.QFrame):
         """
         QtGui.QFrame.__init__(self, parent)
 
-        self.setFrameShape(QtGui.QFrame.StyledPanel)
-        self.setFrameShadow(QtGui.QFrame.Raised)
+        #self.setFrameShape(QtGui.QFrame.StyledPanel)
+        #self.setFrameShadow(QtGui.QFrame.Raised)
 
         # set up the UI
         self.ui = Ui_Item()
