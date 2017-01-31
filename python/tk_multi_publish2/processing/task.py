@@ -49,11 +49,11 @@ class Task(object):
 
     @property
     def required(self):
-        return True
+        return self._required
 
     @property
     def enabled(self):
-        return True
+        return self._enabled
 
     @property
     def settings(self):

@@ -49,7 +49,7 @@ class SceneHook(HookBaseClass):
     def accept(self, log, settings, item):
 
         log.debug("%s: Running accept for %s with settings %s" % (self, item, settings))
-        return {"accepted": True, "required": True, "enabled": True}
+        return {"accepted": True, "required": False, "enabled": False}
 
     def validate(self, log, settings, item):
 

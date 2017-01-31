@@ -92,7 +92,7 @@ class MayaSceneCollector(HookBaseClass):
             if os.path.exists(playblast_dir):
                 for filename in os.listdir(playblast_dir):
                     path = os.path.join(playblast_dir, filename)
-                    item = parent_item.create_item("maya.playblast", "Playblast", filename)
+                    item = parent_item.create_item("maya.playblast", "Playblast in Maya Project", filename)
                     item.properties["path"] = path
                     item.set_icon(os.path.join(self.disk_location, "icons", "popcorn.png"))
                     items.append(item)

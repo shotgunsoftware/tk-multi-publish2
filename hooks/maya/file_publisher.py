@@ -35,7 +35,7 @@ class SceneHook(HookBaseClass):
     @property
     def settings(self):
         return {
-            #"setting_a": {"type": "int", "default": 5, "description": "foo bar baz"},
+            "File Type": {"type": "int", "default": 5, "description": "foo bar baz"},
         }
 
 
@@ -46,7 +46,7 @@ class SceneHook(HookBaseClass):
     def accept(self, log, settings, item):
 
         log.debug("%s: Running accept for %s with settings %s" % (self, item, settings))
-        return {"accepted": True, "required": True, "enabled": True}
+        return {"accepted": True, "required": False, "enabled": False}
 
     def validate(self, log, settings, item):
 

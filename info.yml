@@ -47,9 +47,15 @@ configuration:
               hook: "{self}/maya/test.py"
               settings: {}
 
-            - name: Publish File to Shotgun
-              hook: "{self}/maya/file_publisher.py"
+            - name: Send image to Shotgun review
+              hook: "{self}/maya/image_review.py"
               settings: {}
+
+            - name: Publish Image to Shotgun
+              hook: "{self}/maya/file_publisher.py"
+              settings:
+                publish_type: Image File
+                file_extensions: png, jpg, jpeg
 
             
 # the Shotgun fields that this app needs in order to operate correctly

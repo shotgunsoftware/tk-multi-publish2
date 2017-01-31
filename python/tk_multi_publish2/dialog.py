@@ -214,7 +214,7 @@ class AppDialog(QtGui.QWidget):
 
         self.ui.task_description.setText(task.plugin.description)
 
-        self.ui.task_settings.set_data(task.settings)
+        self.ui.task_settings.set_data(task.settings.values())
 
 
     def _create_plugin_details(self, plugin):
@@ -226,7 +226,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.plugin_name.setText(plugin.name)
 
         self.ui.plugin_description.setText(plugin.description)
-        self.ui.plugin_settings.set_data(plugin.settings)
+        self.ui.plugin_settings.set_data(plugin.settings.values())
 
 
 
@@ -342,21 +342,37 @@ class AppDialog(QtGui.QWidget):
         self.ui.right_tabs.setCurrentIndex(self.PROGRESS_TAB)
 
         parent = self.ui.items_tree.invisibleRootItem()
-        self._visit_tree_r(parent, "Validating", lambda child: child.validate())
-        self._visit_tree_r(parent, "Publishing", lambda child: child.publish())
-        self._visit_tree_r(parent, "Finalizing", lambda child: child.finalize())
+
+        self._log_wrapper.push("Running validation pass")
+        try:
+            self._visit_tree_r(parent, "Validating", lambda child: child.validate())
+        finally:
+            self._log_wrapper.pop()
+
+        self._log_wrapper.push("Running publishing pass")
+        try:
+            self._visit_tree_r(parent, "Publishing", lambda child: child.publish())
+        finally:
+            self._log_wrapper.pop()
+
+        self._log_wrapper.push("Running finalizing pass")
+        try:
+            self._visit_tree_r(parent, "Finalizing", lambda child: child.finalize())
+        finally:
+            self._log_wrapper.pop()
 
 
     def _visit_tree_r(self, parent, action_name, action):
 
         for child_index in xrange(parent.childCount()):
             child = parent.child(child_index)
-            self._log_wrapper.push("%s %s" % (action_name, child), child.icon)
-            try:
-                action(child) # eg. child.validate(), child.publish() etc.
-                self._visit_tree_r(child, action_name, action)
-            finally:
-                self._log_wrapper.pop()
+            if child.enabled:
+                self._log_wrapper.push("%s %s" % (action_name, child), child.icon)
+                try:
+                    action(child) # eg. child.validate(), child.publish() etc.
+                    self._visit_tree_r(child, action_name, action)
+                finally:
+                    self._log_wrapper.pop()
 
 
 

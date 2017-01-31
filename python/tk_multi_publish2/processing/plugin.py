@@ -44,7 +44,7 @@ class Plugin(object):
 
         self._logger = logger
 
-        self._settings = []
+        self._settings = {}
         self._validate_and_resolve_config()
 
 
@@ -81,7 +81,7 @@ class Plugin(object):
                 # todo - validate
                 setting.set_value(self._raw_config_settings[settings_def_name])
 
-            self._settings.append(setting)
+            self._settings[settings_def_name] = setting
 
     @property
     def name(self):
@@ -138,13 +138,30 @@ class Plugin(object):
         self._tasks.append(task)
 
     def run_accept(self, item):
-        return self._plugin.accept(self._logger, self.settings, item)
+        try:
+            return self._plugin.accept(self._logger, self.settings, item)
+        except Exception, e:
+                self._logger.exception("Error running accept for %s" % self)
+            return {"accepted": False}
 
     def run_validate(self, settings, item):
-        return self._plugin.validate(self._logger, settings, item)
+        try:
+            return self._plugin.validate(self._logger, settings, item)
+        except Exception, e:
+            self._logger.exception("Error running validate for %s" % self)
+            # TODO: other validation feedback!! bubble it up
+
 
     def run_publish(self, settings, item):
-        return self._plugin.publish(self._logger, settings, item)
+        try:
+            return self._plugin.publish(self._logger, settings, item)
+        except Exception, e:
+            self._logger.exception("Error running publish for %s" % self)
+
 
     def run_finalize(self, settings, item):
-        return self._plugin.finalize(self._logger, settings, item)
+        try:
+            return self._plugin.finalize(self._logger, settings, item)
+        except Exception, e:
+            self._logger.exception("Error running finalize for %s" % self)
+

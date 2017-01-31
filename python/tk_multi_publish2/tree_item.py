@@ -37,6 +37,10 @@ class PublishTreeWidget(QtGui.QTreeWidgetItem):
         # qicon for the node
         pass
 
+    @property
+    def enabled(self):
+        return True
+
 
 class PublishTreeWidgetTask(PublishTreeWidget):
     """
@@ -74,6 +78,10 @@ class PublishTreeWidgetTask(PublishTreeWidget):
         # qicon for the node
         return QtGui.QIcon(self._task.plugin.icon_pixmap)
 
+    @property
+    def enabled(self):
+        return self._item_widget.checkbox.isChecked()
+
     def validate(self):
         self._item_widget.set_status(self._item_widget.PROCESSING)
         try:
@@ -83,7 +91,6 @@ class PublishTreeWidgetTask(PublishTreeWidget):
         else:
             self._item_widget.set_status(self._item_widget.VALIDATION_COMPLETE)
 
-
     def publish(self):
         self._item_widget.set_status(self._item_widget.PROCESSING)
         try:
@@ -92,7 +99,6 @@ class PublishTreeWidgetTask(PublishTreeWidget):
             self._item_widget.set_status(self._item_widget.PUBLISH_ERROR)
         else:
             self._item_widget.set_status(self._item_widget.PUBLISH_COMPLETE)
-
 
     def finalize(self):
         self._item_widget.set_status(self._item_widget.PROCESSING)
