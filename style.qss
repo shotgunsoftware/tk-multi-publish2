@@ -29,8 +29,14 @@ QWidget {
     font-weight: 100;
 }
 
+/* subheading under the item name in the details */
+#item_type {
+    font-size: 16px;
+    font-weight: 100;
+}
+
 #please_select_an_item {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 100;
 }
 

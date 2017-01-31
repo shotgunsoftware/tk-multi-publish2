@@ -72,7 +72,7 @@
         <item>
          <widget class="QStackedWidget" name="details_stack">
           <property name="currentIndex">
-           <number>3</number>
+           <number>4</number>
           </property>
           <widget class="QWidget" name="details_summary">
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -333,7 +333,7 @@
            </layout>
           </widget>
           <widget class="QWidget" name="details_item">
-           <layout class="QVBoxLayout" name="verticalLayout_12">
+           <layout class="QVBoxLayout" name="verticalLayout_13">
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_6">
               <item>
@@ -359,11 +359,22 @@
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="item_name">
-                <property name="text">
-                 <string>PLUGIN</string>
-                </property>
-               </widget>
+               <layout class="QVBoxLayout" name="verticalLayout_12">
+                <item>
+                 <widget class="QLabel" name="item_name">
+                  <property name="text">
+                   <string>Item name</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="item_type">
+                  <property name="text">
+                   <string>Item type</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </item>
              </layout>
             </item>

@@ -120,7 +120,7 @@ class AppDialog(QtGui.QWidget):
             self._create_plugin_details(selected_item.plugin)
 
         else:
-            raise TankError("Uknownn selection")
+            raise TankError("Uknown selection")
 
 
 
@@ -153,6 +153,7 @@ class AppDialog(QtGui.QWidget):
 
         self.ui.item_icon.setPixmap(item.icon_pixmap)
         self.ui.item_name.setText(item.name)
+        self.ui.item_type.setText(item.display_type)
 
         if item.thumbnail_pixmap:
             self.ui.item_thumbnail.set_thumbnail(item.thumbnail_pixmap)
