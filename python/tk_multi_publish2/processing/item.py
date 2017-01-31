@@ -67,6 +67,9 @@ class Item(object):
 
     @property
     def thumbnail_pixmap(self):
+        """
+        Return parent thumb if nothing else found
+        """
         if self._thumb_path:
             try:
                 pixmap = QtGui.QPixmap(self._thumb_path)
@@ -75,7 +78,10 @@ class Item(object):
                 logger.warning(
                     "%r: Could not load thumbnail '%s': %s" % (self, self._thumb_path, e)
                 )
-        return None
+        elif self.parent:
+            return self.parent.thumbnail_pixmap()
+        else:
+            return None
 
     @property
     def children(self):

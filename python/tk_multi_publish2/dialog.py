@@ -122,9 +122,6 @@ class AppDialog(QtGui.QWidget):
 
         logger.debug("selected: %s" % selected_item)
 
-        print selected_item.parent()
-        print self.ui.items_tree.invisibleRootItem()
-
         if selected_item is None:
             self.ui.details_stack.setCurrentIndex(self.BLANK_DETAILS)
 

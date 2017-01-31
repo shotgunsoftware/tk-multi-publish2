@@ -56,7 +56,7 @@ class MayaSceneCollector(HookBaseClass):
             current_scene = parent_item.create_item("maya.scene", "Current Maya Scene", file_name)
 
         else:
-            current_scene = parent_item.create_item("maya.scene", "<Untitled>")
+            current_scene = parent_item.create_item("maya.scene", "Current Maya Scene", "<Untitled>")
 
         current_scene.properties["path"] = scene_file
         current_scene.properties["workspace_root"] = cmds.workspace( q=True, rootDirectory=True )

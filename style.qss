@@ -29,6 +29,11 @@ QWidget {
     font-weight: 100;
 }
 
+#please_select_an_item {
+    font-size: 18px;
+    font-weight: 100;
+}
+
 /* need this to kick QT into 'style mode' for labels otherwise things are not formatted correctly */
 QLabel {
     margin-top: 1px;
