@@ -165,15 +165,9 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_type.setText(item.display_type)
         self.ui.item_thumbnail.set_thumbnail(item.thumbnail_pixmap)
 
-        from .processing.setting import Setting
-
-        xxx = []
-        for (property_name, property_value) in item.properties.iteritems():
-            s = Setting(property_name, {})
-            s.set_value(property_value)
-            xxx.append(s)
-
-        self.ui.item_settings.set_data(xxx)
+        self.ui.item_settings.set_static_data(
+            [(p, item.properties[p]) for p in item.properties]
+        )
 
 
 

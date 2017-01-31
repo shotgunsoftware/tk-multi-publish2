@@ -83,7 +83,9 @@ class SettingsWidget(QtGui.QWidget):
         finally:
             # make the window visible again and trigger a redraw
             self.setVisible(True)
-            
+
+
+
     def set_data(self, settings):
         """
         Clear any existing data in the widget and populate it with new data
@@ -125,6 +127,55 @@ class SettingsWidget(QtGui.QWidget):
                 
                 curr_row += 1
             
+            # let the value column be the expanding one
+            self.ui.settings_layout.setColumnStretch(1, 1)
+            # and push all rows together
+            self.ui.settings_layout.setRowStretch(curr_row, 1)
+        finally:
+            # make the window visible again and trigger a redraw
+            self.setVisible(True)
+
+    def set_static_data(self, settings):
+        """
+        Clear any existing data in the widget and populate it with new data
+
+
+
+
+        """
+
+        # first clear existing stuff
+        self.clear()
+
+        if len(settings) == 0:
+            # an empty dictionary indicates no data available.
+            return
+
+        self.setVisible(False)
+        try:
+
+            # now create new items - order alphabetically
+            curr_row = 0
+
+            for (name, value) in settings:
+                field_label = FieldNameLabel(self)
+                field_label.setText(name)
+                field_label.setWordWrap(True)
+                field_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+
+                value_label = FieldValueLabel(self)
+                value_label.setText(value)
+                value_label.setWordWrap(True)
+                value_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+
+                self.ui.settings_layout.addWidget(field_label, curr_row, 0)
+                self.ui.settings_layout.addWidget(value_label, curr_row, 1)
+
+                self._widgets.append(value_label)
+                self._widgets.append(field_label)
+
+                curr_row += 1
+
             # let the value column be the expanding one
             self.ui.settings_layout.setColumnStretch(1, 1)
             # and push all rows together
