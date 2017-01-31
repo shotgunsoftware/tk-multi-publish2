@@ -23,7 +23,7 @@ class PluginManager(object):
     Handles hook execution
     """
 
-    def __init__(self):
+    def __init__(self, publish_logger):
         """
         Constructor
 
@@ -32,6 +32,8 @@ class PluginManager(object):
         logger.debug("plugin manager waking up")
 
         self._bundle = sgtk.platform.current_bundle()
+
+        self._logger = publish_logger
 
         logger.debug("Loading plugin configuration")
         self._plugins = []
@@ -46,7 +48,7 @@ class PluginManager(object):
             settings = plugin_def["settings"]
 
             # maintain a ordered list
-            plugin = Plugin(plugin_instance_name, hook_path, settings, logger)
+            plugin = Plugin(plugin_instance_name, hook_path, settings, self._logger)
             logger.debug("Created %s" % plugin)
             self._plugins.append(plugin)
 

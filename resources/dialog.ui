@@ -62,7 +62,7 @@
      </widget>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="details_tab">
        <attribute name="title">
@@ -476,7 +476,7 @@ for more details</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
-         <widget class="QTreeWidget" name="treeWidget">
+         <widget class="QTreeWidget" name="log_tree">
           <attribute name="headerVisible">
            <bool>false</bool>
           </attribute>

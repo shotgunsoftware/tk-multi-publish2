@@ -19,6 +19,8 @@ from .processing import PluginManager
 from .item import Item
 from .tree_item import PublishTreeWidgetItem, PublishTreeWidgetTask, PublishTreeWidgetPlugin
 
+from .publish_logging import PublishLogWrapper
+
 from .processing import ValidationFailure, PublishFailure
 
 # import frameworks
@@ -67,6 +69,9 @@ class AppDialog(QtGui.QWidget):
         # drag and drop
         self.ui.frame.something_dropped.connect(self._on_drop)
 
+        # create a special logger for progress
+        self._log_wrapper = PublishLogWrapper(self.ui.log_tree)
+
         # buttons
         self.ui.reload.clicked.connect(self._on_refresh_clicked)
         self.ui.swap.clicked.connect(self._on_swap_clicked)
@@ -87,7 +92,7 @@ class AppDialog(QtGui.QWidget):
         self._current_item = None
 
         # start up our plugin manager
-        self._plugin_manager = PluginManager()
+        self._plugin_manager = PluginManager(self._log_wrapper.logger)
 
         # start it up
         self._on_refresh_clicked()
@@ -261,7 +266,7 @@ class AppDialog(QtGui.QWidget):
         @return:
         """
         # run the hooks
-        self._plugin_manager = PluginManager()
+        self._plugin_manager = PluginManager(self._log_wrapper.logger)
 
 
 
@@ -274,11 +279,16 @@ class AppDialog(QtGui.QWidget):
 
     def _validate_r(self, parent):
 
+
+
         for child_index in xrange(parent.childCount()):
             child = parent.child(child_index)
-            child.validate()
-
-            self._validate_r(child)
+            self._log_wrapper.push("Validating %s" % child)
+            try:
+                child.validate()
+                self._validate_r(child)
+            finally:
+                self._log_wrapper.pop()
 
 
 
