@@ -38,6 +38,8 @@ class AppDialog(QtGui.QWidget):
 
     (SUMMARY_DETAILS, TASK_DETAILS, PLUGIN_DETAILS, ITEM_DETAILS, BLANK_DETAILS) = range(5)
 
+    (DETAILS_TAB, PROGRESS_TAB) = range(2)
+
 
     def __init__(self, parent=None):
         """
@@ -101,6 +103,9 @@ class AppDialog(QtGui.QWidget):
         logger.debug("Tree selection changed!")
         items = self.ui.items_tree.selectedItems()
         logger.debug("items: %s" % items)
+
+        self.ui.right_tabs.setCurrentIndex(self.DETAILS_TAB)
+
         if len(items) == 0:
             selected_item = None
         else:
@@ -272,7 +277,9 @@ class AppDialog(QtGui.QWidget):
 
 
     def do_validate(self):
-        logger.debug("Publish")
+        logger.debug("Validate")
+
+        self.ui.right_tabs.setCurrentIndex(self.PROGRESS_TAB)
 
         parent = self.ui.items_tree.invisibleRootItem()
         self._validate_r(parent)

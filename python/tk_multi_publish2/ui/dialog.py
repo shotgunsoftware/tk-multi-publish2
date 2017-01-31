@@ -39,8 +39,8 @@ class Ui_Dialog(object):
         self.items_tree.header().setVisible(False)
         self.verticalLayout_2.addWidget(self.items_tree)
         self.verticalLayout.addWidget(self.frame)
-        self.tabWidget = QtGui.QTabWidget(self.splitter)
-        self.tabWidget.setObjectName("tabWidget")
+        self.right_tabs = QtGui.QTabWidget(self.splitter)
+        self.right_tabs.setObjectName("right_tabs")
         self.details_tab = QtGui.QWidget()
         self.details_tab.setObjectName("details_tab")
         self.verticalLayout_5 = QtGui.QVBoxLayout(self.details_tab)
@@ -218,7 +218,7 @@ class Ui_Dialog(object):
         self.verticalLayout_6.addWidget(self.please_select_an_item)
         self.details_stack.addWidget(self.details_select)
         self.verticalLayout_5.addWidget(self.details_stack)
-        self.tabWidget.addTab(self.details_tab, "")
+        self.right_tabs.addTab(self.details_tab, "")
         self.progress_tab = QtGui.QWidget()
         self.progress_tab.setObjectName("progress_tab")
         self.verticalLayout_4 = QtGui.QVBoxLayout(self.progress_tab)
@@ -228,7 +228,7 @@ class Ui_Dialog(object):
         self.log_tree.headerItem().setText(0, "1")
         self.log_tree.header().setVisible(False)
         self.verticalLayout_4.addWidget(self.log_tree)
-        self.tabWidget.addTab(self.progress_tab, "")
+        self.right_tabs.addTab(self.progress_tab, "")
         self.verticalLayout_3.addWidget(self.splitter)
         self.bottom_frame = QtGui.QFrame(Dialog)
         self.bottom_frame.setMaximumSize(QtCore.QSize(16777215, 40))
@@ -261,7 +261,7 @@ class Ui_Dialog(object):
         self.verticalLayout_3.addWidget(self.bottom_frame)
 
         self.retranslateUi(Dialog)
-        self.tabWidget.setCurrentIndex(1)
+        self.right_tabs.setCurrentIndex(0)
         self.details_stack.setCurrentIndex(3)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
@@ -283,8 +283,8 @@ class Ui_Dialog(object):
         self.item_description.setText(QtGui.QApplication.translate("Dialog", "Item description", None, QtGui.QApplication.UnicodeUTF8))
         self.please_select_an_item.setText(QtGui.QApplication.translate("Dialog", "Please select an item \n"
 "for more details", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.details_tab), QtGui.QApplication.translate("Dialog", "Details", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.progress_tab), QtGui.QApplication.translate("Dialog", "Progress", None, QtGui.QApplication.UnicodeUTF8))
+        self.right_tabs.setTabText(self.right_tabs.indexOf(self.details_tab), QtGui.QApplication.translate("Dialog", "Details", None, QtGui.QApplication.UnicodeUTF8))
+        self.right_tabs.setTabText(self.right_tabs.indexOf(self.progress_tab), QtGui.QApplication.translate("Dialog", "Progress", None, QtGui.QApplication.UnicodeUTF8))
         self.validate.setText(QtGui.QApplication.translate("Dialog", "Validate", None, QtGui.QApplication.UnicodeUTF8))
         self.publish.setText(QtGui.QApplication.translate("Dialog", "Publish", None, QtGui.QApplication.UnicodeUTF8))
 
