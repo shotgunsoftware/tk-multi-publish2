@@ -307,6 +307,9 @@ class AppDialog(QtGui.QWidget):
         if self._display_mode != self.ITEM_CENTRIC:
             self._swap_view()
 
+        # and expand it
+        self._expand_tree()
+
         self.ui.right_tabs.setCurrentIndex(self.PROGRESS_TAB)
         parent = self.ui.items_tree.invisibleRootItem()
         self._visit_tree_r(parent, "Validating", lambda child: child.validate())
@@ -316,6 +319,9 @@ class AppDialog(QtGui.QWidget):
         # make sure we swap the tree
         if self._display_mode != self.ITEM_CENTRIC:
             self._swap_view()
+
+        # and expand it
+        self._expand_tree()
 
         self.ui.right_tabs.setCurrentIndex(self.PROGRESS_TAB)
 
