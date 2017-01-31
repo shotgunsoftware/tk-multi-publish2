@@ -75,10 +75,27 @@ class AppDialog(QtGui.QWidget):
         self._log_wrapper = PublishLogWrapper(self.ui.log_tree)
 
         # buttons
-        self.ui.reload.clicked.connect(self._refresh)
         self.ui.swap.clicked.connect(self._swap_view)
         self.ui.validate.clicked.connect(self.do_validate)
         self.ui.publish.clicked.connect(self.do_publish)
+
+
+        self._menu = QtGui.QMenu()
+        self._actions = []
+        self.ui.reload.setMenu(self._menu)
+        self._refresh_action = QtGui.QAction("Refresh", self)
+        self._refresh_action.setIcon(QtGui.QIcon(QtGui.QPixmap(":/tk_multi_publish2/reload.png")))
+        self._refresh_action.triggered.connect(self._refresh)
+        self._menu.addAction(self._refresh_action)
+
+        self._expand_action = QtGui.QAction("Expand All", self)
+        self._expand_action.triggered.connect(self._expand_tree)
+        self._menu.addAction(self._expand_action)
+
+        self._collapse_action = QtGui.QAction("Collapse All", self)
+        self._collapse_action.triggered.connect(self._collapse_tree)
+        self._menu.addAction(self._collapse_action)
+
 
         # selection in tree view
         self.ui.items_tree.itemSelectionChanged.connect(self._on_tree_selection_change)
@@ -201,6 +218,21 @@ class AppDialog(QtGui.QWidget):
 
         self._do_reload()
         self._build_tree()
+
+
+    def _collapse_tree(self):
+
+        for item_index in xrange(self.ui.items_tree.topLevelItemCount()):
+            item = self.ui.items_tree.topLevelItem(item_index)
+            self.ui.items_tree.collapseItem(item)
+
+    def _expand_tree(self):
+
+        for item_index in xrange(self.ui.items_tree.topLevelItemCount()):
+            item = self.ui.items_tree.topLevelItem(item_index)
+            self.ui.items_tree.expandItem(item)
+
+
 
 
     def _swap_view(self):

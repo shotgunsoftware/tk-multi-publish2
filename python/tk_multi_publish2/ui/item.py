@@ -37,7 +37,6 @@ class Ui_Item(object):
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.checkbox = QtGui.QCheckBox(self.chk_page)
         self.checkbox.setText("")
-        self.checkbox.setTristate(True)
         self.checkbox.setObjectName("checkbox")
         self.verticalLayout_2.addWidget(self.checkbox)
         self.stack.addWidget(self.chk_page)
@@ -59,7 +58,7 @@ class Ui_Item(object):
         self.horizontalLayout.addWidget(self.header)
 
         self.retranslateUi(Item)
-        self.stack.setCurrentIndex(0)
+        self.stack.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(Item)
 
     def retranslateUi(self, Item):

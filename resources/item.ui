@@ -29,7 +29,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="widget_2">
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -56,9 +56,6 @@
         <widget class="QCheckBox" name="checkbox">
          <property name="text">
           <string/>
-         </property>
-         <property name="tristate">
-          <bool>true</bool>
          </property>
         </widget>
        </item>
