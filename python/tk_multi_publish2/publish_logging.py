@@ -39,7 +39,7 @@ class PublishLogHandler(logging.Handler):
 
 
 
-    def push(self, text):
+    def push(self, text, icon):
 
         item = QtGui.QTreeWidgetItem()
         item.setText(0, text)
@@ -47,6 +47,8 @@ class PublishLogHandler(logging.Handler):
             self._tree_widget.invisibleRootItem().addChild(item)
         else:
             self._logging_parent_item.addChild(item)
+
+        item.setIcon(0, icon)
 
         self._tree_widget.setCurrentItem(item)
         self._logging_parent_item = item
@@ -119,8 +121,8 @@ class PublishLogWrapper(object):
     def logger(self):
         return self._logger
 
-    def push(self, text):
-        self._handler.push(text)
+    def push(self, text, icon):
+        self._handler.push(text, icon)
 
     def pop(self):
         self._handler.pop()

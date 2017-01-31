@@ -23,8 +23,22 @@ class PublishTreeWidget(QtGui.QTreeWidgetItem):
     def __init__(self, parent):
         super(PublishTreeWidget, self).__init__(parent)
 
+    def validate(self):
+        pass
 
-class PublishTreeWidgetTask(QtGui.QTreeWidgetItem):
+    def publish(self):
+        pass
+
+    def finalize(self):
+        pass
+
+    @property
+    def icon(self):
+        # qicon for the node
+        pass
+
+
+class PublishTreeWidgetTask(PublishTreeWidget):
     """
     Tree item for a task
     """
@@ -50,6 +64,11 @@ class PublishTreeWidgetTask(QtGui.QTreeWidgetItem):
     def task(self):
         return self._task
 
+    @property
+    def icon(self):
+        # qicon for the node
+        return QtGui.QIcon(self._task.plugin.icon_pixmap)
+
     def validate(self):
         self._item_widget.set_status(self._item_widget.PROCESSING)
         try:
@@ -57,10 +76,31 @@ class PublishTreeWidgetTask(QtGui.QTreeWidgetItem):
         except Exception, e:
             self._item_widget.set_status(self._item_widget.VALIDATION_ERROR)
         else:
+            self._item_widget.set_status(self._item_widget.VALIDATION_COMPLETE)
+
+
+    def publish(self):
+        self._item_widget.set_status(self._item_widget.PROCESSING)
+        try:
+            self._task.publish()
+        except Exception, e:
+            self._item_widget.set_status(self._item_widget.PUBLISH_ERROR)
+        else:
             self._item_widget.set_status(self._item_widget.PUBLISH_COMPLETE)
 
 
-class PublishTreeWidgetPlugin(QtGui.QTreeWidgetItem):
+    def finalize(self):
+        self._item_widget.set_status(self._item_widget.PROCESSING)
+        try:
+            self._task.finalize()
+        except Exception, e:
+            self._item_widget.set_status(self._item_widget.PUBLISH_ERROR)
+        else:
+            self._item_widget.set_status(self._item_widget.PUBLISH_COMPLETE)
+
+
+
+class PublishTreeWidgetPlugin(PublishTreeWidget):
     """
     Tree item for a plugin
     """
@@ -88,10 +128,15 @@ class PublishTreeWidgetPlugin(QtGui.QTreeWidgetItem):
     def plugin(self):
         return self._plugin
 
-    def validate(self):
-        pass
+    @property
+    def icon(self):
+        # qicon for the node
+        return QtGui.QIcon(self._plugin.icon_pixmap)
 
-class PublishTreeWidgetItem(QtGui.QTreeWidgetItem):
+
+
+
+class PublishTreeWidgetItem(PublishTreeWidget):
     """
     Tree item for a publish item
     """
@@ -116,5 +161,7 @@ class PublishTreeWidgetItem(QtGui.QTreeWidgetItem):
     def item(self):
         return self._item
 
-    def validate(self):
-        pass
+    @property
+    def icon(self):
+        # qicon for the node
+        return QtGui.QIcon(self._item.icon_pixmap)
