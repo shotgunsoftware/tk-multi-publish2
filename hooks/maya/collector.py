@@ -23,7 +23,7 @@ class MayaSceneCollector(HookBaseClass):
         if path.endswith(".ma") or path.endswith(".mb"):
             file_name = os.path.basename(path)
             (file_name_no_ext, file_extension) = os.path.splitext(file_name)
-            file_item = parent_item.create_item("file.maya", file_name_no_ext)
+            file_item = parent_item.create_item("file.maya", "Maya File", file_name)
             file_item.properties["extension"] = file_extension
             file_item.properties["path"] = path
 
@@ -53,7 +53,7 @@ class MayaSceneCollector(HookBaseClass):
             scene_file = os.path.abspath(scene_file)
             file_name = os.path.basename(scene_file)
             (file_name_no_ext, file_extension) = os.path.splitext(file_name)
-            current_scene = parent_item.create_item("maya.scene", file_name_no_ext)
+            current_scene = parent_item.create_item("maya.scene", "Current Maya Scene", file_name)
 
         else:
             current_scene = parent_item.create_item("maya.scene", "<Untitled>")
@@ -72,8 +72,7 @@ class MayaSceneCollector(HookBaseClass):
         items = []
         for dag_path in cmds.ls(type="camera", long=True):
             short_name = dag_path.split("|")[-1]
-            item_name = "Camera %s" % short_name
-            item = parent_item.create_item("maya.camera", item_name)
+            item = parent_item.create_item("maya.camera", "Camera", short_name)
             item.properties["maya_type"] = "camera"
             item.properties["dag_path"] = dag_path
             item.set_icon(os.path.join(self.disk_location, "icons", "camera.png"))
@@ -93,7 +92,7 @@ class MayaSceneCollector(HookBaseClass):
             if os.path.exists(playblast_dir):
                 for filename in os.listdir(playblast_dir):
                     path = os.path.join(playblast_dir, filename)
-                    item = parent_item.create_item("maya.playblast", filename)
+                    item = parent_item.create_item("maya.playblast", "Playblast", filename)
                     item.properties["path"] = path
                     item.set_icon(os.path.join(self.disk_location, "icons", "popcorn.png"))
                     items.append(item)

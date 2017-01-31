@@ -19,9 +19,10 @@ class Item(object):
     An object representing an item that should be processed
     """
 
-    def __init__(self, type, name, parent):
-        self._name = name
+    def __init__(self, type, display_type, display_name, parent):
+        self._name = display_name
         self._type = type
+        self._display_type = display_type
         self._parent = parent
         self._thumb_path = None
         self._children = []
@@ -36,11 +37,11 @@ class Item(object):
         else:
             return "<Item %s:%s>" % (self._type, self._name)
 
-    def create_item(self, item_type, item_name):
+    def create_item(self, item_type, display_type, display_name):
         """
         Create a new item
         """
-        child_item = Item(item_type, item_name, parent=self)
+        child_item = Item(item_type, display_type, display_name, parent=self)
         self._children.append(child_item)
         child_item._parent = self
         logger.debug("Created %s" % child_item)
@@ -83,6 +84,10 @@ class Item(object):
     @property
     def name(self):
         return self._name
+
+    @property
+    def display_type(self):
+        return self._display_type
 
     @property
     def type(self):

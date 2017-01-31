@@ -89,7 +89,7 @@ class PublishTreeWidgetItem(QtGui.QTreeWidgetItem):
         tree_widget = self.treeWidget()
 
         pd = Item(tree_widget)
-        pd.set_header(self._item.name)
+        pd.set_header("<b>%s</b><br>%s" % (self._item.name, self._item.display_type))
         pd.set_icon(self._item.icon_pixmap)
         #pd.set_status(pd.VALIDATION_ERROR)
 
