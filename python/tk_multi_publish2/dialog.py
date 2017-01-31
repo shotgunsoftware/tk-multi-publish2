@@ -64,7 +64,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.splitter.setStretchFactor(1, 1)
 
         # set up tree view to look slick
-        self.ui.items_tree.setRootIsDecorated(False)
+        #self.ui.items_tree.setRootIsDecorated(False)
         #self.ui.items_tree.setItemsExpandable(False)
         self.ui.items_tree.setIndentation(20)
 
@@ -76,7 +76,7 @@ class AppDialog(QtGui.QWidget):
 
         # buttons
         self.ui.reload.clicked.connect(self._on_refresh_clicked)
-        self.ui.swap.clicked.connect(self._on_swap_clicked)
+        self.ui.swap.clicked.connect(self._swap_view)
         self.ui.validate.clicked.connect(self.do_validate)
         self.ui.publish.clicked.connect(self.do_publish)
 
@@ -216,7 +216,7 @@ class AppDialog(QtGui.QWidget):
         self._build_tree()
 
 
-    def _on_swap_clicked(self):
+    def _swap_view(self):
 
         if self._display_mode == self.ITEM_CENTRIC:
             self._display_mode = self.PLUGIN_CENTRIC
@@ -278,11 +278,19 @@ class AppDialog(QtGui.QWidget):
 
     def do_validate(self):
 
+        # make sure we swap the tree
+        if self._display_mode != self.ITEM_CENTRIC:
+            self._swap_view()
+
         self.ui.right_tabs.setCurrentIndex(self.PROGRESS_TAB)
         parent = self.ui.items_tree.invisibleRootItem()
         self._visit_tree_r(parent, "Validating", lambda child: child.validate())
 
     def do_publish(self):
+
+        # make sure we swap the tree
+        if self._display_mode != self.ITEM_CENTRIC:
+            self._swap_view()
 
         self.ui.right_tabs.setCurrentIndex(self.PROGRESS_TAB)
 
