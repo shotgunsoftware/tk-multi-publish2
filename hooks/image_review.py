@@ -34,7 +34,22 @@ class SceneHook(HookBaseClass):
     @property
     def settings(self):
         return {
-            "File Extensions": {"type": "str", "default": "jpeg, jpg, png, mov", "description": "File Extensions of files to include"},
+            "File Extensions": {
+                "type": "str",
+                "default": "jpeg, jpg, png, mov, mp4",
+                "description": "File Extensions of files to include"
+            },
+            "Create Local Link": {
+                "type": "bool",
+                "default": False,
+                "description": "Should the local file be referenced by Shotgun"
+            },
+            "Upload": {
+                "type": "bool",
+                "default": True,
+                "description": "Upload content to Shotgun?"
+            },
+
         }
 
     @property
@@ -67,19 +82,29 @@ class SceneHook(HookBaseClass):
     def publish(self, log, settings, item):
 
         log.info("Uploading version to Shotgun...")
-        sg = self.parent.shotgun.create(
-            "Version",
-            {"project": self.parent.context.project,
-             "code": item.properties["filename"],
-             "description": self.item.description,
-             }
-        )
-        log.info("sg: %s" % sg)
 
+        data = {
+            "project": self.parent.context.project,
+            "code": item.properties["filename"],
+            "description": item.description,
+        }
 
+        if settings["Create Local Link"]:
+            data["sg_path_to_movie"] = item.properties["path"]
 
-        log.info("This is publish for item %s" % item)
-        time.sleep(0.4)
+        version = self.parent.shotgun.create("Version", data)
+
+        # and thumbnail
+        thumb = item.get_thumbnail()
+        if thumb:
+            self.parent.shotgun.upload_thumbnail("Version", version["id"], item.get_thumbnail())
+
+        # and payload
+        if settings["Upload"]:
+            self.parent.shotgun.upload("Version", version["id"], item.properties["path"], "sg_uploaded_movie")
+
+        log.info("upload complete!")
+
 
     def finalize(self, log, settings, item):
         pass
