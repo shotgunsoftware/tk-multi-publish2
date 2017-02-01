@@ -22,7 +22,6 @@ class Item(QtGui.QFrame):
     """
 
     (
-        NO_CHECKBOX,
         NEUTRAL,
         PROCESSING,
         VALIDATION_COMPLETE,
@@ -31,7 +30,7 @@ class Item(QtGui.QFrame):
         PUBLISH_COMPLETE,
         FINALIZE_COMPLETE,
         FINALIZE_ERROR
-    ) = range(9)
+    ) = range(8)
 
     def __init__(self, parent=None):
         """
@@ -40,9 +39,6 @@ class Item(QtGui.QFrame):
         :param parent:          The parent QWidget for this control
         """
         QtGui.QFrame.__init__(self, parent)
-
-        #self.setFrameShape(QtGui.QFrame.StyledPanel)
-        #self.setFrameShadow(QtGui.QFrame.Raised)
 
         # set up the UI
         self.ui = Ui_Item()
@@ -72,15 +68,10 @@ class Item(QtGui.QFrame):
 
         if status == self.NEUTRAL:
             self.ui.stack.setCurrentIndex(1)
-            self.ui.checkbox.show()
-
-        elif status == self.NO_CHECKBOX:
-            self.ui.stack.setCurrentIndex(1)
-            self.ui.checkbox.hide()
 
         elif status == self.PROCESSING:
             # gray ring
-            self.ui.status.show_dot(ring_color="#808080", fill_color=None)
+            self.ui.status.show_dot(ring_color="#808080", fill_color=None, dotted=True)
 
         elif status == self.VALIDATION_COMPLETE:
             # blue ring

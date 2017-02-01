@@ -178,14 +178,21 @@ class AppDialog(QtGui.QWidget):
 
 
     def _on_publish_comment_change(self):
-        # when the pub comment changes
+        """
+        Callback when someone types in the
+        publish comments box in the overview details pane
+        """
         comments = self.ui.summary_comments.toPlainText()
         if not self._current_item:
             raise TankError("No current item set!")
         self._current_item.set_description(comments)
 
     def _on_summary_thumbnail_captured(self, pixmap):
-        logger.debug("Captured summary thumb")
+        """
+        Callback when a thumbnail is captured
+        @param pixmap:
+        @return:
+        """
         if not self._current_item:
             raise TankError("No current item set!")
         self._current_item.set_thumbnail_pixmap(pixmap)
@@ -323,11 +330,9 @@ class AppDialog(QtGui.QWidget):
 
         ui_item = PublishTreeWidgetPlugin(plugin, parent)
         ui_item.setExpanded(True)
-        ui_item.disable_checkbox()
 
         for task in plugin.tasks:
             item = PublishTreeWidgetItem(task.item, ui_item)
-            item.disable_checkbox()
 
         return ui_item
 

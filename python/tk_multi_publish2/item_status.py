@@ -28,6 +28,7 @@ class ItemStatus(QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
         self._bundle = sgtk.platform.current_bundle()
         self._mode = self._MODE_OFF
+        self._dotted = False
         self._pen_color = None
         self._brush_color = None
 
@@ -36,11 +37,12 @@ class ItemStatus(QtGui.QWidget):
     ############################################################################################
     # public interface
 
-    def show_dot(self, ring_color, fill_color):
+    def show_dot(self, ring_color, fill_color, dotted=False):
 
         self._mode = self._MODE_ON
         self._pen_color = ring_color
         self._brush_color = fill_color
+        self._dotted = dotted
         self.repaint()
 
     def show_nothing(self):
@@ -75,7 +77,13 @@ class ItemStatus(QtGui.QWidget):
             if self._pen_color:
 
                 pen = QtGui.QPen(QtGui.QColor(self._pen_color))
-                pen.setWidth(2)
+
+                if self._dotted:
+                    pen.setWidth(1)
+                    pen.setStyle(QtCore.Qt.DotLine)
+                else:
+                    pen.setWidth(2)
+
                 painter.setPen(pen)
 
             if self._brush_color:

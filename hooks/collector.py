@@ -29,6 +29,7 @@ class GenericSceneCollector(HookBaseClass):
             file_item = parent_item.create_item("file.image", "Image File", file_name)
             file_item.set_thumbnail(path)
             file_item.set_icon(os.path.join(self.disk_location, "icons", "image.png"))
+
         else:
             file_item = parent_item.create_item("file", "Generic File", file_name)
             file_item.set_icon(os.path.join(self.disk_location, "icons", "page.png"))

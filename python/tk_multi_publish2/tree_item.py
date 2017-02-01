@@ -72,9 +72,6 @@ class PublishTreeWidgetTask(PublishTreeWidget):
     def __str__(self):
         return self._task.plugin.name
 
-    def disable_checkbox(self):
-        self._item_widget.set_status(self._item_widget.NO_CHECKBOX)
-
     @property
     def task(self):
         return self._task
@@ -140,9 +137,6 @@ class PublishTreeWidgetPlugin(PublishTreeWidget):
     def __str__(self):
         return self._plugin.name
 
-    def disable_checkbox(self):
-        self._item_widget.set_status(self._item_widget.NO_CHECKBOX)
-
     @property
     def plugin(self):
         return self._plugin
@@ -175,9 +169,6 @@ class PublishTreeWidgetItem(PublishTreeWidget):
 
     def __str__(self):
         return "%s %s" % (self._item.display_type, self._item.name)
-
-    def disable_checkbox(self):
-        self._item_widget.set_status(self._item_widget.NO_CHECKBOX)
 
     @property
     def item(self):
