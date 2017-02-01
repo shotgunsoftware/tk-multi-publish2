@@ -81,29 +81,28 @@ class SceneHook(HookBaseClass):
 
     def publish(self, log, settings, item):
 
-        log.info("Uploading version to Shotgun...")
-
         data = {
             "project": self.parent.context.project,
             "code": item.properties["filename"],
             "description": item.description,
         }
 
-        if settings["Create Local Link"]:
+        if settings["Create Local Link"].value:
             data["sg_path_to_movie"] = item.properties["path"]
 
+        log.info("Creating version for review")
         version = self.parent.shotgun.create("Version", data)
 
         # and thumbnail
         thumb = item.get_thumbnail()
         if thumb:
+            log.info("Uploading thumbnail")
             self.parent.shotgun.upload_thumbnail("Version", version["id"], item.get_thumbnail())
 
         # and payload
-        if settings["Upload"]:
+        if settings["Upload"].value:
+            log.info("Uploading content")
             self.parent.shotgun.upload("Version", version["id"], item.properties["path"], "sg_uploaded_movie")
-
-        log.info("upload complete!")
 
 
     def finalize(self, log, settings, item):
