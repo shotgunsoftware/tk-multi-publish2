@@ -46,25 +46,28 @@ configuration:
                 Create Local Link: True
                 Upload: False
 
+            - name: Publish Image to Shotgun
+              hook: "{self}/file_publisher.py"
+              settings:
+                publish_type: Image File
+                file_extensions: png, jpg, jpeg
 
-#            - name: Publish Maya Scene
-#              hook: "{self}/maya/scene.py"
-#              settings: {}
-#
-#            - name: Normalized Alembic Camera
-#              hook: "{self}/maya/test.py"
-#              settings:
-#                setting_a: 6
-#
-#            - name: Publish Alembic Camera
-#              hook: "{self}/maya/test.py"
-#              settings: {}
-#
-#            - name: Publish Image to Shotgun
-#              hook: "{self}/maya/file_publisher.py"
-#              settings:
-#                publish_type: Image File
-#                file_extensions: png, jpg, jpeg
+
+            # test stuff
+
+            - name: Publish Maya Scene
+              hook: "{self}/maya/scene.py"
+              settings: {}
+
+            - name: Normalized Alembic Camera
+              hook: "{self}/maya/test.py"
+              settings:
+                setting_a: 6
+
+            - name: Publish Alembic Camera
+              hook: "{self}/maya/test.py"
+              settings: {}
+
 
             
 # the Shotgun fields that this app needs in order to operate correctly
