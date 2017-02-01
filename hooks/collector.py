@@ -35,6 +35,7 @@ class GenericSceneCollector(HookBaseClass):
 
         file_item.properties["extension"] = file_extension
         file_item.properties["path"] = path
+        file_item.properties["filename"] = file_name
 
         return file_item
 

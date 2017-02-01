@@ -30,6 +30,7 @@ class Item(object):
         self._properties = {}
         self._parent = None
         self._icon_path = None
+        self._description = None
 
     def __repr__(self):
         if self._parent:
@@ -62,6 +63,10 @@ class Item(object):
     def set_icon(self, path):
         self._icon_path = path
 
+    def set_description(self, description):
+        # update the description for this item
+        self._description = description
+
     @property
     def icon_pixmap(self):
         if self._icon_path:
@@ -86,6 +91,15 @@ class Item(object):
             return self._thumb_pixmap
         elif self.parent:
             return self.parent.thumbnail_pixmap
+        else:
+            return None
+
+    @property
+    def description(self):
+        if self._description:
+            return self._description
+        elif self.parent:
+            return self.parent.description
         else:
             return None
 

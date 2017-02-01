@@ -117,6 +117,9 @@ class AppDialog(QtGui.QWidget):
         #self._uncheck_all_action.triggered.connect(self._expand_tree)
         self._menu.addAction(self._uncheck_all_action)
 
+        # when the description is updated
+        self.ui.summary_comments.textChanged.connect(self._on_publish_comment_change)
+
 
         # selection in tree view
         self.ui.items_tree.itemSelectionChanged.connect(self._update_details_from_selection)
@@ -174,6 +177,12 @@ class AppDialog(QtGui.QWidget):
             raise TankError("Uknown selection")
 
 
+    def _on_publish_comment_change(self):
+        # when the pub comment changes
+        comments = self.ui.summary_comments.toPlainText()
+        if not self._current_item:
+            raise TankError("No current item set!")
+        self._current_item.set_description(comments)
 
     def _on_summary_thumbnail_captured(self, pixmap):
         logger.debug("Captured summary thumb")
