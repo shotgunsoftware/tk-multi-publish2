@@ -63,6 +63,11 @@ class AppDialog(QtGui.QWidget):
         self.ui.splitter.setStretchFactor(0, 0)
         self.ui.splitter.setStretchFactor(1, 1)
 
+        # give tree view 360 width, rest to details pane
+        # note: value of second option does not seem to matter (as long as it's there)
+        self.ui.splitter.setSizes([360, 100])
+
+
         # set up tree view to look slick
         #self.ui.items_tree.setRootIsDecorated(False)
         #self.ui.items_tree.setItemsExpandable(False)

@@ -149,7 +149,7 @@ class Plugin(object):
             return self._plugin.validate(self._logger, settings, item)
         except Exception, e:
             self._logger.exception("Error running validate for %s" % self)
-            # TODO: other validation feedback!! bubble it up
+            raise
 
 
     def run_publish(self, settings, item):
@@ -157,6 +157,7 @@ class Plugin(object):
             return self._plugin.publish(self._logger, settings, item)
         except Exception, e:
             self._logger.exception("Error running publish for %s" % self)
+            raise
 
 
     def run_finalize(self, settings, item):
@@ -164,4 +165,5 @@ class Plugin(object):
             return self._plugin.finalize(self._logger, settings, item)
         except Exception, e:
             self._logger.exception("Error running finalize for %s" % self)
+            raise
 
