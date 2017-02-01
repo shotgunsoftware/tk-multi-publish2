@@ -194,6 +194,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.summary_icon.setPixmap(item.icon_pixmap)
         self.ui.summary_thumbnail.set_thumbnail(item.thumbnail_pixmap)
         self.ui.summary_header.setText("Publish summary for %s" % item.name)
+        self.ui.summary_context.setText(str(self._bundle.context))
 
 
     def _create_item_details(self, item):
