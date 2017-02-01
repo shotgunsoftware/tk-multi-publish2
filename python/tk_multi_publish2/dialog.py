@@ -114,7 +114,8 @@ class AppDialog(QtGui.QWidget):
 
 
         # selection in tree view
-        self.ui.items_tree.itemSelectionChanged.connect(self._on_tree_selection_change)
+        self.ui.items_tree.itemSelectionChanged.connect(self._update_details_from_selection)
+        self.ui.reversed_items_tree.itemSelectionChanged.connect(self._update_details_from_selection)
 
         # thumbnails
         self.ui.summary_thumbnail.screen_grabbed.connect(self._on_summary_thumbnail_captured)
@@ -132,35 +133,37 @@ class AppDialog(QtGui.QWidget):
         # start it up
         self._refresh()
 
-    def _on_tree_selection_change(self):
-        logger.debug("Tree selection changed!")
-        items = self.ui.items_tree.selectedItems()
-        logger.debug("items: %s" % items)
 
-        self.ui.right_tabs.setCurrentIndex(self.DETAILS_TAB)
+    def _update_details_from_selection(self):
+
+        if self._display_mode == self.ITEM_CENTRIC:
+            items = self.ui.items_tree.selectedItems()
+        else:
+            items = self.ui.reversed_items_tree.selectedItems()
 
         if len(items) == 0:
-            selected_item = None
+            tree_item = None
         else:
-            selected_item = items[0]
+            tree_item = items[0]
 
-        logger.debug("selected: %s" % selected_item)
+        # make sure we are focused on the details tab
+        self.ui.right_tabs.setCurrentIndex(self.DETAILS_TAB)
 
-        if selected_item is None:
+        if tree_item is None:
             self.ui.details_stack.setCurrentIndex(self.BLANK_DETAILS)
 
-        elif selected_item.parent() is None and isinstance(selected_item, PublishTreeWidgetItem):
+        elif tree_item.parent() is None and isinstance(tree_item, PublishTreeWidgetItem):
             # top level item
-            self._create_summary_details(selected_item.item)
+            self._create_summary_details(tree_item.item)
 
-        elif isinstance(selected_item, PublishTreeWidgetItem):
-            self._create_item_details(selected_item.item)
+        elif isinstance(tree_item, PublishTreeWidgetItem):
+            self._create_item_details(tree_item.item)
 
-        elif isinstance(selected_item, PublishTreeWidgetTask):
-            self._create_task_details(selected_item.task)
+        elif isinstance(tree_item, PublishTreeWidgetTask):
+            self._create_task_details(tree_item.task)
 
-        elif isinstance(selected_item, PublishTreeWidgetPlugin):
-            self._create_plugin_details(selected_item.plugin)
+        elif isinstance(tree_item, PublishTreeWidgetPlugin):
+            self._create_plugin_details(tree_item.plugin)
 
         else:
             raise TankError("Uknown selection")
@@ -234,7 +237,21 @@ class AppDialog(QtGui.QWidget):
 
         self._do_reload()
         self._build_tree()
+        self._select_top_items()
 
+    def _select_top_items(self):
+
+        # select the top item
+        if self.ui.items_tree.topLevelItemCount() > 0:
+            self.ui.items_tree.setCurrentItem(
+                self.ui.items_tree.topLevelItem(0)
+            )
+
+        # select the top item
+        if self.ui.reversed_items_tree.topLevelItemCount() > 0:
+            self.ui.reversed_items_tree.setCurrentItem(
+                self.ui.reversed_items_tree.topLevelItem(0)
+            )
 
     def _collapse_tree(self):
 
@@ -250,16 +267,16 @@ class AppDialog(QtGui.QWidget):
 
 
 
-
     def _swap_view(self):
 
         if self._display_mode == self.ITEM_CENTRIC:
             self._display_mode = self.PLUGIN_CENTRIC
+            self.ui.items_tree_stack.setCurrentIndex(self.PLUGIN_CENTRIC)
         else:
             self._display_mode = self.ITEM_CENTRIC
+            self.ui.items_tree_stack.setCurrentIndex(self.ITEM_CENTRIC)
 
-        self._build_tree()
-
+        self._update_details_from_selection()
 
 
     def _build_item_tree_r(self, parent, item):
@@ -288,23 +305,20 @@ class AppDialog(QtGui.QWidget):
 
     def _build_tree(self):
 
+        # first build the items tree
         self.ui.items_tree.clear()
 
-        if self._display_mode == self.ITEM_CENTRIC:
-            for item in self._plugin_manager.top_level_items:
-                ui_item = self._build_item_tree_r(self.ui.items_tree, item)
-                self.ui.items_tree.addTopLevelItem(ui_item)
+        for item in self._plugin_manager.top_level_items:
+            ui_item = self._build_item_tree_r(self.ui.items_tree, item)
+            self.ui.items_tree.addTopLevelItem(ui_item)
 
-        else:
-            for item in self._plugin_manager.plugins:
-                ui_item = self._build_plugin_tree_r(self.ui.items_tree, item)
-                self.ui.items_tree.addTopLevelItem(ui_item)
+        # now build the reverse one
+        self.ui.reversed_items_tree.clear()
 
-        # select the top item
-        if self.ui.items_tree.topLevelItemCount() > 0:
-            self.ui.items_tree.setCurrentItem(
-                self.ui.items_tree.topLevelItem(0)
-            )
+        for item in self._plugin_manager.plugins:
+            ui_item = self._build_plugin_tree_r(self.ui.reversed_items_tree, item)
+            self.ui.reversed_items_tree.addTopLevelItem(ui_item)
+
 
     def _do_reload(self):
         """
