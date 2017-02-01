@@ -108,10 +108,9 @@ class PublishLogWrapper(object):
         # and handle it in the UI
         self._logger.addHandler(self._handler)
 
-        if sgtk.LogManager().global_debug:
-            self._handler.setLevel(logging.DEBUG)
-        else:
-            self._handler.setLevel(logging.INFO)
+        # don't spam with debug messages
+        # user can see those in console or log files.
+        self._handler.setLevel(logging.INFO)
 
         formatter = logging.Formatter(
             "[%(levelname)s %(basename)s] %(message)s"
