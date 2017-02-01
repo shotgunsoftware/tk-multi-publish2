@@ -296,9 +296,11 @@ class AppDialog(QtGui.QWidget):
 
         ui_item = PublishTreeWidgetPlugin(plugin, parent)
         ui_item.setExpanded(True)
+        ui_item.disable_checkbox()
 
         for task in plugin.tasks:
             item = PublishTreeWidgetItem(task.item, ui_item)
+            item.disable_checkbox()
 
         return ui_item
 
