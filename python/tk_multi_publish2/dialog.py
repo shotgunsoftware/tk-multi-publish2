@@ -296,6 +296,13 @@ class AppDialog(QtGui.QWidget):
 
 
     def _build_item_tree_r(self, parent, item):
+        """
+
+
+        """
+        if len(item.tasks) == 0 and len(item.children) == 0:
+            # orphan. Don't create it
+            return None
 
         ui_item = PublishTreeWidgetItem(item, parent)
         ui_item.setExpanded(True)
@@ -309,6 +316,10 @@ class AppDialog(QtGui.QWidget):
         return ui_item
 
     def _build_plugin_tree_r(self, parent, plugin):
+
+        if len(plugin.tasks) == 0:
+            # orphan. Don't create it
+            return None
 
         ui_item = PublishTreeWidgetPlugin(plugin, parent)
         ui_item.setExpanded(True)
@@ -328,14 +339,16 @@ class AppDialog(QtGui.QWidget):
 
         for item in self._plugin_manager.top_level_items:
             ui_item = self._build_item_tree_r(self.ui.items_tree, item)
-            self.ui.items_tree.addTopLevelItem(ui_item)
+            if ui_item:
+                self.ui.items_tree.addTopLevelItem(ui_item)
 
         # now build the reverse one
         self.ui.reversed_items_tree.clear()
 
         for item in self._plugin_manager.plugins:
             ui_item = self._build_plugin_tree_r(self.ui.reversed_items_tree, item)
-            self.ui.reversed_items_tree.addTopLevelItem(ui_item)
+            if ui_item:
+                self.ui.reversed_items_tree.addTopLevelItem(ui_item)
 
 
     def _do_reload(self):
