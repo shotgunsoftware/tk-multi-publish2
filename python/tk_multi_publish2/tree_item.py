@@ -23,14 +23,17 @@ class PublishTreeWidget(QtGui.QTreeWidgetItem):
     def __init__(self, parent):
         super(PublishTreeWidget, self).__init__(parent)
 
+    def begin_process(self):
+        self._item_widget.set_status(self._item_widget.PROCESSING)
+
     def validate(self):
-        pass
+        self._item_widget.set_status(self._item_widget.VALIDATION_COMPLETE)
 
     def publish(self):
-        pass
+        self._item_widget.set_status(self._item_widget.PUBLISH_COMPLETE)
 
     def finalize(self):
-        pass
+        self._item_widget.set_status(self._item_widget.FINALIZE_COMPLETE)
 
     @property
     def icon(self):
@@ -86,7 +89,6 @@ class PublishTreeWidgetTask(PublishTreeWidget):
         return self._item_widget.checkbox.isChecked()
 
     def validate(self):
-        self._item_widget.set_status(self._item_widget.PROCESSING)
         try:
             self._task.validate()
         except Exception, e:
@@ -95,7 +97,6 @@ class PublishTreeWidgetTask(PublishTreeWidget):
             self._item_widget.set_status(self._item_widget.VALIDATION_COMPLETE)
 
     def publish(self):
-        self._item_widget.set_status(self._item_widget.PROCESSING)
         try:
             self._task.publish()
         except Exception, e:
@@ -104,13 +105,12 @@ class PublishTreeWidgetTask(PublishTreeWidget):
             self._item_widget.set_status(self._item_widget.PUBLISH_COMPLETE)
 
     def finalize(self):
-        self._item_widget.set_status(self._item_widget.PROCESSING)
         try:
             self._task.finalize()
         except Exception, e:
-            self._item_widget.set_status(self._item_widget.PUBLISH_ERROR)
+            self._item_widget.set_status(self._item_widget.FINALIZE_ERROR)
         else:
-            self._item_widget.set_status(self._item_widget.PUBLISH_COMPLETE)
+            self._item_widget.set_status(self._item_widget.FINALIZE_COMPLETE)
 
 
 

@@ -344,7 +344,17 @@ class AppDialog(QtGui.QWidget):
 
         self.ui.right_tabs.setCurrentIndex(self.PROGRESS_TAB)
         parent = self.ui.items_tree.invisibleRootItem()
-        self._visit_tree_r(parent, "Validating", lambda child: child.validate())
+
+        self._log_wrapper.push("Running validation pass")
+
+        # set all nodes to "ready to go"
+        self._visit_tree_r(parent, lambda child: child.begin_process())
+
+        try:
+            self._visit_tree_r(parent, lambda child: child.validate(), "Validating")
+        finally:
+            self._log_wrapper.pop()
+            self._log_wrapper.logger.info("Validation Complete!")
 
     def do_publish(self):
 
@@ -359,36 +369,44 @@ class AppDialog(QtGui.QWidget):
 
         parent = self.ui.items_tree.invisibleRootItem()
 
+        # set all nodes to "ready to go"
+        self._visit_tree_r(parent, lambda child: child.begin_process())
+
         self._log_wrapper.push("Running validation pass")
+
         try:
-            self._visit_tree_r(parent, "Validating", lambda child: child.validate())
+            self._visit_tree_r(parent, lambda child: child.validate(), "Validating")
         finally:
             self._log_wrapper.pop()
 
         self._log_wrapper.push("Running publishing pass")
         try:
-            self._visit_tree_r(parent, "Publishing", lambda child: child.publish())
+            self._visit_tree_r(parent, lambda child: child.publish(), "Publishing")
         finally:
             self._log_wrapper.pop()
 
         self._log_wrapper.push("Running finalizing pass")
         try:
-            self._visit_tree_r(parent, "Finalizing", lambda child: child.finalize())
+            self._visit_tree_r(parent, lambda child: child.finalize(), "Finalizing")
         finally:
             self._log_wrapper.pop()
 
+        self._log_wrapper.logger.info("Publish Complete!")
 
-    def _visit_tree_r(self, parent, action_name, action):
+
+    def _visit_tree_r(self, parent, action, action_name=None):
 
         for child_index in xrange(parent.childCount()):
             child = parent.child(child_index)
             if child.enabled:
-                self._log_wrapper.push("%s %s" % (action_name, child), child.icon)
+                if action_name:
+                    self._log_wrapper.push("%s %s" % (action_name, child), child.icon)
                 try:
                     action(child) # eg. child.validate(), child.publish() etc.
-                    self._visit_tree_r(child, action_name, action)
+                    self._visit_tree_r(child, action, action_name)
                 finally:
-                    self._log_wrapper.pop()
+                    if action_name:
+                        self._log_wrapper.pop()
 
 
 

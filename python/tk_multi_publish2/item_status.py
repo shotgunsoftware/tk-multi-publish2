@@ -19,66 +19,47 @@ class ItemStatus(QtGui.QWidget):
     Publish Status Widget
     """
 
-    (_MODE_OFF, _MODE_SPIN, _MODE_DOT) = range(3)
+    (_MODE_OFF, _MODE_ON) = range(2)
 
     def __init__(self, parent=None):
         """
         Constructor
         """
-
         QtGui.QWidget.__init__(self, parent)
-
         self._bundle = sgtk.platform.current_bundle()
-
-        # setup spinner timer
-        self._timer = QtCore.QTimer(self)
-        self._timer.timeout.connect(self._on_animation)
-        self._spin_angle = 0
-
         self._mode = self._MODE_OFF
+        self._pen_color = None
+        self._brush_color = None
+
 
 
     ############################################################################################
     # public interface
 
-    def show_spin(self):
-        """
-        Turn on spinning
-        """
-        self._mode = self._MODE_SPIN
-        self._timer.start(40)
+    def show_dot(self, ring_color, fill_color):
 
-    def show_dot(self, color):
-
-        self._timer.stop()
-        self._mode = self._MODE_DOT
-        self._color = color
+        self._mode = self._MODE_ON
+        self._pen_color = ring_color
+        self._brush_color = fill_color
+        self.repaint()
 
     def show_nothing(self):
         """
         Hide the overlay.
         """
-        self._timer.stop()
         self._mode = self._MODE_OFF
+        self.repaint()
 
 
     ############################################################################################
     # internal methods
-
-    def _on_animation(self):
-        """
-        Spinner async callback to help animate the progress spinner.
-        """
-        self._spin_angle += 2
-        if self._spin_angle == 90:
-            self._spin_angle = 0
-        self.repaint()
 
     def paintEvent(self, event):
         """
         Render the UI.
         """
         if self._mode == self._MODE_OFF:
+            # fast exit
             return
 
         painter = QtGui.QPainter()
@@ -88,38 +69,25 @@ class ItemStatus(QtGui.QWidget):
             # set up semi transparent backdrop
             painter.setRenderHint(QtGui.QPainter.Antialiasing)
 
-            if self._mode == self._MODE_SPIN:
+            painter.translate((painter.device().width() / 2) - 7,
+                              (painter.device().height() / 2) - 7)
 
-                # show the spinner
-                painter.translate((painter.device().width() / 2) - 8,
-                                  (painter.device().height() / 2) - 8)
+            if self._pen_color:
 
-                pen = QtGui.QPen(QtGui.QColor(self._bundle.style_constants["SG_HIGHLIGHT_COLOR"]))
-                pen.setCapStyle(QtCore.Qt.RoundCap)
+                pen = QtGui.QPen(QtGui.QColor(self._pen_color))
                 pen.setWidth(2)
                 painter.setPen(pen)
 
-                r = QtCore.QRectF(0.0, 0.0, 16.0, 16.0)
-                start_angle = (0 + self._spin_angle) * 4 * 16
-                span_angle = 300 * 16
+            if self._brush_color:
 
-                painter.drawArc(r, start_angle, span_angle)
-
-            elif self._mode == self._MODE_DOT:
-
-
-                painter.translate((painter.device().width() / 2) - 7,
-                                  (painter.device().height() / 2) - 7)
-
-                brush = QtGui.QBrush(QtGui.QColor(self._color))
+                brush = QtGui.QBrush(QtGui.QColor(self._brush_color))
                 painter.setBrush(brush)
                 pen = QtGui.QPen(QtCore.Qt.NoPen)
                 painter.setPen(pen)
 
+            r = QtCore.QRectF(0.0, 0.0, 14.0, 14.0)
+            painter.drawEllipse(r)
 
-                r = QtCore.QRectF(0.0, 0.0, 14.0, 14.0)
-
-                painter.drawEllipse(r)
 
         finally:
             painter.end()
