@@ -36,6 +36,10 @@ class PublishTreeWidget(QtGui.QTreeWidgetItem):
         self._item_widget.set_status(self._item_widget.FINALIZE_COMPLETE)
 
     @property
+    def checkbox(self):
+        return self._item_widget.checkbox
+
+    @property
     def icon(self):
         # qicon for the node
         pass

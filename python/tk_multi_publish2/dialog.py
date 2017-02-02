@@ -67,10 +67,7 @@ class AppDialog(QtGui.QWidget):
         # note: value of second option does not seem to matter (as long as it's there)
         self.ui.splitter.setSizes([360, 100])
 
-
         # set up tree view to look slick
-        #self.ui.items_tree.setRootIsDecorated(False)
-        #self.ui.items_tree.setItemsExpandable(False)
         self.ui.items_tree.setIndentation(20)
 
         # drag and drop
@@ -110,11 +107,11 @@ class AppDialog(QtGui.QWidget):
         self._menu.addAction(self._separator_2)
 
         self._check_all_action = QtGui.QAction("Check All", self)
-        #self._check_all_action.triggered.connect(self._expand_tree)
+        self._check_all_action.triggered.connect(lambda : self._check_all(True))
         self._menu.addAction(self._check_all_action)
 
         self._uncheck_all_action = QtGui.QAction("Unckeck All", self)
-        #self._uncheck_all_action.triggered.connect(self._expand_tree)
+        self._uncheck_all_action.triggered.connect(lambda : self._check_all(False))
         self._menu.addAction(self._uncheck_all_action)
 
         # when the description is updated
@@ -126,8 +123,8 @@ class AppDialog(QtGui.QWidget):
         self.ui.reversed_items_tree.itemSelectionChanged.connect(self._update_details_from_selection)
 
         # thumbnails
-        self.ui.summary_thumbnail.screen_grabbed.connect(self._on_summary_thumbnail_captured)
-        self.ui.item_thumbnail.screen_grabbed.connect(self._on_item_thumbnail_captured)
+        self.ui.summary_thumbnail.screen_grabbed.connect(self._update_item_thumbnail)
+        self.ui.item_thumbnail.screen_grabbed.connect(self._update_item_thumbnail)
 
         # mode
         self._display_mode = self.ITEM_CENTRIC
@@ -143,7 +140,11 @@ class AppDialog(QtGui.QWidget):
 
 
     def _update_details_from_selection(self):
-
+        """
+        Makes sure that the right hand side
+        details section reflects the selected item
+        in the left hand side tree.
+        """
         if self._display_mode == self.ITEM_CENTRIC:
             items = self.ui.items_tree.selectedItems()
         else:
@@ -174,8 +175,7 @@ class AppDialog(QtGui.QWidget):
             self._create_plugin_details(tree_item.plugin)
 
         else:
-            raise TankError("Uknown selection")
-
+            raise TankError("Unknown selection")
 
     def _on_publish_comment_change(self):
         """
@@ -197,8 +197,11 @@ class AppDialog(QtGui.QWidget):
             raise TankError("No current item set!")
         self._current_item.set_thumbnail_pixmap(pixmap)
 
-    def _on_item_thumbnail_captured(self, pixmap):
-        logger.debug("item thumb captured")
+    def _update_item_thumbnail(self, pixmap):
+        """
+        Update the currently selected item with the given
+        thumbnail pixmap
+        """
         if not self._current_item:
             raise TankError("No current item set!")
         self._current_item.set_thumbnail_pixmap(pixmap)
@@ -227,8 +230,6 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_settings.set_static_data(
             [(p, item.properties[p]) for p in item.properties]
         )
-
-
 
     def _create_task_details(self, task):
 
@@ -277,28 +278,59 @@ class AppDialog(QtGui.QWidget):
             )
 
     def _collapse_tree(self):
-
-        for item_index in xrange(self.ui.items_tree.topLevelItemCount()):
-            item = self.ui.items_tree.topLevelItem(item_index)
-            self.ui.items_tree.collapseItem(item)
+        """
+        Contract all the nodes in the currently active left hand side tree
+        """
+        if self._display_mode == self.ITEM_CENTRIC:
+            for item_index in xrange(self.ui.items_tree.topLevelItemCount()):
+                item = self.ui.items_tree.topLevelItem(item_index)
+                self.ui.items_tree.collapseItem(item)
+        else:
+            for item_index in xrange(self.ui.reversed_items_tree.topLevelItemCount()):
+                item = self.ui.reversed_items_tree.topLevelItem(item_index)
+                self.ui.reversed_items_tree.collapseItem(item)
 
     def _expand_tree(self):
+        """
+        Expand all the nodes in the currently active left hand side tree
+        """
+        if self._display_mode == self.ITEM_CENTRIC:
+            for item_index in xrange(self.ui.items_tree.topLevelItemCount()):
+                item = self.ui.items_tree.topLevelItem(item_index)
+                self.ui.items_tree.expandItem(item)
+        else:
+            for item_index in xrange(self.ui.reversed_items_tree.topLevelItemCount()):
+                item = self.ui.reversed_items_tree.topLevelItem(item_index)
+                self.ui.reversed_items_tree.expandItem(item)
 
-        for item_index in xrange(self.ui.items_tree.topLevelItemCount()):
-            item = self.ui.items_tree.topLevelItem(item_index)
-            self.ui.items_tree.expandItem(item)
+    def _check_all(self, checked):
+        """
+        Check all boxes in the currently active tree
+        """
+        def _check_r(parent):
+            for child_index in xrange(parent.childCount()):
+                child = parent.child(child_index)
+                child.checkbox.setChecked(checked)
+                _check_r(child)
 
+        if self._display_mode == self.ITEM_CENTRIC:
+            parent = self.ui.items_tree.invisibleRootItem()
+        else:
+            parent = self.ui.reversed_items_tree.invisibleRootItem()
 
+        _check_r(parent)
 
     def _swap_view(self):
-
+        """
+        Swaps left hand side tree views between
+        item centric and plugin centric modes.
+        """
         if self._display_mode == self.ITEM_CENTRIC:
             self._display_mode = self.PLUGIN_CENTRIC
             self.ui.items_tree_stack.setCurrentIndex(self.PLUGIN_CENTRIC)
         else:
             self._display_mode = self.ITEM_CENTRIC
             self.ui.items_tree_stack.setCurrentIndex(self.ITEM_CENTRIC)
-
         self._update_details_from_selection()
 
 

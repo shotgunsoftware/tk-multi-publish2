@@ -52,7 +52,7 @@ DropAreaFrame[dragging="true"] {
 
 
 
-Item { padding-top: 2px; padding-bottom: 4px; }
+Item { padding-left: 4px; padding-top: 2px; padding-bottom: 4px; }
 
 QTreeView::branch { background: none; }
 
