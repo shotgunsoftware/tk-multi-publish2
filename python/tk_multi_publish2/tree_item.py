@@ -109,22 +109,18 @@ class PublishTreeWidgetTask(PublishTreeWidget):
             self._task.publish()
         except Exception, e:
             self._item_widget.set_status(self._item_widget.PUBLISH_ERROR)
-            status = False
+            raise
         else:
             self._item_widget.set_status(self._item_widget.PUBLISH_COMPLETE)
-            status = True
-        return status
 
     def finalize(self):
         try:
             self._task.finalize()
         except Exception, e:
             self._item_widget.set_status(self._item_widget.FINALIZE_ERROR)
-            status = False
+            raise
         else:
             self._item_widget.set_status(self._item_widget.FINALIZE_COMPLETE)
-            status = True
-        return status
 
 
 

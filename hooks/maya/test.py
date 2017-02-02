@@ -53,11 +53,13 @@ class TestHook(HookBaseClass):
 
     def validate(self, log, settings, item):
 
-        log.info("This is validate for item %s" % item)
-        log.info("Settings %s" % settings)
-        time.sleep(0.4)
-        # raise sgtk.TankError("validation failed!")
 
+
+        log.warning("hmm")
+        time.sleep(0.4)
+
+        # raise sgtk.TankError("validation failed!")
+        return True
 
     def publish(self, log, settings, item):
 

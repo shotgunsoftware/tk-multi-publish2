@@ -401,8 +401,9 @@ class AppDialog(QtGui.QWidget):
     def do_validate(self):
         """
         Perform a full validation
-        """
 
+        :returns: number of issues reported
+        """
         # make sure we swap the tree
         if self._display_mode != self.ITEM_CENTRIC:
             self._swap_view()
@@ -434,8 +435,12 @@ class AppDialog(QtGui.QWidget):
             else:
                 self._log_wrapper.logger.info("Validation Complete. All checks passed.")
 
-    def do_publish(self):
+        return num_issues
 
+    def do_publish(self):
+        """
+        Perform a full publish
+        """
         # make sure we swap the tree
         if self._display_mode != self.ITEM_CENTRIC:
             self._swap_view()
@@ -445,27 +450,27 @@ class AppDialog(QtGui.QWidget):
 
         self.ui.right_tabs.setCurrentIndex(self.PROGRESS_TAB)
 
+        issues = self.do_validate()
+        if issues > 0:
+            self._log_wrapper.logger.error("Validation errors detected. No proceeding with publish.")
+            return
+
         parent = self.ui.items_tree.invisibleRootItem()
-
-        # set all nodes to "ready to go"
-        self._visit_tree_r(parent, lambda child: child.begin_process())
-
-        self._log_wrapper.push("Running validation pass")
-
-        try:
-            self._visit_tree_r(parent, lambda child: child.validate(), "Validating")
-        finally:
-            self._log_wrapper.pop()
 
         self._log_wrapper.push("Running publishing pass")
         try:
             self._visit_tree_r(parent, lambda child: child.publish(), "Publishing")
+        except Exception, e:
+            self._log_error("Error while publishing. Aborting.")
+            return
         finally:
             self._log_wrapper.pop()
 
         self._log_wrapper.push("Running finalizing pass")
         try:
             self._visit_tree_r(parent, lambda child: child.finalize(), "Finalizing")
+        except Exception, e:
+            self._log_error("Error while finalizing. Aborting.")
         finally:
             self._log_wrapper.pop()
 
