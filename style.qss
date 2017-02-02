@@ -10,6 +10,38 @@ agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 not expressly granted therein are reserved by Shotgun Software Inc.
 */
 
+
+
+
+
+QTabWidget::pane {
+    border-top: 1px solid rgb(255, 255, 255, 20);
+    padding-top: 8px;
+}
+
+/* Style the tab using the tab sub-control.
+   Note that it reads QTabBar _not_ QTabWidget */
+QTabBar::tab {
+    font-size: 12px;
+    font-weight: 100;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-bottom: 8px;
+    padding-top: 0px;
+    border-bottom: 2px solid rgb(255, 255, 255, 5);
+}
+
+QTabBar::tab:hover {
+    color: {{SG_HIGHLIGHT_COLOR}};
+}
+
+QTabBar::tab:selected {
+    color: {{SG_HIGHLIGHT_COLOR}};
+    border-bottom: 2px solid {{SG_HIGHLIGHT_COLOR}};
+}
+
+
+
 /* ----------------------- GLOBAL STYLE SETTINGS ----------------------- */
 
 /* Get rid of borders for main Listing Views */
@@ -28,6 +60,15 @@ QWidget {
     font-size: 22px;
     font-weight: 100;
 }
+
+/* the two labels above the tree on the left hand side */
+#items_tree_label, #reversed_items_tree_label {
+    font-size: 14px;
+    font-weight: 100;
+    padding-bottom: 10px;
+}
+
+
 
 /* subheading under the item name in the details */
 #item_type {
