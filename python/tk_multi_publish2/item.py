@@ -29,8 +29,9 @@ class Item(QtGui.QFrame):
         PUBLISH_ERROR,
         PUBLISH_COMPLETE,
         FINALIZE_COMPLETE,
-        FINALIZE_ERROR
-    ) = range(8)
+        FINALIZE_ERROR,
+        EMPTY
+    ) = range(9)
 
     def __init__(self, parent=None):
         """
@@ -68,6 +69,9 @@ class Item(QtGui.QFrame):
 
         if status == self.NEUTRAL:
             self.ui.stack.setCurrentIndex(1)
+
+        elif status == self.EMPTY:
+            pass
 
         elif status == self.PROCESSING:
             # gray ring

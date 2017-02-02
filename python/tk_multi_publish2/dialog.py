@@ -259,7 +259,7 @@ class AppDialog(QtGui.QWidget):
 
     def _refresh(self):
 
-        self._do_reload()
+        self._reload_plugin_scan()
         self._build_tree()
         self._select_top_items()
 
@@ -336,8 +336,7 @@ class AppDialog(QtGui.QWidget):
 
     def _build_item_tree_r(self, parent, item):
         """
-
-
+        Build the tree of items
         """
         if len(item.tasks) == 0 and len(item.children) == 0:
             # orphan. Don't create it
@@ -355,6 +354,9 @@ class AppDialog(QtGui.QWidget):
         return ui_item
 
     def _build_plugin_tree_r(self, parent, plugin):
+        """
+        Build the tree of plugins
+        """
 
         if len(plugin.tasks) == 0:
             # orphan. Don't create it
@@ -370,10 +372,11 @@ class AppDialog(QtGui.QWidget):
 
 
     def _build_tree(self):
-
+        """
+        Rebuilds the lefthand side tree
+        """
         # first build the items tree
         self.ui.items_tree.clear()
-
         for item in self._plugin_manager.top_level_items:
             ui_item = self._build_item_tree_r(self.ui.items_tree, item)
             if ui_item:
@@ -381,25 +384,24 @@ class AppDialog(QtGui.QWidget):
 
         # now build the reverse one
         self.ui.reversed_items_tree.clear()
-
         for item in self._plugin_manager.plugins:
             ui_item = self._build_plugin_tree_r(self.ui.reversed_items_tree, item)
             if ui_item:
                 self.ui.reversed_items_tree.addTopLevelItem(ui_item)
 
 
-    def _do_reload(self):
+    def _reload_plugin_scan(self):
         """
 
-        @return:
         """
         # run the hooks
         self._plugin_manager = PluginManager(self._log_wrapper.logger)
 
 
-
-
     def do_validate(self):
+        """
+        Perform a full validation
+        """
 
         # make sure we swap the tree
         if self._display_mode != self.ITEM_CENTRIC:
@@ -408,19 +410,29 @@ class AppDialog(QtGui.QWidget):
         # and expand it
         self._expand_tree()
 
+        # flip right hand side to show the logs
         self.ui.right_tabs.setCurrentIndex(self.PROGRESS_TAB)
+
         parent = self.ui.items_tree.invisibleRootItem()
 
-        self._log_wrapper.push("Running validation pass")
+        self._log_wrapper.push("Running Validation pass")
 
         # set all nodes to "ready to go"
-        self._visit_tree_r(parent, lambda child: child.begin_process())
+        def _begin_process_r(parent):
+            for child_index in xrange(parent.childCount()):
+                child = parent.child(child_index)
+                child.begin_process()
+                _begin_process_r(child)
+        _begin_process_r(parent)
 
         try:
-            self._visit_tree_r(parent, lambda child: child.validate(), "Validating")
+            num_issues = self._visit_tree_r(parent, lambda child: child.validate(), "Validating")
         finally:
             self._log_wrapper.pop()
-            self._log_wrapper.logger.info("Validation Complete!")
+            if num_issues > 0:
+                self._log_wrapper.logger.warning("Validation Complete. %d issues reported." % num_issues)
+            else:
+                self._log_wrapper.logger.info("Validation Complete. All checks passed.")
 
     def do_publish(self):
 
@@ -462,20 +474,22 @@ class AppDialog(QtGui.QWidget):
 
     def _visit_tree_r(self, parent, action, action_name=None):
 
+        num_problems = 0
+
         for child_index in xrange(parent.childCount()):
             child = parent.child(child_index)
             if child.enabled:
                 if action_name:
                     self._log_wrapper.push("%s %s" % (action_name, child), child.icon)
                 try:
-                    action(child) # eg. child.validate(), child.publish() etc.
-                    self._visit_tree_r(child, action, action_name)
+                    status = action(child) # eg. child.validate(), child.publish() etc.
+                    if not status:
+                        num_problems += 1
+                    num_problems += self._visit_tree_r(child, action, action_name)
                 finally:
                     if action_name:
                         self._log_wrapper.pop()
-
-
-
+        return num_problems
 
     def _on_drop(self, files):
         """
@@ -483,11 +497,6 @@ class AppDialog(QtGui.QWidget):
         """
         self._plugin_manager.add_external_files(files)
         self._build_tree()
-
-
-
-
-
 
     def is_first_launch(self):
         """
@@ -512,11 +521,4 @@ class AppDialog(QtGui.QWidget):
             QtGui.QPixmap(":/tk_multi_publish2/help_4.png")
         ]
         help_screen.show_help_screen(self.window(), app, help_pix)
-
-
-
-
-
-
-
 
