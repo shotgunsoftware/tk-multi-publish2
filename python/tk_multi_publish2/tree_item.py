@@ -23,23 +23,37 @@ class PublishTreeWidget(QtGui.QTreeWidgetItem):
     def __init__(self, parent):
         super(PublishTreeWidget, self).__init__(parent)
 
+    def begin_process(self):
+        if self.enabled:
+            # enabled nodes get a dotted ring
+            self._item_widget.set_status(self._item_widget.PROCESSING)
+        else:
+            # unchecked items just get empty
+            self._item_widget.set_status(self._item_widget.EMPTY)
+
     def validate(self):
-        pass
+        self._item_widget.set_status(self._item_widget.VALIDATION_COMPLETE)
+        return True
 
     def publish(self):
-        pass
+        self._item_widget.set_status(self._item_widget.PUBLISH_COMPLETE)
+        return True
 
     def finalize(self):
-        pass
+        self._item_widget.set_status(self._item_widget.FINALIZE_COMPLETE)
+        return True
+
+    @property
+    def checkbox(self):
+        return self._item_widget.checkbox
 
     @property
     def icon(self):
-        # qicon for the node
-        pass
+        raise NotImplementedError
 
     @property
     def enabled(self):
-        return True
+        return self._item_widget.checkbox.isChecked()
 
 
 class PublishTreeWidgetTask(PublishTreeWidget):
@@ -78,36 +92,35 @@ class PublishTreeWidgetTask(PublishTreeWidget):
         # qicon for the node
         return QtGui.QIcon(self._task.plugin.icon_pixmap)
 
-    @property
-    def enabled(self):
-        return self._item_widget.checkbox.isChecked()
-
     def validate(self):
-        self._item_widget.set_status(self._item_widget.PROCESSING)
         try:
-            self._task.validate()
+            status = self._task.validate()
         except Exception, e:
             self._item_widget.set_status(self._item_widget.VALIDATION_ERROR)
         else:
-            self._item_widget.set_status(self._item_widget.VALIDATION_COMPLETE)
+            if status:
+                self._item_widget.set_status(self._item_widget.VALIDATION_COMPLETE)
+            else:
+                self._item_widget.set_status(self._item_widget.VALIDATION_ERROR)
+        return status
 
     def publish(self):
-        self._item_widget.set_status(self._item_widget.PROCESSING)
         try:
             self._task.publish()
         except Exception, e:
             self._item_widget.set_status(self._item_widget.PUBLISH_ERROR)
+            raise
         else:
             self._item_widget.set_status(self._item_widget.PUBLISH_COMPLETE)
 
     def finalize(self):
-        self._item_widget.set_status(self._item_widget.PROCESSING)
         try:
             self._task.finalize()
         except Exception, e:
-            self._item_widget.set_status(self._item_widget.PUBLISH_ERROR)
+            self._item_widget.set_status(self._item_widget.FINALIZE_ERROR)
+            raise
         else:
-            self._item_widget.set_status(self._item_widget.PUBLISH_COMPLETE)
+            self._item_widget.set_status(self._item_widget.FINALIZE_COMPLETE)
 
 
 
@@ -131,8 +144,6 @@ class PublishTreeWidgetPlugin(PublishTreeWidget):
 
         tree_widget = self.treeWidget()
         tree_widget.setItemWidget(self, 0, self._item_widget)
-
-        self._item_widget.set_status(self._item_widget.NO_CHECKBOX)
 
     def __str__(self):
         return self._plugin.name
@@ -163,8 +174,6 @@ class PublishTreeWidgetItem(PublishTreeWidget):
         self._item_widget = Item(tree_widget)
         self._item_widget.set_header("<b>%s</b><br>%s" % (self._item.name, self._item.display_type))
         self._item_widget.set_icon(self._item.icon_pixmap)
-
-        self._item_widget.set_status(self._item_widget.NO_CHECKBOX)
 
         tree_widget.setItemWidget(self, 0, self._item_widget)
 

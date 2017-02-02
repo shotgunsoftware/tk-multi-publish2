@@ -111,6 +111,7 @@ class SettingsWidget(QtGui.QWidget):
 
                 field_label = FieldNameLabel(self)
                 field_label.setText(setting.name)
+                field_label.setToolTip(setting.description)
                 field_label.setWordWrap(True)
                 field_label.setAlignment(QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
                 

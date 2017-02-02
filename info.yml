@@ -34,6 +34,27 @@ configuration:
 
         default_value:
 
+            - name: Send image to Shotgun review
+              hook: "{self}/image_review.py"
+              settings:
+                File Extensions: "jpeg, jpg, png"
+
+            - name: Link movie to Shotgun review
+              hook: "{self}/image_review.py"
+              settings:
+                File Extensions: "mov, mp4"
+                Create Local Link: True
+                Upload: False
+
+            - name: Publish Image to Shotgun
+              hook: "{self}/file_publisher.py"
+              settings:
+                publish_type: Image File
+                file_extensions: png, jpg, jpeg
+
+
+            # test stuff
+
             - name: Publish Maya Scene
               hook: "{self}/maya/scene.py"
               settings: {}
@@ -47,15 +68,6 @@ configuration:
               hook: "{self}/maya/test.py"
               settings: {}
 
-            - name: Send image to Shotgun review
-              hook: "{self}/maya/image_review.py"
-              settings: {}
-
-            - name: Publish Image to Shotgun
-              hook: "{self}/maya/file_publisher.py"
-              settings:
-                publish_type: Image File
-                file_extensions: png, jpg, jpeg
 
             
 # the Shotgun fields that this app needs in order to operate correctly

@@ -21,7 +21,17 @@ class Item(QtGui.QFrame):
     Represents a right hand side details pane in the UI
     """
 
-    (NO_CHECKBOX, NEUTRAL, PROCESSING, VALIDATION_COMPLETE, VALIDATION_ERROR, PUBLISH_ERROR, PUBLISH_COMPLETE) = range(7)
+    (
+        NEUTRAL,
+        PROCESSING,
+        VALIDATION_COMPLETE,
+        VALIDATION_ERROR,
+        PUBLISH_ERROR,
+        PUBLISH_COMPLETE,
+        FINALIZE_COMPLETE,
+        FINALIZE_ERROR,
+        EMPTY
+    ) = range(9)
 
     def __init__(self, parent=None):
         """
@@ -30,9 +40,6 @@ class Item(QtGui.QFrame):
         :param parent:          The parent QWidget for this control
         """
         QtGui.QFrame.__init__(self, parent)
-
-        #self.setFrameShape(QtGui.QFrame.StyledPanel)
-        #self.setFrameShadow(QtGui.QFrame.Raised)
 
         # set up the UI
         self.ui = Ui_Item()
@@ -62,26 +69,37 @@ class Item(QtGui.QFrame):
 
         if status == self.NEUTRAL:
             self.ui.stack.setCurrentIndex(1)
-            self.ui.checkbox.show()
 
-        elif status == self.NO_CHECKBOX:
-            self.ui.stack.setCurrentIndex(1)
-            self.ui.checkbox.hide()
+        elif status == self.EMPTY:
+            pass
 
         elif status == self.PROCESSING:
-            self.ui.status.show_spin()
-
-        elif status == self.PUBLISH_COMPLETE:
-            self.ui.status.show_dot("#18A7E3")
-
-        elif status == self.PUBLISH_ERROR:
-            self.ui.status.show_dot("red")
+            # gray ring
+            self.ui.status.show_dot(ring_color="#808080", fill_color=None, dotted=True)
 
         elif status == self.VALIDATION_COMPLETE:
-            self.ui.status.show_dot("green")
+            # blue ring
+            self.ui.status.show_dot(ring_color="#18A7E3", fill_color=None)
 
         elif status == self.VALIDATION_ERROR:
-            self.ui.status.show_dot("orange")
+            # orange ring
+            self.ui.status.show_dot(ring_color="#FF8000", fill_color=None)
+
+        elif status == self.PUBLISH_COMPLETE:
+            # blue fill gray ring
+            self.ui.status.show_dot(ring_color="#FFF", fill_color="#18A7E3")
+
+        elif status == self.PUBLISH_ERROR:
+            # big fat red
+            self.ui.status.show_dot(ring_color="#FF0000", fill_color="#FF0000")
+
+        elif status == self.FINALIZE_COMPLETE:
+            # blue dot
+            self.ui.status.show_dot(ring_color="#18A7E3", fill_color="#18A7E3")
+
+        elif status == self.FINALIZE_ERROR:
+            # red ring blue middle
+            self.ui.status.show_dot(ring_color="#FF0000", fill_color="#18A7E3")
 
         else:
             raise sgtk.TankError("Invalid item status!")

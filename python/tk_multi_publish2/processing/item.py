@@ -9,6 +9,8 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import sgtk
+import os
+import tempfile
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -30,6 +32,7 @@ class Item(object):
         self._properties = {}
         self._parent = None
         self._icon_path = None
+        self._description = None
 
     def __repr__(self):
         if self._parent:
@@ -62,6 +65,10 @@ class Item(object):
     def set_icon(self, path):
         self._icon_path = path
 
+    def set_description(self, description):
+        # update the description for this item
+        self._description = description
+
     @property
     def icon_pixmap(self):
         if self._icon_path:
@@ -77,6 +84,8 @@ class Item(object):
         else:
             return None
 
+
+
     @property
     def thumbnail_pixmap(self):
         """
@@ -86,6 +95,33 @@ class Item(object):
             return self._thumb_pixmap
         elif self.parent:
             return self.parent.thumbnail_pixmap
+        else:
+            return None
+
+    def get_thumbnail(self):
+        """
+        Writes the thumbnail to disk as a temp file and
+        @return:
+        """
+        if self.thumbnail_pixmap is None:
+            return None
+
+        temp_path = tempfile.NamedTemporaryFile(
+            suffix=".jpg",
+            prefix="sgtk_thumb",
+            delete=False
+        ).name
+        self.thumbnail_pixmap.save(temp_path)
+
+        return temp_path
+
+
+    @property
+    def description(self):
+        if self._description:
+            return self._description
+        elif self.parent:
+            return self.parent.description
         else:
             return None
 

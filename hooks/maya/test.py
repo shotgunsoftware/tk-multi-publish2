@@ -49,15 +49,17 @@ class TestHook(HookBaseClass):
     def accept(self, log, settings, item):
 
         log.debug("%s: Running accept for %s with settings %s" % (self, item, settings))
-        return {"accepted": True, "required": False, "enabled": False}
+        return {"accepted": True, "required": False, "enabled": True}
 
     def validate(self, log, settings, item):
 
-        log.info("This is validate for item %s" % item)
-        log.info("Settings %s" % settings)
-        time.sleep(0.4)
-        # raise sgtk.TankError("validation failed!")
 
+
+        log.warning("hmm")
+        time.sleep(0.4)
+
+        # raise sgtk.TankError("validation failed!")
+        return True
 
     def publish(self, log, settings, item):
 

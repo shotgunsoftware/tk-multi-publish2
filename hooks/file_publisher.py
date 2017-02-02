@@ -31,13 +31,9 @@ class SceneHook(HookBaseClass):
     def description_html(self):
         return """Publishes files to shotgun"""
 
-
     @property
     def settings(self):
-        return {
-            "File Type": {"type": "int", "default": 5, "description": "foo bar baz"},
-        }
-
+        return {}
 
     @property
     def subscriptions(self):
@@ -45,27 +41,31 @@ class SceneHook(HookBaseClass):
 
     def accept(self, log, settings, item):
 
-        log.debug("%s: Running accept for %s with settings %s" % (self, item, settings))
-        return {"accepted": True, "required": False, "enabled": False}
+        return {"accepted": True, "required": False, "enabled": True}
 
     def validate(self, log, settings, item):
-
-        log.info("This is validate for item %s" % item)
-        log.warning("warning!")
-        log.error("error!")
-        time.sleep(0.4)
-        # raise sgtk.TankError("validation failed!")
+        pass
 
 
     def publish(self, log, settings, item):
 
-        log.info("This is publish for item %s" % item)
-        time.sleep(0.4)
+        # Create the TankPublishedFile entity in Shotgun
+        args = {
+            "tk": self.parent.sgtk,
+            "context": self.parent.context,
+            "comment": item.description,
+            "path": "file://%s" % item.properties["path"],
+            "name": item.properties["filename"],
+            "version_number": 0,
+            "thumbnail_path": item.get_thumbnail(),
+            "tank_type": item.properties["extension"],
+        }
+
+        sgtk.util.register_publish(**args)
+
 
     def finalize(self, log, settings, item):
-
-        log.info("This is finalize for item %s" % item)
-        time.sleep(0.4)
+        pass
 
 
 

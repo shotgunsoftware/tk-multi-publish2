@@ -29,13 +29,27 @@ class SceneHook(HookBaseClass):
 
     @property
     def description_html(self):
-        return """Uploads image files to Shotgun for Review."""
-
+        return """Uploads files to Shotgun for Review."""
 
     @property
     def settings(self):
         return {
-            "File Extensions": {"type": "str", "default": "jpeg, jpg, png", "description": "File Extensions of files to include"},
+            "File Extensions": {
+                "type": "str",
+                "default": "jpeg, jpg, png, mov, mp4",
+                "description": "File Extensions of files to include"
+            },
+            "Create Local Link": {
+                "type": "bool",
+                "default": False,
+                "description": "Should the local file be referenced by Shotgun"
+            },
+            "Upload": {
+                "type": "bool",
+                "default": True,
+                "description": "Upload content to Shotgun?"
+            },
+
         }
 
     @property
@@ -53,7 +67,7 @@ class SceneHook(HookBaseClass):
             else:
                 valid_extensions.append(".%s" % ext)
 
-        log.debug("valid extes: %s" % valid_extensions)
+        log.debug("valid extensions: %s" % valid_extensions)
 
         if item.properties["extension"] in valid_extensions:
             return {"accepted": True, "required": False, "enabled": True}
@@ -67,17 +81,29 @@ class SceneHook(HookBaseClass):
 
     def publish(self, log, settings, item):
 
-        log.info("Uploading version to Shotgun...")
-        sg = self.parent.shotgun.create(
-            "Version",
-            {"project": self.parent.context.project}
-        )
-        log.info("sg: %s" % sg)
+        data = {
+            "project": self.parent.context.project,
+            "code": item.properties["filename"],
+            "description": item.description,
+        }
 
+        if settings["Create Local Link"].value:
+            data["sg_path_to_movie"] = item.properties["path"]
 
+        log.info("Creating version for review")
+        version = self.parent.shotgun.create("Version", data)
 
-        log.info("This is publish for item %s" % item)
-        time.sleep(0.4)
+        # and thumbnail
+        thumb = item.get_thumbnail()
+        if thumb:
+            log.info("Uploading thumbnail")
+            self.parent.shotgun.upload_thumbnail("Version", version["id"], item.get_thumbnail())
+
+        # and payload
+        if settings["Upload"].value:
+            log.info("Uploading content")
+            self.parent.shotgun.upload("Version", version["id"], item.properties["path"], "sg_uploaded_movie")
+
 
     def finalize(self, log, settings, item):
         pass
