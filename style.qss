@@ -63,11 +63,18 @@ QTreeView::branch { background: none; }
 
 
 #log_tree {
-
     font-size: 12px;
-
-
+    font-weight: 100;
 }
+
+#log_tree::item {
+    margin: 4px;
+}
+
+#items_tree, #reversed_items_tree {
+    background-color: #444;
+}
+
 
 
 #item_settings_label, #task_settings_label, #plugin_settings_label {
