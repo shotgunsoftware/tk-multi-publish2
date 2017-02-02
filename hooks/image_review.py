@@ -76,7 +76,7 @@ class SceneHook(HookBaseClass):
             return {"accepted": False}
 
     def validate(self, log, settings, item):
-        pass
+        return True
 
 
     def publish(self, log, settings, item):

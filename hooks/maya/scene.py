@@ -57,6 +57,7 @@ class SceneHook(HookBaseClass):
         log.info("Settings %s" % settings)
         time.sleep(0.4)
         # raise sgtk.TankError("validation failed!")
+        return True
 
 
     def publish(self, log, settings, item):

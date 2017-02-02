@@ -461,7 +461,8 @@ class AppDialog(QtGui.QWidget):
         try:
             self._visit_tree_r(parent, lambda child: child.publish(), "Publishing")
         except Exception, e:
-            self._log_error("Error while publishing. Aborting.")
+            # todo - design a retry setup?
+            self._log_wrapper.logger.error("Error while publishing. Aborting.")
             return
         finally:
             self._log_wrapper.pop()
@@ -470,7 +471,8 @@ class AppDialog(QtGui.QWidget):
         try:
             self._visit_tree_r(parent, lambda child: child.finalize(), "Finalizing")
         except Exception, e:
-            self._log_error("Error while finalizing. Aborting.")
+            self._log_wrapper.logger.error("Error while finalizing. Aborting.")
+            return
         finally:
             self._log_wrapper.pop()
 
