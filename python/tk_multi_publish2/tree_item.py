@@ -31,6 +31,14 @@ class PublishTreeWidget(QtGui.QTreeWidgetItem):
             # unchecked items just get empty
             self._item_widget.set_status(self._item_widget.EMPTY)
 
+    def _set_status_upwards(self, status):
+        """
+        Traverse all parents and set them to be a certain status
+        """
+        self._item_widget.set_status(status)
+        if self.parent():
+            self.parent()._set_status_upwards(status)
+
     def validate(self):
         self._item_widget.set_status(self._item_widget.VALIDATION_COMPLETE)
         return True
@@ -77,7 +85,6 @@ class PublishTreeWidgetTask(PublishTreeWidget):
         else:
             self._item_widget.checkbox.setEnabled(True)
 
-
         tree_widget.setItemWidget(self, 0, self._item_widget)
 
     def __str__(self):
@@ -96,31 +103,34 @@ class PublishTreeWidgetTask(PublishTreeWidget):
         try:
             status = self._task.validate()
         except Exception, e:
-            self._item_widget.set_status(self._item_widget.VALIDATION_ERROR)
+            self._set_status_upwards(self._item_widget.VALIDATION_ERROR)
+            status = False
         else:
             if status:
                 self._item_widget.set_status(self._item_widget.VALIDATION_COMPLETE)
             else:
-                self._item_widget.set_status(self._item_widget.VALIDATION_ERROR)
+                self._set_status_upwards(self._item_widget.VALIDATION_ERROR)
         return status
 
     def publish(self):
         try:
             self._task.publish()
         except Exception, e:
-            self._item_widget.set_status(self._item_widget.PUBLISH_ERROR)
+            self._set_status_upwards(self._item_widget.PUBLISH_ERROR)
             raise
         else:
             self._item_widget.set_status(self._item_widget.PUBLISH_COMPLETE)
+        return True
 
     def finalize(self):
         try:
             self._task.finalize()
         except Exception, e:
-            self._item_widget.set_status(self._item_widget.FINALIZE_ERROR)
+            self._set_status_upwards(self._item_widget.FINALIZE_ERROR)
             raise
         else:
             self._item_widget.set_status(self._item_widget.FINALIZE_COMPLETE)
+        return True
 
 
 

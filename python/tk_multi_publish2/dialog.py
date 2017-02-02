@@ -480,8 +480,10 @@ class AppDialog(QtGui.QWidget):
 
 
     def _visit_tree_r(self, parent, action, action_name=None):
-
-        num_problems = 0
+        """
+        Recursive visitor helper function that descends the tree
+        """
+        number_true_return_values = 0
 
         for child_index in xrange(parent.childCount()):
             child = parent.child(child_index)
@@ -489,14 +491,21 @@ class AppDialog(QtGui.QWidget):
                 if action_name:
                     self._log_wrapper.push("%s %s" % (action_name, child), child.icon)
                 try:
+                    # process this node
                     status = action(child) # eg. child.validate(), child.publish() etc.
                     if not status:
-                        num_problems += 1
-                    num_problems += self._visit_tree_r(child, action, action_name)
+                        number_true_return_values += 1
+
+                    # now process all children
+                    number_true_return_values += self._visit_tree_r(
+                        child,
+                        action,
+                        action_name
+                    )
                 finally:
                     if action_name:
                         self._log_wrapper.pop()
-        return num_problems
+        return number_true_return_values
 
     def _on_drop(self, files):
         """
