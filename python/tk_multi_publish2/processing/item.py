@@ -29,10 +29,12 @@ class Item(object):
         self._thumb_pixmap = None
         self._children = []
         self._tasks = []
+        self._context = None
         self._properties = {}
         self._parent = None
         self._icon_path = None
         self._description = None
+        self._bundle = sgtk.platform.current_bundle()
 
     def __repr__(self):
         if self._parent:
@@ -69,6 +71,12 @@ class Item(object):
         # update the description for this item
         self._description = description
 
+    def set_context(self, context):
+        """
+        Sets the context for the object item.
+        """
+        self._context = context
+
     @property
     def icon_pixmap(self):
         if self._icon_path:
@@ -84,7 +92,17 @@ class Item(object):
         else:
             return None
 
-
+    @property
+    def context(self):
+        """
+        Context inherited from parent or app
+        """
+        if self._context:
+            return self._context
+        elif self.parent:
+            return self.parent.context
+        else:
+            return self._bundle.context
 
     @property
     def thumbnail_pixmap(self):
@@ -114,7 +132,6 @@ class Item(object):
         self.thumbnail_pixmap.save(temp_path)
 
         return temp_path
-
 
     @property
     def description(self):

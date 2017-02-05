@@ -26,6 +26,7 @@ from .processing import ValidationFailure, PublishFailure
 # import frameworks
 settings = sgtk.platform.import_framework("tk-framework-shotgunutils", "settings")
 help_screen = sgtk.platform.import_framework("tk-framework-qtwidgets", "help_screen")
+task_manager = sgtk.platform.import_framework("tk-framework-shotgunutils", "task_manager")
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -40,6 +41,8 @@ class AppDialog(QtGui.QWidget):
 
     (DETAILS_TAB, PROGRESS_TAB) = range(2)
 
+    (DISPLAY_CONTEXT, EDIT_CONTEXT) = range(2)
+
 
     def __init__(self, parent=None):
         """
@@ -52,6 +55,10 @@ class AppDialog(QtGui.QWidget):
         # create a settings manager where we can pull and push prefs later
         # prefs in this manager are shared
         self._settings_manager = settings.UserSettings(sgtk.platform.current_bundle())
+        # create a background task manager
+        self._task_manager = task_manager.BackgroundTaskManager(self,
+                                                                start_processing=True,
+                                                                max_threads=2)
 
         self._bundle = sgtk.platform.current_bundle()
 
@@ -117,6 +124,18 @@ class AppDialog(QtGui.QWidget):
         # when the description is updated
         self.ui.summary_comments.textChanged.connect(self._on_publish_comment_change)
 
+        # context edit
+        self.ui.summary_context_edit.clicked.connect(self._enable_context_edit_mode)
+        self.ui.summary_context_select.set_bg_task_manager(self._task_manager)
+        self.ui.summary_context_select.set_searchable_entity_types(
+            {
+                "Asset": [],
+                "Shot": [],
+                "Task": [],
+                "Project": [],
+            }
+        )
+        self.ui.summary_context_select.entity_selected.connect(self._update_context)
 
         # selection in tree view
         self.ui.items_tree.itemSelectionChanged.connect(self._update_details_from_selection)
@@ -138,6 +157,20 @@ class AppDialog(QtGui.QWidget):
         # start it up
         self._refresh()
 
+    def closeEvent(self, event):
+        """
+        Executed when the main dialog is closed.
+        All worker threads and other things which need a proper shutdown
+        need to be called here.
+        """
+        logger.debug("CloseEvent Received. Begin shutting down UI.")
+
+        try:
+            self.ui.summary_context_select.destroy()
+            # shut down main threadpool
+            self._task_manager.shut_down()
+        except Exception, e:
+            logger.exception("Error running Shotgun Panel App closeEvent()")
 
     def _update_details_from_selection(self):
         """
@@ -177,6 +210,17 @@ class AppDialog(QtGui.QWidget):
         else:
             raise TankError("Unknown selection")
 
+    def _enable_context_edit_mode(self):
+        logger.debug("editing context")
+        self.ui.context_stack.setCurrentIndex(self.EDIT_CONTEXT)
+        self.ui.summary_context_select.setText("")
+
+    def _update_context(self, entity_type, entity_id):
+        self.ui.context_stack.setCurrentIndex(self.DISPLAY_CONTEXT)
+        ctx = self._bundle.sgtk.context_from_entity(entity_type, entity_id)
+        self._current_item.set_context(ctx)
+        self.ui.summary_context.setText(str(ctx))
+
     def _on_publish_comment_change(self):
         """
         Callback when someone types in the
@@ -214,7 +258,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.summary_comments.setPlainText(item.description)
         self.ui.summary_thumbnail.set_thumbnail(item.thumbnail_pixmap)
         self.ui.summary_header.setText("Publish summary for %s" % item.name)
-        self.ui.summary_context.setText(str(self._bundle.context))
+        self.ui.summary_context.setText(str(item.context))
 
 
     def _create_item_details(self, item):
