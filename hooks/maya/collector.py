@@ -24,13 +24,16 @@ class MayaSceneCollector(HookBaseClass):
             file_name = os.path.basename(path)
             (file_name_no_ext, file_extension) = os.path.splitext(file_name)
             file_item = parent_item.create_item("file.maya", "Maya File", file_name)
+            file_item.set_icon(os.path.join(self.disk_location, "icons", "maya.png"))
+
             file_item.properties["extension"] = file_extension
             file_item.properties["path"] = path
-
-            file_item.set_icon(os.path.join(self.disk_location, "icons", "maya.png"))
+            file_item.properties["filename"] = file_name
 
             # experimental
             file_item.properties["workspace_root"] = path
+
+            self.create_playblasts(file_item)
 
             return file_item
 
@@ -59,7 +62,7 @@ class MayaSceneCollector(HookBaseClass):
             current_scene = parent_item.create_item("maya.scene", "Current Maya Scene", "Untitled Scene")
 
         current_scene.properties["path"] = scene_file
-        current_scene.properties["workspace_root"] = cmds.workspace( q=True, rootDirectory=True )
+        current_scene.properties["workspace_root"] = cmds.workspace(q=True, rootDirectory=True)
 
         current_scene.set_icon(os.path.join(self.disk_location, "icons", "maya.png"))
 

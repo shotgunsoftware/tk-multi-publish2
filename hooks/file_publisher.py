@@ -10,6 +10,7 @@
 import sgtk
 import os
 import time
+import urllib
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -50,9 +51,10 @@ class SceneHook(HookBaseClass):
     def publish(self, log, settings, item):
 
         # Create the TankPublishedFile entity in Shotgun
+        # note - explicitly calling
         args = {
             "tk": self.parent.sgtk,
-            "context": self.parent.context,
+            "context": item.context,
             "comment": item.description,
             "path": "file://%s" % item.properties["path"],
             "name": item.properties["filename"],
@@ -62,6 +64,8 @@ class SceneHook(HookBaseClass):
         }
 
         sgtk.util.register_publish(**args)
+
+
 
 
     def finalize(self, log, settings, item):

@@ -49,7 +49,6 @@ class SceneHook(HookBaseClass):
                 "default": True,
                 "description": "Upload content to Shotgun?"
             },
-
         }
 
     @property
