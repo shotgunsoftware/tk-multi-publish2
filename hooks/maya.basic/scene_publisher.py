@@ -50,6 +50,18 @@ class SceneHook(HookBaseClass):
 
     def accept(self, log, settings, item):
 
+        project_root = item.properties["project_root"]
+        context_file = os.path.join(project_root, "shotgun.context")
+        log.debug("Looking for context file in %s" % context_file)
+        if os.path.exists(context_file):
+            try:
+                with open(context_file, "rb") as fh:
+                    context_str = fh.read()
+                context_obj = sgtk.Context.deserialize(context_str)
+                item.set_context(context_obj)
+            except Exception, e:
+                log.warning("Could not read saved context %s: %s" % (context_file, e))
+
         return {"accepted": True, "required": False, "enabled": True}
 
     def validate(self, log, settings, item):
@@ -166,7 +178,11 @@ class SceneHook(HookBaseClass):
 
 
     def finalize(self, log, settings, item):
-        pass
+
+        project_root = item.properties["project_root"]
+        context_file = os.path.join(project_root, "shotgun.context")
+        with open(context_file, "wb") as fh:
+            fh.write(item.context.serialize(with_user_credentials=False))
 
 
 
