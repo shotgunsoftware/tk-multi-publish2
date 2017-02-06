@@ -160,7 +160,7 @@ class Plugin(object):
 
     def run_publish(self, settings, item):
         try:
-            return self._plugin.publish(self._logger, settings, item)
+            self._plugin.publish(self._logger, settings, item)
         except Exception, e:
             self._logger.exception("Error Publishing: %s" % e)
             raise
@@ -171,7 +171,7 @@ class Plugin(object):
 
     def run_finalize(self, settings, item):
         try:
-            return self._plugin.finalize(self._logger, settings, item)
+            self._plugin.finalize(self._logger, settings, item)
         except Exception, e:
             self._logger.exception("Error finalizing: %s" % e)
             raise

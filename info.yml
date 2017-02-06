@@ -16,7 +16,7 @@ configuration:
     collector:
         type: hook
         description: "Logic for enumerating things"
-        default_value: "{self}/collector.py:{self}/maya/collector.py"
+        default_value: "{self}/collector.py:{self}/maya.basic/collector.py"
 
 
     publish_plugins:
@@ -54,6 +54,9 @@ configuration:
               hook: "{self}/version_creator.py"
               settings: {}
 
+            - name: Publish current Maya Scene
+              hook: "{self}/maya.basic/scene_publisher.py"
+              settings: {}
 
             
 # the Shotgun fields that this app needs in order to operate correctly

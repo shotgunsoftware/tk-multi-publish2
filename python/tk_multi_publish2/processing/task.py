@@ -68,8 +68,8 @@ class Task(object):
 
     def publish(self):
 
-        return self.plugin.run_publish(self.settings, self.item)
+        self.plugin.run_publish(self.settings, self.item)
 
     def finalize(self):
 
-        return self.plugin.run_finalize(self.settings, self.item)
+        self.plugin.run_finalize(self.settings, self.item)
