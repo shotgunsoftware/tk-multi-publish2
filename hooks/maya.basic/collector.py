@@ -113,7 +113,7 @@ class MayaSceneCollector(HookBaseClass):
                     if path.endswith(".mov"):
                         item = parent_item.create_item("maya.playblast", "Playblast in Maya Project", filename)
                         item.properties["path"] = path
-                        item.set_icon(os.path.join(self.disk_location, "icons", "camera.png"))
+                        item.set_icon(os.path.join(self.disk_location, "icons", "popcorn.png"))
                         items.append(item)
 
         return items
