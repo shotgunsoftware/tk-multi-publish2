@@ -87,6 +87,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.swap.clicked.connect(self._swap_view)
         self.ui.validate.clicked.connect(self.do_validate)
         self.ui.publish.clicked.connect(self.do_publish)
+        self._close_ui_on_publish_click = False
 
 
         self._menu = QtGui.QMenu()
@@ -485,6 +486,10 @@ class AppDialog(QtGui.QWidget):
         """
         Perform a full publish
         """
+        if self._close_ui_on_publish_click:
+            # close
+            self.close()
+
         # make sure we swap the tree
         if self._display_mode != self.ITEM_CENTRIC:
             self._swap_view()
@@ -521,6 +526,10 @@ class AppDialog(QtGui.QWidget):
             self._log_wrapper.pop()
 
         self._log_wrapper.logger.info("Publish Complete!")
+
+        # make the publish button say close
+        self.ui.publish.setText("Close")
+        self._close_ui_on_publish_click = True
 
 
     def _visit_tree_r(self, parent, action, action_name=None):
