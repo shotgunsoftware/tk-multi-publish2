@@ -401,10 +401,10 @@ class AppDialog(QtGui.QWidget):
         """
         Build the tree of plugins
         """
-
-        if len(plugin.tasks) == 0:
-            # orphan. Don't create it
-            return None
+        # show all plugins
+        # if len(plugin.tasks) == 0:
+        #     # orphan. Don't create it
+        #     return None
 
         ui_item = PublishTreeWidgetPlugin(plugin, parent)
         ui_item.setExpanded(True)

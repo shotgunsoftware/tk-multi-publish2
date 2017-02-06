@@ -19,34 +19,42 @@ class MayaSceneCollector(HookBaseClass):
     """
 
     def process_file(self, parent_item, path):
+        """
+        Extend the base processing capabilities with a maya
+        file detection which determines the maya project.
+        """
 
         if path.endswith(".ma") or path.endswith(".mb"):
-            file_name = os.path.basename(path)
-            (file_name_no_ext, file_extension) = os.path.splitext(file_name)
-            file_item = parent_item.create_item("file.maya", "Maya File", file_name)
-            file_item.set_icon(os.path.join(self.disk_location, "icons", "maya.png"))
 
-            file_item.properties["extension"] = file_extension
-            file_item.properties["path"] = path
-            file_item.properties["filename"] = file_name
+            item = super(MayaSceneCollector, self).process_file(parent_item, path)
 
-            # experimental
-            file_item.properties["workspace_root"] = path
+            item.update_type("file.maya", "Maya File")
+            item.set_icon(os.path.join(self.disk_location, "icons", "maya.png"))
 
-            self.create_playblasts(file_item)
+            # set the workspace root for this item
 
-            return file_item
+            folder = os.path.dirname(path)
+            if os.path.basename(folder) == "scenes":
+                # assume parent level is workspace root
+                item.properties["project_root"] = os.path.dirname(folder)
+            else:
+                item.properties["project_root"] = None
+
+            self.create_playblasts(item)
 
         else:
-            return super(MayaSceneCollector, self).process_file(parent_item, path)
+            # run base class implementation
+            item = super(MayaSceneCollector, self).process_file(parent_item, path)
+
+        return item
 
 
-    def process_current_scene(self, parent_item):
-
-        scene = self.create_current_maya_scene(parent_item)
-        self.create_cameras(scene)
-        self.create_playblasts(scene)
-        return scene
+    # def process_current_scene(self, parent_item):
+    #
+    #     scene = self.create_current_maya_scene(parent_item)
+    #     self.create_cameras(scene)
+    #     self.create_playblasts(scene)
+    #     return scene
 
 
     def create_current_maya_scene(self, parent_item):

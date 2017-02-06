@@ -9,6 +9,7 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 import sgtk
 import os
+import re
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -30,6 +31,10 @@ class GenericSceneCollector(HookBaseClass):
             file_item.set_thumbnail(path)
             file_item.set_icon(os.path.join(self.disk_location, "icons", "image.png"))
 
+        elif file_extension in [".mov", ".mp4"]:
+            file_item = parent_item.create_item("file.movie", "Movie File", file_name)
+            file_item.set_icon(os.path.join(self.disk_location, "icons", "quicktime.png"))
+
         else:
             file_item = parent_item.create_item("file", "Generic File", file_name)
             file_item.set_icon(os.path.join(self.disk_location, "icons", "page.png"))
@@ -37,6 +42,17 @@ class GenericSceneCollector(HookBaseClass):
         file_item.properties["extension"] = file_extension
         file_item.properties["path"] = path
         file_item.properties["filename"] = file_name
+
+        # check if path matches pattern fooo.v123.ext
+        version = re.search("(.*)\.v([0-9]+)\.[^\.]+$", file_name)
+        if version:
+            # strip all leading zeroes
+            file_item.properties["prefix"] = version.group(1)
+            version_no_leading_zeroes = version.group(2).lstrip("0")
+            file_item.properties["version"] = int(version_no_leading_zeroes)
+        else:
+            file_item.properties["version"] = 0
+            file_item.properties["prefix"] = file_name_no_ext
 
         return file_item
 

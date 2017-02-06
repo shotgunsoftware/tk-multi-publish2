@@ -21,7 +21,7 @@ class SceneHook(HookBaseClass):
 
     @property
     def icon(self):
-        return os.path.join(self.disk_location, "icons", "flash.png")
+        return os.path.join(self.disk_location, "icons", "play.png")
 
     @property
     def title(self):
@@ -39,21 +39,22 @@ class SceneHook(HookBaseClass):
                 "default": "jpeg, jpg, png, mov, mp4",
                 "description": "File Extensions of files to include"
             },
-            "Create Local Link": {
-                "type": "bool",
-                "default": False,
-                "description": "Should the local file be referenced by Shotgun"
-            },
             "Upload": {
                 "type": "bool",
                 "default": True,
                 "description": "Upload content to Shotgun?"
             },
+            "Link Local File": {
+                "type": "bool",
+                "default": True,
+                "description": "Should the local file be referenced by Shotgun"
+            },
+
         }
 
     @property
     def subscriptions(self):
-        return ["file*"]
+        return ["file.image", "file.movie"]
 
     def accept(self, log, settings, item):
 
@@ -82,26 +83,35 @@ class SceneHook(HookBaseClass):
 
         data = {
             "project": self.parent.context.project,
-            "code": item.properties["filename"],
+            "code": item.properties["prefix"],
             "description": item.description,
         }
 
-        if settings["Create Local Link"].value:
+        # set the context
+        if item.context.project:
+            data["entity"] = item.context.project
+        if item.context.entity:
+            data["entity"] = item.context.entity
+        if item.context.task:
+            data["entity"] = item.context.task
+
+        if settings["Link Local File"].value:
             data["sg_path_to_movie"] = item.properties["path"]
 
         log.info("Creating version for review")
         version = self.parent.shotgun.create("Version", data)
 
-        # and thumbnail
-        thumb = item.get_thumbnail()
-        if thumb:
-            log.info("Uploading thumbnail")
-            self.parent.shotgun.upload_thumbnail("Version", version["id"], item.get_thumbnail())
-
         # and payload
+        thumb = item.get_thumbnail()
+
         if settings["Upload"].value:
             log.info("Uploading content")
             self.parent.shotgun.upload("Version", version["id"], item.properties["path"], "sg_uploaded_movie")
+        elif thumb:
+            # only upload thumb if we are not uploading the content
+            # with uploaded content, the thumb is automatically extracted.
+            log.info("Uploading thumbnail")
+            self.parent.shotgun.upload_thumbnail("Version", version["id"], item.get_thumbnail())
 
 
     def finalize(self, log, settings, item):

@@ -42,6 +42,15 @@ class Item(object):
         else:
             return "<Item %s:%s>" % (self._type, self._name)
 
+    def update_type(self, item_type, display_type):
+        """
+        Updates the type that was set on creation.
+
+        Useful when subclassing
+        """
+        self._type = item_type
+        self._display_type = display_type
+
     def create_item(self, item_type, display_type, display_name):
         """
         Create a new item

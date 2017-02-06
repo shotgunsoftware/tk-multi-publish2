@@ -34,38 +34,24 @@ configuration:
 
         default_value:
 
-            - name: Send image to Shotgun review
-              hook: "{self}/image_review.py"
-              settings:
-                File Extensions: "jpeg, jpg, png"
-
-            - name: Link movie to Shotgun review
-              hook: "{self}/image_review.py"
-              settings:
-                File Extensions: "mov, mp4"
-                Create Local Link: True
-                Upload: False
-
-            - name: Publish Image to Shotgun
+            - name: Publish to Shotgun
               hook: "{self}/file_publisher.py"
               settings:
-                publish_type: Image File
-                file_extensions: png, jpg, jpeg
+                Publish all file types: false
+                File Types:
+                - [Nuke Script, nk]
+                - [Photoshop Image, psd, psb]
+                - [3dsmax Scene, max]
+                - [Houdini Scene, hip]
+                - [Maya Scene, ma, mb]
+                - [Hiero Project, hrox]
+                - [Alembic Cache]
+                - [Rendered Image, dpx, exr]
+                - [Texture, tiff, tx, tga, dds]
+                - [Image, jpeg, jpg, png]
 
-
-            # test stuff
-
-            - name: Publish Maya Scene
-              hook: "{self}/maya/scene.py"
-              settings: {}
-
-            - name: Normalized Alembic Camera
-              hook: "{self}/maya/test.py"
-              settings:
-                setting_a: 6
-
-            - name: Publish Alembic Camera
-              hook: "{self}/maya/test.py"
+            - name: Send to Shotgun review
+              hook: "{self}/version_creator.py"
               settings: {}
 
 
