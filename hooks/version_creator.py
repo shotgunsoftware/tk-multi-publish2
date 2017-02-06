@@ -82,7 +82,7 @@ class SceneHook(HookBaseClass):
     def publish(self, log, settings, item):
 
         data = {
-            "project": self.parent.context.project,
+            "project": item.context.project,
             "code": item.properties["prefix"],
             "description": item.description,
         }

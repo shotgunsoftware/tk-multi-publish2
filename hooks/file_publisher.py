@@ -112,7 +112,11 @@ class SceneHook(HookBaseClass):
             "published_file_type": publish_type,
         }
 
-        sgtk.util.register_publish(**args)
+        sg_data = sgtk.util.register_publish(**args)
+
+        item.properties["shotgun_data"] = sg_data
+        item.properties["shotgun_publish_id"] = sg_data["id"]
+
 
     def finalize(self, log, settings, item):
         pass

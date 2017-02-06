@@ -51,8 +51,9 @@ class MayaSceneCollector(HookBaseClass):
 
     def process_current_scene(self, parent_item):
 
-        scene = self.create_current_maya_scene(parent_item)
-        return scene
+        item = self.create_current_maya_scene(parent_item)
+        self.create_playblasts(item)
+        return item
 
 
     def create_current_maya_scene(self, parent_item):
@@ -97,7 +98,7 @@ class MayaSceneCollector(HookBaseClass):
         # extract playblast objects
         items = []
 
-        ws_root = parent_item.properties.get("workspace_root")
+        ws_root = parent_item.properties.get("project_root")
         if ws_root:
             playblast_dir = os.path.join(ws_root, "movies")
             if os.path.exists(playblast_dir):
@@ -105,7 +106,7 @@ class MayaSceneCollector(HookBaseClass):
                     path = os.path.join(playblast_dir, filename)
                     item = parent_item.create_item("maya.playblast", "Playblast in Maya Project", filename)
                     item.properties["path"] = path
-                    item.set_icon(os.path.join(self.disk_location, "icons", "popcorn.png"))
+                    item.set_icon(os.path.join(self.disk_location, "icons", "camera.png"))
                     items.append(item)
 
         return items

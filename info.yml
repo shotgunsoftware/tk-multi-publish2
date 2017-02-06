@@ -58,7 +58,10 @@ configuration:
               hook: "{self}/maya.basic/scene_publisher.py"
               settings: {}
 
-            
+            - name: Playblast to Shotgun Review
+              hook: "{self}/maya.basic/playblast_publisher.py"
+              settings: {}
+
 # the Shotgun fields that this app needs in order to operate correctly
 requires_shotgun_fields:
 
