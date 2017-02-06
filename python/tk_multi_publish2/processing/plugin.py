@@ -143,6 +143,9 @@ class Plugin(object):
         except Exception, e:
             self._logger.exception("Error running accept for %s" % self)
             return {"accepted": False}
+        finally:
+            # give qt a chance to do stuff
+            QtCore.QCoreApplication.processEvents()
 
     def run_validate(self, settings, item):
         try:
@@ -150,20 +153,29 @@ class Plugin(object):
         except Exception, e:
             self._logger.exception("Error Validating: %s" % e)
             raise
+        finally:
+            # give qt a chance to do stuff
+            QtCore.QCoreApplication.processEvents()
 
 
     def run_publish(self, settings, item):
         try:
-            return self._plugin.publish(self._logger, settings, item)
+            self._plugin.publish(self._logger, settings, item)
         except Exception, e:
             self._logger.exception("Error Publishing: %s" % e)
             raise
+        finally:
+            # give qt a chance to do stuff
+            QtCore.QCoreApplication.processEvents()
 
 
     def run_finalize(self, settings, item):
         try:
-            return self._plugin.finalize(self._logger, settings, item)
+            self._plugin.finalize(self._logger, settings, item)
         except Exception, e:
             self._logger.exception("Error finalizing: %s" % e)
             raise
+        finally:
+            # give qt a chance to do stuff
+            QtCore.QCoreApplication.processEvents()
 
