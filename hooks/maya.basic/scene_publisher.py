@@ -61,8 +61,46 @@ class SceneHook(HookBaseClass):
         if item.properties["project_root"] is None:
             log.warning("Your scene is not part of a maya project.")
 
+        # indicate that we are publishing this
+        item.properties["is_published"] = True
+
         return True
 
+    def _maya_find_additional_scene_dependencies(self):
+        """
+        Find additional dependencies from the scene
+        """
+        # default implementation looks for references and
+        # textures (file nodes) and returns any paths that
+        # match a template defined in the configuration
+        ref_paths = set()
+
+        # first let's look at maya references
+        ref_nodes = cmds.ls(references=True)
+        for ref_node in ref_nodes:
+            # get the path:
+            ref_path = cmds.referenceQuery(ref_node, filename=True)
+            # make it platform dependent
+            # (maya uses C:/style/paths)
+            ref_path = ref_path.replace("/", os.path.sep)
+            if ref_path:
+                ref_paths.add(ref_path)
+
+        # now look at file texture nodes
+        for file_node in cmds.ls(l=True, type="file"):
+            # ensure this is actually part of this scene and not referenced
+            if cmds.referenceQuery(file_node, isNodeReferenced=True):
+                # this is embedded in another reference, so don't include it in the
+                # breakdown
+                continue
+
+            # get path and make it platform dependent
+            # (maya uses C:/style/paths)
+            texture_path = cmds.getAttr("%s.fileTextureName" % file_node).replace("/", os.path.sep)
+            if texture_path:
+                ref_paths.add(texture_path)
+
+        return ref_paths
 
     def publish(self, log, settings, item):
 
@@ -116,12 +154,15 @@ class SceneHook(HookBaseClass):
             "version_number": version_to_use,
             "thumbnail_path": item.get_thumbnail(),
             "published_file_type": settings["Publish Type"].value,
+            #"dependency_paths": self._maya_find_additional_scene_dependencies(), # need to update core for this to work
         }
 
         sg_data = sgtk.util.register_publish(**args)
 
         item.properties["shotgun_data"] = sg_data
         item.properties["shotgun_publish_id"] = sg_data["id"]
+        item.properties["publish_path"] = publish_path
+        item.properties["publish_version"] = version_to_use
 
 
     def finalize(self, log, settings, item):

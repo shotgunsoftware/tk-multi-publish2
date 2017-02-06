@@ -62,6 +62,10 @@ configuration:
               hook: "{self}/maya.basic/playblast_publisher.py"
               settings: {}
 
+            - name: Publish alembic to Shotgun
+              hook: "{self}/maya.basic/alembic_publisher.py"
+              settings: {}
+
 # the Shotgun fields that this app needs in order to operate correctly
 requires_shotgun_fields:
 

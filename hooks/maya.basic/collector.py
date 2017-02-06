@@ -53,6 +53,7 @@ class MayaSceneCollector(HookBaseClass):
 
         item = self.create_current_maya_scene(parent_item)
         self.create_playblasts(item)
+        self.create_alembic_caches(item)
         return item
 
 
@@ -77,18 +78,23 @@ class MayaSceneCollector(HookBaseClass):
 
         return current_scene
 
+    def create_alembic_caches(self, parent_item):
 
-
-    def create_cameras(self, parent_item):
-
+        # use the workspace_root property on the parent to
+        # extract playblast objects
         items = []
-        for dag_path in cmds.ls(type="camera", long=True):
-            short_name = dag_path.split("|")[-1]
-            item = parent_item.create_item("maya.camera", "Maya Camera", short_name)
-            item.properties["maya_type"] = "camera"
-            item.properties["dag_path"] = dag_path
-            item.set_icon(os.path.join(self.disk_location, "icons", "camera.png"))
-            items.append(item)
+
+        ws_root = parent_item.properties.get("project_root")
+        if ws_root:
+            cache_dir = os.path.join(ws_root, "cache", "alembic")
+            if os.path.exists(cache_dir):
+                for filename in os.listdir(cache_dir):
+                    path = os.path.join(cache_dir, filename)
+                    if path.endswith(".abc"):
+                        item = parent_item.create_item("maya.alembic_file", "Alembic Cache File", filename)
+                        item.properties["path"] = path
+                        item.set_icon(os.path.join(self.disk_location, "icons", "alembic.png"))
+                        items.append(item)
 
         return items
 
@@ -104,10 +110,11 @@ class MayaSceneCollector(HookBaseClass):
             if os.path.exists(playblast_dir):
                 for filename in os.listdir(playblast_dir):
                     path = os.path.join(playblast_dir, filename)
-                    item = parent_item.create_item("maya.playblast", "Playblast in Maya Project", filename)
-                    item.properties["path"] = path
-                    item.set_icon(os.path.join(self.disk_location, "icons", "camera.png"))
-                    items.append(item)
+                    if path.endswith(".mov"):
+                        item = parent_item.create_item("maya.playblast", "Playblast in Maya Project", filename)
+                        item.properties["path"] = path
+                        item.set_icon(os.path.join(self.disk_location, "icons", "camera.png"))
+                        items.append(item)
 
         return items
 

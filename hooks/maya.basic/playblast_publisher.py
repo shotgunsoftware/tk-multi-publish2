@@ -89,11 +89,9 @@ class PlayblastPublisher(HookBaseClass):
 
     def finalize(self, log, settings, item):
 
-        # write a sidecar file with a date stamp of when the
         mov_path = item.properties["path"]
-        if os.path.exists(mov_path):
-            log.info("Deleting %s" % item.properties["path"])
-            os.remove(item.properties["path"])
+        log.info("Deleting %s" % item.properties["path"])
+        sgtk.util.filesystem.safe_delete_file(mov_path)
 
 
 
