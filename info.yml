@@ -45,7 +45,7 @@ configuration:
                 - [Houdini Scene, hip]
                 - [Maya Scene, ma, mb]
                 - [Hiero Project, hrox]
-                - [Alembic Cache]
+                - [Alembic Cache, abc]
                 - [Rendered Image, dpx, exr]
                 - [Texture, tiff, tx, tga, dds]
                 - [Image, jpeg, jpg, png]

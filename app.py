@@ -12,7 +12,7 @@
 Multi Publish
 
 """
-
+import os
 import sgtk
 
 class MultiPublish2(sgtk.platform.Application):
@@ -28,7 +28,17 @@ class MultiPublish2(sgtk.platform.Application):
         # register command
         cb = lambda : tk_multi_publish2.show_dialog(self)
         menu_caption = "Publish..."
-        menu_options = {"short_name": "publish", "description": "Publishing of data into Shotgun"}
+        menu_options = {
+            "short_name": "publish",
+            "description": "Publishing of data into Shotgun",
+
+            # dark themed icon for engines that recognize this format
+            "icons": {
+                "dark": {
+                    "png": os.path.join(self.disk_location, "resources", "publish_menu_icon.png")
+                }
+            }
+        }
         self.engine.register_command(menu_caption, cb, menu_options)
 
     @property
