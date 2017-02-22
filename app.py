@@ -27,7 +27,7 @@ class MultiPublish2(sgtk.platform.Application):
 
         # register command
         cb = lambda : tk_multi_publish2.show_dialog(self)
-        menu_caption = "Publish..."
+        menu_caption = "Publish"
         menu_options = {
             "short_name": "publish",
             "description": "Publishing of data into Shotgun",
