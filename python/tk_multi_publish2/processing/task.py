@@ -12,8 +12,6 @@ import sgtk
 
 logger = sgtk.platform.get_logger(__name__)
 
-from .setting import Setting
-
 class Task(object):
     """
     A plugin instance or the particular action that

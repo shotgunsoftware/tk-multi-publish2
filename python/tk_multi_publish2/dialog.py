@@ -16,12 +16,9 @@ from sgtk.platform.qt import QtCore, QtGui
 from .ui.dialog import Ui_Dialog
 
 from .processing import PluginManager
-from .item import Item
 from .tree_item import PublishTreeWidgetItem, PublishTreeWidgetTask, PublishTreeWidgetPlugin
 
 from .publish_logging import PublishLogWrapper
-
-from .processing import ValidationFailure, PublishFailure
 
 # import frameworks
 settings = sgtk.platform.import_framework("tk-framework-shotgunutils", "settings")

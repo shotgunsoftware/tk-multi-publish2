@@ -7,17 +7,15 @@
 # By accessing, using, copying or modifying this work you indicate your 
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
 # not expressly granted therein are reserved by Shotgun Software Inc.
-
-"""
-Multi Publish
-
-"""
 import os
 import sgtk
 
 class MultiPublish2(sgtk.platform.Application):
+    """
+    Main app class for publisher.
 
-    (VALIDATE, PUBLISH) = range(2)
+    Command registration and API methods.
+    """
 
     def init_app(self):
         """
@@ -26,16 +24,15 @@ class MultiPublish2(sgtk.platform.Application):
         tk_multi_publish2 = self.import_module("tk_multi_publish2")
 
         # register command
-        cb = lambda : tk_multi_publish2.show_dialog(self)
+        cb = lambda: tk_multi_publish2.show_dialog(self)
         menu_caption = "Publish"
         menu_options = {
             "short_name": "publish",
-            "description": "Publishing of data into Shotgun",
-
+            "description": "Publishing of data to Shotgun",
             # dark themed icon for engines that recognize this format
             "icons": {
                 "dark": {
-                    "png": os.path.join(self.disk_location, "resources", "publish_menu_icon.png")
+                    "png": os.path.join(self.disk_location, "icon_256_dark.png")
                 }
             }
         }
@@ -49,7 +46,9 @@ class MultiPublish2(sgtk.platform.Application):
         return True
 
     def destroy_app(self):
-
-        self.log_debug("Destroying tk-multi-publish")
+        """
+        Tear down the app
+        """
+        self.log_debug("Destroying tk-multi-publish2")
 
 

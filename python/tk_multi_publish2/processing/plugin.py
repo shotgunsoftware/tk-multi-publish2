@@ -8,15 +8,12 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-import re
 import sgtk
-import collections
 
 from sgtk.platform.qt import QtCore, QtGui
 
 logger = sgtk.platform.get_logger(__name__)
 
-from .errors import PluginValidationError, PluginNotFoundError, ValidationFailure, PublishFailure
 from sgtk import TankError
 
 

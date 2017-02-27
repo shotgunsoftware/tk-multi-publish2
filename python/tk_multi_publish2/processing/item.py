@@ -9,7 +9,6 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import sgtk
-import os
 import tempfile
 
 logger = sgtk.platform.get_logger(__name__)
