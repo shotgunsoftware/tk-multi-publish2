@@ -12,6 +12,7 @@ import sgtk
 
 logger = sgtk.platform.get_logger(__name__)
 
+
 class Task(object):
     """
     A task is a particular unit of work which can to be carried
@@ -20,28 +21,21 @@ class Task(object):
     on a particular collector item.
     """
 
-    def __init__(self, plugin, item):
+    def __init__(self, plugin, item, required, enabled):
         """
         :param plugin: The plugin instance associated with this task
         :param item: The collector item associated with this task
+        :param bool required: Indicates that the task is required
+        :param bool enabled: Indicates that the task is enabled
         """
         self._plugin = plugin
         self._item = item
         self._settings = []
-        self._enabled = False
-        self._required = False
+        self._enabled = enabled
+        self._required = required
 
     def __repr__(self):
         return "<Task: %s for %s >" % (self._plugin, self._item)
-
-    def set_plugin_defaults(self, required, enabled):
-        """
-        Set the
-        :param required:
-        :param enabled:
-        """
-        self._required = required
-        self._enabled = enabled
 
     @property
     def item(self):

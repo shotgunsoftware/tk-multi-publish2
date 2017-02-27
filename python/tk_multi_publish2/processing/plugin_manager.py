@@ -85,8 +85,8 @@ class PluginManager(object):
                     yield item
 
 
-    def _create_task(self, plugin, item):
-        task = Task(plugin, item)
+    def _create_task(self, plugin, item, is_required, is_enabled):
+        task = Task(plugin, item, is_required, is_enabled)
         plugin.add_task(task)
         item.add_task(task)
         logger.debug("Created %s" % task)
@@ -142,10 +142,9 @@ class PluginManager(object):
                 if accept_data.get("accepted"):
                     # this item was accepted by the plugin!
                     # create a task
-                    task = self._create_task(plugin, item)
                     is_required = accept_data.get("required") is True
                     is_enabled = accept_data.get("enabled") is True
-                    task.set_plugin_defaults(is_required, is_enabled)
+                    task = self._create_task(plugin, item, is_required, is_enabled)
                     self._tasks.append(task)
 
         # TODO: need to do a cull to remove any items in the tree which do not have tasks

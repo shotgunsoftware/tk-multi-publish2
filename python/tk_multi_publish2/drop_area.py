@@ -18,6 +18,8 @@ def drop_area(cls):
     """
     A class decorator which adds needed overrides to any QWidget
     so it can behave like a drop area and emit something_dropped signals
+
+    @todo - move this into the qtwidgets framework
     """
     class WrappedClass(cls):
         """
