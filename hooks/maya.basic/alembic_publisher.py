@@ -46,7 +46,7 @@ class SceneHook(HookBaseClass):
         }
 
     @property
-    def subscriptions(self):
+    def item_filters(self):
         return ["maya.alembic_file"]
 
     def accept(self, log, settings, item):

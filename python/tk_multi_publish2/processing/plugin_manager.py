@@ -71,17 +71,17 @@ class PluginManager(object):
     def plugins(self):
         return self._plugins
 
-    def _get_matching_items(self, subscriptions, all_items):
+    def _get_matching_items(self, item_filters, all_items):
         """
         Given a list of subscriptions from a plugin,
         yield a series of matching items. Items are
         randomly ordered.
         """
-        for subscription in subscriptions:
-            logger.debug("Checking matches for subscription %s" % subscription)
+        for item_filter in item_filters:
+            logger.debug("Checking matches for item filter %s" % item_filter)
             # "maya.*"
             for item in all_items:
-                if fnmatch.fnmatch(item.type, subscription):
+                if fnmatch.fnmatch(item.type, item_filter):
                     yield item
 
 
@@ -136,7 +136,7 @@ class PluginManager(object):
         logger.debug("Visiting all plugins and offering items")
         for plugin in self._plugins:
 
-            for item in self._get_matching_items(plugin.subscriptions, all_new_items):
+            for item in self._get_matching_items(plugin.item_filters, all_new_items):
                 logger.debug("seeing if %s is interested in %s" % (plugin, item))
                 accept_data = plugin.run_accept(item)
                 if accept_data.get("accepted"):

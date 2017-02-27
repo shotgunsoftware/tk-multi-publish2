@@ -53,7 +53,7 @@ class SceneHook(HookBaseClass):
         }
 
     @property
-    def subscriptions(self):
+    def item_filters(self):
         return ["file.image", "file.movie"]
 
     def accept(self, log, settings, item):

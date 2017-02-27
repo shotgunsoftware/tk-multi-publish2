@@ -104,9 +104,9 @@ class Plugin(object):
             return "No detailed description provided."
 
     @property
-    def subscriptions(self):
+    def item_filters(self):
         try:
-            return self._plugin.subscriptions
+            return self._plugin.item_filters
         except AttributeError:
             return []
 

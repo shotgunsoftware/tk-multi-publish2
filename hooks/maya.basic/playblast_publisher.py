@@ -39,7 +39,7 @@ class PlayblastPublisher(HookBaseClass):
         return {}
 
     @property
-    def subscriptions(self):
+    def item_filters(self):
         return ["maya.playblast"]
 
 

@@ -45,7 +45,7 @@ class SceneHook(HookBaseClass):
         }
 
     @property
-    def subscriptions(self):
+    def item_filters(self):
         return ["maya.scene"]
 
     def accept(self, log, settings, item):
