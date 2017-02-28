@@ -28,11 +28,11 @@ class SceneHook(HookBaseClass):
         return os.path.join(self.disk_location, "icons", "shotgun.png")
 
     @property
-    def title(self):
+    def name(self):
         return "Publish Alembic"
 
     @property
-    def description_html(self):
+    def description(self):
         return """Extracts alembic geometry."""
 
     @property

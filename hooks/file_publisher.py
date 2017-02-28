@@ -25,11 +25,11 @@ class SceneHook(HookBaseClass):
         return os.path.join(self.disk_location, "icons", "shotgun.png")
 
     @property
-    def title(self):
+    def name(self):
         return "Publish files to Shotgun"
 
     @property
-    def description_html(self):
+    def description(self):
         return """
         Publishes files to shotgun.
         """

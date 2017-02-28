@@ -27,11 +27,11 @@ class PlayblastPublisher(HookBaseClass):
         return os.path.join(self.disk_location, "icons", "play.png")
 
     @property
-    def title(self):
+    def name(self):
         return "Review Playblast"
 
     @property
-    def description_html(self):
+    def description(self):
         return """Send playblast to Shotgun for review."""
 
     @property

@@ -14,16 +14,24 @@ from sgtk.platform.qt import QtCore, QtGui
 
 logger = sgtk.platform.get_logger(__name__)
 
-
-
 from .setting import Setting
 
 
-
 class Plugin(object):
+    """
+    Class that wraps around a publishing plugin hook
+
+    Each plugin object reflects an instance in the
+    app configuration.
+    """
 
     def __init__(self, name, path, settings, logger):
-
+        """
+        :param name: Name to be used for this plugin instance
+        :param path: Path to publish plugin hook
+        :param settings: Dictionary of plugin-specific settings
+        :param logger: a logger object that will be used by the hook
+        """
         # all plugins need a hook and a name
         self._name = name
         self._path = path
@@ -31,20 +39,18 @@ class Plugin(object):
 
         self._bundle = sgtk.platform.current_bundle()
 
-        # init the plugin
+        # create an instance of the hook
         self._plugin = self._bundle.create_hook_instance(self._path)
 
         self._configured_settings = {}
         self._required_runtime_settings = {}
         self._tasks = []
-
         self._logger = logger
-
         self._settings = {}
+
+        # kick things off
         self._validate_and_resolve_config()
-
-
-
+        self._icon_pixmap = self._load_plugin_icon()
 
     def __repr__(self):
         """
@@ -52,9 +58,34 @@ class Plugin(object):
         """
         return "<Publish Plugin %s>" % self._path
 
+    def _load_plugin_icon(self):
+        """
+        Loads the icon defined by the hook.
+
+        :returns: QPixmap or None if not found
+        """
+        # load plugin icon
+        pixmap = None
+        try:
+            icon_path = self._plugin.icon
+            try:
+                pixmap = QtGui.QPixmap(icon_path)
+            except Exception, e:
+                logger.warning(
+                    "%r: Could not load icon '%s': %s" % (self, icon_path, e)
+                )
+        except AttributeError:
+            # plugin does not have an icon
+            pass
+
+        return pixmap
+
     def _validate_and_resolve_config(self):
         """
-        Validate all values. Resolve links
+        Init helper method.
+
+        Validates plugin settings and creates Setting objects
+        that can be accessed from the settings property.
         """
         try:
             settings_defs = self._plugin.settings
@@ -84,47 +115,71 @@ class Plugin(object):
 
     @property
     def name(self):
-        # name as defined in the env config
+        """
+        The name of this plugin instance
+        """
         return self._name
 
     @property
     def tasks(self):
+        """
+        Tasks associated with this publish plugin.
+        """
         return self._tasks
 
+    def add_task(self, task):
+        """
+        Adds a task to this publish plugin.
+
+        :param task: Task instance to add.
+        """
+        self._tasks.append(task)
+
     @property
-    def title(self):
+    def plugin_name(self):
+        """
+        The name of the publish plugin.
+        Always a string.
+        """
+        value = None
         try:
-            return self._plugin.title
+            value = self._plugin.name
         except AttributeError:
-            return "Untitled Integration."
+            pass
+
+        return value or "Untitled Integration."
 
     @property
     def description(self):
+        """
+        The decscription of the publish plugin.
+        Always a string.
+        """
+        value = None
         try:
-            return self._plugin.description_html
+            value = self._plugin.description
         except AttributeError:
-            return "No detailed description provided."
+            pass
+
+        return value or "No detailed description provided."
 
     @property
     def item_filters(self):
+        """
+        The item filters defined by this plugin
+        or [] if none have been defined.
+        """
         try:
             return self._plugin.item_filters
         except AttributeError:
             return []
 
     @property
-    def icon_pixmap(self):
-        try:
-            icon_path = self._plugin.icon
-            try:
-                pixmap = QtGui.QPixmap(icon_path)
-                return pixmap
-            except Exception, e:
-                logger.warning(
-                    "%r: Could not load icon '%s': %s" % (self, icon_path, e)
-                )
-        except AttributeError:
-            return None
+    def icon(self):
+        """
+        The associated icon, as a pixmap.
+        """
+        return self._icon_pixmap
 
     @property
     def settings(self):
@@ -133,10 +188,13 @@ class Plugin(object):
         """
         return self._settings
 
-    def add_task(self, task):
-        self._tasks.append(task)
-
     def run_accept(self, item):
+        """
+        Executes the hook accept method for the given item
+
+        :param item: Item to analyze
+        :returns: dictionary with boolean keys 'accepted' and 'required'
+        """
         try:
             return self._plugin.accept(self._logger, self.settings, item)
         except Exception, e:
@@ -147,6 +205,13 @@ class Plugin(object):
             QtCore.QCoreApplication.processEvents()
 
     def run_validate(self, settings, item):
+        """
+        Executes the validation logic for this plugin instance.
+
+        :param settings: Dictionary of settings
+        :param item: Item to analyze
+        :return: True if validation passed, False otherwise.
+        """
         try:
             return self._plugin.validate(self._logger, settings, item)
         except Exception, e:
@@ -156,8 +221,13 @@ class Plugin(object):
             # give qt a chance to do stuff
             QtCore.QCoreApplication.processEvents()
 
-
     def run_publish(self, settings, item):
+        """
+        Executes the publish logic for this plugin instance.
+
+        :param settings: Dictionary of settings
+        :param item: Item to analyze
+        """
         try:
             self._plugin.publish(self._logger, settings, item)
         except Exception, e:
@@ -167,8 +237,13 @@ class Plugin(object):
             # give qt a chance to do stuff
             QtCore.QCoreApplication.processEvents()
 
-
     def run_finalize(self, settings, item):
+        """
+        Executes the finalize logic for this plugin instance.
+
+        :param settings: Dictionary of settings
+        :param item: Item to analyze
+        """
         try:
             self._plugin.finalize(self._logger, settings, item)
         except Exception, e:

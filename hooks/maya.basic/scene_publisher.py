@@ -27,11 +27,11 @@ class SceneHook(HookBaseClass):
         return os.path.join(self.disk_location, "icons", "shotgun.png")
 
     @property
-    def title(self):
+    def name(self):
         return "Publish Maya Scene"
 
     @property
-    def description_html(self):
+    def description(self):
         return """Publishes the current maya scene. This will create a versioned backup and publish that."""
 
     @property
