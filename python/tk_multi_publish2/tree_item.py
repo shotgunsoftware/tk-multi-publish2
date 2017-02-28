@@ -18,12 +18,28 @@ logger = sgtk.platform.get_logger(__name__)
 
 class PublishTreeWidget(QtGui.QTreeWidgetItem):
     """
-    Base class for all tree widgets
+    Base class for all tree widgets.
+
+    Each of these QTreeWidgetItem objects encapsulate an
+    Item widget which is used to display the actual UI
+    for the tree node.
     """
+
     def __init__(self, parent):
+        """
+        :param parent: The parent QWidget for this control
+        """
         super(PublishTreeWidget, self).__init__(parent)
 
+        # create an item widget and associate it with this QTreeWidgetItem
+        tree_widget = self.treeWidget()
+        self._item_widget = Item(tree_widget)
+        tree_widget.setItemWidget(self, 0, self._item_widget)
+
     def begin_process(self):
+        """
+        Reset progress state
+        """
         if self.enabled:
             # enabled nodes get a dotted ring
             self._item_widget.set_status(self._item_widget.PROCESSING)
@@ -40,66 +56,86 @@ class PublishTreeWidget(QtGui.QTreeWidgetItem):
             self.parent()._set_status_upwards(status)
 
     def validate(self):
+        """
+        Perform validation
+        """
         self._item_widget.set_status(self._item_widget.VALIDATION_COMPLETE)
         return True
 
     def publish(self):
+        """
+        Perform publish
+        """
         self._item_widget.set_status(self._item_widget.PUBLISH_COMPLETE)
         return True
 
     def finalize(self):
+        """
+        Perform finalize
+        """
         self._item_widget.set_status(self._item_widget.FINALIZE_COMPLETE)
         return True
 
     @property
     def checkbox(self):
+        """
+        The checkbox associated with this item
+        """
         return self._item_widget.checkbox
 
     @property
     def icon(self):
-        raise NotImplementedError
+        """
+        The icon pixmap associated with this item
+        """
+        return self._item_widget.icon
 
     @property
     def enabled(self):
+        """
+        Returns true if the checkbox is enabled
+        """
         return self._item_widget.checkbox.isChecked()
 
 
 class PublishTreeWidgetTask(PublishTreeWidget):
     """
-    Tree item for a task
+    Tree item for a publish task
     """
 
     def __init__(self, task, parent):
         """
+        :param task: Task instance
+        :param parent: The parent QWidget for this control
         """
         super(PublishTreeWidgetTask, self).__init__(parent)
+
         self._task = task
 
-        tree_widget = self.treeWidget()
-        self._item_widget = Item(tree_widget)
         self._item_widget.set_header(self._task.plugin.name)
         self._item_widget.set_icon(self._task.plugin.icon)
         self._item_widget.checkbox.setChecked(self._task.enabled)
+
         if self._task.required:
             self._item_widget.checkbox.setEnabled(False)
         else:
             self._item_widget.checkbox.setEnabled(True)
 
-        tree_widget.setItemWidget(self, 0, self._item_widget)
 
     def __str__(self):
         return self._task.plugin.name
 
     @property
     def task(self):
+        """
+        Associated task instance
+        """
         return self._task
 
-    @property
-    def icon(self):
-        # qicon for the node
-        return QtGui.QIcon(self._task.plugin.icon)
-
     def validate(self):
+        """
+        Perform validation
+        """
         try:
             status = self._task.validate()
         except Exception, e:
@@ -113,6 +149,9 @@ class PublishTreeWidgetTask(PublishTreeWidget):
         return status
 
     def publish(self):
+        """
+        Perform publish
+        """
         try:
             self._task.publish()
         except Exception, e:
@@ -123,6 +162,9 @@ class PublishTreeWidgetTask(PublishTreeWidget):
         return True
 
     def finalize(self):
+        """
+        Perform finalize
+        """
         try:
             self._task.finalize()
         except Exception, e:
@@ -138,33 +180,26 @@ class PublishTreeWidgetPlugin(PublishTreeWidget):
     Tree item for a plugin
     """
 
-
     def __init__(self, plugin, parent):
         """
+        :param parent: The parent QWidget for this control
         """
         super(PublishTreeWidgetPlugin, self).__init__(parent)
         self._plugin = plugin
 
-        tree_widget = self.treeWidget()
-
-        self._item_widget = Item(tree_widget)
         self._item_widget.set_header(self._plugin.name)
         self._item_widget.set_icon(self._plugin.icon)
 
-        tree_widget = self.treeWidget()
-        tree_widget.setItemWidget(self, 0, self._item_widget)
 
     def __str__(self):
         return self._plugin.name
 
     @property
     def plugin(self):
+        """
+        associated plugin instance
+        """
         return self._plugin
-
-    @property
-    def icon(self):
-        # qicon for the node
-        return QtGui.QIcon(self._plugin.icon)
 
 
 class PublishTreeWidgetItem(PublishTreeWidget):
@@ -173,26 +208,22 @@ class PublishTreeWidgetItem(PublishTreeWidget):
     """
 
     def __init__(self, item, parent):
+        """
+        :param item:
+        :param parent: The parent QWidget for this control
+        """
         super(PublishTreeWidgetItem, self).__init__(parent)
         self._item = item
-
-        tree_widget = self.treeWidget()
-
-        self._item_widget = Item(tree_widget)
         self._item_widget.set_header("<b>%s</b><br>%s" % (self._item.name, self._item.display_type))
         self._item_widget.set_icon(self._item.icon)
-
-        tree_widget.setItemWidget(self, 0, self._item_widget)
-
 
     def __str__(self):
         return "%s %s" % (self._item.display_type, self._item.name)
 
     @property
     def item(self):
+        """
+        Associated item instance
+        """
         return self._item
 
-    @property
-    def icon(self):
-        # qicon for the node
-        return QtGui.QIcon(self._item.icon)
