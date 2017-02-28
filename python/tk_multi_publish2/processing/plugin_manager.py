@@ -28,7 +28,7 @@ class PluginManager(object):
         :param publish_logger: A logger object that the
             various hooks can send logging information to.
         """
-        logger.debug("plugin manager waking up")
+        logger.debug("Plugin manager waking up")
 
         self._bundle = sgtk.platform.current_bundle()
 
@@ -39,6 +39,7 @@ class PluginManager(object):
 
         plugin_defs = self._bundle.get_setting("publish_plugins")
 
+        # create plugin objects
         for plugin_def in plugin_defs:
             logger.debug("Find config chunk %s" % plugin_def)
 
@@ -46,22 +47,25 @@ class PluginManager(object):
             hook_path = plugin_def["hook"]
             settings = plugin_def["settings"]
 
-            # maintain a ordered list
             plugin = Plugin(plugin_instance_name, hook_path, settings, self._logger)
-            logger.debug("Created %s" % plugin)
             self._plugins.append(plugin)
+            logger.debug("Created %s" % plugin)
 
+        # create an item root
         self._root_item = Item.get_invisible_root_item()
+
+        # initalize tasks
         self._tasks = []
 
-        # do the current scene
+        # process the current scene
         self._collect(collect_current_scene=True)
 
     @property
     def top_level_items(self):
         """
         Returns a list of the items which reside on the top level
-        of the tree, e.g. all the children of the invisible rooot item.
+        of the tree, e.g. all the children of the invisible root item.
+
         :returns: List if :class:`Item` instances
         """
         return self._root_item.children
@@ -70,6 +74,7 @@ class PluginManager(object):
     def plugins(self):
         """
         Returns a list of the plugin instances loaded from the configuration
+
         :returns: List of :class:`Plugin` instances.
         """
         return self._plugins
@@ -77,37 +82,24 @@ class PluginManager(object):
     def add_external_files(self, paths):
         """
         Runs the collector for the given set of paths
+
         :param str paths: List of full file path
         """
         logger.debug("Adding external files '%s'" % paths)
-        # and update the data model
         self._collect(collect_current_scene=False, paths=paths)
-
-    def _get_matching_items(self, item_filters, all_items):
-        """
-        Given a list of item filters from a plugin,
-        yield a series of matching items. Items are
-        randomly ordered.
-
-        :param item_filters: List of item filters to glob against.
-        :param all_items: Items to match against.
-        """
-        for item_filter in item_filters:
-            logger.debug("Checking matches for item filter %s" % item_filter)
-            # "maya.*"
-            for item in all_items:
-                if fnmatch.fnmatch(item.type, item_filter):
-                    yield item
-
-
 
     def _collect(self, collect_current_scene, paths=None):
         """
         Runs the collector and generates fresh items.
-        """
 
+        :param bool collect_current_scene: Boolean to indicate if collection should
+            be performed for the current scene, e.g. if the collector hook's
+            process_current_scene() method should be executed.
+        :param paths: List of paths for which the collector hook's method
+            process_file() should be executed for
+        """
         # get existing items
-        all_items_before = self._get_items(self._root_item)
+        all_items_before = self._get_item_tree_as_list()
 
         # pass 1 - collect stuff from the scene and other places
         logger.debug("Executing collector")
@@ -134,7 +126,8 @@ class PluginManager(object):
         # get list of new things
         all_new_items = list(set(all_items_after) - set(all_items_before))
 
-        # now we have a series of items from the scene, pass it back to the plugins to see which are interesting
+        # now we have a series of items from the scene, visit our plugins
+        # to see if there is interest
         logger.debug("Visiting all plugins and offering items")
         for plugin in self._plugins:
 
@@ -149,19 +142,37 @@ class PluginManager(object):
                     task = Task.create_task(plugin, item, is_required, is_enabled)
                     self._tasks.append(task)
 
-        # TODO: need to do a cull to remove any items in the tree which do not have tasks
+        # TODO: need to do a cull to remove any items in the tree which do not have tasks?
 
-
-    def _get_items(self, parent):
+    def _get_matching_items(self, item_filters, all_items):
         """
-        Iterates recursively and reutrns all items it finds
+        Given a list of item filters from a plugin,
+        yield a series of matching items. Items are
+        randomly ordered.
 
-        :param parent: Parent item object
+        :param item_filters: List of item filters to glob against.
+        :param all_items: Items to match against.
+        """
+        for item_filter in item_filters:
+            logger.debug("Checking matches for item filter %s" % item_filter)
+            # "maya.*"
+            for item in all_items:
+                if fnmatch.fnmatch(item.type, item_filter):
+                    yield item
+
+    def _get_item_tree_as_list(self):
+        """
+        Returns the item tree as a flat list.
+
         :returns: List if item objects
         """
-        items = []
-        for child in parent.children:
-            items.append(child)
-            items.extend(self._get_items(child))
-        return items
+        def _get_subtree_as_list_r(parent):
+            items = []
+            for child in parent.children:
+                items.append(child)
+                items.extend(_get_subtree_as_list_r(child))
+            return items
+
+        parent = self._root_item
+        return _get_subtree_as_list_r(parent)
 

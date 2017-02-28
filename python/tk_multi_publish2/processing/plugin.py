@@ -9,12 +9,10 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import sgtk
-
 from sgtk.platform.qt import QtCore, QtGui
+from .setting import Setting
 
 logger = sgtk.platform.get_logger(__name__)
-
-from .setting import Setting
 
 
 class Plugin(object):

@@ -11,10 +11,9 @@
 import os
 import sgtk
 import tempfile
+from sgtk.platform.qt import QtCore, QtGui
 
 logger = sgtk.platform.get_logger(__name__)
-
-from sgtk.platform.qt import QtCore, QtGui
 
 
 class Item(object):
