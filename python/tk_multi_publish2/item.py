@@ -11,10 +11,10 @@
 
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
-
 from .ui.item import Ui_Item
 
 logger = sgtk.platform.get_logger(__name__)
+
 
 class Item(QtGui.QFrame):
     """

@@ -11,10 +11,10 @@
 
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
-
 from .item import Item
 
 logger = sgtk.platform.get_logger(__name__)
+
 
 class PublishTreeWidget(QtGui.QTreeWidgetItem):
     """
@@ -133,7 +133,6 @@ class PublishTreeWidgetTask(PublishTreeWidget):
         return True
 
 
-
 class PublishTreeWidgetPlugin(PublishTreeWidget):
     """
     Tree item for a plugin
@@ -150,7 +149,7 @@ class PublishTreeWidgetPlugin(PublishTreeWidget):
 
         self._item_widget = Item(tree_widget)
         self._item_widget.set_header(self._plugin.name)
-        self._item_widget.set_icon(self._plugin.icon_)
+        self._item_widget.set_icon(self._plugin.icon)
 
         tree_widget = self.treeWidget()
         tree_widget.setItemWidget(self, 0, self._item_widget)
@@ -166,8 +165,6 @@ class PublishTreeWidgetPlugin(PublishTreeWidget):
     def icon(self):
         # qicon for the node
         return QtGui.QIcon(self._plugin.icon)
-
-
 
 
 class PublishTreeWidgetItem(PublishTreeWidget):

@@ -139,10 +139,6 @@ class SettingsWidget(QtGui.QWidget):
     def set_static_data(self, settings):
         """
         Clear any existing data in the widget and populate it with new data
-
-
-
-
         """
 
         # first clear existing stuff

@@ -8,13 +8,13 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
 
+screen_grab = sgtk.platform.import_framework("tk-framework-qtwidgets", "screen_grab")
+
 logger = sgtk.platform.get_logger(__name__)
 
-screen_grab = sgtk.platform.import_framework("tk-framework-qtwidgets", "screen_grab")
 
 class Thumbnail(QtGui.QLabel):
     """

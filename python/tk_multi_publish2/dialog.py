@@ -14,10 +14,8 @@ from sgtk import TankError
 from sgtk.platform.qt import QtCore, QtGui
 
 from .ui.dialog import Ui_Dialog
-
 from .processing import PluginManager
 from .tree_item import PublishTreeWidgetItem, PublishTreeWidgetTask, PublishTreeWidgetPlugin
-
 from .publish_logging import PublishLogWrapper
 
 # import frameworks
@@ -26,6 +24,7 @@ help_screen = sgtk.platform.import_framework("tk-framework-qtwidgets", "help_scr
 task_manager = sgtk.platform.import_framework("tk-framework-shotgunutils", "task_manager")
 
 logger = sgtk.platform.get_logger(__name__)
+
 
 class AppDialog(QtGui.QWidget):
     """

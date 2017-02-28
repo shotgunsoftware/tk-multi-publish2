@@ -121,7 +121,7 @@ class PluginManager(object):
                 )
 
         # get all items after scan
-        all_items_after = self._get_items(self._root_item)
+        all_items_after = self._get_item_tree_as_list()
 
         # get list of new things
         all_new_items = list(set(all_items_after) - set(all_items_before))
