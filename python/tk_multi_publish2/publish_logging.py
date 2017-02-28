@@ -19,28 +19,33 @@ logger = sgtk.platform.get_logger(__name__)
 
 class PublishLogHandler(logging.Handler):
     """
-    Publish Log handler
+    Publish Log handler that links up a handler to a
+    qt tree for display.
     """
 
     def __init__(self, tree_widget):
         """
-        :param engine: Engine to which log messages should be forwarded.
-        :type engine: :class:`Engine`
+        :param tree_widget: QTreeWidget to use for logging
         """
         # avoiding super in order to be py25-compatible
         logging.Handler.__init__(self)
+
         self._tree_widget = tree_widget
 
-        self._logging_parent_item = None # none means root
+        self._logging_parent_item = None  # none means root
 
         self._debug_brush = QtGui.QBrush(QtGui.QColor("#508937"))  # green
         self._warning_brush = QtGui.QBrush(QtGui.QColor("#FFD786"))  # orange
         self._error_brush = QtGui.QBrush(QtGui.QColor("#FF383F"))  # red
 
-
-
     def push(self, text, icon):
+        """
+        Push a child node to the tree. New log records will
+        be added as children to this child node.
 
+        :param text: Caption for the entry
+        :param icon: QIcon for the entry
+        """
         item = QtGui.QTreeWidgetItem()
         item.setText(0, text)
         if self._logging_parent_item is None:
@@ -55,7 +60,11 @@ class PublishLogHandler(logging.Handler):
         self._logging_parent_item = item
 
     def pop(self):
-
+        """
+        Pops any active child section.
+        If no child sections exist, this operation will not
+        have any effect.
+        """
         # top level items return None
         if self._logging_parent_item:
             self._logging_parent_item = self._logging_parent_item.parent()
@@ -95,9 +104,15 @@ class PublishLogHandler(logging.Handler):
 
 
 class PublishLogWrapper(object):
+    """
+    Convenience object that wraps around a logger and a handler
+    that can be used for publishing.
+    """
 
     def __init__(self, tree_widget):
-
+        """
+        :param tree_widget: QTreeWidget to use for logging
+        """
         # set up a logger
         full_log_path = "%s.publish" % logger.name
 
@@ -119,12 +134,27 @@ class PublishLogWrapper(object):
 
     @property
     def logger(self):
+        """
+        The associated logger
+        """
         return self._logger
 
     def push(self, text, icon=None):
+        """
+        Push a child node to the tree. New log records will
+        be added as children to this child node.
+
+        :param text: Caption for the entry
+        :param icon: QIcon for the entry
+        """
         self._handler.push(text, icon)
 
     def pop(self):
+        """
+        Pops any active child section.
+        If no child sections exist, this operation will not
+        have any effect.
+        """
         self._handler.pop()
 
 

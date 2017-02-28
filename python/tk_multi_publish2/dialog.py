@@ -46,8 +46,6 @@ class AppDialog(QtGui.QWidget):
 
     def __init__(self, parent=None):
         """
-        Constructor
-        
         :param parent: The parent QWidget for this control
         """
         QtGui.QWidget.__init__(self, parent)
