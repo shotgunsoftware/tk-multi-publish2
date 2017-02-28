@@ -9,16 +9,11 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 import sgtk
 import os
-import re
-import time
-import glob
-import maya.cmds as cmds
-import maya.mel as mel
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
-class SceneHook(HookBaseClass):
+class MayaAlembicCachePublishPlugin(HookBaseClass):
     """
     Testing the new awesome hooks
     """

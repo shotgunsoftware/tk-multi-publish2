@@ -15,9 +15,9 @@ import urllib
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
-class SceneHook(HookBaseClass):
+class GenericFilePublishPlugin(HookBaseClass):
     """
-    Testing the new awesome hooks
+    Publishing Plugin for generic files
     """
 
     @property

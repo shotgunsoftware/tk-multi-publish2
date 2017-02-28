@@ -14,7 +14,7 @@ import time
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
-class SceneHook(HookBaseClass):
+class ShotgunReviewPlugin(HookBaseClass):
     """
     Testing the new awesome hooks
     """

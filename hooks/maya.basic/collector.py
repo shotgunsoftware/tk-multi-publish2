@@ -13,6 +13,7 @@ import maya.cmds as cmds
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
+
 class MayaSceneCollector(HookBaseClass):
     """
     Collector that operates on the maya scene
@@ -20,12 +21,19 @@ class MayaSceneCollector(HookBaseClass):
 
     def process_file(self, parent_item, path):
         """
-        Extend the base processing capabilities with a maya
-        file detection which determines the maya project.
+        Analyzes the given file and creates one or more items
+        to represent it. Extends the base processing
+        capabilities with a maya file detection which
+        determines the maya project.
+
+        :param parent_item: Root item instance
+        :param path: Path to analyze
+        :returns: The main item that was created
         """
 
         if path.endswith(".ma") or path.endswith(".mb"):
 
+            # run base class logic to set basic properties for us
             item = super(MayaSceneCollector, self).process_file(parent_item, path)
 
             item.type = "file.maya"
@@ -49,17 +57,27 @@ class MayaSceneCollector(HookBaseClass):
 
         return item
 
-
     def process_current_scene(self, parent_item):
+        """
+        Analyzes the current scene open in a DCC and parents a subtree of items
+        under the parent_item passed in.
 
+        :param parent_item: Root item instance
+        """
+        # create an item representing the current maya scene
         item = self.create_current_maya_scene(parent_item)
+        # look for playblasts
         self.create_playblasts(item)
+        # look for caches
         self.create_alembic_caches(item)
-        return item
-
 
     def create_current_maya_scene(self, parent_item):
+        """
+        Creates an item that represents the current maya scene.
 
+        :param parent_item: Parent Item instance
+        :returns: Item of type maya.scene
+        """
         scene_file = cmds.file(query=True, sn=True)
         if scene_file == "":
             # make more pythonic
@@ -80,7 +98,15 @@ class MayaSceneCollector(HookBaseClass):
         return current_scene
 
     def create_alembic_caches(self, parent_item):
+        """
+        Creates items for alembic caches
 
+        Looks for a 'project_root' property on the parent item,
+        and if such exists, look for quicktimes in a 'cache/alembic' subfolder.
+
+        :param parent_item: Parent Item instance
+        :returns: List of items of type maya.alembic_file
+        """
         # use the workspace_root property on the parent to
         # extract playblast objects
         items = []
@@ -100,7 +126,15 @@ class MayaSceneCollector(HookBaseClass):
         return items
 
     def create_playblasts(self, parent_item):
+        """
+        Creates items for quicktime playblasts.
 
+        Looks for a 'project_root' property on the parent item,
+        and if such exists, look for quicktimes in a 'movies' subfolder.
+
+        :param parent_item: Parent Item instance
+        :returns: List of items with type maya.playblast
+        """
         # use the workspace_root property on the parent to
         # extract playblast objects
         items = []

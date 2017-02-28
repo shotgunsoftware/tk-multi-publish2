@@ -31,12 +31,16 @@ class AppDialog(QtGui.QWidget):
     Main dialog window for the App
     """
 
+    # the yin-yang modes
     (ITEM_CENTRIC, PLUGIN_CENTRIC) = range(2)
 
+    # details ui panes
     (SUMMARY_DETAILS, TASK_DETAILS, PLUGIN_DETAILS, ITEM_DETAILS, BLANK_DETAILS) = range(5)
 
+    # main right hand side tabs
     (DETAILS_TAB, PROGRESS_TAB) = range(2)
 
+    # modes for handling context
     (DISPLAY_CONTEXT, EDIT_CONTEXT) = range(2)
 
 
@@ -44,13 +48,14 @@ class AppDialog(QtGui.QWidget):
         """
         Constructor
         
-        :param parent:          The parent QWidget for this control
+        :param parent: The parent QWidget for this control
         """
         QtGui.QWidget.__init__(self, parent)
 
         # create a settings manager where we can pull and push prefs later
         # prefs in this manager are shared
         self._settings_manager = settings.UserSettings(sgtk.platform.current_bundle())
+
         # create a background task manager
         self._task_manager = task_manager.BackgroundTaskManager(self,
                                                                 start_processing=True,
@@ -67,7 +72,8 @@ class AppDialog(QtGui.QWidget):
         self.ui.splitter.setStretchFactor(1, 1)
 
         # give tree view 360 width, rest to details pane
-        # note: value of second option does not seem to matter (as long as it's there)
+        # note: value of second option does not seem to
+        # matter (as long as it's there)
         self.ui.splitter.setSizes([360, 100])
 
         # set up tree view to look slick
@@ -85,16 +91,17 @@ class AppDialog(QtGui.QWidget):
         self.ui.publish.clicked.connect(self.do_publish)
         self._close_ui_on_publish_click = False
 
-
+        # create menu on the cog button
         self._menu = QtGui.QMenu()
         self._actions = []
         self.ui.options.setMenu(self._menu)
+
         self._refresh_action = QtGui.QAction("Refresh", self)
         self._refresh_action.setIcon(QtGui.QIcon(QtGui.QPixmap(":/tk_multi_publish2/reload.png")))
         self._refresh_action.triggered.connect(self._refresh)
         self._menu.addAction(self._refresh_action)
 
-        self._separator_1= QtGui.QAction(self)
+        self._separator_1 = QtGui.QAction(self)
         self._separator_1.setSeparator(True)
         self._menu.addAction(self._separator_1)
 
@@ -111,17 +118,17 @@ class AppDialog(QtGui.QWidget):
         self._menu.addAction(self._separator_2)
 
         self._check_all_action = QtGui.QAction("Check All", self)
-        self._check_all_action.triggered.connect(lambda : self._check_all(True))
+        self._check_all_action.triggered.connect(lambda: self._check_all(True))
         self._menu.addAction(self._check_all_action)
 
-        self._uncheck_all_action = QtGui.QAction("Unckeck All", self)
-        self._uncheck_all_action.triggered.connect(lambda : self._check_all(False))
+        self._uncheck_all_action = QtGui.QAction("Uncheck All", self)
+        self._uncheck_all_action.triggered.connect(lambda: self._check_all(False))
         self._menu.addAction(self._uncheck_all_action)
 
         # when the description is updated
         self.ui.summary_comments.textChanged.connect(self._on_publish_comment_change)
 
-        # context edit
+        # context edit - TEMPORARY, PENDING DESIGN
         self.ui.summary_context_edit.clicked.connect(self._enable_context_edit_mode)
         self.ui.summary_context_select.set_bg_task_manager(self._task_manager)
         self.ui.summary_context_select.set_searchable_entity_types(
@@ -142,7 +149,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.summary_thumbnail.screen_grabbed.connect(self._update_item_thumbnail)
         self.ui.item_thumbnail.screen_grabbed.connect(self._update_item_thumbnail)
 
-        # mode
+        # current yin-yang mode
         self._display_mode = self.ITEM_CENTRIC
 
         # currently displayed item
@@ -163,6 +170,7 @@ class AppDialog(QtGui.QWidget):
         logger.debug("CloseEvent Received. Begin shutting down UI.")
 
         try:
+            # shut down global search widget
             self.ui.summary_context_select.destroy()
             # shut down main threadpool
             self._task_manager.shut_down()

@@ -17,7 +17,7 @@ import maya.cmds as cmds
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
-class SceneHook(HookBaseClass):
+class MayaScenePublishPlugin(HookBaseClass):
     """
     Testing the new awesome hooks
     """

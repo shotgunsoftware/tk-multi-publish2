@@ -9,15 +9,11 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 import sgtk
 import os
-import re
-import time
-import glob
-import maya.cmds as cmds
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
-class PlayblastPublisher(HookBaseClass):
+class MayaPlayblastReviewPlugin(HookBaseClass):
     """
     Testing the new awesome hooks
     """
