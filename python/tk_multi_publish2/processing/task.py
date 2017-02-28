@@ -35,6 +35,9 @@ class Task(object):
         self._required = required
 
     def __repr__(self):
+        """
+        String representation
+        """
         return "<Task: %s for %s >" % (self._plugin, self._item)
 
     @property

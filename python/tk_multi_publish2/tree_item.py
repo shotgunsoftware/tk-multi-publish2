@@ -78,7 +78,7 @@ class PublishTreeWidgetTask(PublishTreeWidget):
         tree_widget = self.treeWidget()
         self._item_widget = Item(tree_widget)
         self._item_widget.set_header(self._task.plugin.name)
-        self._item_widget.set_icon(self._task.plugin.icon_pixmap)
+        self._item_widget.set_icon(self._task.plugin.icon)
         self._item_widget.checkbox.setChecked(self._task.enabled)
         if self._task.required:
             self._item_widget.checkbox.setEnabled(False)
@@ -97,7 +97,7 @@ class PublishTreeWidgetTask(PublishTreeWidget):
     @property
     def icon(self):
         # qicon for the node
-        return QtGui.QIcon(self._task.plugin.icon_pixmap)
+        return QtGui.QIcon(self._task.plugin.icon)
 
     def validate(self):
         try:
@@ -150,7 +150,7 @@ class PublishTreeWidgetPlugin(PublishTreeWidget):
 
         self._item_widget = Item(tree_widget)
         self._item_widget.set_header(self._plugin.name)
-        self._item_widget.set_icon(self._plugin.icon_pixmap)
+        self._item_widget.set_icon(self._plugin.icon_)
 
         tree_widget = self.treeWidget()
         tree_widget.setItemWidget(self, 0, self._item_widget)
@@ -165,7 +165,7 @@ class PublishTreeWidgetPlugin(PublishTreeWidget):
     @property
     def icon(self):
         # qicon for the node
-        return QtGui.QIcon(self._plugin.icon_pixmap)
+        return QtGui.QIcon(self._plugin.icon)
 
 
 
@@ -183,7 +183,7 @@ class PublishTreeWidgetItem(PublishTreeWidget):
 
         self._item_widget = Item(tree_widget)
         self._item_widget.set_header("<b>%s</b><br>%s" % (self._item.name, self._item.display_type))
-        self._item_widget.set_icon(self._item.icon_pixmap)
+        self._item_widget.set_icon(self._item.icon)
 
         tree_widget.setItemWidget(self, 0, self._item_widget)
 
@@ -198,4 +198,4 @@ class PublishTreeWidgetItem(PublishTreeWidget):
     @property
     def icon(self):
         # qicon for the node
-        return QtGui.QIcon(self._item.icon_pixmap)
+        return QtGui.QIcon(self._item.icon)

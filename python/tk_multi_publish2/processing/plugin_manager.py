@@ -52,7 +52,7 @@ class PluginManager(object):
             logger.debug("Created %s" % plugin)
             self._plugins.append(plugin)
 
-        self._root_item = Item("_root", "_root", "_root", parent=None)
+        self._root_item = Item.get_invisible_root_item()
         self._tasks = []
 
         # do the current scene

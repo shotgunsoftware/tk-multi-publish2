@@ -216,7 +216,7 @@ class AppDialog(QtGui.QWidget):
     def _update_context(self, entity_type, entity_id):
         self.ui.context_stack.setCurrentIndex(self.DISPLAY_CONTEXT)
         ctx = self._bundle.sgtk.context_from_entity(entity_type, entity_id)
-        self._current_item.set_context(ctx)
+        self._current_item.context = ctx
         self.ui.summary_context.setText(str(ctx))
 
     def _on_publish_comment_change(self):
@@ -237,7 +237,7 @@ class AppDialog(QtGui.QWidget):
         """
         if not self._current_item:
             raise TankError("No current item set!")
-        self._current_item.set_thumbnail_pixmap(pixmap)
+        self._current_item.thumbnail = pixmap
 
     def _update_item_thumbnail(self, pixmap):
         """
@@ -246,15 +246,15 @@ class AppDialog(QtGui.QWidget):
         """
         if not self._current_item:
             raise TankError("No current item set!")
-        self._current_item.set_thumbnail_pixmap(pixmap)
+        self._current_item.thumbnail = pixmap
 
     def _create_summary_details(self, item):
 
         self._current_item = item
         self.ui.details_stack.setCurrentIndex(self.SUMMARY_DETAILS)
-        self.ui.summary_icon.setPixmap(item.icon_pixmap)
+        self.ui.summary_icon.setPixmap(item.icon)
         self.ui.summary_comments.setPlainText(item.description)
-        self.ui.summary_thumbnail.set_thumbnail(item.thumbnail_pixmap)
+        self.ui.summary_thumbnail.set_thumbnail(item.thumbnail)
         self.ui.summary_header.setText("Publish summary for %s" % item.name)
         self.ui.summary_context.setText(str(item.context))
 
@@ -264,10 +264,10 @@ class AppDialog(QtGui.QWidget):
         self._current_item = item
         self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
 
-        self.ui.item_icon.setPixmap(item.icon_pixmap)
+        self.ui.item_icon.setPixmap(item.icon)
         self.ui.item_name.setText(item.name)
         self.ui.item_type.setText(item.display_type)
-        self.ui.item_thumbnail.set_thumbnail(item.thumbnail_pixmap)
+        self.ui.item_thumbnail.set_thumbnail(item.thumbnail)
 
         self.ui.item_settings.set_static_data(
             [(p, item.properties[p]) for p in item.properties]
@@ -278,7 +278,7 @@ class AppDialog(QtGui.QWidget):
         self._current_item = None
         self.ui.details_stack.setCurrentIndex(self.TASK_DETAILS)
 
-        self.ui.task_icon.setPixmap(task.plugin.icon_pixmap)
+        self.ui.task_icon.setPixmap(task.plugin.icon)
         self.ui.task_name.setText(task.plugin.name)
 
         self.ui.task_description.setText(task.plugin.description)
@@ -290,7 +290,7 @@ class AppDialog(QtGui.QWidget):
 
         self._current_item = None
         self.ui.details_stack.setCurrentIndex(self.PLUGIN_DETAILS)
-        self.ui.plugin_icon.setPixmap(plugin.icon_pixmap)
+        self.ui.plugin_icon.setPixmap(plugin.icon)
 
         self.ui.plugin_name.setText(plugin.name)
 

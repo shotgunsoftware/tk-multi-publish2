@@ -14,7 +14,6 @@ from sgtk.platform.qt import QtCore, QtGui
 
 logger = sgtk.platform.get_logger(__name__)
 
-from sgtk import TankError
 
 
 from .setting import Setting
@@ -48,6 +47,9 @@ class Plugin(object):
 
 
     def __repr__(self):
+        """
+        String representation
+        """
         return "<Publish Plugin %s>" % self._path
 
     def _validate_and_resolve_config(self):

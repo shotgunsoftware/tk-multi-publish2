@@ -102,7 +102,7 @@ class SceneHook(HookBaseClass):
         version = self.parent.shotgun.create("Version", data)
 
         # and payload
-        thumb = item.get_thumbnail()
+        thumb = item.get_thumbnail_as_path()
 
         if settings["Upload"].value:
             log.info("Uploading content")
@@ -111,7 +111,11 @@ class SceneHook(HookBaseClass):
             # only upload thumb if we are not uploading the content
             # with uploaded content, the thumb is automatically extracted.
             log.info("Uploading thumbnail")
-            self.parent.shotgun.upload_thumbnail("Version", version["id"], item.get_thumbnail())
+            self.parent.shotgun.upload_thumbnail(
+                "Version",
+                version["id"],
+                item.get_thumbnail_as_path()
+            )
 
 
     def finalize(self, log, settings, item):

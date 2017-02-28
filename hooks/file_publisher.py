@@ -108,7 +108,7 @@ class SceneHook(HookBaseClass):
             "path": "file://%s" % item.properties["path"],
             "name": "%s%s" % (item.properties["prefix"], item.properties["extension"]),
             "version_number": item.properties["version"],
-            "thumbnail_path": item.get_thumbnail(),
+            "thumbnail_path": item.get_thumbnail_as_path(),
             "published_file_type": publish_type,
         }
 

@@ -93,7 +93,7 @@ class SceneHook(HookBaseClass):
             "path": "file://%s" % publish_path,
             "name": filename,
             "version_number": version,
-            "thumbnail_path": item.get_thumbnail(),
+            "thumbnail_path": item.get_thumbnail_as_path(),
             "published_file_type": settings["Publish Type"].value,
             "dependency_ids": [item.parent.properties["shotgun_publish_id"]]
         }

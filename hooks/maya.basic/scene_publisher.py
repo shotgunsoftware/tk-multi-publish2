@@ -58,7 +58,7 @@ class SceneHook(HookBaseClass):
                 with open(context_file, "rb") as fh:
                     context_str = fh.read()
                 context_obj = sgtk.Context.deserialize(context_str)
-                item.set_context(context_obj)
+                item.context = context_obj
             except Exception, e:
                 log.warning("Could not read saved context %s: %s" % (context_file, e))
 
@@ -164,7 +164,7 @@ class SceneHook(HookBaseClass):
             "path": "file://%s" % publish_path,
             "name": filename,
             "version_number": version_to_use,
-            "thumbnail_path": item.get_thumbnail(),
+            "thumbnail_path": item.get_thumbnail_as_path(),
             "published_file_type": settings["Publish Type"].value,
             #"dependency_paths": self._maya_find_additional_scene_dependencies(), # need to update core for this to work
         }

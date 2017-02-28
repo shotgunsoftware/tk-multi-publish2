@@ -28,8 +28,9 @@ class MayaSceneCollector(HookBaseClass):
 
             item = super(MayaSceneCollector, self).process_file(parent_item, path)
 
-            item.update_type("file.maya", "Maya File")
-            item.set_icon(os.path.join(self.disk_location, "icons", "maya.png"))
+            item.type = "file.maya"
+            item.display_type = "Maya File"
+            item.set_icon_from_path(os.path.join(self.disk_location, "icons", "maya.png"))
 
             # set the workspace root for this item
 
@@ -74,7 +75,7 @@ class MayaSceneCollector(HookBaseClass):
         current_scene.properties["path"] = scene_file
         current_scene.properties["project_root"] = cmds.workspace(q=True, rootDirectory=True)
 
-        current_scene.set_icon(os.path.join(self.disk_location, "icons", "maya.png"))
+        current_scene.set_icon_from_path(os.path.join(self.disk_location, "icons", "maya.png"))
 
         return current_scene
 
@@ -93,7 +94,7 @@ class MayaSceneCollector(HookBaseClass):
                     if path.endswith(".abc"):
                         item = parent_item.create_item("maya.alembic_file", "Alembic Cache File", filename)
                         item.properties["path"] = path
-                        item.set_icon(os.path.join(self.disk_location, "icons", "alembic.png"))
+                        item.set_icon_from_path(os.path.join(self.disk_location, "icons", "alembic.png"))
                         items.append(item)
 
         return items
@@ -113,7 +114,7 @@ class MayaSceneCollector(HookBaseClass):
                     if path.endswith(".mov"):
                         item = parent_item.create_item("maya.playblast", "Playblast in Maya Project", filename)
                         item.properties["path"] = path
-                        item.set_icon(os.path.join(self.disk_location, "icons", "popcorn.png"))
+                        item.set_icon_from_path(os.path.join(self.disk_location, "icons", "popcorn.png"))
                         items.append(item)
 
         return items
