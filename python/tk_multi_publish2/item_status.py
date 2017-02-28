@@ -14,16 +14,18 @@ from sgtk.platform.qt import QtCore, QtGui
 
 logger = sgtk.platform.get_logger(__name__)
 
+
 class ItemStatus(QtGui.QWidget):
     """
-    Publish Status Widget
+    Publish Status Widget. Small graphical widget used to display
+    a circular dot in different colors.
     """
 
     (_MODE_OFF, _MODE_ON) = range(2)
 
     def __init__(self, parent=None):
         """
-        Constructor
+        :param parent: The parent QWidget for this control
         """
         QtGui.QWidget.__init__(self, parent)
         self._bundle = sgtk.platform.current_bundle()
@@ -32,13 +34,14 @@ class ItemStatus(QtGui.QWidget):
         self._pen_color = None
         self._brush_color = None
 
-
-
-    ############################################################################################
-    # public interface
-
     def show_dot(self, ring_color, fill_color, dotted=False):
+        """
+        Show a status dot using a particular color combination
 
+        :param ring_color: html color string for the ring border
+        :param fill_color: html color string for the fill color
+        :param dotted: if true then draw a dotted border
+        """
         self._mode = self._MODE_ON
         self._pen_color = ring_color
         self._brush_color = fill_color
@@ -47,14 +50,10 @@ class ItemStatus(QtGui.QWidget):
 
     def show_nothing(self):
         """
-        Hide the overlay.
+        Turn off any dot that is being display.
         """
         self._mode = self._MODE_OFF
         self.repaint()
-
-
-    ############################################################################################
-    # internal methods
 
     def paintEvent(self, event):
         """
@@ -95,7 +94,6 @@ class ItemStatus(QtGui.QWidget):
 
             r = QtCore.QRectF(0.0, 0.0, 14.0, 14.0)
             painter.drawEllipse(r)
-
 
         finally:
             painter.end()

@@ -11,16 +11,30 @@
 
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
-
 from .ui.item import Ui_Item
 
 logger = sgtk.platform.get_logger(__name__)
 
+
 class Item(QtGui.QFrame):
     """
-    Represents a right hand side details pane in the UI
+    Widget representing a single item in the left hand side tree view.
+    (Connected to a designer ui setup)
+
+    Each item has got the following associated properties:
+
+    - An area which can either be a checkbox for selection
+      or a "dot" which signals progress udpates
+
+    - An icon
+
+    - A header text
+
+    These widgets are plugged in as subcomponents inside a QTreeWidgetItem
+    via the PublishTreeWidget class hierarchy.
     """
 
+    # status of checkbox / progress
     (
         NEUTRAL,
         PROCESSING,
@@ -35,33 +49,50 @@ class Item(QtGui.QFrame):
 
     def __init__(self, parent=None):
         """
-        Constructor
-        
-        :param parent:          The parent QWidget for this control
+        :param parent: The parent QWidget for this control
         """
         QtGui.QFrame.__init__(self, parent)
 
         # set up the UI
         self.ui = Ui_Item()
         self.ui.setupUi(self)
-
         self.set_status(self.NEUTRAL)
-
-    def set_icon(self, pixmap):
-        """
-        Specifies if this item should be a plugin or a item
-        """
-        self.ui.icon.setPixmap(pixmap)
 
     @property
     def checkbox(self):
+        """
+        The checkbox widget associated with this item
+        """
         return self.ui.checkbox
+
+    @property
+    def icon(self):
+        """
+        The icon pixmap associated with this item
+        """
+        return self.ui.icon.pixmap()
+
+    def set_icon(self, pixmap):
+        """
+        Set the icon to be used
+
+        :param pixmap: Square icon pixmap to use
+        """
+        self.ui.icon.setPixmap(pixmap)
+
+    def set_header(self, title):
+        """
+        Set the title of the item
+
+        :param title: Header text. Can be html.
+        """
+        self.ui.header.setText(title)
 
     def set_status(self, status):
         """
         Set the status for the plugin
-        @param status:
-        @return:
+        :param status: An integer representing on of the
+            status constants defined by the class
         """
         # reset
         self.ui.status.show_nothing()
@@ -105,10 +136,5 @@ class Item(QtGui.QFrame):
             raise sgtk.TankError("Invalid item status!")
 
 
-    def set_header(self, title):
-        """
-        Set the title of the item
-        """
-        self.ui.header.setText(title)
 
 

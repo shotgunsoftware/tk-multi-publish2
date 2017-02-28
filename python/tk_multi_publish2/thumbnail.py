@@ -8,13 +8,13 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
 
+screen_grab = sgtk.platform.import_framework("tk-framework-qtwidgets", "screen_grab")
+
 logger = sgtk.platform.get_logger(__name__)
 
-screen_grab = sgtk.platform.import_framework("tk-framework-qtwidgets", "screen_grab")
 
 class Thumbnail(QtGui.QLabel):
     """
@@ -23,13 +23,13 @@ class Thumbnail(QtGui.QLabel):
     using screen capture and other methods.
     """
 
+    # emitted when screen is captured
+    # passes the QPixmap as a parameter
     screen_grabbed = QtCore.Signal(object)
 
     def __init__(self, parent=None):
         """
-        Constructor
-
-        :param parent:          The parent QWidget for this control
+        :param parent: The parent QWidget for this control
         """
         QtGui.QLabel.__init__(self, parent)
         self._thumbnail = None
@@ -41,7 +41,9 @@ class Thumbnail(QtGui.QLabel):
 
     def set_thumbnail(self, pixmap):
         """
-        Set up the widget as a thumb
+        Set pixmap to be displayed
+
+        :param pixmap: QPixmap to show or None in order to show default one.
         """
         if pixmap is None:
             self._set_screenshot_pixmap(self._no_thumb_pixmap)
@@ -54,7 +56,6 @@ class Thumbnail(QtGui.QLabel):
         """
         QtGui.QLabel.mousePressEvent(self, event)
 
-        # no pixmap exists - screengrab mode
         self._bundle.log_debug("Prompting for screenshot...")
 
         self.window().hide()
@@ -63,17 +64,12 @@ class Thumbnail(QtGui.QLabel):
         finally:
             self.window().show()
 
-        # It's possible that there's custom screencapture logic
-        # happening and we won't get a pixmap back right away.
-        # A good example of this is something like RV, which
-        # will handle screenshots itself and provide back the
-        # image asynchronously.
         if pixmap:
             self._bundle.log_debug(
                 "Got screenshot %sx%s" % (pixmap.width(), pixmap.height())
             )
-            self.screen_grabbed.emit(pixmap)
             self._set_screenshot_pixmap(pixmap)
+            self.screen_grabbed.emit(pixmap)
 
     def _set_screenshot_pixmap(self, pixmap):
         """
@@ -92,7 +88,7 @@ class Thumbnail(QtGui.QLabel):
         Format a given pixmap to 16:9 ratio
 
         :param pixmap_obj: input screenshot
-        :returns: 160x90 pixmap
+        :returns: 320x180 pixmap (16:9 ratio)
         """
         CANVAS_WIDTH = 320
         CANVAS_HEIGHT = 180

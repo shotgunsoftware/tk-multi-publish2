@@ -1,4 +1,4 @@
-# Copyright (c) 2015 Shotgun Software Inc.
+# Copyright (c) 2017 Shotgun Software Inc
 # 
 # CONFIDENTIAL AND PROPRIETARY
 # 
@@ -18,6 +18,7 @@ shotgun_globals = sgtk.platform.import_framework("tk-framework-shotgunutils", "s
 
 from .ui.settings_widget import Ui_SettingsWidget
 
+
 class FieldNameLabel(QtGui.QLabel):
     """
     Wrapper class so that we can style based on class
@@ -34,7 +35,7 @@ class FieldValueLabel(QtGui.QLabel):
 
 class SettingsWidget(QtGui.QWidget):
     """
-    Widget that shows shotgun data in a name-value pair, top down fasion:
+    Widget that shows shotgun data in a name-value pair, top down fashion:
     
     Status: In Progress
     Description: Foo Bar
@@ -84,13 +85,11 @@ class SettingsWidget(QtGui.QWidget):
             # make the window visible again and trigger a redraw
             self.setVisible(True)
 
-
-
     def set_data(self, settings):
         """
         Clear any existing data in the widget and populate it with new data
         
-        :param sg_data: Shotgun data dictionary
+        :param settings: Shotgun data dictionary
         """
                         
         # first clear existing stuff
@@ -140,11 +139,8 @@ class SettingsWidget(QtGui.QWidget):
         """
         Clear any existing data in the widget and populate it with new data
 
-
-
-
+        :param settings: Shotgun data dictionary
         """
-
         # first clear existing stuff
         self.clear()
 

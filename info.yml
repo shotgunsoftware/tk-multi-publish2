@@ -8,20 +8,16 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-# Metadata defining the behaviour and requirements for this app
-
-# expected fields in the configuration file for this app
 configuration:
 
     collector:
         type: hook
-        description: "Logic for enumerating things"
+        description: "Logic for extracting items from the scene and from dropped files."
         default_value: "{self}/collector.py:{self}/maya.basic/collector.py"
-
 
     publish_plugins:
         type: list
-        description: "List of automations to process"
+        description: "List of publish plugins."
         values:
             type: dict
             items:
@@ -75,7 +71,7 @@ description: "Provides UI and functionality to publish files to Shotgun."
 
 # Required minimum versions for this item to run
 requires_shotgun_version:
-requires_core_version: "v0.14.58"
+requires_core_version: "v0.18.0"
 requires_engine_version: 
 
 # this app works in all engines - it does not contain 

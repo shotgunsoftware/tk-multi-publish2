@@ -17,25 +17,52 @@ import maya.cmds as cmds
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
-class SceneHook(HookBaseClass):
+class MayaScenePublishPlugin(HookBaseClass):
     """
-    Testing the new awesome hooks
+    Plugin for versioning and publishing the current maya scene
     """
 
     @property
     def icon(self):
+        """
+        Path to an png icon on disk
+        """
         return os.path.join(self.disk_location, "icons", "shotgun.png")
 
     @property
-    def title(self):
+    def name(self):
+        """
+        One line display name describing the plugin
+        """
         return "Publish Maya Scene"
 
     @property
-    def description_html(self):
+    def description(self):
+        """
+        Verbose, multi-line description of what the plugin does. This
+        can contain simple html for formatting.
+        """
         return """Publishes the current maya scene. This will create a versioned backup and publish that."""
 
     @property
     def settings(self):
+        """
+        Dictionary defining the settings that this plugin expects to recieve
+        through the settings parameter in the accept, validate, publish and
+        finalize methods.
+
+        A dictionary on the following form::
+
+            {
+                "Settings Name": {
+                    "type": "settings_type",
+                    "default": "default_value",
+                    "description": "One line description of the setting"
+            }
+
+        The type string should be one of the data types that toolkit accepts
+        as part of its environment configuration.
+        """
         return {
             "Publish Type": {
                 "type": "shotgun_publish_type",
@@ -45,11 +72,38 @@ class SceneHook(HookBaseClass):
         }
 
     @property
-    def subscriptions(self):
+    def item_filters(self):
+        """
+        List of item types that this plugin is interested in.
+        Only items matching entries in this list will be presented
+        to the accept() method. Strings can contain glob patters
+        such as *, for example ["maya.*", "file.maya"]
+        """
         return ["maya.scene"]
 
     def accept(self, log, settings, item):
+        """
+        Method called by the publisher to determine if an item
+        is of any interest to this plugin. Only items matching
+        the filters defined via the item_filters property will
+        be presented to this method.
 
+        A publish task will be generated for each item accepted
+        here. Returns a dictionary with the following booleans:
+
+            - accepted: Indicates if the plugin is interested in
+                        this value at all.
+            - required: If set to True, the publish task is
+                        required and cannot be disabled.
+            - enabled:  If True, the publish task will be
+                        enabled in the UI by default.
+
+        :param log: Logger to output feedback to.
+        :param settings: Dictionary of Settings. The keys are strings, matching the keys
+            returned in the settings property. The values are `Setting` instances.
+        :param item: Item to process
+        :returns: dictionary with boolean keys accepted, required and enabled
+        """
         project_root = item.properties["project_root"]
         context_file = os.path.join(project_root, "shotgun.context")
         log.debug("Looking for context file in %s" % context_file)
@@ -58,14 +112,24 @@ class SceneHook(HookBaseClass):
                 with open(context_file, "rb") as fh:
                     context_str = fh.read()
                 context_obj = sgtk.Context.deserialize(context_str)
-                item.set_context(context_obj)
+                item.context = context_obj
             except Exception, e:
                 log.warning("Could not read saved context %s: %s" % (context_file, e))
 
         return {"accepted": True, "required": False, "enabled": True}
 
     def validate(self, log, settings, item):
+        """
+        Validates the given item to check that it is ok to publish.
+        Returns a boolean to indicate validity. Use the logger to
+        output further details around why validation has failed.
 
+        :param log: Logger to output feedback to.
+        :param settings: Dictionary of Settings. The keys are strings, matching the keys
+            returned in the settings property. The values are `Setting` instances.
+        :param item: Item to process
+        :returns: True if item is valid, False otherwise.
+        """
         if item.properties["path"] is None:
             log.error("Please save your scene before you continue!")
             return False
@@ -115,7 +179,16 @@ class SceneHook(HookBaseClass):
         return ref_paths
 
     def publish(self, log, settings, item):
+        """
+        Executes the publish logic for the given
+        item and settings. Use the logger to give
+        the user status updates.
 
+        :param log: Logger to output feedback to.
+        :param settings: Dictionary of Settings. The keys are strings, matching the keys
+            returned in the settings property. The values are `Setting` instances.
+        :param item: Item to process
+        """
         # save the maya scene
         log.info("Saving maya scene...")
         cmds.file(save=True, force=True)
@@ -164,7 +237,7 @@ class SceneHook(HookBaseClass):
             "path": "file://%s" % publish_path,
             "name": filename,
             "version_number": version_to_use,
-            "thumbnail_path": item.get_thumbnail(),
+            "thumbnail_path": item.get_thumbnail_as_path(),
             "published_file_type": settings["Publish Type"].value,
             #"dependency_paths": self._maya_find_additional_scene_dependencies(), # need to update core for this to work
         }
@@ -178,7 +251,16 @@ class SceneHook(HookBaseClass):
 
 
     def finalize(self, log, settings, item):
+        """
+        Execute the finalization pass. This pass executes once
+        all the publish tasks have completed, and can for example
+        be used to version up files.
 
+        :param log: Logger to output feedback to.
+        :param settings: Dictionary of Settings. The keys are strings, matching the keys
+            returned in the settings property. The values are `Setting` instances.
+        :param item: Item to process
+        """
         project_root = item.properties["project_root"]
         context_file = os.path.join(project_root, "shotgun.context")
         with open(context_file, "wb") as fh:

@@ -20,16 +20,15 @@ logger = sgtk.platform.get_logger(__name__)
 
 class PluginManager(object):
     """
-    Handles hook execution
+    Manager which handles hook initialization and execution.
     """
 
     def __init__(self, publish_logger):
         """
-        Constructor
-
-        :param parent: The parent QWidget for this control
+        :param publish_logger: A logger object that the
+            various hooks can send logging information to.
         """
-        logger.debug("plugin manager waking up")
+        logger.debug("Plugin manager waking up")
 
         self._bundle = sgtk.platform.current_bundle()
 
@@ -40,6 +39,7 @@ class PluginManager(object):
 
         plugin_defs = self._bundle.get_setting("publish_plugins")
 
+        # create plugin objects
         for plugin_def in plugin_defs:
             logger.debug("Find config chunk %s" % plugin_def)
 
@@ -47,65 +47,59 @@ class PluginManager(object):
             hook_path = plugin_def["hook"]
             settings = plugin_def["settings"]
 
-            # maintain a ordered list
             plugin = Plugin(plugin_instance_name, hook_path, settings, self._logger)
-            logger.debug("Created %s" % plugin)
             self._plugins.append(plugin)
+            logger.debug("Created %s" % plugin)
 
-        self._root_item = Item("_root", "_root", "_root", parent=None)
+        # create an item root
+        self._root_item = Item.get_invisible_root_item()
+
+        # initalize tasks
         self._tasks = []
 
-        # do the current scene
+        # process the current scene
         self._collect(collect_current_scene=True)
-
-    def add_external_files(self, paths):
-        logger.debug("Adding external files '%s'" % paths)
-        # and update the data model
-        self._collect(collect_current_scene=False, paths=paths)
 
     @property
     def top_level_items(self):
+        """
+        Returns a list of the items which reside on the top level
+        of the tree, e.g. all the children of the invisible root item.
+
+        :returns: List if :class:`Item` instances
+        """
         return self._root_item.children
 
     @property
     def plugins(self):
+        """
+        Returns a list of the plugin instances loaded from the configuration
+
+        :returns: List of :class:`Plugin` instances.
+        """
         return self._plugins
 
-    def _get_matching_items(self, subscriptions, all_items):
+    def add_external_files(self, paths):
         """
-        Given a list of subscriptions from a plugin,
-        yield a series of matching items. Items are
-        randomly ordered.
+        Runs the collector for the given set of paths
+
+        :param str paths: List of full file path
         """
-        for subscription in subscriptions:
-            logger.debug("Checking matches for subscription %s" % subscription)
-            # "maya.*"
-            for item in all_items:
-                if fnmatch.fnmatch(item.type, subscription):
-                    yield item
-
-
-    def _create_task(self, plugin, item):
-        task = Task(plugin, item)
-        plugin.add_task(task)
-        item.add_task(task)
-        logger.debug("Created %s" % task)
-        return task
-
-    def _get_items(self, parent):
-        items = []
-        for child in parent.children:
-            items.append(child)
-            items.extend(self._get_items(child))
-        return items
+        logger.debug("Adding external files '%s'" % paths)
+        self._collect(collect_current_scene=False, paths=paths)
 
     def _collect(self, collect_current_scene, paths=None):
         """
         Runs the collector and generates fresh items.
-        """
 
+        :param bool collect_current_scene: Boolean to indicate if collection should
+            be performed for the current scene, e.g. if the collector hook's
+            process_current_scene() method should be executed.
+        :param paths: List of paths for which the collector hook's method
+            process_file() should be executed for
+        """
         # get existing items
-        all_items_before = self._get_items(self._root_item)
+        all_items_before = self._get_item_tree_as_list()
 
         # pass 1 - collect stuff from the scene and other places
         logger.debug("Executing collector")
@@ -127,27 +121,58 @@ class PluginManager(object):
                 )
 
         # get all items after scan
-        all_items_after = self._get_items(self._root_item)
+        all_items_after = self._get_item_tree_as_list()
 
         # get list of new things
         all_new_items = list(set(all_items_after) - set(all_items_before))
 
-        # now we have a series of items from the scene, pass it back to the plugins to see which are interesting
+        # now we have a series of items from the scene, visit our plugins
+        # to see if there is interest
         logger.debug("Visiting all plugins and offering items")
         for plugin in self._plugins:
 
-            for item in self._get_matching_items(plugin.subscriptions, all_new_items):
+            for item in self._get_matching_items(plugin.item_filters, all_new_items):
                 logger.debug("seeing if %s is interested in %s" % (plugin, item))
                 accept_data = plugin.run_accept(item)
                 if accept_data.get("accepted"):
                     # this item was accepted by the plugin!
                     # create a task
-                    task = self._create_task(plugin, item)
                     is_required = accept_data.get("required") is True
                     is_enabled = accept_data.get("enabled") is True
-                    task.set_plugin_defaults(is_required, is_enabled)
+                    task = Task.create_task(plugin, item, is_required, is_enabled)
                     self._tasks.append(task)
 
-        # TODO: need to do a cull to remove any items in the tree which do not have tasks
+        # TODO: need to do a cull to remove any items in the tree which do not have tasks?
 
+    def _get_matching_items(self, item_filters, all_items):
+        """
+        Given a list of item filters from a plugin,
+        yield a series of matching items. Items are
+        randomly ordered.
+
+        :param item_filters: List of item filters to glob against.
+        :param all_items: Items to match against.
+        """
+        for item_filter in item_filters:
+            logger.debug("Checking matches for item filter %s" % item_filter)
+            # "maya.*"
+            for item in all_items:
+                if fnmatch.fnmatch(item.type, item_filter):
+                    yield item
+
+    def _get_item_tree_as_list(self):
+        """
+        Returns the item tree as a flat list.
+
+        :returns: List if item objects
+        """
+        def _get_subtree_as_list_r(parent):
+            items = []
+            for child in parent.children:
+                items.append(child)
+                items.extend(_get_subtree_as_list_r(child))
+            return items
+
+        parent = self._root_item
+        return _get_subtree_as_list_r(parent)
 

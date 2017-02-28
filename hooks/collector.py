@@ -13,31 +13,45 @@ import re
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
+
 class GenericSceneCollector(HookBaseClass):
     """
-    Collector that operates on the maya scene
+    A generic collector that handles files and general objects.
     """
 
     def process_current_scene(self, parent_item):
-        return None
+        """
+        Analyzes the current scene open in a DCC and parents a subtree of items
+        under the parent_item passed in.
+
+        :param parent_item: Root item instance
+        """
+        # default implementation does not do anything
 
     def process_file(self, parent_item, path):
+        """
+        Analyzes the given file and creates one or more items
+        to represent it.
 
+        :param parent_item: Root item instance
+        :param path: Path to analyze
+        :returns: The main item that was created
+        """
         file_name = os.path.basename(path)
         (file_name_no_ext, file_extension) = os.path.splitext(file_name)
 
         if file_extension in [".jpeg", ".jpg", ".png"]:
             file_item = parent_item.create_item("file.image", "Image File", file_name)
-            file_item.set_thumbnail(path)
-            file_item.set_icon(os.path.join(self.disk_location, "icons", "image.png"))
+            file_item.set_thumbnail_from_path(path)
+            file_item.set_icon_from_path(os.path.join(self.disk_location, "icons", "image.png"))
 
         elif file_extension in [".mov", ".mp4"]:
             file_item = parent_item.create_item("file.movie", "Movie File", file_name)
-            file_item.set_icon(os.path.join(self.disk_location, "icons", "quicktime.png"))
+            file_item.set_icon_from_path(os.path.join(self.disk_location, "icons", "quicktime.png"))
 
         else:
             file_item = parent_item.create_item("file", "Generic File", file_name)
-            file_item.set_icon(os.path.join(self.disk_location, "icons", "page.png"))
+            file_item.set_icon_from_path(os.path.join(self.disk_location, "icons", "page.png"))
 
         file_item.properties["extension"] = file_extension
         file_item.properties["path"] = path
