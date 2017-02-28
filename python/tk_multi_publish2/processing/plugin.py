@@ -78,7 +78,7 @@ class Plugin(object):
             if settings_def_name in self._raw_config_settings:
                 # this setting was provided by the config
                 # todo - validate
-                setting.set_value(self._raw_config_settings[settings_def_name])
+                setting.value = self._raw_config_settings[settings_def_name]
 
             self._settings[settings_def_name] = setting
 
