@@ -40,6 +40,23 @@ class Task(object):
         """
         return "<Task: %s for %s >" % (self._plugin, self._item)
 
+    @classmethod
+    def create_task(cls, plugin, item, is_required, is_enabled):
+        """
+        Factory method for new tasks.
+
+        :param plugin: Plugin instance
+        :param item: Item object
+        :param is_required: bool to indicate if this options is required
+        :param is_enabled: bool to indicate if node is enabled
+        :return: Task instance
+        """
+        task = Task(plugin, item, is_required, is_enabled)
+        plugin.add_task(task)
+        item.add_task(task)
+        logger.debug("Created %s" % task)
+        return task
+
     @property
     def item(self):
         """

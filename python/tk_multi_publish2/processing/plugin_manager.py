@@ -20,14 +20,13 @@ logger = sgtk.platform.get_logger(__name__)
 
 class PluginManager(object):
     """
-    Handles hook execution
+    Manager which handles hook initialization and execution.
     """
 
     def __init__(self, publish_logger):
         """
-        Constructor
-
-        :param parent: The parent QWidget for this control
+        :param publish_logger: A logger object that the
+            various hooks can send logging information to.
         """
         logger.debug("plugin manager waking up")
 
@@ -58,24 +57,40 @@ class PluginManager(object):
         # do the current scene
         self._collect(collect_current_scene=True)
 
-    def add_external_files(self, paths):
-        logger.debug("Adding external files '%s'" % paths)
-        # and update the data model
-        self._collect(collect_current_scene=False, paths=paths)
-
     @property
     def top_level_items(self):
+        """
+        Returns a list of the items which reside on the top level
+        of the tree, e.g. all the children of the invisible rooot item.
+        :returns: List if :class:`Item` instances
+        """
         return self._root_item.children
 
     @property
     def plugins(self):
+        """
+        Returns a list of the plugin instances loaded from the configuration
+        :returns: List of :class:`Plugin` instances.
+        """
         return self._plugins
+
+    def add_external_files(self, paths):
+        """
+        Runs the collector for the given set of paths
+        :param str paths: List of full file path
+        """
+        logger.debug("Adding external files '%s'" % paths)
+        # and update the data model
+        self._collect(collect_current_scene=False, paths=paths)
 
     def _get_matching_items(self, item_filters, all_items):
         """
-        Given a list of subscriptions from a plugin,
+        Given a list of item filters from a plugin,
         yield a series of matching items. Items are
         randomly ordered.
+
+        :param item_filters: List of item filters to glob against.
+        :param all_items: Items to match against.
         """
         for item_filter in item_filters:
             logger.debug("Checking matches for item filter %s" % item_filter)
@@ -85,19 +100,6 @@ class PluginManager(object):
                     yield item
 
 
-    def _create_task(self, plugin, item, is_required, is_enabled):
-        task = Task(plugin, item, is_required, is_enabled)
-        plugin.add_task(task)
-        item.add_task(task)
-        logger.debug("Created %s" % task)
-        return task
-
-    def _get_items(self, parent):
-        items = []
-        for child in parent.children:
-            items.append(child)
-            items.extend(self._get_items(child))
-        return items
 
     def _collect(self, collect_current_scene, paths=None):
         """
@@ -144,9 +146,22 @@ class PluginManager(object):
                     # create a task
                     is_required = accept_data.get("required") is True
                     is_enabled = accept_data.get("enabled") is True
-                    task = self._create_task(plugin, item, is_required, is_enabled)
+                    task = Task.create_task(plugin, item, is_required, is_enabled)
                     self._tasks.append(task)
 
         # TODO: need to do a cull to remove any items in the tree which do not have tasks
 
+
+    def _get_items(self, parent):
+        """
+        Iterates recursively and reutrns all items it finds
+
+        :param parent: Parent item object
+        :returns: List if item objects
+        """
+        items = []
+        for child in parent.children:
+            items.append(child)
+            items.extend(self._get_items(child))
+        return items
 
