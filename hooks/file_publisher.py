@@ -179,7 +179,7 @@ class GenericFilePublishPlugin(HookBaseClass):
             "tk": self.parent.sgtk,
             "context": item.context,
             "comment": item.description,
-            "path": "file://%s" % item.properties["path"],
+            "path": item.properties["path"],
             "name": "%s%s" % (item.properties["prefix"], item.properties["extension"]),
             "version_number": item.properties["version"],
             "thumbnail_path": item.get_thumbnail_as_path(),

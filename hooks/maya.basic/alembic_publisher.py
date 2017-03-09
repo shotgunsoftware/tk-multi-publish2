@@ -157,7 +157,7 @@ class MayaAlembicCachePublishPlugin(HookBaseClass):
             "tk": self.parent.sgtk,
             "context": item.context,
             "comment": item.description,
-            "path": "file://%s" % publish_path,
+            "path": publish_path,
             "name": filename,
             "version_number": version,
             "thumbnail_path": item.get_thumbnail_as_path(),
