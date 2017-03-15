@@ -52,7 +52,7 @@ class PluginManager(object):
             logger.debug("Created %s" % plugin)
 
         # create an item root
-        self._root_item = Item.get_invisible_root_item()
+        self._root_item = Item.create_invisible_root_item()
 
         # initalize tasks
         self._tasks = []

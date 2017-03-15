@@ -22,11 +22,7 @@ class Item(object):
     Items are constructed and returned by the collector hook.
 
     Items are organized as a tree with access to parent and children.
-
-    In order to access the top level item in the tree, use the class method
-    :class:`Item.get_invisible_root_item()`
     """
-    _invisible_root_item = None
 
     def __init__(self, item_type, display_type, name, parent):
         """
@@ -82,15 +78,14 @@ class Item(object):
                     logger.debug("Removed temp file '%s'" % temp_file)
 
     @classmethod
-    def get_invisible_root_item(cls):
+    def create_invisible_root_item(cls):
         """
-        Returns the root of the tree of items.
+        Creates a root under which items can be parented.
 
         :returns: :class:`Item`
         """
-        if cls._invisible_root_item is None:
-            cls._invisible_root_item = Item("_root", "_root", "_root", parent=None)
-        return cls._invisible_root_item
+        return Item("_root", "_root", "_root", parent=None)
+
 
     def is_root(self):
         """
@@ -98,7 +93,7 @@ class Item(object):
 
         :returns: True if the root item, False otherwise
         """
-        return self is self._invisible_root_item
+        return self.parent is None
 
     def create_item(self, item_type, display_type, name):
         """
