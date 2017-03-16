@@ -232,7 +232,7 @@ class AppDialog(QtGui.QWidget):
         comments = self.ui.summary_comments.toPlainText()
         if not self._current_item:
             raise TankError("No current item set!")
-        self._current_item.set_description(comments)
+        self._current_item.description = comments
 
     def _on_summary_thumbnail_captured(self, pixmap):
         """
