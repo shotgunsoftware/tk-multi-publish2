@@ -13,7 +13,7 @@ configuration:
     collector:
         type: hook
         description: "Logic for extracting items from the scene and from dropped files."
-        default_value: "{self}/collector.py:{self}/maya.basic/collector.py"
+        default_value: "{self}/collector.py"
 
     publish_plugins:
         type: list
@@ -27,9 +27,7 @@ configuration:
                     type: hook
                 settings:
                     type: dict
-
         default_value:
-
             - name: Publish to Shotgun
               hook: "{self}/file_publisher.py"
               settings:
@@ -45,21 +43,8 @@ configuration:
                 - [Rendered Image, dpx, exr]
                 - [Texture, tiff, tx, tga, dds]
                 - [Image, jpeg, jpg, png]
-
             - name: Send to Shotgun review
               hook: "{self}/version_creator.py"
-              settings: {}
-
-            - name: Publish current Maya Scene
-              hook: "{self}/maya.basic/scene_publisher.py"
-              settings: {}
-
-            - name: Playblast to Shotgun Review
-              hook: "{self}/maya.basic/playblast_publisher.py"
-              settings: {}
-
-            - name: Publish alembic to Shotgun
-              hook: "{self}/maya.basic/alembic_publisher.py"
               settings: {}
 
 # the Shotgun fields that this app needs in order to operate correctly
