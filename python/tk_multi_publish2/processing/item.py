@@ -144,7 +144,7 @@ class Item(object):
         """
         Adds a task to this item
 
-        :param task: Task instance to be adde
+        :param task: Task instance to be added
         """
         self._tasks.append(task)
 
