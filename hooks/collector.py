@@ -37,37 +37,87 @@ class GenericSceneCollector(HookBaseClass):
         :param path: Path to analyze
         :returns: The main item that was created
         """
-        file_name = os.path.basename(path)
-        (file_name_no_ext, file_extension) = os.path.splitext(file_name)
 
-        if file_extension in [".jpeg", ".jpg", ".png"]:
-            file_item = parent_item.create_item("file.image", "Image File", file_name)
+        engine = self.parent.engine
+        engine.logger.debug("Processing file: %s" % (path,))
+
+        # break down the path into the necessary pieces for processing
+        components = self._get_file_path_components(path)
+
+        ext = components["extension"]
+        filename = components["filename"]
+
+        if ext in [".jpeg", ".jpg", ".png"]:
+            file_item = parent_item.create_item("file.image", "Image File", filename)
             file_item.set_thumbnail_from_path(path)
             file_item.set_icon_from_path(os.path.join(self.disk_location, "icons", "image.png"))
 
-        elif file_extension in [".mov", ".mp4"]:
-            file_item = parent_item.create_item("file.movie", "Movie File", file_name)
+        elif ext in [".mov", ".mp4"]:
+            file_item = parent_item.create_item("file.movie", "Movie File", filename)
             file_item.set_icon_from_path(os.path.join(self.disk_location, "icons", "quicktime.png"))
 
         else:
-            file_item = parent_item.create_item("file", "Generic File", file_name)
+            file_item = parent_item.create_item("file", "Generic File", filename)
             file_item.set_icon_from_path(os.path.join(self.disk_location, "icons", "page.png"))
 
-        file_item.properties["extension"] = file_extension
-        file_item.properties["path"] = path
-        file_item.properties["filename"] = file_name
-
-        # check if path matches pattern fooo.v123.ext
-        version = re.search("(.*)\.v([0-9]+)\.[^\.]+$", file_name)
-        if version:
-            # strip all leading zeroes
-            file_item.properties["prefix"] = version.group(1)
-            version_no_leading_zeroes = version.group(2).lstrip("0")
-            file_item.properties["version"] = int(version_no_leading_zeroes)
-        else:
-            file_item.properties["version"] = 0
-            file_item.properties["prefix"] = file_name_no_ext
+        # update the item's property dict with the file component parts
+        file_item.properties.update(components)
 
         return file_item
 
+    def _get_file_path_components(self, path):
+        """
+        Convenience method for determining file components for a given path.
 
+        :param str path: The path to the file to componentize.
+
+        Returns file path components in the form::
+
+            path="/path/to/the/file/my_file.v0001.ext"
+
+            {
+                "path": "/path/to/the/file/my_file.v0001.ext",
+                "directory": "/path/to/the/file" ,
+                "filename": "my_file.v0001.ext",
+                "filename_no_ext": "my_file.v0001",
+                "prefix": "my_file",
+                "version_str": "v0001",
+                "version": 1,
+                "extension": "ext"
+            }
+
+        If there is no version number:
+            - ``prefix`` will be the ``filename_no_ext`` value
+            - ``version_str`` will be ``""``
+            - ``version`` will be ``0``
+        """
+
+        # the easy bits
+        (directory, filename) = os.path.split(path)
+        (filename_no_ext, extension) = os.path.splitext(filename)
+
+        # some default values in case we can't determine a version
+        prefix = filename_no_ext
+        version_str = ""
+        version = 0
+
+        # now figure out if there's a version stashed in the name. this looks
+        # for a pattern like "my_file.v####.ext" where #### is a version number.
+        # there may be additional common version patterns that we need to add
+        # to this logic as well.
+        version_match = re.search("(.*)\.(v([0-9]+))\.[^.]+$", filename)
+        if version_match:
+            prefix = version_match.group(1)
+            version_str = version_match.group(2)
+            version = int(version_match.group(3))  # remove leading zeros
+
+        return dict(
+            path=path,
+            directory=directory,
+            filename=filename,
+            filename_no_ext=filename_no_ext,
+            prefix=prefix,
+            version_str=version_str,
+            version=version,
+            extension=extension,
+        )

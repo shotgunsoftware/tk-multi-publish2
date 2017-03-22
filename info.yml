@@ -27,25 +27,8 @@ configuration:
                     type: hook
                 settings:
                     type: dict
-        default_value:
-            - name: Publish to Shotgun
-              hook: "{self}/file_publisher.py"
-              settings:
-                Publish all file types: false
-                File Types:
-                - [Nuke Script, nk]
-                - [Photoshop Image, psd, psb]
-                - [3dsmax Scene, max]
-                - [Houdini Scene, hip]
-                - [Maya Scene, ma, mb]
-                - [Hiero Project, hrox]
-                - [Alembic Cache, abc]
-                - [Rendered Image, dpx, exr]
-                - [Texture, tiff, tx, tga, dds]
-                - [Image, jpeg, jpg, png]
-            - name: Send to Shotgun review
-              hook: "{self}/version_creator.py"
-              settings: {}
+        allows_empty: True
+        default_value: []
 
 # the Shotgun fields that this app needs in order to operate correctly
 requires_shotgun_fields:
