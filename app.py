@@ -23,6 +23,9 @@ class MultiPublish2(sgtk.platform.Application):
         """
         tk_multi_publish2 = self.import_module("tk_multi_publish2")
 
+        # make the util methods available via the app instance
+        self.util = tk_multi_publish2.util
+
         # register command
         cb = lambda: tk_multi_publish2.show_dialog(self)
         menu_caption = "Publish"
