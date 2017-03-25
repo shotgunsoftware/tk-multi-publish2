@@ -10,12 +10,9 @@
 
 import mimetypes
 import os
-import glob
 import re
-import time
 
-from sgtk.util.filesystem import ensure_folder_exists, copy_file
-
+import sgtk
 
 # ---- globals
 
@@ -41,7 +38,7 @@ _COMMON_EXTENSIONS = {
 }
 
 # flag to indicate if the mimetypes extension lookup has been populated
-_MIMIETYPES_LOOKUP_POPULATED = False
+_MIMETYPES_LOOKUP_POPULATED = False
 
 
 # ---- util functions
@@ -65,22 +62,29 @@ def get_file_type_info(extension):
     If no common type info can be found, returns None.
     """
 
+    logger = sgtk.platform.current_bundle().logger
+    logger.debug("Getting file type info for extension: '%s'..." % (extension,))
+
     # iterate over the common extensions to find a known file type
     for (display_name, info) in _COMMON_EXTENSIONS.iteritems():
         ext_list = info[0]
         if extension.lower() in ext_list:
+            logger.debug("Found common file type info: %s, %s" % info)
             return display_name, info[1]
 
     # if we're here, not a hardcoded, common type. check by category
     if is_audio(extension):
-        return "Audio File", "audio"
+        info = "Audio File", "audio"
     elif is_image(extension):
-        return "Image File", "image"
+        info = "Image File", "image"
     elif is_video(extension):
-        return "Video File", "video"
+        info = "Video File", "video"
     else:
         # no matches. return the generic result
-        return "Generic File", "file"
+        info = "Generic File", "file"
+
+    logger.debug("Best guess at file type info: %s, %s" % info)
+    return info
 
 
 def get_file_path_components(path):
@@ -91,27 +95,39 @@ def get_file_path_components(path):
 
     Returns file path components in the form::
 
-        path="/path/to/the/file/my_file.v0001.ext"
+        # example 1: path="/path/to/the/file/my_file.v001.ext"
 
         {
-            "path": "/path/to/the/file/my_file.v0001.ext",
-            "directory": "/path/to/the/file" ,
-            "filename": "my_file.v0001.ext",
-            "filename_no_ext": "my_file.v0001",
+            "path": "/path/to/the/file/my_file.v001.ext",
+            "folder": "/path/to/the/file" ,
+            "filename": "my_file.v001.ext",
+            "filename_no_ext": "my_file.v001",
+            "extension": "ext",
             "prefix": "my_file",
-            "version_str": "v0001",
             "version": 1,
-            "extension": "ext"
+            "version_str": v001
         }
 
-    If there is no version number:
-        - ``prefix`` will be the ``filename_no_ext`` value
-        - ``version_str`` will be ``""``
-        - ``version`` will be ``0``
+        # example 1: path="/path/to/the/file/my_file.ext"
+
+        {
+            "path": "/path/to/the/file/my_file.ext",
+            "folder": "/path/to/the/file" ,
+            "filename": "my_file.ext",
+            "filename_no_ext": "my_file",
+            "extension": "ext",
+            "prefix": "my_file",
+            "version": None,
+            "version_str": None
+        }
+
     """
 
+    logger = sgtk.platform.current_bundle().logger
+    logger.debug("Getting file path components for path: '%s'..." % (path,))
+
     # the easy bits
-    (directory, filename) = os.path.split(path)
+    (folder, filename) = os.path.split(path)
     (filename_no_ext, extension) = os.path.splitext(filename)
 
     # remove the "." from the extension
@@ -119,163 +135,86 @@ def get_file_path_components(path):
 
     # some default values in case we can't determine a version
     prefix = filename_no_ext
-    version_str = ""
-    version = 0
+    version_str = None
+    version = None
 
-    # now figure out if there's a version stashed in the name. this looks
-    # for a pattern like "my_file.v####.ext" where #### is a version number.
-    # there may be additional common version patterns that we need to add
-    # to this logic as well.
+    # now figure out if there's a version stashed in the name. this looks for a
+    # pattern like "my_file.v###.ext" where #### is a version number. There may
+    # be additional common version patterns that we need to add to this logic as
+    # well.
     version_match = re.search("(.*)\.(v([0-9]+))\.[^.]+$", filename)
+
     if version_match:
         prefix = version_match.group(1)
         version_str = version_match.group(2)
         version = int(version_match.group(3))  # remove leading zeros
 
-    return dict(
+    file_info = dict(
         path=path,
-        directory=directory,
+        folder=folder,
         filename=filename,
         filename_no_ext=filename_no_ext,
-        prefix=prefix,
-        version_str=version_str,
-        version=version,
         extension=extension,
+        prefix=prefix,
+        version=version,
+        version_str=version_str,
     )
 
+    logger.debug("Extracted file components: %s" % (file_info,))
+    return file_info
 
-def get_next_version(folder, prefix, extension):
+
+def get_next_version_folder(folder, pattern="^v(\d{3})$"):
     """
-    Identify and return the next available version number for the file with
-    the supplied previx and extension in the supplied directory.
+    Returns the next available version subfolder within the supplied folder.
 
-    :param str folder: The folder to find matching files
-    :param str prefix: The file prefix to match against
-    :param str extension: The file extension to match against
+    :param str folder: The path path to a folder containing subfolders
+        representing versions.
+    :param str pattern: A regex pattern matching the version subfolders. The
+        default value matches the letter "v" followed by a 3 digit padded
+        version number. The pattern should match the entire subfolder name
+        and should include one set of parenthesis to allow matching of the
+        version number.
 
-    :returns: An ``int`` corresponding to the next available version of the file
+    :returns: An integer representing the next sequential version folder
 
-    Examines the supplied folder for files matching the format::
+    :raises ValueError: if the supplied folder does not exist.
 
-        <folder>/<prefix>.v####.<extension>
+    For example, if the supplied folder looks like this::
 
-    Determines the next available version number and returns it as an int.
-    """
+        /path/to/some/folder/publish/
+            v001/
+            v002/
+            v003/
 
-    # start with a list of 0. if there are not matching files, then the
-    # max will be 0, making the next available version 1.
-    versions = [0]
-
-    # build the full glob pattern
-    file_pattern = "%s.v*.%s" % (prefix, extension)
-    glob_pattern = os.path.join(folder, file_pattern)
-
-    # build a regex pattern to extract the version number from matched files
-    regex_str = os.path.join(folder, "%s\.v(\d+)\.%s" % (prefix, extension))
-    regex = re.compile("^%s$" % (regex_str,))
-
-    # find any files matching the glob, then search for the match string
-    for previous_version in glob.glob(glob_pattern):
-        match = re.match(regex, previous_version)
-        if match:
-            version = int(match.group(1))
-            versions.append(version)
-
-    return max(versions) + 1
-
-
-def prepare_for_publish(path, version=None):
-    """
-    Utility method used to prep a file for publish.
-
-    :param str path: The path to the file to publish.
-    :param version: ``str`` or ``int`` to override the version number used
-        for the publish file.
-
-    Makes a snapshot of the file in a ``publish`` folder in the same directory
-    as the file. Returns info for the publish snapshot file. The method also
-    makes use of the ``get_next_version`` function to determine the next
-    available version of the file in the ``publish`` directory.
-
-    Returns publish file path info of the form::
-
-        # source path is "/path/to/the/file/my_file.ext"
-        {
-            "path": "/path/to/the/file/publish/my_file.v0001.ext",
-            "directory": "/path/to/the/file/publish",
-            "filename": "my_file.v0001.ext",
-            "filename_no_ext": "my_file.v0001",
-            "prefix": "my_file",
-            "version_str": "v0001",
-            "version": 1,
-            "extension": "ext"
-        }
-
-    If the ``version`` override is provided, the next available version will be
-    overridden by that value.
-
-    Once the publish path is constructed, if a file already exists in the
-    destination with that name, a timestamp is attached to the end of the
-    file prefix.
+    The return value would be an integer, 4. If there are no subfolders or no
+    folders matching the pattern, an integer value of 1 will be returned.
     """
 
-    # TODO: consider writing here:
-    #       /path/to/the/file/publish/v0001/my_file.ext
-    #  Would avoid issues with current studio file naming conventions
-    #  Would require a better concept of versioning? i.e. explicit in publisher
+    logger = sgtk.platform.current_bundle().logger
+    logger.debug("Getting the next version subfolder for: %s" % (folder,))
 
-    # TODO: consider the case where the supplied path already has a version
-    #       number in it: "/path/to/the/file/my_file.v0001.ext"
+    if not os.path.exists(folder):
+        raise ValueError("The supplied folder does not exist: %s" % (folder,))
 
-    # TODO: consider optional arg to write to a publish subfolder
-    #       /path/to/the/file/publish/<subfolder>/my_file.ext
-    #  Would be nice for secondary files like alembic caches or playblasts
+    # keep a running list of matched version numbers. at the end we'll return
+    # the highest version + 1. So if we start with 0 and find nothing, we'll end
+    # up with 1.
+    existing_versions = [0]
 
-    # extract the basic path components from the source path
-    (source_directory, source_filename) = os.path.split(os.path.abspath(path))
-    (prefix, extension) = os.path.splitext(source_filename)
+    for subfolder_name in os.listdir(folder):
 
-    # remove the dot from the extension
-    extension = extension.lstrip(".")
+        # make sure we're only processing subfolders
+        if not os.path.isdir(os.path.join(folder, subfolder_name)):
+            continue
 
-    # construct the publish directory path
-    publish_directory = os.path.join(source_directory, "publish")
+        version_match = re.match(pattern, subfolder_name)
+        if version_match:
+            # append the matched version number as an int to the list
+            existing_versions.append(int(version_match.group(1)))
 
-    # ensure the publish directory exists
-    ensure_folder_exists(publish_directory)
-
-    # get the next version to use for publishing
-    if not version:
-        version = get_next_version(publish_directory, prefix, extension)
-
-    # formatted strings
-    version_str = "v%04d" % (version,)
-    filename_no_ext = "%s.%s" % (prefix, version_str)
-    filename = "%s.%s" % (filename_no_ext, extension)
-
-    # construct the ultimate publish path
-    publish_path = os.path.join(publish_directory, filename)
-
-    # check to see if path already exits. If so, tack on a timestamp.
-    if os.path.exists(publish_path):
-        timestamp = time.strftime('%Y%m%d%H%M%S')
-        filename = "%s_%s.%s" % (filename_no_ext, timestamp, extension)
-        publish_path = os.path.join(publish_directory, filename)
-
-    # snapshot the source file to the publish path
-    copy_file(path, publish_path)
-
-    # return a dictionary of info about the file to be published
-    return dict(
-        path=publish_path,
-        directory=publish_directory,
-        filename=filename,
-        filename_no_ext=filename_no_ext,
-        prefix=prefix,
-        version_str=version_str,
-        version=version,
-        extension=extension,
-    )
+    # return the next available version
+    return max(existing_versions) + 1
 
 
 def is_audio(extension):
@@ -306,6 +245,12 @@ def _build_mimetypes_lookup():
     Build lists of extensions by type.
     """
 
+    global _MIMETYPES_LOOKUP_POPULATED
+
+    # don't need to call this more than once.
+    if _MIMETYPES_LOOKUP_POPULATED:
+        return
+
     # build the full list of common types from the system
     mimetypes.init()
 
@@ -319,9 +264,14 @@ def _build_mimetypes_lookup():
         # the categories we're interested in are defined as keys by the lookup.
         # if this is one of those categories, add the extension to the list
         if category in _LOOKUP_BY_EXTENSION:
-            # lowercase everything we add to the lookup to adress situations
+            # lowercase everything we add to the lookup to address situations
             # such as jpg vs JPG
             _LOOKUP_BY_EXTENSION[category].append(ext.lower())
+
+    _MIMETYPES_LOOKUP_POPULATED = True
+
+# call once at import time
+_build_mimetypes_lookup()
 
 
 def _is_category(extension, category):
@@ -329,13 +279,6 @@ def _is_category(extension, category):
     Returns True if the supplied extension is in the list of known extensions
     for the supplied category
     """
-
-    global _MIMIETYPES_LOOKUP_POPULATED
-
-    # cache the mimetypes if not done so already
-    if not _MIMIETYPES_LOOKUP_POPULATED:
-        _build_mimetypes_lookup()
-        _MIMIETYPES_LOOKUP_POPULATED = True
 
     # see if the extension is in the supplied category
     return ".%s" % (extension,) in _LOOKUP_BY_EXTENSION[category]
