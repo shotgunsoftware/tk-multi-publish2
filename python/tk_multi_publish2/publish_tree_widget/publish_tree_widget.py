@@ -31,7 +31,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
     def set_plugin_manager(self, plugin_manager):
         self._plugin_manager = plugin_manager
 
-    def _build_item_tree_r(self, item):
+    def _build_item_tree_r(self, item, tree_parent):
         """
         Build the tree of items
         """
@@ -39,14 +39,14 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             # orphan. Don't create it
             return None
 
-        ui_item = TreeNodeItem(item, parent=self)
+        ui_item = TreeNodeItem(item, tree_parent)
         ui_item.setExpanded(True)
 
         for task in item.tasks:
-            task = TreeNodeTask(task, parent=self)
+            task = TreeNodeTask(task, tree_parent)
 
         for child in item.children:
-            self._build_item_tree_r(child)
+            self._build_item_tree_r(child, ui_item)
 
         return ui_item
 
@@ -58,7 +58,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         logger.debug("Building tree.")
         self.clear()
         for item in self._plugin_manager.top_level_items:
-            ui_item = self._build_item_tree_r(item)
+            ui_item = self._build_item_tree_r(item, self)
             if ui_item:
                 self.addTopLevelItem(ui_item)
 

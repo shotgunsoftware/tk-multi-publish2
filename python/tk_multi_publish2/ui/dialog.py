@@ -26,6 +26,7 @@ class Ui_Dialog(object):
         self.items_tree.setAcceptDrops(True)
         self.items_tree.setDragEnabled(True)
         self.items_tree.setDragDropMode(QtGui.QAbstractItemView.InternalMove)
+        self.items_tree.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
         self.items_tree.setObjectName("items_tree")
         self.items_tree.headerItem().setText(0, "1")
         self.items_tree.header().setVisible(False)
