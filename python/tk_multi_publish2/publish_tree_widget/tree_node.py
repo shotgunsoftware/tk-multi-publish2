@@ -118,6 +118,12 @@ class TreeNodeContext(TreeNodeBase):
         self._context = context
         self._node_widget.set_header("%s" % self._context)
 
+        # this object can have other items dropped on it
+        # but cannot be dragged
+        self.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsDropEnabled)
+
+
+
     def __str__(self):
         return "%s %s" % (self._item.display_type, self._item.name)
 
@@ -144,6 +150,10 @@ class TreeNodeItem(TreeNodeBase):
         self._node_widget.set_header("<b>%s</b><br>%s" % (self._item.name, self._item.display_type))
         self._node_widget.set_icon(self._item.icon)
 
+        # items cannot be dragged or dropped on
+        self.setFlags(QtCore.Qt.ItemIsEnabled)
+
+
     def __str__(self):
         return "%s %s" % (self._item.display_type, self._item.name)
 
@@ -153,6 +163,22 @@ class TreeNodeItem(TreeNodeBase):
         Associated item instance
         """
         return self._item
+
+
+class TopLevelTreeNodeItem(TreeNodeItem):
+    """
+    Tree item for a publish item
+    """
+
+    def __init__(self, item, parent):
+        """
+        :param item:
+        :param parent: The parent QWidget for this control
+        """
+        super(TopLevelTreeNodeItem, self).__init__(item, parent)
+        # top level items can be dragged
+        self.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
+
 
 class TreeNodeTask(TreeNodeBase):
     """
@@ -176,6 +202,9 @@ class TreeNodeTask(TreeNodeBase):
             self._node_widget.checkbox.setEnabled(False)
         else:
             self._node_widget.checkbox.setEnabled(True)
+
+        # tasks cannot be dragged or dropped on
+        self.setFlags(QtCore.Qt.ItemIsEnabled)
 
 
     def __str__(self):

@@ -12,7 +12,7 @@
 import sgtk
 import collections
 from sgtk.platform.qt import QtCore, QtGui
-from .tree_node import TreeNodeContext, TreeNodeTask, TreeNodeItem
+from .tree_node import TreeNodeContext, TreeNodeTask, TreeNodeItem, TopLevelTreeNodeItem
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -34,7 +34,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
     def set_plugin_manager(self, plugin_manager):
         self._plugin_manager = plugin_manager
 
-    def _build_item_tree_r(self, item, tree_parent):
+    def _build_item_tree_r(self, item, level, tree_parent):
         """
         Build the tree of items
         """
@@ -42,14 +42,17 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             # orphan. Don't create it
             return None
 
-        ui_item = TreeNodeItem(item, tree_parent)
+        if level == 0:
+            ui_item = TopLevelTreeNodeItem(item, tree_parent)
+        else:
+            ui_item = TreeNodeItem(item, tree_parent)
         ui_item.setExpanded(True)
 
         for task in item.tasks:
             task = TreeNodeTask(task, ui_item)
 
         for child in item.children:
-            self._build_item_tree_r(child, ui_item)
+            self._build_item_tree_r(child, level+1, ui_item)
 
         return ui_item
 
@@ -71,9 +74,10 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             context_item.setExpanded(True)
             self.addTopLevelItem(context_item)
             for item in items:
-                self._build_item_tree_r(item, tree_parent=context_item)
+                self._build_item_tree_r(item, level=0, tree_parent=context_item)
 
     def dropEvent(self, event):
+
 
         for item in self._dragged_items:
             print(item)
