@@ -11,12 +11,12 @@
 
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
-from .ui.item import Ui_Item
+from ..ui.item import Ui_Item
 
 logger = sgtk.platform.get_logger(__name__)
 
 
-class Item(QtGui.QFrame):
+class NodeWidget(QtGui.QFrame):
     """
     Widget representing a single item in the left hand side tree view.
     (Connected to a designer ui setup)
@@ -51,7 +51,7 @@ class Item(QtGui.QFrame):
         """
         :param parent: The parent QWidget for this control
         """
-        QtGui.QFrame.__init__(self, parent)
+        super(NodeWidget, self).__init__(parent)
 
         # set up the UI
         self.ui = Ui_Item()

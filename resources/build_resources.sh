@@ -10,10 +10,6 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-# The path to output all built .py files to: 
-UI_PYTHON_PATH=../python/tk_multi_publish2/ui
-
-
 # Helper functions to build UI files
 function build_qt {
     echo " > Building " $2
@@ -34,12 +30,17 @@ function build_res {
 }
 
 
-# build UI's:
+# build main UIs:
 echo "building user interfaces..."
+UI_PYTHON_PATH=../python/tk_multi_publish2/ui
 build_ui dialog
-build_ui item
 build_ui settings_widget
 
 # build resources
 echo "building resources..."
 build_res resources
+
+# build tree UIs:
+echo "building tree interfaces..."
+UI_PYTHON_PATH=../python/tk_multi_publish2/tree/ui
+build_ui node_widget

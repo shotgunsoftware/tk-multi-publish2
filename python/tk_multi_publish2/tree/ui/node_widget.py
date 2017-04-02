@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'item.ui'
+# Form implementation generated from reading ui file 'node_widget.ui'
 #
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
@@ -8,15 +8,15 @@
 
 from tank.platform.qt import QtCore, QtGui
 
-class Ui_Item(object):
-    def setupUi(self, Item):
-        Item.setObjectName("Item")
-        Item.resize(253, 26)
-        self.horizontalLayout = QtGui.QHBoxLayout(Item)
+class Ui_NodeWidget(object):
+    def setupUi(self, NodeWidget):
+        NodeWidget.setObjectName("NodeWidget")
+        NodeWidget.resize(253, 26)
+        self.horizontalLayout = QtGui.QHBoxLayout(NodeWidget)
         self.horizontalLayout.setSpacing(4)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.stack = QtGui.QStackedWidget(Item)
+        self.stack = QtGui.QStackedWidget(NodeWidget)
         self.stack.setMaximumSize(QtCore.QSize(20, 20))
         self.stack.setObjectName("stack")
         self.widget_2 = QtGui.QWidget()
@@ -41,14 +41,14 @@ class Ui_Item(object):
         self.verticalLayout_2.addWidget(self.checkbox)
         self.stack.addWidget(self.chk_page)
         self.horizontalLayout.addWidget(self.stack)
-        self.icon = QtGui.QLabel(Item)
+        self.icon = QtGui.QLabel(NodeWidget)
         self.icon.setMinimumSize(QtCore.QSize(26, 26))
         self.icon.setMaximumSize(QtCore.QSize(26, 26))
         self.icon.setText("")
         self.icon.setScaledContents(True)
         self.icon.setObjectName("icon")
         self.horizontalLayout.addWidget(self.icon)
-        self.header = QtGui.QLabel(Item)
+        self.header = QtGui.QLabel(NodeWidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -57,13 +57,13 @@ class Ui_Item(object):
         self.header.setObjectName("header")
         self.horizontalLayout.addWidget(self.header)
 
-        self.retranslateUi(Item)
+        self.retranslateUi(NodeWidget)
         self.stack.setCurrentIndex(1)
-        QtCore.QMetaObject.connectSlotsByName(Item)
+        QtCore.QMetaObject.connectSlotsByName(NodeWidget)
 
-    def retranslateUi(self, Item):
-        Item.setWindowTitle(QtGui.QApplication.translate("Item", "Form", None, QtGui.QApplication.UnicodeUTF8))
-        self.header.setText(QtGui.QApplication.translate("Item", "<big>Alembic Caches</big>", None, QtGui.QApplication.UnicodeUTF8))
+    def retranslateUi(self, NodeWidget):
+        NodeWidget.setWindowTitle(QtGui.QApplication.translate("NodeWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
+        self.header.setText(QtGui.QApplication.translate("NodeWidget", "<big>Alembic Caches</big>", None, QtGui.QApplication.UnicodeUTF8))
 
 from ..item_status import ItemStatus
 from . import resources_rc

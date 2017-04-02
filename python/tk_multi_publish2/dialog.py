@@ -79,6 +79,7 @@ class AppDialog(QtGui.QWidget):
 
         # drag and drop
         self.ui.frame.something_dropped.connect(self._on_drop)
+        self._one_drop = False
 
         # create a special logger for progress
         self._log_wrapper = PublishLogWrapper(self.ui.log_tree)
@@ -566,8 +567,10 @@ class AppDialog(QtGui.QWidget):
         """
         When someone drops stuff into the publish.
         """
-        self._plugin_manager.add_external_files(files)
-        self._build_tree()
+        if not self._one_drop:
+            self._plugin_manager.add_external_files(files)
+            self._build_tree()
+            self._one_drop = True
 
     def is_first_launch(self):
         """

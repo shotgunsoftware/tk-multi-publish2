@@ -16,7 +16,7 @@ from .item import Item
 logger = sgtk.platform.get_logger(__name__)
 
 
-class PublishTreeWidget(QtGui.QTreeWidgetItem):
+class TreeNodeBase(QtGui.QTreeWidgetItem):
     """
     Base class for all tree widgets.
 
@@ -29,7 +29,7 @@ class PublishTreeWidget(QtGui.QTreeWidgetItem):
         """
         :param parent: The parent QWidget for this control
         """
-        super(PublishTreeWidget, self).__init__(parent)
+        super(TreeNodeBase, self).__init__(parent)
 
         # create an item widget and associate it with this QTreeWidgetItem
         tree_widget = self.treeWidget()
@@ -98,7 +98,58 @@ class PublishTreeWidget(QtGui.QTreeWidgetItem):
         return self._item_widget.checkbox.isChecked()
 
 
-class PublishTreeWidgetTask(PublishTreeWidget):
+class TreeNodeContext(TreeNodeBase):
+    """
+    Highest level object in the tree, representing a context
+    """
+
+    def __init__(self, item, parent):
+        """
+        :param item:
+        :param parent: The parent QWidget for this control
+        """
+        super(TreeNodeContext, self).__init__(parent)
+        self._item = item
+        self._item_widget.set_header("<b>%s</b><br>%s" % (self._item.name, self._item.display_type))
+        self._item_widget.set_icon(self._item.icon)
+
+    def __str__(self):
+        return "%s %s" % (self._item.display_type, self._item.name)
+
+    @property
+    def item(self):
+        """
+        Associated item instance
+        """
+        return self._item
+
+
+class TreeNodeItem(TreeNodeBase):
+    """
+    Tree item for a publish item
+    """
+
+    def __init__(self, item, parent):
+        """
+        :param item:
+        :param parent: The parent QWidget for this control
+        """
+        super(TreeNodeItem, self).__init__(parent)
+        self._item = item
+        self._item_widget.set_header("<b>%s</b><br>%s" % (self._item.name, self._item.display_type))
+        self._item_widget.set_icon(self._item.icon)
+
+    def __str__(self):
+        return "%s %s" % (self._item.display_type, self._item.name)
+
+    @property
+    def item(self):
+        """
+        Associated item instance
+        """
+        return self._item
+
+class TreeNodeTask(TreeNodeBase):
     """
     Tree item for a publish task
     """
@@ -108,7 +159,7 @@ class PublishTreeWidgetTask(PublishTreeWidget):
         :param task: Task instance
         :param parent: The parent QWidget for this control
         """
-        super(PublishTreeWidgetTask, self).__init__(parent)
+        super(TreeNodeTask, self).__init__(parent)
 
         self._task = task
 
@@ -173,57 +224,3 @@ class PublishTreeWidgetTask(PublishTreeWidget):
         else:
             self._item_widget.set_status(self._item_widget.FINALIZE_COMPLETE)
         return True
-
-
-class PublishTreeWidgetPlugin(PublishTreeWidget):
-    """
-    Tree item for a plugin
-    """
-
-    def __init__(self, plugin, parent):
-        """
-        :param parent: The parent QWidget for this control
-        """
-        super(PublishTreeWidgetPlugin, self).__init__(parent)
-        self._plugin = plugin
-
-        self._item_widget.set_header(self._plugin.name)
-        self._item_widget.set_icon(self._plugin.icon)
-
-
-    def __str__(self):
-        return self._plugin.name
-
-    @property
-    def plugin(self):
-        """
-        associated plugin instance
-        """
-        return self._plugin
-
-
-class PublishTreeWidgetItem(PublishTreeWidget):
-    """
-    Tree item for a publish item
-    """
-
-    def __init__(self, item, parent):
-        """
-        :param item:
-        :param parent: The parent QWidget for this control
-        """
-        super(PublishTreeWidgetItem, self).__init__(parent)
-        self._item = item
-        self._item_widget.set_header("<b>%s</b><br>%s" % (self._item.name, self._item.display_type))
-        self._item_widget.set_icon(self._item.icon)
-
-    def __str__(self):
-        return "%s %s" % (self._item.display_type, self._item.name)
-
-    @property
-    def item(self):
-        """
-        Associated item instance
-        """
-        return self._item
-
