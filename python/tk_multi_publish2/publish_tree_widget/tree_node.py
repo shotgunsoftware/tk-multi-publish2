@@ -30,10 +30,16 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         :param parent: The parent QWidget for this control
         """
         super(TreeNodeBase, self).__init__(parent)
+        self.create_widget()
 
+    def create_widget(self):
+        """
+        Create the widget that is used to visualise the node
+        """
         # create an item widget and associate it with this QTreeWidgetItem
         tree_widget = self.treeWidget()
         self._node_widget = NodeWidget(tree_widget)
+        print "set node widget %s" % self._node_widget
         tree_widget.setItemWidget(self, 0, self._node_widget)
 
     def begin_process(self):
@@ -103,15 +109,14 @@ class TreeNodeContext(TreeNodeBase):
     Highest level object in the tree, representing a context
     """
 
-    def __init__(self, item, parent):
+    def __init__(self, context, parent):
         """
         :param item:
         :param parent: The parent QWidget for this control
         """
         super(TreeNodeContext, self).__init__(parent)
-        self._item = item
-        self._node_widget.set_header("<b>%s</b><br>%s" % (self._item.name, self._item.display_type))
-        self._node_widget.set_icon(self._item.icon)
+        self._context = context
+        self._node_widget.set_header("%s" % self._context)
 
     def __str__(self):
         return "%s %s" % (self._item.display_type, self._item.name)
