@@ -31,17 +31,11 @@ class AppDialog(QtGui.QWidget):
     Main dialog window for the App
     """
 
-    # the yin-yang modes
-    (ITEM_CENTRIC, PLUGIN_CENTRIC) = range(2)
-
     # details ui panes
     (SUMMARY_DETAILS, TASK_DETAILS, PLUGIN_DETAILS, ITEM_DETAILS, BLANK_DETAILS) = range(5)
 
     # main right hand side tabs
     (DETAILS_TAB, PROGRESS_TAB) = range(2)
-
-    # modes for handling context
-    (DISPLAY_CONTEXT, EDIT_CONTEXT) = range(2)
 
 
     def __init__(self, parent=None):
@@ -55,9 +49,11 @@ class AppDialog(QtGui.QWidget):
         self._settings_manager = settings.UserSettings(sgtk.platform.current_bundle())
 
         # create a background task manager
-        self._task_manager = task_manager.BackgroundTaskManager(self,
-                                                                start_processing=True,
-                                                                max_threads=2)
+        self._task_manager = task_manager.BackgroundTaskManager(
+            self,
+            start_processing=True,
+            max_threads=2
+        )
 
         self._bundle = sgtk.platform.current_bundle()
 
@@ -85,7 +81,6 @@ class AppDialog(QtGui.QWidget):
         self._log_wrapper = PublishLogWrapper(self.ui.log_tree)
 
         # buttons
-        self.ui.swap.clicked.connect(self._swap_view)
         self.ui.validate.clicked.connect(self.do_validate)
         self.ui.publish.clicked.connect(self.do_publish)
         self._close_ui_on_publish_click = False
@@ -127,29 +122,12 @@ class AppDialog(QtGui.QWidget):
         # when the description is updated
         self.ui.summary_comments.textChanged.connect(self._on_publish_comment_change)
 
-        # context edit - TEMPORARY, PENDING DESIGN
-        self.ui.summary_context_edit.clicked.connect(self._enable_context_edit_mode)
-        self.ui.summary_context_select.set_bg_task_manager(self._task_manager)
-        self.ui.summary_context_select.set_searchable_entity_types(
-            {
-                "Asset": [],
-                "Shot": [],
-                "Task": [],
-                "Project": [],
-            }
-        )
-        self.ui.summary_context_select.entity_selected.connect(self._update_context)
-
         # selection in tree view
         self.ui.items_tree.itemSelectionChanged.connect(self._update_details_from_selection)
-        self.ui.reversed_items_tree.itemSelectionChanged.connect(self._update_details_from_selection)
 
         # thumbnails
         self.ui.summary_thumbnail.screen_grabbed.connect(self._update_item_thumbnail)
         self.ui.item_thumbnail.screen_grabbed.connect(self._update_item_thumbnail)
-
-        # current yin-yang mode
-        self._display_mode = self.ITEM_CENTRIC
 
         # currently displayed item
         self._current_item = None
@@ -169,8 +147,6 @@ class AppDialog(QtGui.QWidget):
         logger.debug("CloseEvent Received. Begin shutting down UI.")
 
         try:
-            # shut down global search widget
-            self.ui.summary_context_select.destroy()
             # shut down main threadpool
             self._task_manager.shut_down()
         except Exception, e:
@@ -182,10 +158,7 @@ class AppDialog(QtGui.QWidget):
         details section reflects the selected item
         in the left hand side tree.
         """
-        if self._display_mode == self.ITEM_CENTRIC:
-            items = self.ui.items_tree.selectedItems()
-        else:
-            items = self.ui.reversed_items_tree.selectedItems()
+        items = self.ui.items_tree.selectedItems()
 
         if len(items) == 0:
             tree_item = None
@@ -213,17 +186,6 @@ class AppDialog(QtGui.QWidget):
 
         else:
             raise TankError("Unknown selection")
-
-    def _enable_context_edit_mode(self):
-        logger.debug("editing context")
-        self.ui.context_stack.setCurrentIndex(self.EDIT_CONTEXT)
-        self.ui.summary_context_select.setText("")
-
-    def _update_context(self, entity_type, entity_id):
-        self.ui.context_stack.setCurrentIndex(self.DISPLAY_CONTEXT)
-        ctx = self._bundle.sgtk.context_from_entity(entity_type, entity_id)
-        self._current_item.context = ctx
-        self.ui.summary_context.setText(str(ctx))
 
     def _on_publish_comment_change(self):
         """
@@ -319,37 +281,21 @@ class AppDialog(QtGui.QWidget):
                 self.ui.items_tree.topLevelItem(0)
             )
 
-        # select the top item
-        if self.ui.reversed_items_tree.topLevelItemCount() > 0:
-            self.ui.reversed_items_tree.setCurrentItem(
-                self.ui.reversed_items_tree.topLevelItem(0)
-            )
-
     def _collapse_tree(self):
         """
         Contract all the nodes in the currently active left hand side tree
         """
-        if self._display_mode == self.ITEM_CENTRIC:
-            for item_index in xrange(self.ui.items_tree.topLevelItemCount()):
-                item = self.ui.items_tree.topLevelItem(item_index)
-                self.ui.items_tree.collapseItem(item)
-        else:
-            for item_index in xrange(self.ui.reversed_items_tree.topLevelItemCount()):
-                item = self.ui.reversed_items_tree.topLevelItem(item_index)
-                self.ui.reversed_items_tree.collapseItem(item)
+        for item_index in xrange(self.ui.items_tree.topLevelItemCount()):
+            item = self.ui.items_tree.topLevelItem(item_index)
+            self.ui.items_tree.collapseItem(item)
 
     def _expand_tree(self):
         """
         Expand all the nodes in the currently active left hand side tree
         """
-        if self._display_mode == self.ITEM_CENTRIC:
-            for item_index in xrange(self.ui.items_tree.topLevelItemCount()):
-                item = self.ui.items_tree.topLevelItem(item_index)
-                self.ui.items_tree.expandItem(item)
-        else:
-            for item_index in xrange(self.ui.reversed_items_tree.topLevelItemCount()):
-                item = self.ui.reversed_items_tree.topLevelItem(item_index)
-                self.ui.reversed_items_tree.expandItem(item)
+        for item_index in xrange(self.ui.items_tree.topLevelItemCount()):
+            item = self.ui.items_tree.topLevelItem(item_index)
+            self.ui.items_tree.expandItem(item)
 
     def _check_all(self, checked):
         """
@@ -361,26 +307,9 @@ class AppDialog(QtGui.QWidget):
                 child.checkbox.setChecked(checked)
                 _check_r(child)
 
-        if self._display_mode == self.ITEM_CENTRIC:
-            parent = self.ui.items_tree.invisibleRootItem()
-        else:
-            parent = self.ui.reversed_items_tree.invisibleRootItem()
+        parent = self.ui.items_tree.invisibleRootItem()
 
         _check_r(parent)
-
-    def _swap_view(self):
-        """
-        Swaps left hand side tree views between
-        item centric and plugin centric modes.
-        """
-        if self._display_mode == self.ITEM_CENTRIC:
-            self._display_mode = self.PLUGIN_CENTRIC
-            self.ui.items_tree_stack.setCurrentIndex(self.PLUGIN_CENTRIC)
-        else:
-            self._display_mode = self.ITEM_CENTRIC
-            self.ui.items_tree_stack.setCurrentIndex(self.ITEM_CENTRIC)
-        self._update_details_from_selection()
-
 
     def _build_item_tree_r(self, parent, item):
         """
@@ -430,14 +359,6 @@ class AppDialog(QtGui.QWidget):
             if ui_item:
                 self.ui.items_tree.addTopLevelItem(ui_item)
 
-        # now build the reverse one
-        self.ui.reversed_items_tree.clear()
-        for item in self._plugin_manager.plugins:
-            ui_item = self._build_plugin_tree_r(self.ui.reversed_items_tree, item)
-            if ui_item:
-                self.ui.reversed_items_tree.addTopLevelItem(ui_item)
-
-
     def _reload_plugin_scan(self):
         """
 
@@ -452,11 +373,6 @@ class AppDialog(QtGui.QWidget):
 
         :returns: number of issues reported
         """
-        # make sure we swap the tree
-        if self._display_mode != self.ITEM_CENTRIC:
-            self._swap_view()
-
-        # and expand it
         self._expand_tree()
 
         # flip right hand side to show the logs
@@ -474,6 +390,7 @@ class AppDialog(QtGui.QWidget):
                 _begin_process_r(child)
         _begin_process_r(parent)
 
+        num_issues = 0
         try:
             num_issues = self._visit_tree_r(parent, lambda child: child.validate(), "Validating")
         finally:
@@ -493,11 +410,6 @@ class AppDialog(QtGui.QWidget):
             # close
             self.close()
 
-        # make sure we swap the tree
-        if self._display_mode != self.ITEM_CENTRIC:
-            self._swap_view()
-
-        # and expand it
         self._expand_tree()
 
         self.ui.right_tabs.setCurrentIndex(self.PROGRESS_TAB)
