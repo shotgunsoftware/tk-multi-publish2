@@ -14,6 +14,17 @@ not expressly granted therein are reserved by Shotgun Software Inc.
 /* Global styling */
 /* --------------------------------------------------------------------- */
 
+QProgressBar {
+    border: none;
+    border-radius: 2px;
+    height: 0.5px;
+}
+ QProgressBar::chunk {
+    background-color: #18A7E3; 
+    background-color: #18A7E3; 
+    height: 0.5px;
+}
+
 
 /* Get rid of borders for main Listing Views */
 QListView, QTableView, QScrollArea, QFrame {
@@ -35,6 +46,8 @@ QLabel {
 QTreeView::branch {
     background: none;
 }
+
+
 
 /* --------------------------------------------------------------------- */
 /* Right hand side tab control  */
@@ -164,6 +177,10 @@ Item {
 #log_tree::item {
     margin: 4px;
 }
+
+
+
+
 
 
 

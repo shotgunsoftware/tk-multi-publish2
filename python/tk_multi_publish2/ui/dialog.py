@@ -22,7 +22,7 @@ class Ui_Dialog(object):
         self.verticalLayout = QtGui.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.items_tree = QtGui.QTreeWidget(self.verticalLayoutWidget)
+        self.items_tree = PublishTreeWidget(self.verticalLayoutWidget)
         self.items_tree.setAcceptDrops(True)
         self.items_tree.setDragEnabled(True)
         self.items_tree.setDragDropMode(QtGui.QAbstractItemView.InternalMove)
@@ -257,10 +257,11 @@ class Ui_Dialog(object):
         self.verticalLayout_4.addWidget(self.log_tree)
         self.right_tabs.addTab(self.progress_tab, "")
         self.verticalLayout_3.addWidget(self.splitter)
-        self.progressBar = QtGui.QProgressBar(Dialog)
-        self.progressBar.setProperty("value", 24)
-        self.progressBar.setObjectName("progressBar")
-        self.verticalLayout_3.addWidget(self.progressBar)
+        self.progress = QtGui.QProgressBar(Dialog)
+        self.progress.setProperty("value", 24)
+        self.progress.setTextVisible(False)
+        self.progress.setObjectName("progress")
+        self.verticalLayout_3.addWidget(self.progress)
         self.bottom_frame = QtGui.QFrame(Dialog)
         self.bottom_frame.setMaximumSize(QtCore.QSize(16777215, 40))
         self.bottom_frame.setFrameShape(QtGui.QFrame.StyledPanel)
@@ -316,6 +317,7 @@ class Ui_Dialog(object):
         self.validate.setText(QtGui.QApplication.translate("Dialog", "Validate", None, QtGui.QApplication.UnicodeUTF8))
         self.publish.setText(QtGui.QApplication.translate("Dialog", "Publish", None, QtGui.QApplication.UnicodeUTF8))
 
+from ..publish_tree_widget import PublishTreeWidget
 from ..settings_widget import SettingsWidget
 from ..drop_area import DropAreaFrame
 from ..thumbnail import Thumbnail

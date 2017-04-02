@@ -11,7 +11,7 @@
 
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
-from .item import Item
+from .node_widget import NodeWidget
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -33,8 +33,8 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
 
         # create an item widget and associate it with this QTreeWidgetItem
         tree_widget = self.treeWidget()
-        self._item_widget = Item(tree_widget)
-        tree_widget.setItemWidget(self, 0, self._item_widget)
+        self._node_widget = NodeWidget(tree_widget)
+        tree_widget.setItemWidget(self, 0, self._node_widget)
 
     def begin_process(self):
         """
@@ -42,16 +42,16 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         """
         if self.enabled:
             # enabled nodes get a dotted ring
-            self._item_widget.set_status(self._item_widget.PROCESSING)
+            self._node_widget.set_status(self._node_widget.PROCESSING)
         else:
             # unchecked items just get empty
-            self._item_widget.set_status(self._item_widget.EMPTY)
+            self._node_widget.set_status(self._node_widget.EMPTY)
 
     def _set_status_upwards(self, status):
         """
         Traverse all parents and set them to be a certain status
         """
-        self._item_widget.set_status(status)
+        self._node_widget.set_status(status)
         if self.parent():
             self.parent()._set_status_upwards(status)
 
@@ -59,21 +59,21 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         """
         Perform validation
         """
-        self._item_widget.set_status(self._item_widget.VALIDATION_COMPLETE)
+        self._node_widget.set_status(self._node_widget.VALIDATION_COMPLETE)
         return True
 
     def publish(self):
         """
         Perform publish
         """
-        self._item_widget.set_status(self._item_widget.PUBLISH_COMPLETE)
+        self._node_widget.set_status(self._node_widget.PUBLISH_COMPLETE)
         return True
 
     def finalize(self):
         """
         Perform finalize
         """
-        self._item_widget.set_status(self._item_widget.FINALIZE_COMPLETE)
+        self._node_widget.set_status(self._node_widget.FINALIZE_COMPLETE)
         return True
 
     @property
@@ -81,21 +81,21 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         """
         The checkbox associated with this item
         """
-        return self._item_widget.checkbox
+        return self._node_widget.checkbox
 
     @property
     def icon(self):
         """
         The icon pixmap associated with this item
         """
-        return self._item_widget.icon
+        return self._node_widget.icon
 
     @property
     def enabled(self):
         """
         Returns true if the checkbox is enabled
         """
-        return self._item_widget.checkbox.isChecked()
+        return self._node_widget.checkbox.isChecked()
 
 
 class TreeNodeContext(TreeNodeBase):
@@ -110,8 +110,8 @@ class TreeNodeContext(TreeNodeBase):
         """
         super(TreeNodeContext, self).__init__(parent)
         self._item = item
-        self._item_widget.set_header("<b>%s</b><br>%s" % (self._item.name, self._item.display_type))
-        self._item_widget.set_icon(self._item.icon)
+        self._node_widget.set_header("<b>%s</b><br>%s" % (self._item.name, self._item.display_type))
+        self._node_widget.set_icon(self._item.icon)
 
     def __str__(self):
         return "%s %s" % (self._item.display_type, self._item.name)
@@ -136,8 +136,8 @@ class TreeNodeItem(TreeNodeBase):
         """
         super(TreeNodeItem, self).__init__(parent)
         self._item = item
-        self._item_widget.set_header("<b>%s</b><br>%s" % (self._item.name, self._item.display_type))
-        self._item_widget.set_icon(self._item.icon)
+        self._node_widget.set_header("<b>%s</b><br>%s" % (self._item.name, self._item.display_type))
+        self._node_widget.set_icon(self._item.icon)
 
     def __str__(self):
         return "%s %s" % (self._item.display_type, self._item.name)
@@ -163,14 +163,14 @@ class TreeNodeTask(TreeNodeBase):
 
         self._task = task
 
-        self._item_widget.set_header(self._task.plugin.name)
-        self._item_widget.set_icon(self._task.plugin.icon)
-        self._item_widget.checkbox.setChecked(self._task.enabled)
+        self._node_widget.set_header(self._task.plugin.name)
+        self._node_widget.set_icon(self._task.plugin.icon)
+        self._node_widget.checkbox.setChecked(self._task.enabled)
 
         if self._task.required:
-            self._item_widget.checkbox.setEnabled(False)
+            self._node_widget.checkbox.setEnabled(False)
         else:
-            self._item_widget.checkbox.setEnabled(True)
+            self._node_widget.checkbox.setEnabled(True)
 
 
     def __str__(self):
@@ -190,13 +190,13 @@ class TreeNodeTask(TreeNodeBase):
         try:
             status = self._task.validate()
         except Exception, e:
-            self._set_status_upwards(self._item_widget.VALIDATION_ERROR)
+            self._set_status_upwards(self._node_widget.VALIDATION_ERROR)
             status = False
         else:
             if status:
-                self._item_widget.set_status(self._item_widget.VALIDATION_COMPLETE)
+                self._node_widget.set_status(self._node_widget.VALIDATION_COMPLETE)
             else:
-                self._set_status_upwards(self._item_widget.VALIDATION_ERROR)
+                self._set_status_upwards(self._node_widget.VALIDATION_ERROR)
         return status
 
     def publish(self):
@@ -206,10 +206,10 @@ class TreeNodeTask(TreeNodeBase):
         try:
             self._task.publish()
         except Exception, e:
-            self._set_status_upwards(self._item_widget.PUBLISH_ERROR)
+            self._set_status_upwards(self._node_widget.PUBLISH_ERROR)
             raise
         else:
-            self._item_widget.set_status(self._item_widget.PUBLISH_COMPLETE)
+            self._node_widget.set_status(self._node_widget.PUBLISH_COMPLETE)
         return True
 
     def finalize(self):
@@ -219,8 +219,8 @@ class TreeNodeTask(TreeNodeBase):
         try:
             self._task.finalize()
         except Exception, e:
-            self._set_status_upwards(self._item_widget.FINALIZE_ERROR)
+            self._set_status_upwards(self._node_widget.FINALIZE_ERROR)
             raise
         else:
-            self._item_widget.set_status(self._item_widget.FINALIZE_COMPLETE)
+            self._node_widget.set_status(self._node_widget.FINALIZE_COMPLETE)
         return True

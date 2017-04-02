@@ -11,7 +11,7 @@
 
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
-from ..ui.item import Ui_Item
+from .ui.node_widget import Ui_NodeWidget
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -54,7 +54,7 @@ class NodeWidget(QtGui.QFrame):
         super(NodeWidget, self).__init__(parent)
 
         # set up the UI
-        self.ui = Ui_Item()
+        self.ui = Ui_NodeWidget()
         self.ui.setupUi(self)
         self.set_status(self.NEUTRAL)
 

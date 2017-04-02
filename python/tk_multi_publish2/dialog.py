@@ -15,7 +15,6 @@ from sgtk.platform.qt import QtCore, QtGui
 
 from .ui.dialog import Ui_Dialog
 from .processing import PluginManager
-from .tree_item import PublishTreeWidgetItem, PublishTreeWidgetTask, PublishTreeWidgetPlugin
 from .publish_logging import PublishLogWrapper
 
 # import frameworks
@@ -75,7 +74,6 @@ class AppDialog(QtGui.QWidget):
 
         # drag and drop
         self.ui.frame.something_dropped.connect(self._on_drop)
-        self._one_drop = False
 
         # create a special logger for progress
         self._log_wrapper = PublishLogWrapper(self.ui.log_tree)
@@ -133,7 +131,7 @@ class AppDialog(QtGui.QWidget):
         self._current_item = None
 
         # start up our plugin manager
-        self._plugin_manager = PluginManager(self._log_wrapper.logger)
+        self._plugin_manager = None
 
         # start it up
         self._refresh()
@@ -160,32 +158,34 @@ class AppDialog(QtGui.QWidget):
         """
         items = self.ui.items_tree.selectedItems()
 
-        if len(items) == 0:
-            tree_item = None
-        else:
-            tree_item = items[0]
+        # TODO ---- FIX THIS
 
-        # make sure we are focused on the details tab
-        self.ui.right_tabs.setCurrentIndex(self.DETAILS_TAB)
-
-        if tree_item is None:
-            self.ui.details_stack.setCurrentIndex(self.BLANK_DETAILS)
-
-        elif tree_item.parent() is None and isinstance(tree_item, PublishTreeWidgetItem):
-            # top level item
-            self._create_summary_details(tree_item.item)
-
-        elif isinstance(tree_item, PublishTreeWidgetItem):
-            self._create_item_details(tree_item.item)
-
-        elif isinstance(tree_item, PublishTreeWidgetTask):
-            self._create_task_details(tree_item.task)
-
-        elif isinstance(tree_item, PublishTreeWidgetPlugin):
-            self._create_plugin_details(tree_item.plugin)
-
-        else:
-            raise TankError("Unknown selection")
+        # if len(items) == 0:
+        #     tree_item = None
+        # else:
+        #     tree_item = items[0]
+        #
+        # # make sure we are focused on the details tab
+        # self.ui.right_tabs.setCurrentIndex(self.DETAILS_TAB)
+        #
+        # if tree_item is None:
+        #     self.ui.details_stack.setCurrentIndex(self.BLANK_DETAILS)
+        #
+        # elif tree_item.parent() is None and isinstance(tree_item, PublishTreeWidgetItem):
+        #     # top level item
+        #     self._create_summary_details(tree_item.item)
+        #
+        # elif isinstance(tree_item, PublishTreeWidgetItem):
+        #     self._create_item_details(tree_item.item)
+        #
+        # elif isinstance(tree_item, PublishTreeWidgetTask):
+        #     self._create_task_details(tree_item.task)
+        #
+        # elif isinstance(tree_item, PublishTreeWidgetPlugin):
+        #     self._create_plugin_details(tree_item.plugin)
+        #
+        # else:
+        #     raise TankError("Unknown selection")
 
     def _on_publish_comment_change(self):
         """
@@ -270,7 +270,7 @@ class AppDialog(QtGui.QWidget):
     def _refresh(self):
 
         self._reload_plugin_scan()
-        self._build_tree()
+        self.ui.items_tree.build_tree()
         self._select_top_items()
 
     def _select_top_items(self):
@@ -311,60 +311,14 @@ class AppDialog(QtGui.QWidget):
 
         _check_r(parent)
 
-    def _build_item_tree_r(self, parent, item):
-        """
-        Build the tree of items
-        """
-        if len(item.tasks) == 0 and len(item.children) == 0:
-            # orphan. Don't create it
-            return None
-
-        ui_item = PublishTreeWidgetItem(item, parent)
-        ui_item.setExpanded(True)
-
-        for task in item.tasks:
-            task = PublishTreeWidgetTask(task, ui_item)
-
-        for child in item.children:
-            self._build_item_tree_r(ui_item, child)
-
-        return ui_item
-
-    def _build_plugin_tree_r(self, parent, plugin):
-        """
-        Build the tree of plugins
-        """
-        # show all plugins
-        # if len(plugin.tasks) == 0:
-        #     # orphan. Don't create it
-        #     return None
-
-        ui_item = PublishTreeWidgetPlugin(plugin, parent)
-        ui_item.setExpanded(True)
-
-        for task in plugin.tasks:
-            item = PublishTreeWidgetItem(task.item, ui_item)
-
-        return ui_item
-
-
-    def _build_tree(self):
-        """
-        Rebuilds the lefthand side tree
-        """
-        # first build the items tree
-        self.ui.items_tree.clear()
-        for item in self._plugin_manager.top_level_items:
-            ui_item = self._build_item_tree_r(self.ui.items_tree, item)
-            if ui_item:
-                self.ui.items_tree.addTopLevelItem(ui_item)
-
     def _reload_plugin_scan(self):
         """
 
         """
         # run the hooks
+
         self._plugin_manager = PluginManager(self._log_wrapper.logger)
+        self.ui.items_tree.set_plugin_manager(self._plugin_manager)
 
 
     def do_validate(self):
@@ -460,7 +414,7 @@ class AppDialog(QtGui.QWidget):
                     self._log_wrapper.push("%s %s" % (action_name, child), child.icon)
                 try:
                     # process this node
-                    status = action(child) # eg. child.validate(), child.publish() etc.
+                    status = action(child)  # eg. child.validate(), child.publish() etc.
                     if not status:
                         number_true_return_values += 1
 
@@ -479,10 +433,8 @@ class AppDialog(QtGui.QWidget):
         """
         When someone drops stuff into the publish.
         """
-        if not self._one_drop:
-            self._plugin_manager.add_external_files(files)
-            self._build_tree()
-            self._one_drop = True
+        self._plugin_manager.add_external_files(files)
+        self.ui.items_tree.build_tree()
 
     def is_first_launch(self):
         """
