@@ -179,7 +179,7 @@ DropAreaFrame[dragging="true"] {
 
 #items_tree::item {
     background-color: none;
-    padding: 3px;
+    padding: 1.5px;
 }
 
 /* Tree view items */
