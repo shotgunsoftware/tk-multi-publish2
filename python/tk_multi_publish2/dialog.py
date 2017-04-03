@@ -69,9 +69,6 @@ class AppDialog(QtGui.QWidget):
         # matter (as long as it's there)
         self.ui.splitter.setSizes([360, 100])
 
-        # set up tree view to look slick
-        self.ui.items_tree.setIndentation(20)
-
         # drag and drop
         self.ui.frame.something_dropped.connect(self._on_drop)
 

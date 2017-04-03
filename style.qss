@@ -145,23 +145,70 @@ DropAreaFrame[dragging="true"] {
 }
 
 /* the two labels above the tree on the left hand side */
-#items_tree_label, #reversed_items_tree_label {
+#items_tree_label {
     font-size: 14px;
     font-weight: 100;
     padding-bottom: 10px;
 }
 
 
-/* Tree view items */
-Item {
-    padding-left: 4px;
-    padding-top: 2px;
-    padding-bottom: 4px;
+
+/* --------------------------------------------------------------------- */
+/* Publish tree widget */
+/* --------------------------------------------------------------------- */
+
+
+/* properties for the main tree widget */
+#items_tree {
+    background-color: #292929;
+    /* push the whole tree 20px to the side */
+    margin-left: -20px;
 }
 
-#items_tree, #reversed_items_tree {
-    background-color: #444;
+/* disable all the 'tree handles' */
+#items_tree::branch {
+    border-image: none;
+    image: none;
+    background: none;
 }
+
+/* selection of tree items */
+#items_tree::item:selected {
+    background-color: {{SG_HIGHLIGHT_COLOR}};
+}
+
+#items_tree::item {
+    background-color: none;
+    padding: 3px;
+}
+
+/* Tree view items */
+NodeWidget {
+    padding: 12px;
+    border: 1px solid black;
+    background-color: #343434;
+}
+
+
+/* the widget that displays the contexts */
+ContextWidget {
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-bottom: 4px;
+    padding-top: 10px;
+    border-bottom: 1px solid #494C4F;
+
+    /* make sure we push it all the way in to compensate for the -20px margin of the widget */
+    margin-left: 20px;
+}
+
+ContextWidget QLabel {
+    font-size: 12px;
+    font-weight: 100;
+}
+
+
+
 
 
 

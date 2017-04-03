@@ -44,3 +44,4 @@ build_res resources
 echo "building tree interfaces..."
 UI_PYTHON_PATH=../python/tk_multi_publish2/publish_tree_widget/ui
 build_ui node_widget
+build_ui context_widget

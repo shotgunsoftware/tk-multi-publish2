@@ -12,8 +12,63 @@
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
 from .node_widget import NodeWidget
+from .context_widget import ContextWidget
 
 logger = sgtk.platform.get_logger(__name__)
+
+class TreeNodeContext(QtGui.QTreeWidgetItem):
+    """
+    Highest level object in the tree, representing a context
+    """
+
+    def __init__(self, context, parent):
+        """
+        :param item:
+        :param parent: The parent QWidget for this control
+        """
+        self._context = context
+        super(TreeNodeContext, self).__init__(parent)
+
+        # this object can have other items dropped on it
+        # but cannot be dragged
+        self.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsDropEnabled)
+
+        self.create_widget()
+
+    def create_widget(self):
+        """
+        Create the widget that is used to visualise the node
+        """
+        # create an item widget and associate it with this QTreeWidgetItem
+        tree_widget = self.treeWidget()
+        self._node_widget = ContextWidget(tree_widget)
+        tree_widget.setItemWidget(self, 0, self._node_widget)
+
+    def __repr__(self):
+        return "<TreeNodeContext %s>" % self._context
+
+    def __str__(self):
+        return "%s" % self._context
+
+    def validate(self):
+        """
+        Perform validation
+        """
+        return True
+
+    def publish(self):
+        """
+        Perform publish
+        """
+        return True
+
+    def finalize(self):
+        """
+        Perform finalize
+        """
+        return True
+
+
 
 
 class TreeNodeBase(QtGui.QTreeWidgetItem):
@@ -104,36 +159,8 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         return self._node_widget.checkbox.isChecked()
 
 
-class TreeNodeContext(TreeNodeBase):
-    """
-    Highest level object in the tree, representing a context
-    """
-
-    def __init__(self, context, parent):
-        """
-        :param item:
-        :param parent: The parent QWidget for this control
-        """
-        self._context = context
-
-        super(TreeNodeContext, self).__init__(parent)
-        self._node_widget.set_header("%s" % self._context)
-
-        # this object can have other items dropped on it
-        # but cannot be dragged
-        self.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsDropEnabled)
 
 
-
-    def __str__(self):
-        return "%s" % self._context
-
-    @property
-    def item(self):
-        """
-        Associated item instance
-        """
-        return self._item
 
 
 class TreeNodeItem(TreeNodeBase):
@@ -153,7 +180,7 @@ class TreeNodeItem(TreeNodeBase):
         self._node_widget.set_icon(self._item.icon)
 
         # items cannot be dragged or dropped on
-        self.setFlags(QtCore.Qt.ItemIsEnabled)
+        self.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
 
     def __str__(self):
@@ -206,7 +233,7 @@ class TreeNodeTask(TreeNodeBase):
             self._node_widget.checkbox.setEnabled(True)
 
         # tasks cannot be dragged or dropped on
-        self.setFlags(QtCore.Qt.ItemIsEnabled)
+        self.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
     def __str__(self):
         return self._task.plugin.name

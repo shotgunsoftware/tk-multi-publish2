@@ -29,6 +29,18 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         super(PublishTreeWidget, self).__init__(parent)
         self._plugin_manager = None
         self._dragged_items = []
+        self._bundle = sgtk.platform.current_bundle()
+        # make sure that we cannot drop items on the root item
+        self.invisibleRootItem().setFlags(QtCore.Qt.ItemIsEnabled)
+
+        # 20 px indent for items
+        self.ui.items_tree.setIndentation(20)
+        # no indentation for the top level items
+        self.ui.items_tree.setRootIsDecorated(False)
+        # turn off keyboard focus - this is to disable the
+        # dotted lines around the widget which is selected.
+        self.ui.items_tree.setFocusPolicy(QtCore.Qt.NoFocus)
+
 
 
     def set_plugin_manager(self, plugin_manager):
@@ -76,10 +88,17 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             for item in items:
                 self._build_item_tree_r(item, level=0, tree_parent=context_item)
 
-    def treeDropEvent(self, event):
+        empty_ctx = self._bundle.sgtk.context_empty()
+        context_item = TreeNodeContext(empty_ctx, self)
+        context_item.setExpanded(True)
+        self.addTopLevelItem(context_item)
+
+
+    def dropEvent(self, event):
         super(PublishTreeWidget, self).dropEvent(event)
 
         for item in self._dragged_items:
+            print "item %s" % item
             item.create_widget()
             # and do it for all children
 
@@ -91,7 +110,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
             _check_r(item)
 
-        self._dagged_items = []
+        #self._dagged_items = []
 
 
 
@@ -100,3 +119,12 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
         self._dragged_items = self.selectedItems()
         super(PublishTreeWidget, self).dragEnterEvent(event)
+
+
+    def mouseMoveEvent(self, event):
+
+        if self.state() != QtGui.QAbstractItemView.DragSelectingState:
+            # bubble
+            print "bubble"
+            super(PublishTreeWidget, self).mouseMoveEvent(event)
+
