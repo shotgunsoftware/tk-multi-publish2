@@ -34,12 +34,12 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         self.invisibleRootItem().setFlags(QtCore.Qt.ItemIsEnabled)
 
         # 20 px indent for items
-        self.ui.items_tree.setIndentation(20)
+        self.setIndentation(20)
         # no indentation for the top level items
-        self.ui.items_tree.setRootIsDecorated(False)
+        self.setRootIsDecorated(False)
         # turn off keyboard focus - this is to disable the
         # dotted lines around the widget which is selected.
-        self.ui.items_tree.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.setFocusPolicy(QtCore.Qt.NoFocus)
 
 
 
