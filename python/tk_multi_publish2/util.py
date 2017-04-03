@@ -458,7 +458,7 @@ def get_publishes(context, path, publish_name, filters=None):
     logger.debug("Publish dry run data: %s" % (publish_data,))
 
     # now build up the filters to match against
-    publish_filters = filters or []
+    publish_filters = [filters] if filters else []
     for field in ["code", "entity", "name", "project", "task"]:
         publish_filters.append([field, "is", publish_data[field]])
     logger.debug("Build publish filters: %s" % (publish_filters,))
