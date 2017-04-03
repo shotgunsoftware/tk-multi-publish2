@@ -114,8 +114,9 @@ class TreeNodeContext(TreeNodeBase):
         :param item:
         :param parent: The parent QWidget for this control
         """
-        super(TreeNodeContext, self).__init__(parent)
         self._context = context
+
+        super(TreeNodeContext, self).__init__(parent)
         self._node_widget.set_header("%s" % self._context)
 
         # this object can have other items dropped on it
@@ -125,7 +126,7 @@ class TreeNodeContext(TreeNodeBase):
 
 
     def __str__(self):
-        return "%s %s" % (self._item.display_type, self._item.name)
+        return "%s" % self._context
 
     @property
     def item(self):
@@ -145,8 +146,9 @@ class TreeNodeItem(TreeNodeBase):
         :param item:
         :param parent: The parent QWidget for this control
         """
-        super(TreeNodeItem, self).__init__(parent)
         self._item = item
+
+        super(TreeNodeItem, self).__init__(parent)
         self._node_widget.set_header("<b>%s</b><br>%s" % (self._item.name, self._item.display_type))
         self._node_widget.set_icon(self._item.icon)
 
@@ -190,9 +192,9 @@ class TreeNodeTask(TreeNodeBase):
         :param task: Task instance
         :param parent: The parent QWidget for this control
         """
-        super(TreeNodeTask, self).__init__(parent)
-
         self._task = task
+
+        super(TreeNodeTask, self).__init__(parent)
 
         self._node_widget.set_header(self._task.plugin.name)
         self._node_widget.set_icon(self._task.plugin.icon)
@@ -205,7 +207,6 @@ class TreeNodeTask(TreeNodeBase):
 
         # tasks cannot be dragged or dropped on
         self.setFlags(QtCore.Qt.ItemIsEnabled)
-
 
     def __str__(self):
         return self._task.plugin.name

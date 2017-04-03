@@ -28,8 +28,8 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         """
         super(PublishTreeWidget, self).__init__(parent)
         self._plugin_manager = None
+        self._dragged_items = []
 
-        self._dragged_items = None
 
     def set_plugin_manager(self, plugin_manager):
         self._plugin_manager = plugin_manager
@@ -76,24 +76,27 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             for item in items:
                 self._build_item_tree_r(item, level=0, tree_parent=context_item)
 
-    def dropEvent(self, event):
-
-
-        for item in self._dragged_items:
-            print(item)
-            item.create_widget()
-
+    def treeDropEvent(self, event):
         super(PublishTreeWidget, self).dropEvent(event)
 
+        for item in self._dragged_items:
+            item.create_widget()
+            # and do it for all children
 
-    def mouseReleaseEvent(self, event):
-        super(PublishTreeWidget, self).mouseReleaseEvent(event)
-        self._dragged_items = self.selectedItems()
+            def _check_r(parent):
+                for child_index in xrange(parent.childCount()):
+                    child = parent.child(child_index)
+                    child.create_widget()
+                    _check_r(child)
+
+            _check_r(item)
+
+        self._dagged_items = []
+
+
 
 
     def dragEnterEvent(self, event):
-
-
 
         self._dragged_items = self.selectedItems()
         super(PublishTreeWidget, self).dragEnterEvent(event)
