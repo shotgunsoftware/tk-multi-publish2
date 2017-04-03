@@ -53,27 +53,3 @@ class MultiPublish2(sgtk.platform.Application):
         Tear down the app
         """
         self.log_debug("Destroying tk-multi-publish2")
-
-    def get_icon_path(self, name):
-        """
-        Return an icon for the name supplied.
-
-        If no matching icon can be found, a generic "file" icon will be
-        returned.
-
-        :param str names: The name of the icon to return.
-
-        :return: The path to a found icon.
-        """
-
-        # the publisher's icons folder
-        icons_folder = os.path.abspath(
-            os.path.join(self.disk_location, "icons"))
-
-        # try to find an icon for the supplied names
-        icon_path = os.path.join(icons_folder, "%s.png" % (name,))
-        if os.path.exists(icon_path):
-            return icon_path
-
-        # no match. return the file icon
-        return os.path.join(icons_folder, "file.png")

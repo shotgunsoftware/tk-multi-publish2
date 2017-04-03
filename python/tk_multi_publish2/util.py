@@ -15,6 +15,9 @@ import re
 import sgtk
 from sgtk.util.filesystem import copy_file, copy_folder
 
+# create a logger to use throughout
+logger = sgtk.platform.get_logger(__name__)
+
 # ---- globals
 
 # populated by _build_mimetypes_lookup() below
@@ -61,7 +64,7 @@ def copy_path_to_version(path, version, padding=3):
 
     Example 2::
 
-        new_folder = copy_pathto_version("/path/to/folder.v0001", 2, padding=4)
+        new_folder = copy_path_to_version("/path/to/folder.v0001", 2, padding=4)
         print new_folder
         # /path/to/folder.v0002
 
@@ -73,9 +76,10 @@ def copy_path_to_version(path, version, padding=3):
     :param padding: The number of digits to pad the version number.
 
     :return: The newly created path.
+
+    :raises: ``Exception`` if the new version path already exists.
     """
 
-    logger = sgtk.platform.current_bundle().logger
     logger.debug("Copying path '%s' to version %s..." % (path, version))
 
     # break down the supplied path to its components in order to easily build
@@ -93,8 +97,8 @@ def copy_path_to_version(path, version, padding=3):
     logger.debug("New path: %s" % (new_path,))
 
     if os.path.exists(new_path):
-        logger.warn("Path already exists. Not copying.")
-        return None
+        raise Exception(
+            "Versioned destination path already exists: %s" % (new_path,))
 
     # now copy the source to the new path and return it
     if os.path.isdir(path):
@@ -126,7 +130,6 @@ def get_file_type_info(extension):
     If no common type info can be found, returns None.
     """
 
-    logger = sgtk.platform.current_bundle().logger
     logger.debug("Getting file type info for extension: '%s'..." % (extension,))
 
     # iterate over the common extensions to find a known file type
@@ -225,10 +228,10 @@ def get_file_path_components(path):
 
     """
 
-    # ensure no trailing path separator
-    path = path.rstrip(os.sep)
+    # get the path in a normalized state. no trailing separator, separators are
+    # appropriate for current os, no double separators, etc.
+    path = sgtk.util.ShotgunPath.normalize(path)
 
-    logger = sgtk.platform.current_bundle().logger
     logger.debug("Getting file path components for path: '%s'..." % (path,))
 
     # break it up into the major components
@@ -247,7 +250,7 @@ def get_file_path_components(path):
 
     # see if there is a version in the filename. must match .v### somewhere in
     # the filename.
-    version_pattern = re.compile("(.*)\.(v(\d+))", re.IGNORECASE)
+    version_pattern = re.compile("(.*)\.(v(\d+))\.[^.]+$", re.IGNORECASE)
     version_pattern_match = re.search(version_pattern, filename)
     if version_pattern_match:
         prefix = version_pattern_match.group(1)
@@ -279,7 +282,10 @@ def get_file_path_components(path):
         version_padding=version_padding
     )
 
-    logger.debug("Extracted file components: %s" % (file_info,))
+    logger.debug(
+        "Extracted components from path '%s': %s" %
+        (path, file_info)
+    )
     return file_info
 
 
@@ -288,11 +294,15 @@ def get_image_sequence_paths(folder):
     Given a folder, inspect the contained files to find what appear to be images
     with frame numbers.
 
-    :param folder:
-    :return:
+    :param folder: The path to a folder potentially containing a sequence of
+        images.
+
+    :return: A list of paths for each identified image seuqence. For example:
+        ["/path/to/the/supplied/folder/key_light1.%04d.exr",
+         "/path/to/the/supplied/folder/fill_light1.%04d.exr"]
+
     """
 
-    logger = sgtk.platform.current_bundle().logger
     logger.debug("Looking for image sequences in folder: '%s'..." % (folder,))
 
     seq_paths = set()
@@ -373,27 +383,62 @@ def is_video(extension):
     return _is_category(extension, "video")
 
 
-# ---- publish util functions
+# ---- icon util
 
-def get_publishes(context, path, name):
+def get_builtin_icon(name):
     """
-    Returns a list of SG published file dicts for any existing publishes that
-    match the supplied context, path, and name.
+    Return an icon for the name supplied.
 
-    :param context: The context to search publishes for
-    :param path: The path to match against previous publishes
-    :param name: The name of the publish.
+    If no matching icon can be found, a generic "file" icon will be
+    returned.
 
-    :return: A list of ``dict``s representing existing publishes that match
-        the supplied arguments.
+    :param str names: The name of the icon to return.
+
+    :return: The path to a found icon.
     """
 
     publisher = sgtk.platform.current_bundle()
 
-    logger = publisher.logger
+    # the publisher's icons folder
+    icons_folder = os.path.abspath(
+        os.path.join(publisher.disk_location, "icons"))
+
+    # try to find an icon for the supplied names
+    icon_path = os.path.join(icons_folder, "%s.png" % (name,))
+    if os.path.exists(icon_path):
+        return icon_path
+
+    # no match. return the file icon
+    return os.path.join(icons_folder, "file.png")
+
+
+# ---- publish util functions
+
+def get_publishes(context, path, publish_name, filters=None):
+    """
+    Returns a list of SG published file dicts for any existing publishes that
+    match the supplied context, path, and publish_name.
+
+    :param context: The context to search publishes for
+    :param path: The path to match against previous publishes
+    :param publish_name: The name of the publish.
+    :param filters: A list of additional SG find() filters to apply to the
+        publish search.
+
+    :return: A list of ``dict``s representing existing publishes that match
+        the supplied arguments. The paths returned are the standard "id", and
+        "type" as well as the "path" field.
+
+    This method is typically used by publish plugin hooks to determine if there
+    are existing publishes for a given context, publish_name, and path and
+    warning appropriately.
+    """
+
+    publisher = sgtk.platform.current_bundle()
+
     logger.debug(
         "Getting other publishes for context: %s, path: %s, name: %s" %
-        (context, path, name)
+        (context, path, publish_name)
     )
 
     # ask core to do a dry_run of a publish with the supplied criteria. this is
@@ -406,14 +451,14 @@ def get_publishes(context, path, name):
         publisher.sgtk,
         context,
         path,
-        name,
+        publish_name,
         version_number=None,
         dry_run=True
     )
     logger.debug("Publish dry run data: %s" % (publish_data,))
 
     # now build up the filters to match against
-    publish_filters = []
+    publish_filters = filters or []
     for field in ["code", "entity", "name", "project", "task"]:
         publish_filters.append([field, "is", publish_data[field]])
     logger.debug("Build publish filters: %s" % (publish_filters,))
@@ -424,7 +469,6 @@ def get_publishes(context, path, name):
         publish_filters,
         ["path"]
     )
-    logger.debug("Find returned %s matches: %s" % (len(publishes), publishes))
 
     # next, extract the publish path from each of the returned publishes and
     # compare it against the supplied path. if the paths match, we add the
@@ -434,13 +478,7 @@ def get_publishes(context, path, name):
     for publish in publishes:
         publish_path = sgtk.util.resolve_publish_path(publisher.sgtk, publish)
         if publish_path and publish_path == path:
-            logger.debug("Path match: %s" % (path,))
             matching_publishes.append(publish)
-        else:
-            logger.debug(
-                "Path mismatch: %s (input path) ! = %s (publish)" %
-                (path, publish_path)
-            )
 
     return matching_publishes
 
@@ -464,7 +502,6 @@ def clear_status_for_other_publishes(context, publish_data):
 
     publisher = sgtk.platform.current_bundle()
 
-    logger = publisher.logger
     logger.debug("Clearing the status of any other publishes.")
 
     # determine the path from the publish data. this will match the path that
@@ -473,7 +510,12 @@ def clear_status_for_other_publishes(context, publish_data):
     name = publish_data["name"]
 
     # get a list of all publishes matching this criteria
-    publishes = get_publishes(context, path, name)
+    publishes = get_publishes(
+        context,
+        path,
+        name,
+        filters=["sg_status_list", "is_not", None]
+    )
 
     if not publishes:
         # no other publishes. nothing to do.

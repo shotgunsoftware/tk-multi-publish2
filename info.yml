@@ -13,7 +13,6 @@ configuration:
     collector:
         type: hook
         description: "Logic for extracting items from the scene and from dropped files."
-        default_value: "{self}/collector.py"
 
     publish_plugins:
         type: list
