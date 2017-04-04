@@ -14,6 +14,13 @@ configuration:
         type: hook
         description: "Logic for extracting items from the scene and from dropped files."
 
+    path_info:
+        type: hook
+        description:
+          "This hook contains methods that are used by publish plugins to
+           infer information from file paths. This includes version and frame
+           number identification, publish display name, etc."
+
     publish_plugins:
         type: list
         description: "List of publish plugins."
