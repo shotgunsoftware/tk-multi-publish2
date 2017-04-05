@@ -17,9 +17,10 @@ configuration:
     path_info:
         type: hook
         description:
-          "This hook contains methods that are used by publish plugins to
-           infer information from file paths. This includes version and frame
-           number identification, publish display name, etc."
+          "This hook contains methods that are used during publishing to infer
+           information from file paths. This includes version and frame number
+           identification, publish display name, image sequence paths, etc."
+        default_value: "{self}/path_info.py"
 
     publish_plugins:
         type: list

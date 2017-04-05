@@ -9,7 +9,7 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import os
-import re
+import pprint
 
 import sgtk
 
@@ -27,7 +27,8 @@ def get_file_path_components(path):
 
     Returns file path components in the form::
 
-        # example 1: file
+    Examples::
+
         # path="/path/to/the/file/my_file.v001.ext"
 
         {
@@ -37,7 +38,6 @@ def get_file_path_components(path):
             "extension": "ext",
         }
 
-        # example 2: folder
         # path="/path/to/the/foler"
 
         {
@@ -77,7 +77,128 @@ def get_file_path_components(path):
         "Extracted components from path '%s': %s" %
         (path, file_info)
     )
+
     return file_info
+
+
+def get_image_sequence_paths(folder):
+    """
+    Given a folder, inspect the contained files to find what appear to be images
+    with frame numbers.
+
+    Example::
+
+        in: "/path/to/the/supplied/folder"
+        out: ["/path/to/the/supplied/folder/key_light1.%04d.exr",
+              "/path/to/the/supplied/folder/fill_light1.%04d.exr"]
+
+    :param folder: The path to a folder potentially containing a sequence of
+        images.
+
+    :return: A list of paths for each identified image sequence.
+    """
+
+    # the logic for this method lives in a hook that can be overridden by
+    # clients. exposing the method here in the publish utils api prevents
+    # clients from having to call other hooks directly in their
+    # collector/publisher hook implementations.
+    publisher = sgtk.platform.current_bundle()
+    return publisher.execute_hook_method(
+        "path_info",
+        "get_image_sequence_paths",
+        folder=folder
+    )
+
+def get_next_version_path(path):
+    """
+    Given a file path, return a path to the next version.
+
+    This is typically used by auto-versioning logic in plugins that make copies
+    of files/folders post publish.
+
+    If no version can be identified in the supplied path, ``None`` will be
+    returned, indicating that the next version path can't be determined.
+
+    Example::
+
+        in: /path/to/the/file/my_file.v001.jpg
+        in: /path/to/the/file/my_file.v002.jpg
+
+    :param path: The path to a file, likely one to be published.
+
+    :return: The path to the next version of the supplied path.
+    """
+
+    # the logic for this method lives in a hook that can be overridden by
+    # clients. exposing the method here in the publish utils api prevents
+    # clients from having to call other hooks directly in their
+    # collector/publisher hook implementations.
+    publisher = sgtk.platform.current_bundle()
+    return publisher.execute_hook_method(
+        "path_info",
+        "get_next_version_path",
+        path=path
+    )
+
+
+def get_publish_name(path):
+    """
+    Given a file path, return the display name to use for publishing.
+
+    Typically, this is a name where the path and any version number are removed
+    in order to keep the publish name consistent as subsequent versions are
+    published.
+
+    Example::
+
+        in: /path/to/the/file/my_file.v001.jpg
+        out: my_file.jpg
+
+    :param path: The path to a file, likely one to be published.
+
+    :return: A publish display name for the provided path.
+    """
+
+    # the logic for this method lives in a hook that can be overridden by
+    # clients. exposing the method here in the publish utils api prevents
+    # clients from having to call other hooks directly in their
+    # collector/publisher hook implementations.
+    publisher = sgtk.platform.current_bundle()
+    return publisher.execute_hook_method(
+        "path_info",
+        "get_publish_name",
+        path=path
+    )
+
+
+def get_version_number(path):
+    """
+    Extract a version number from the supplied path.
+
+    This is used by plugins that need to know what version number to associate
+    with the file when publishing.
+
+    Example::
+
+        in: /path/to/the/file/my_file.v001.jpg
+        out: 1
+
+    :param path: The path to a file, likely one to be published.
+
+    :return: An integer representing the version number in the supplied path.
+        If no version found, ``None`` will be returned.
+    """
+
+    # the logic for this method lives in a hook that can be overridden by
+    # clients. exposing the method here in the publish utils api prevents
+    # clients from having to call other hooks directly in their
+    # collector/publisher hook implementations.
+    publisher = sgtk.platform.current_bundle()
+    return publisher.execute_hook_method(
+        "path_info",
+        "get_version_number",
+        path=path
+    )
 
 
 # ---- publish util functions
@@ -206,6 +327,11 @@ def clear_status_for_conflicting_publishes(context, publish_data):
             "entity_id": publish["id"],
             "data": {"sg_status_list": None}  # will clear the status
         })
+
+    logger.debug(
+        "Batch updating publish data: %s" %
+        (pprint.pformat(batch_data),)
+    )
 
     # execute all the updates!
     publisher.shotgun.batch(batch_data)
