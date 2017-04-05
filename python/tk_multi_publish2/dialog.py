@@ -389,8 +389,17 @@ class AppDialog(QtGui.QWidget):
             # orphan. Don't create it
             return None
 
+        checked = item.properties.get("default_checked", True)
+        expanded = item.properties.get("default_expanded", True)
+
+        if checked:
+            check_state = QtCore.Qt.Checked
+        else:
+            check_state = QtCore.Qt.Unchecked
+
         ui_item = PublishTreeWidgetItem(item, parent)
-        ui_item.setExpanded(True)
+        ui_item.setExpanded(expanded)
+        ui_item.checkbox.setCheckState(check_state)
 
         for task in item.tasks:
             task = PublishTreeWidgetTask(task, ui_item)
@@ -416,7 +425,6 @@ class AppDialog(QtGui.QWidget):
             item = PublishTreeWidgetItem(task.item, ui_item)
 
         return ui_item
-
 
     def _build_tree(self):
         """
