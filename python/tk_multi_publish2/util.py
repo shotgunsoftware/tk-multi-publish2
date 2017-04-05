@@ -19,6 +19,44 @@ logger = sgtk.platform.get_logger(__name__)
 
 # ---- file/path util functions
 
+def create_next_version_path(path):
+    """
+    A method to create the next version of the supplied path.
+
+    The method will create a copy of the supplied path (file or folder) at the
+    next available version. The method will fail if a version cannot be detected
+    in the filename or if the next version path already exists.
+
+    This method is often called in the ``finalize`` phase of publish plugins
+    when an automatic version up setting is enabled.
+
+    :param path: The path to version up.
+
+    :return: A dictionary of info about the results of the action::
+
+        {
+            # the destination path
+            "next_version_path": "/path/to/next/version/of/file.v002.ext",
+
+            # True if successful, False otherwise
+            "success": True
+
+            # Reason why the version failed. None otherwise
+            "reason": "Path already exists."
+        }
+    """
+
+    # the logic for this method lives in a hook that can be overridden by
+    # clients. exposing the method here in the publish utils api prevents
+    # clients from having to call other hooks directly in their
+    # collector/publisher hook implementations.
+    publisher = sgtk.platform.current_bundle()
+    return publisher.execute_hook_method(
+        "path_info",
+        "create_next_version_path",
+        path=path
+    )
+
 def get_file_path_components(path):
     """
     Convenience method for determining file components for a given path.
@@ -107,37 +145,6 @@ def get_image_sequence_paths(folder):
         "path_info",
         "get_image_sequence_paths",
         folder=folder
-    )
-
-def get_next_version_path(path):
-    """
-    Given a file path, return a path to the next version.
-
-    This is typically used by auto-versioning logic in plugins that make copies
-    of files/folders post publish.
-
-    If no version can be identified in the supplied path, ``None`` will be
-    returned, indicating that the next version path can't be determined.
-
-    Example::
-
-        in: /path/to/the/file/my_file.v001.jpg
-        in: /path/to/the/file/my_file.v002.jpg
-
-    :param path: The path to a file, likely one to be published.
-
-    :return: The path to the next version of the supplied path.
-    """
-
-    # the logic for this method lives in a hook that can be overridden by
-    # clients. exposing the method here in the publish utils api prevents
-    # clients from having to call other hooks directly in their
-    # collector/publisher hook implementations.
-    publisher = sgtk.platform.current_bundle()
-    return publisher.execute_hook_method(
-        "path_info",
-        "get_next_version_path",
-        path=path
     )
 
 

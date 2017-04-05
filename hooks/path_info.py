@@ -12,6 +12,7 @@ import os
 import re
 
 import sgtk
+from sgtk.util.filesystem import copy_file, copy_folder
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -33,58 +34,64 @@ class BasicPathInfo(HookBaseClass):
     Methods for basic file path parsing.
     """
 
-    def get_next_version_path(self, path):
+    def create_next_version_path(self, path):
         """
-        Given a file path, return a path to the next version.
+        A method to create the next version of the supplied path.
 
-        This is typically used by auto-versioning logic in plugins that make
-        copies of files/folders post publish.
+        The method will create a copy of the supplied path (file or folder) at
+        the next available version. The method will fail if a version cannot be
+        detected in the filename or if the next version path already exists.
 
-        If no version can be identified in the supplied path, ``None`` will be
-        returned, indicating that the next version path can't be determined.
+        This method is often called in the ``finalize`` phase of publish plugins
+        when an automatic version up setting is enabled.
 
-        :param path: The path to a file, likely one to be published.
+        :param path: The path to version up.
 
-        :return: The path to the next version of the supplied path.
+        :return: A dictionary of info about the results of the action::
+
+            {
+                # the destination path
+                "next_version_path": "/path/to/next/version/of/file.v002.ext",
+
+                # True if successful, False otherwise
+                "success": True
+
+                # Reason why the version failed. None otherwise
+                "reason": "Path already exists."
+            }
         """
 
-        publisher = self.parent
+        next_version_path = self._get_next_version_path(path)
 
-        logger = publisher.logger
-        logger.debug("Getting next version of path: %s ..." % (path,))
+        # default values
+        success = False
+        reason = None
 
-        # default
-        next_version_path = None
+        # nothing to do if the next version path can't be determined or if it
+        # already exists.
+        if not next_version_path:
+            reason = "Could not determine next version path."
+        elif os.path.exists(next_version_path):
+            reason = "Path already exists (%s)" % (next_version_path,)
+        else:
 
-        path_info = publisher.util.get_file_path_components(path)
-        filename = path_info["filename"]
+            # if here, all good. try to copy the file/folder
+            try:
+                if os.path.isdir(path):
+                    copy_folder(path, next_version_path)
+                else:
+                    copy_file(path, next_version_path)
+            except Exception, e:
+                reason = "Exception raised during path copy: %s" % (str(e),)
+            else:
+                success = True
 
-        # see if there's a version in the supplied path
-        version_pattern_match = re.search(VERSION_REGEX, filename)
-
-        if version_pattern_match:
-            prefix = version_pattern_match.group(1)
-            version_str = version_pattern_match.group(2)
-            extension = version_pattern_match.group(3) or ""
-
-            # make sure we maintain the same padding
-            padding = len(version_str)
-
-            # bump the version number
-            next_version_number = int(version_str) + 1
-
-            # create a new version string filled with the appropriate 0 padding
-            next_version_str = "v%s" % (str(next_version_number).zfill(padding))
-
-            new_filename = "%s.%s" % (prefix, next_version_str)
-            if extension:
-                new_filename = "%s.%s" % (new_filename, extension)
-
-            # build the new path in the same folder
-            next_version_path = os.path.join(path_info["folder"], new_filename)
-
-        logger.debug("Returning next version path: %s" % (next_version_path,))
-        return next_version_path
+        # return the promised dictionary
+        return dict(
+            next_version_path=next_version_path,
+            success=success,
+            reason=reason
+        )
 
     def get_publish_name(self, path):
         """
@@ -236,3 +243,56 @@ class BasicPathInfo(HookBaseClass):
             seq_paths.add(seq_path)
 
         return list(seq_paths)
+
+    def _get_next_version_path(self, path):
+        """
+        Given a file path, return a path to the next version.
+
+        This is typically used by auto-versioning logic in plugins that make
+        copies of files/folders post publish.
+
+        If no version can be identified in the supplied path, ``None`` will be
+        returned, indicating that the next version path can't be determined.
+
+        :param path: The path to a file, likely one to be published.
+
+        :return: The path to the next version of the supplied path.
+        """
+
+        publisher = self.parent
+
+        logger = publisher.logger
+        logger.debug("Getting next version of path: %s ..." % (path,))
+
+        # default
+        next_version_path = None
+
+        path_info = publisher.util.get_file_path_components(path)
+        filename = path_info["filename"]
+
+        # see if there's a version in the supplied path
+        version_pattern_match = re.search(VERSION_REGEX, filename)
+
+        if version_pattern_match:
+            prefix = version_pattern_match.group(1)
+            version_str = version_pattern_match.group(2)
+            extension = version_pattern_match.group(3) or ""
+
+            # make sure we maintain the same padding
+            padding = len(version_str)
+
+            # bump the version number
+            next_version_number = int(version_str) + 1
+
+            # create a new version string filled with the appropriate 0 padding
+            next_version_str = "v%s" % (str(next_version_number).zfill(padding))
+
+            new_filename = "%s.%s" % (prefix, next_version_str)
+            if extension:
+                new_filename = "%s.%s" % (new_filename, extension)
+
+            # build the new path in the same folder
+            next_version_path = os.path.join(path_info["folder"], new_filename)
+
+        logger.debug("Returning next version path: %s" % (next_version_path,))
+        return next_version_path
