@@ -119,21 +119,21 @@ def get_file_path_components(path):
     return file_info
 
 
-def get_image_sequence_paths(folder):
+def get_image_sequence_path(path):
     """
-    Given a folder, inspect the contained files to find what appear to be images
-    with frame numbers.
+    Given a path to an image on disk, see if a frame number can be identified.
+    If the frame number can be identified, return the original path with the
+    frame number replaced by a format string with appropriate padding.
 
     Example::
 
-        in: "/path/to/the/supplied/folder"
-        out: ["/path/to/the/supplied/folder/key_light1.%04d.exr",
-              "/path/to/the/supplied/folder/fill_light1.%04d.exr"]
+         in: "/path/to/the/supplied/folder/key_light1.0001.exr"
+        out: "/path/to/the/supplied/folder/key_light1.%04d.exr",
 
-    :param folder: The path to a folder potentially containing a sequence of
-        images.
+    :param path: The path to identify a frame number and return format path
 
-    :return: A list of paths for each identified image sequence.
+    :return: A path with the frame number replaced by format specification. If
+        no frame number exsists in the path, returns ``None``.
     """
 
     # the logic for this method lives in a hook that can be overridden by
@@ -143,8 +143,8 @@ def get_image_sequence_paths(folder):
     publisher = sgtk.platform.current_bundle()
     return publisher.execute_hook_method(
         "path_info",
-        "get_image_sequence_paths",
-        folder=folder
+        "get_image_sequence_path",
+        path=path
     )
 
 

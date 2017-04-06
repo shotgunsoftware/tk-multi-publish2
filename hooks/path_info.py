@@ -26,7 +26,7 @@ VERSION_REGEX = re.compile("(.*)\.v(\d+)\.?([^.]+)?$", re.IGNORECASE)
 # a regular expression used to extract the frame number from the file.
 # this implementation assumes the version number is of the form '.####' and
 # comes just before the extension in the filename.
-FRAME_REGEX = re.compile("(.*)\.(\d+)\.?([^.]+)$", re.IGNORECASE)
+FRAME_REGEX = re.compile("(.*)\.(\d+)\.([^.]+)$", re.IGNORECASE)
 
 
 class BasicPathInfo(HookBaseClass):
@@ -103,8 +103,13 @@ class BasicPathInfo(HookBaseClass):
 
         Example::
 
-            in: /path/to/the/file/my_file.v001.jpg
-            out: my_file.jpg
+            # versioned file. remove the version
+            in: /path/to/the/file/scene.v001.ma
+            out: scene.ma
+
+            # image sequence. replace the frame number with #s
+            in: /path/to/the/file/my_file.001.jpg
+            out: my_file.###.jpg
 
         :param path: The path to a file, likely one to be published.
 
@@ -119,8 +124,8 @@ class BasicPathInfo(HookBaseClass):
         path_info = publisher.util.get_file_path_components(path)
         filename = path_info["filename"]
 
-        # if there's a version in the filename, extract it
         version_pattern_match = re.search(VERSION_REGEX, filename)
+        frame_pattern_match = re.search(FRAME_REGEX, filename)
 
         if version_pattern_match:
             # found a version number, use the other groups to remove it
@@ -130,6 +135,13 @@ class BasicPathInfo(HookBaseClass):
                 publish_name = "%s.%s" % (prefix, extension)
             else:
                 publish_name = prefix
+        elif frame_pattern_match:
+            # found a frame number, replace it with #s
+            prefix = frame_pattern_match.group(1)
+            frame = frame_pattern_match.group(2)
+            display_str = "#" * len(frame)
+            extension = frame_pattern_match.group(3) or ""
+            publish_name = "%s.%s.%s" % (prefix, display_str, extension)
         else:
             publish_name = filename
 
@@ -165,84 +177,48 @@ class BasicPathInfo(HookBaseClass):
 
         if version_pattern_match:
             version_number = int(version_pattern_match.group(2))
-            logger.debug("PATTERN MATCH: " + str(version_number))
 
-        logger.debug("Returning version_number: %s" % (version_number,))
+        logger.debug("Returning version number: %s" % (version_number,))
         return version_number
 
-    def get_image_sequence_paths(self, folder):
+    def get_image_sequence_path(self, path):
         """
-        Given a folder, inspect the contained files to find what appear to be
-        images with frame numbers.
+        Given a path to an image on disk, see if a frame number can be
+        identified. If the frame number can be identified, return the original
+        path with the frame number replaced by a format string with appropriate
+        padding.
 
-        :param folder: The path to a folder potentially containing a sequence of
-            images.
+        Example::
 
-        :return: A list of paths for each identified image seuqence.
-            For example: ["/path/to/the/supplied/folder/key_light1.%04d.exr",
-            "/path/to/the/supplied/folder/fill_light1.%04d.exr"]
+             in: "/path/to/the/supplied/folder/key_light1.0001.exr"
+            out: "/path/to/the/supplied/folder/key_light1.%04d.exr",
 
+        :param path: The path to identify a frame number and return format path
+
+        :return: A path with the frame number replaced by format specification.
+            If no frame number exsists in the path, returns ``None``.
         """
 
-        publisher = self.parent
+        (folder, filename) = os.path.split(path)
 
-        logger = publisher.logger
+        # see if the path has a frame number
+        frame_pattern_match = re.search(FRAME_REGEX, filename)
 
-        logger.debug(
-            "Looking for image sequences in folder: '%s'..." % (folder,))
+        if not frame_pattern_match:
+            # no frame number detected. nothing to do
+            return None
 
-        seq_paths = set()
+        prefix = frame_pattern_match.group(1)
+        frame_str = frame_pattern_match.group(2)
+        extension = frame_pattern_match.group(3)
 
-        # list of filenames without the frame number to avoid unnecessary
-        # processing
-        processed_names = []
+        # make sure we maintain the same padding
+        padding = len(frame_str)
+        frame_format = "%%0%dd" % (padding,)
+        seq_filename = "%s.%s.%s" % (prefix, frame_format, extension)
 
-        # examine the files in the folder
-        for filename in os.listdir(folder):
-
-            file_path = os.path.join(folder, filename)
-            if os.path.isdir(file_path):
-                # ignore subfolders
-                continue
-
-            # TODO: don't continue if the extension isn't an image type
-
-            # see if there is a frame number
-            frame_pattern_match = re.search(FRAME_REGEX, filename)
-
-            if not frame_pattern_match:
-                # no frame number detected. carry on.
-                continue
-
-            prefix = frame_pattern_match.group(1)
-            frame_str = frame_pattern_match.group(2)
-            extension = frame_pattern_match.group(3) or ""
-
-            # filename without a frame number.
-            file_no_frame = "%s.%s" % (prefix, extension)
-
-            # see if we've already processed
-            if file_no_frame in processed_names:
-                continue
-
-            # add this name to the list to avoid doing the steps below for a
-            # different frame number
-            processed_names.append(file_no_frame)
-
-            # make sure we maintain the same padding
-            padding = len(frame_str)
-            frame_format = "%%0%dd" % (padding,)
-            seq_filename = "%s.%s" % (prefix, frame_format)
-            if extension:
-                seq_filename = "%s.%s" % (seq_filename, extension)
-
-            # build the path in the same folder
-            seq_path = os.path.join(folder, seq_filename)
-
-            logger.debug("Found image sequence: %s" % (seq_path,))
-            seq_paths.add(seq_path)
-
-        return list(seq_paths)
+        # build the path in the same folder
+        return os.path.join(folder, seq_filename)
 
     def _get_next_version_path(self, path):
         """
