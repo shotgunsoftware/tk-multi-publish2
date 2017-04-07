@@ -11,7 +11,6 @@
 
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
-from .ui.task_widget import Ui_TaskWidget
 
 logger = sgtk.platform.get_logger(__name__)
 

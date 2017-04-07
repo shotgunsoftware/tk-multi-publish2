@@ -152,7 +152,7 @@ DropAreaFrame[dragging="true"] {
 #items_tree {
     background-color: #292929;
     /* push the whole tree 20px to the side */
-    margin-left: -20px;
+    /*margin-left: -20px;*/
 }
 
 /* disable all the 'tree handles' */
@@ -179,11 +179,9 @@ CustomTreeWidgetItem {
     background-color: #343434;
 }
 
-
 /* Tree view items */
 CustomTreeWidgetTask {
     padding: 5px;
-    border: 1px solid red;
     background-color: #343434;
 }
 

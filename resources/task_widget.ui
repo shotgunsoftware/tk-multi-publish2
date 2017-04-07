@@ -65,6 +65,13 @@
    <item>
     <widget class="StatusDotWidget" name="status" native="true"/>
    </item>
+   <item>
+    <widget class="QToolButton" name="settings">
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>

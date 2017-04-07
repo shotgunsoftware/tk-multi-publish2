@@ -11,7 +11,7 @@ from tank.platform.qt import QtCore, QtGui
 class Ui_ItemWidget(object):
     def setupUi(self, ItemWidget):
         ItemWidget.setObjectName("ItemWidget")
-        ItemWidget.resize(415, 53)
+        ItemWidget.resize(279, 53)
         self.horizontalLayout = QtGui.QHBoxLayout(ItemWidget)
         self.horizontalLayout.setSpacing(4)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
