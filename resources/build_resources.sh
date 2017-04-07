@@ -10,6 +10,9 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+# Remove any problematic profiles from pngs.
+for f in *.png; do mogrify $f; done
+
 # Helper functions to build UI files
 function build_qt {
     echo " > Building " $2
@@ -35,6 +38,7 @@ echo "building user interfaces..."
 UI_PYTHON_PATH=../python/tk_multi_publish2/ui
 build_ui dialog
 build_ui settings_widget
+build_ui progress_widget
 
 # build resources
 echo "building resources..."
@@ -43,5 +47,7 @@ build_res resources
 # build tree UIs:
 echo "building tree interfaces..."
 UI_PYTHON_PATH=../python/tk_multi_publish2/publish_tree_widget/ui
-build_ui node_widget
+build_ui item_widget
+build_ui task_widget
 build_ui context_widget
+

@@ -12,7 +12,9 @@
 import sgtk
 import collections
 from sgtk.platform.qt import QtCore, QtGui
-from .tree_node import TreeNodeContext, TreeNodeTask, TreeNodeItem, TopLevelTreeNodeItem
+from .tree_node_context import TreeNodeContext
+from .tree_node_task import TreeNodeTask
+from .tree_node_item import TreeNodeItem, TopLevelTreeNodeItem
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -40,8 +42,6 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         # turn off keyboard focus - this is to disable the
         # dotted lines around the widget which is selected.
         self.setFocusPolicy(QtCore.Qt.NoFocus)
-
-
 
     def set_plugin_manager(self, plugin_manager):
         self._plugin_manager = plugin_manager
@@ -95,36 +95,42 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
 
     def dropEvent(self, event):
+        """
+        Something was dropped on this widget
+        """
+        # run default implementation
         super(PublishTreeWidget, self).dropEvent(event)
 
+        #
         for item in self._dragged_items:
-            print "item %s" % item
-            item.create_widget()
+            item._create_widget()
+            item.setExpanded(True)
             # and do it for all children
 
             def _check_r(parent):
                 for child_index in xrange(parent.childCount()):
                     child = parent.child(child_index)
-                    child.create_widget()
+                    child._create_widget()
+                    child.setExpanded(True)
                     _check_r(child)
 
             _check_r(item)
 
-        #self._dagged_items = []
-
-
-
-
     def dragEnterEvent(self, event):
-
+        """
+        Event triggering when a drag operation starts
+        """
+        # record selection for use later.
         self._dragged_items = self.selectedItems()
         super(PublishTreeWidget, self).dragEnterEvent(event)
 
-
     def mouseMoveEvent(self, event):
-
+        """
+        Overridden mouse move event to suppress
+        selecting multiple selection via the mouse since
+        this makes drag and drop pretty weird.
+        """
         if self.state() != QtGui.QAbstractItemView.DragSelectingState:
-            # bubble
-            print "bubble"
+            # bubble up all events that aren't drag select related
             super(PublishTreeWidget, self).mouseMoveEvent(event)
 

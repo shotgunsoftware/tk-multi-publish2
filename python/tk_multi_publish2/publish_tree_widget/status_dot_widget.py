@@ -15,7 +15,7 @@ from sgtk.platform.qt import QtCore, QtGui
 logger = sgtk.platform.get_logger(__name__)
 
 
-class ItemStatus(QtGui.QWidget):
+class StatusDotWidget(QtGui.QWidget):
     """
     Publish Status Widget. Small graphical widget used to display
     a circular dot in different colors.

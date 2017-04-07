@@ -11,12 +11,12 @@
 
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
-from .ui.node_widget import Ui_NodeWidget
+from .ui.task_widget import Ui_TaskWidget
 
 logger = sgtk.platform.get_logger(__name__)
 
 
-class NodeWidget(QtGui.QFrame):
+class CustomTreeWidgetBase(QtGui.QFrame):
     """
     Widget representing a single item in the left hand side tree view.
     (Connected to a designer ui setup)
@@ -47,23 +47,12 @@ class NodeWidget(QtGui.QFrame):
         EMPTY
     ) = range(9)
 
-    def __init__(self, parent=None):
+    def __init__(self, tree_node, parent=None):
         """
         :param parent: The parent QWidget for this control
         """
-        super(NodeWidget, self).__init__(parent)
-
-        # set up the UI
-        self.ui = Ui_NodeWidget()
-        self.ui.setupUi(self)
-        self.set_status(self.NEUTRAL)
-
-    @property
-    def checkbox(self):
-        """
-        The checkbox widget associated with this item
-        """
-        return self.ui.checkbox
+        super(CustomTreeWidgetBase, self).__init__(parent)
+        self._tree_node = tree_node
 
     @property
     def icon(self):
@@ -88,6 +77,23 @@ class NodeWidget(QtGui.QFrame):
         """
         self.ui.header.setText(title)
 
+    def _update_check_state(self, state):
+        """
+        Communicate the value of the checkbox back to the associated node
+        """
+        self._tree_node.set_check_state(state)
+
+    def set_checkbox_value(self, state):
+        """
+        Set the value of the checkbox
+        """
+        if state == QtCore.Qt.Checked:
+            self.ui.checkbox.setCheckState(QtCore.Qt.Checked)
+        elif state == QtCore.Qt.PartiallyChecked:
+            self.ui.checkbox.setCheckState(QtCore.Qt.PartiallyChecked)
+        else:
+            self.ui.checkbox.setCheckState(QtCore.Qt.Unchecked)
+
     def set_status(self, status):
         """
         Set the status for the plugin
@@ -96,16 +102,14 @@ class NodeWidget(QtGui.QFrame):
         """
         # reset
         self.ui.status.show_nothing()
-        self.ui.stack.setCurrentIndex(0)
 
         if status == self.NEUTRAL:
-            self.ui.stack.setCurrentIndex(1)
-
-        elif status == self.EMPTY:
+            # do nothing
             pass
 
         elif status == self.PROCESSING:
             # gray ring
+            self.ui.status.show()
             self.ui.status.show_dot(ring_color="#808080", fill_color=None, dotted=True)
 
         elif status == self.VALIDATION_COMPLETE:
@@ -134,7 +138,5 @@ class NodeWidget(QtGui.QFrame):
 
         else:
             raise sgtk.TankError("Invalid item status!")
-
-
 
 

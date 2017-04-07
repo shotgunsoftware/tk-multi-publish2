@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>NodeWidget</class>
- <widget class="QWidget" name="NodeWidget">
+ <class>ItemWidget</class>
+ <widget class="QWidget" name="ItemWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>253</width>
-    <height>26</height>
+    <width>415</width>
+    <height>53</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,46 +21,10 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QStackedWidget" name="stack">
-     <property name="maximumSize">
-      <size>
-       <width>20</width>
-       <height>20</height>
-      </size>
+    <widget class="QCheckBox" name="checkbox">
+     <property name="text">
+      <string/>
      </property>
-     <property name="currentIndex">
-      <number>1</number>
-     </property>
-     <widget class="QWidget" name="widget_2">
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="margin">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="ItemStatus" name="status" native="true"/>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="chk_page">
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="margin">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="QCheckBox" name="checkbox">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
     </widget>
    </item>
    <item>
@@ -94,20 +58,20 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>&lt;big&gt;Alembic Caches&lt;/big&gt;</string>
+      <string>&lt;big&gt;Alembic Caches&lt;/big&gt;&lt;br&gt;foo</string>
      </property>
     </widget>
    </item>
+   <item>
+    <widget class="StatusDotWidget" name="status" native="true"/>
+   </item>
   </layout>
-  <zorder>icon</zorder>
-  <zorder>header</zorder>
-  <zorder>stack</zorder>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ItemStatus</class>
+   <class>StatusDotWidget</class>
    <extends>QWidget</extends>
-   <header>..item_status</header>
+   <header>..status_dot_widget</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="tk_multi_publish2">
+    <file>icon_256.png</file>
+    <file>cross.png</file>
     <file>tick.png</file>
     <file>shotgun.png</file>
     <file>failure.png</file>

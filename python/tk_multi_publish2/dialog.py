@@ -16,6 +16,7 @@ from sgtk.platform.qt import QtCore, QtGui
 from .ui.dialog import Ui_Dialog
 from .processing import PluginManager
 from .publish_logging import PublishLogWrapper
+from .progress_widget import ProgressWidget
 
 # import frameworks
 settings = sgtk.platform.import_framework("tk-framework-shotgunutils", "settings")
@@ -32,10 +33,6 @@ class AppDialog(QtGui.QWidget):
 
     # details ui panes
     (SUMMARY_DETAILS, TASK_DETAILS, PLUGIN_DETAILS, ITEM_DETAILS, BLANK_DETAILS) = range(5)
-
-    # main right hand side tabs
-    (DETAILS_TAB, PROGRESS_TAB) = range(2)
-
 
     def __init__(self, parent=None):
         """
@@ -72,8 +69,13 @@ class AppDialog(QtGui.QWidget):
         # drag and drop
         self.ui.frame.something_dropped.connect(self._on_drop)
 
+        # parent our progress widget overlay
+        self._progress_widget = ProgressWidget(self.ui.progress, self)
+
+        self.ui.progress_toggle.clicked.connect(self._progress_widget.toggle)
+
         # create a special logger for progress
-        self._log_wrapper = PublishLogWrapper(self.ui.log_tree)
+        self._log_wrapper = PublishLogWrapper(self._progress_widget.log_tree)
 
         # buttons
         self.ui.validate.clicked.connect(self.do_validate)
@@ -326,9 +328,6 @@ class AppDialog(QtGui.QWidget):
         """
         self._expand_tree()
 
-        # flip right hand side to show the logs
-        self.ui.right_tabs.setCurrentIndex(self.PROGRESS_TAB)
-
         parent = self.ui.items_tree.invisibleRootItem()
 
         self._log_wrapper.push("Running Validation pass")
@@ -362,8 +361,6 @@ class AppDialog(QtGui.QWidget):
             self.close()
 
         self._expand_tree()
-
-        self.ui.right_tabs.setCurrentIndex(self.PROGRESS_TAB)
 
         issues = self.do_validate()
         if issues > 0:
