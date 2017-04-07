@@ -152,7 +152,7 @@ DropAreaFrame[dragging="true"] {
 #items_tree {
     background-color: #292929;
     /* push the whole tree 20px to the side */
-    /*margin-left: -20px;*/
+    margin-left: -20px;
 }
 
 /* disable all the 'tree handles' */
