@@ -19,14 +19,16 @@ HookBaseClass = sgtk.get_hook_baseclass()
 # ---- globals
 
 # a regular expression used to extract the version number from the file.
-# this implementation assumes the version number is of the form '.v###' and
-# comes just before an optional extension in the file/folder name.
-VERSION_REGEX = re.compile("(.*)\.v(\d+)\.?([^.]+)?$", re.IGNORECASE)
+# this implementation assumes the version number is of the form 'v###'
+# coming just before an optional extension in the file/folder name and just
+# after a '.', '_', or '-'.
+VERSION_REGEX = re.compile("(.*)([._-])v(\d+)\.?([^.]+)?$", re.IGNORECASE)
 
 # a regular expression used to extract the frame number from the file.
-# this implementation assumes the version number is of the form '.####' and
-# comes just before the extension in the filename.
-FRAME_REGEX = re.compile("(.*)\.(\d+)\.([^.]+)$", re.IGNORECASE)
+# this implementation assumes the version number is of the form '.####'
+# coming just before the extension in the filename and just after a '.', '_',
+# or '-'.
+FRAME_REGEX = re.compile("(.*)([._-])(\d+)\.([^.]+)$", re.IGNORECASE)
 
 
 class BasicPathInfo(HookBaseClass):
@@ -130,7 +132,7 @@ class BasicPathInfo(HookBaseClass):
         if version_pattern_match:
             # found a version number, use the other groups to remove it
             prefix = version_pattern_match.group(1)
-            extension = version_pattern_match.group(3) or ""
+            extension = version_pattern_match.group(4) or ""
             if extension:
                 publish_name = "%s.%s" % (prefix, extension)
             else:
@@ -138,10 +140,12 @@ class BasicPathInfo(HookBaseClass):
         elif frame_pattern_match:
             # found a frame number, replace it with #s
             prefix = frame_pattern_match.group(1)
-            frame = frame_pattern_match.group(2)
+            frame_sep = frame_pattern_match.group(2)
+            frame = frame_pattern_match.group(3)
             display_str = "#" * len(frame)
-            extension = frame_pattern_match.group(3) or ""
-            publish_name = "%s.%s.%s" % (prefix, display_str, extension)
+            extension = frame_pattern_match.group(4) or ""
+            publish_name = "%s%s%s.%s" % (
+                prefix, frame_sep, display_str, extension)
         else:
             publish_name = filename
 
@@ -176,7 +180,7 @@ class BasicPathInfo(HookBaseClass):
         version_pattern_match = re.search(VERSION_REGEX, filename)
 
         if version_pattern_match:
-            version_number = int(version_pattern_match.group(2))
+            version_number = int(version_pattern_match.group(3))
 
         logger.debug("Returning version number: %s" % (version_number,))
         return version_number
@@ -209,13 +213,15 @@ class BasicPathInfo(HookBaseClass):
             return None
 
         prefix = frame_pattern_match.group(1)
-        frame_str = frame_pattern_match.group(2)
-        extension = frame_pattern_match.group(3)
+        frame_sep = frame_pattern_match.group(2)
+        frame_str = frame_pattern_match.group(3)
+        extension = frame_pattern_match.group(4)
 
         # make sure we maintain the same padding
         padding = len(frame_str)
         frame_format = "%%0%dd" % (padding,)
-        seq_filename = "%s.%s.%s" % (prefix, frame_format, extension)
+        seq_filename = "%s%s%s.%s" % (
+            prefix, frame_sep, frame_format, extension)
 
         # build the path in the same folder
         return os.path.join(folder, seq_filename)
@@ -251,8 +257,9 @@ class BasicPathInfo(HookBaseClass):
 
         if version_pattern_match:
             prefix = version_pattern_match.group(1)
-            version_str = version_pattern_match.group(2)
-            extension = version_pattern_match.group(3) or ""
+            version_sep = version_pattern_match.group(2)
+            version_str = version_pattern_match.group(3)
+            extension = version_pattern_match.group(4) or ""
 
             # make sure we maintain the same padding
             padding = len(version_str)
@@ -263,7 +270,7 @@ class BasicPathInfo(HookBaseClass):
             # create a new version string filled with the appropriate 0 padding
             next_version_str = "v%s" % (str(next_version_number).zfill(padding))
 
-            new_filename = "%s.%s" % (prefix, next_version_str)
+            new_filename = "%s%s%s" % (prefix, version_sep, next_version_str)
             if extension:
                 new_filename = "%s.%s" % (new_filename, extension)
 
