@@ -12,8 +12,6 @@
 import sgtk
 import logging
 
-from sgtk.platform.qt import QtCore, QtGui
-
 logger = sgtk.platform.get_logger(__name__)
 
 
@@ -23,52 +21,13 @@ class PublishLogHandler(logging.Handler):
     qt tree for display.
     """
 
-    def __init__(self, tree_widget):
+    def __init__(self, progress_widget):
         """
         :param tree_widget: QTreeWidget to use for logging
         """
         # avoiding super in order to be py25-compatible
         logging.Handler.__init__(self)
-
-        self._tree_widget = tree_widget
-
-        self._logging_parent_item = None  # none means root
-
-        self._debug_brush = QtGui.QBrush(QtGui.QColor("#508937"))  # green
-        self._warning_brush = QtGui.QBrush(QtGui.QColor("#FFD786"))  # orange
-        self._error_brush = QtGui.QBrush(QtGui.QColor("#FF383F"))  # red
-
-    def push(self, text, icon):
-        """
-        Push a child node to the tree. New log records will
-        be added as children to this child node.
-
-        :param text: Caption for the entry
-        :param icon: QIcon for the entry
-        """
-        item = QtGui.QTreeWidgetItem()
-        item.setText(0, text)
-        if self._logging_parent_item is None:
-            self._tree_widget.invisibleRootItem().addChild(item)
-        else:
-            self._logging_parent_item.addChild(item)
-
-        if icon:
-            item.setIcon(0, icon)
-
-        self._tree_widget.setCurrentItem(item)
-        self._logging_parent_item = item
-
-    def pop(self):
-        """
-        Pops any active child section.
-        If no child sections exist, this operation will not
-        have any effect.
-        """
-        # top level items return None
-        if self._logging_parent_item:
-            self._logging_parent_item = self._logging_parent_item.parent()
-
+        self._progress_widget = progress_widget
 
     def emit(self, record):
         """
@@ -82,25 +41,17 @@ class PublishLogHandler(logging.Handler):
         # sgtk.env.asset.tk-maya.tk-multi-publish -> tk-multi-publish
         record.basename = record.name.rsplit(".", 1)[-1]
 
-        item = QtGui.QTreeWidgetItem(self._logging_parent_item)
-        item.setText(0, record.msg)
-        if self._logging_parent_item:
-            self._logging_parent_item.addChild(item)
-        else:
-            # root level
-            self._tree_widget.addTopLevelItem(item)
-
-        # assign color
         if record.levelno < logging.ERROR and record.levelno > logging.INFO:
-            item.setForeground(0, self._warning_brush)
+            status = self._progress_widget.WARNING
         elif record.levelno > logging.WARNING:
-            item.setForeground(0, self._error_brush)
+            status = self._progress_widget.ERROR
         elif record.levelno < logging.INFO:
-            item.setForeground(0, self._debug_brush)
+            status = self._progress_widget.DEBUG
+        else:
+            status = self._progress_widget.INFO
 
-        self._tree_widget.setCurrentItem(item)
-
-        QtCore.QCoreApplication.processEvents()
+        # request that the log manager processes the message
+        self._progress_widget.process_log_message(record.msg, status)
 
 
 class PublishLogWrapper(object):
@@ -109,16 +60,19 @@ class PublishLogWrapper(object):
     that can be used for publishing.
     """
 
-    def __init__(self, tree_widget):
+    def __init__(self, progress_widget):
         """
         :param tree_widget: QTreeWidget to use for logging
         """
+
+        self._bundle = sgtk.platform.current_bundle()
+
         # set up a logger
-        full_log_path = "%s.publish" % logger.name
+        full_log_path = "%s.plugins" % self._bundle.logger.name
 
         self._logger = logging.getLogger(full_log_path)
 
-        self._handler = PublishLogHandler(tree_widget)
+        self._handler = PublishLogHandler(progress_widget)
 
         # and handle it in the UI
         self._logger.addHandler(self._handler)
@@ -139,23 +93,6 @@ class PublishLogWrapper(object):
         """
         return self._logger
 
-    def push(self, text, icon=None):
-        """
-        Push a child node to the tree. New log records will
-        be added as children to this child node.
-
-        :param text: Caption for the entry
-        :param icon: QIcon for the entry
-        """
-        self._handler.push(text, icon)
-
-    def pop(self):
-        """
-        Pops any active child section.
-        If no child sections exist, this operation will not
-        have any effect.
-        """
-        self._handler.pop()
 
 
 

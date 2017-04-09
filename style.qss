@@ -174,14 +174,17 @@ DropAreaFrame[dragging="true"] {
 
 /* Tree view items */
 CustomTreeWidgetItem {
-    padding: 12px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 14px;
+    padding-bottom: 14px;
     border: 1px solid black;
     background-color: #343434;
 }
 
 /* Tree view items */
 CustomTreeWidgetTask {
-    padding: 5px;
+    padding: 4px;
     background-color: #343434;
 }
 
@@ -288,14 +291,6 @@ ProgressWidget #progress_bar {
     border: none;
     background-color: none;
     margin: 3px;
-}
-
-ProgressWidget #progress_bar:hover {
-    background-color: #ccc;
-}
-
-ProgressWidget #progress_bar::chunk:hover {
-    background-color: white; 
 }
 
 ProgressWidget #progress_bar::chunk {
