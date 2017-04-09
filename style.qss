@@ -226,6 +226,12 @@ CustomTreeWidgetContext QLabel {
 /* Progress widget */
 /* --------------------------------------------------------------------- */
 
+ProgressWidget #frame {
+    background-color: rgba(0, 0, 0, 30%);
+    border-radius: 4px;
+}
+
+
 #progress_frame {
 
     background-color: rgba(0, 0, 0, 70%);
@@ -242,20 +248,20 @@ CustomTreeWidgetContext QLabel {
 /* Progress bar */
 /* --------------------------------------------------------------------- */
 
-#progress {
+ProgressWidget #progress_bar {
     border: none;
     background-color: none;
     margin: 3px;
 }
 
-#progress:hover {
+ProgressWidget #progress_bar:hover {
     background-color: #ccc;
 }
 
-#progress::chunk:hover {
+ProgressWidget #progress_bar::chunk:hover {
     background-color: white; 
 }
 
-#progress::chunk {
+ProgressWidget #progress_bar::chunk {
     background-color: {{SG_HIGHLIGHT_COLOR}}; 
 }

@@ -175,6 +175,13 @@ files you want to publish.</string>
              </column>
             </widget>
            </item>
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Drag and drop items onto the tree in order to add them</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
          <widget class="QFrame" name="details_frame">

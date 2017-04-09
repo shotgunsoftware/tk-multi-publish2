@@ -30,6 +30,9 @@ class AppDialog(QtGui.QWidget):
     Main dialog window for the App
     """
 
+    # main drag and drop areas
+    (DRAG_SCREEN, PUBLISH_SCREEN) = range(2)
+
     # details ui panes
     (ITEM_DETAILS, TASK_DETAILS) = range(2)
 
@@ -232,8 +235,14 @@ class AppDialog(QtGui.QWidget):
     def _refresh(self):
 
         self._reload_plugin_scan()
-        self.ui.items_tree.build_tree()
-        self._select_top_items()
+
+        if len(self._plugin_manager.top_level_items) == 0:
+            # nothing in list. show the full screen drag and drop ui
+            self.ui.main_stack.setCurrentIndex(self.DRAG_SCREEN)
+        else:
+            self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
+            self.ui.items_tree.build_tree()
+            self._select_top_items()
 
     def _select_top_items(self):
 
@@ -390,6 +399,9 @@ class AppDialog(QtGui.QWidget):
         """
         When someone drops stuff into the publish.
         """
+        # make sure we switch main mode to the publish screen
+        self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
+        # add files and rebuild tree
         self._plugin_manager.add_external_files(files)
         self.ui.items_tree.build_tree()
 
