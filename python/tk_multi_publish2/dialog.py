@@ -290,7 +290,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.items_tree.set_plugin_manager(self._plugin_manager)
 
 
-    def do_validate(self):
+    def do_validate(self, standalone=True):
         """
         Perform a full validation
 
@@ -315,7 +315,7 @@ class AppDialog(QtGui.QWidget):
 
         num_issues = 0
         try:
-            num_issues = self._visit_tree_r(parent, lambda child: child.validate(), "Validating")
+            num_issues = self._visit_tree_r(parent, lambda child: child.validate(standalone), "Validating")
         finally:
             self.ui.progress_widget.pop()
             if num_issues > 0:
@@ -343,7 +343,7 @@ class AppDialog(QtGui.QWidget):
 
         self._expand_tree()
 
-        issues = self.do_validate()
+        issues = self.do_validate(standalone=False)
         if issues > 0:
             self.ui.progress_widget.logger.error("Validation errors detected. No proceeding with publish.")
             return

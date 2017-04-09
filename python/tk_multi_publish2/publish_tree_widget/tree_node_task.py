@@ -82,7 +82,7 @@ class TreeNodeTask(TreeNodeBase):
         """
         return self._task
 
-    def validate(self):
+    def validate(self, standalone):
         """
         Perform validation
         """
@@ -93,7 +93,10 @@ class TreeNodeTask(TreeNodeBase):
             status = False
         else:
             if status:
-                self._embedded_widget.set_status(self._embedded_widget.VALIDATION_COMPLETE)
+                if standalone:
+                    self._embedded_widget.set_status(self._embedded_widget.VALIDATION_STANDALONE)
+                else:
+                    self._embedded_widget.set_status(self._embedded_widget.VALIDATION)
             else:
                 self._set_status_upwards(self._embedded_widget.VALIDATION_ERROR)
         return status
@@ -108,7 +111,7 @@ class TreeNodeTask(TreeNodeBase):
             self._set_status_upwards(self._embedded_widget.PUBLISH_ERROR)
             raise
         else:
-            self._embedded_widget.set_status(self._embedded_widget.PUBLISH_COMPLETE)
+            self._embedded_widget.set_status(self._embedded_widget.PUBLISH)
         return True
 
     def finalize(self):

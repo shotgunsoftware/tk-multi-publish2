@@ -11,7 +11,7 @@ from tank.platform.qt import QtCore, QtGui
 class Ui_TaskWidget(object):
     def setupUi(self, TaskWidget):
         TaskWidget.setObjectName("TaskWidget")
-        TaskWidget.resize(331, 34)
+        TaskWidget.resize(314, 34)
         self.horizontalLayout = QtGui.QHBoxLayout(TaskWidget)
         self.horizontalLayout.setSpacing(4)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
@@ -35,12 +35,17 @@ class Ui_TaskWidget(object):
         self.header.setSizePolicy(sizePolicy)
         self.header.setObjectName("header")
         self.horizontalLayout.addWidget(self.header)
-        self.status = StatusDotWidget(TaskWidget)
-        self.status.setObjectName("status")
-        self.horizontalLayout.addWidget(self.status)
         self.settings = QtGui.QToolButton(TaskWidget)
         self.settings.setObjectName("settings")
         self.horizontalLayout.addWidget(self.settings)
+        self.status = QtGui.QLabel(TaskWidget)
+        self.status.setMinimumSize(QtCore.QSize(20, 20))
+        self.status.setMaximumSize(QtCore.QSize(20, 20))
+        self.status.setText("")
+        self.status.setPixmap(QtGui.QPixmap(":/tk_multi_publish2/status_load.png"))
+        self.status.setScaledContents(True)
+        self.status.setObjectName("status")
+        self.horizontalLayout.addWidget(self.status)
 
         self.retranslateUi(TaskWidget)
         QtCore.QMetaObject.connectSlotsByName(TaskWidget)
@@ -51,5 +56,4 @@ class Ui_TaskWidget(object):
         self.header.setText(QtGui.QApplication.translate("TaskWidget", "<big>Alembic Caches</big>", None, QtGui.QApplication.UnicodeUTF8))
         self.settings.setText(QtGui.QApplication.translate("TaskWidget", "...", None, QtGui.QApplication.UnicodeUTF8))
 
-from ..status_dot_widget import StatusDotWidget
 from . import resources_rc

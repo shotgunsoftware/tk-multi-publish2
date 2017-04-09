@@ -36,15 +36,14 @@ class CustomTreeWidgetBase(QtGui.QFrame):
     # status of checkbox / progress
     (
         NEUTRAL,
-        PROCESSING,
-        VALIDATION_COMPLETE,
+        VALIDATION,
+        VALIDATION_STANDALONE,
         VALIDATION_ERROR,
+        PUBLISH,
         PUBLISH_ERROR,
-        PUBLISH_COMPLETE,
-        FINALIZE_COMPLETE,
+        FINALIZE,
         FINALIZE_ERROR,
-        EMPTY
-    ) = range(9)
+    ) = range(8)
 
     def __init__(self, tree_node, parent=None):
         """
@@ -52,6 +51,17 @@ class CustomTreeWidgetBase(QtGui.QFrame):
         """
         super(CustomTreeWidgetBase, self).__init__(parent)
         self._tree_node = tree_node
+
+        self._icon_lookup = {
+            self.NEUTRAL: None,
+            self.VALIDATION: QtGui.QPixmap(":/tk_multi_publish2/status_validate.png"),
+            self.VALIDATION_ERROR: QtGui.QPixmap(":/tk_multi_publish2/status_warning.png"),
+            self.PUBLISH: QtGui.QPixmap(":/tk_multi_publish2/status_publish.png"),
+            self.PUBLISH_ERROR: QtGui.QPixmap(":/tk_multi_publish2/status_error.png"),
+            self.FINALIZE: QtGui.QPixmap(":/tk_multi_publish2/status_success.png"),
+            self.FINALIZE_ERROR: QtGui.QPixmap(":/tk_multi_publish2/status_error.png"),
+            self.VALIDATION_STANDALONE: QtGui.QPixmap(":/tk_multi_publish2/status_success.png"),
+        }
 
     @property
     def icon(self):
@@ -93,43 +103,9 @@ class CustomTreeWidgetBase(QtGui.QFrame):
         :param status: An integer representing on of the
             status constants defined by the class
         """
-        # reset
-        self.ui.status.show_nothing()
 
-        if status == self.NEUTRAL:
-            # do nothing
-            pass
+        if status not in self._icon_lookup:
+            raise ValueError("Invalid icon index!")
 
-        elif status == self.PROCESSING:
-            # gray ring
-            self.ui.status.show()
-            self.ui.status.show_dot(ring_color="#808080", fill_color=None, dotted=True)
-
-        elif status == self.VALIDATION_COMPLETE:
-            # blue ring
-            self.ui.status.show_dot(ring_color="#18A7E3", fill_color=None)
-
-        elif status == self.VALIDATION_ERROR:
-            # orange ring
-            self.ui.status.show_dot(ring_color="#FF8000", fill_color=None)
-
-        elif status == self.PUBLISH_COMPLETE:
-            # blue fill gray ring
-            self.ui.status.show_dot(ring_color="#FFF", fill_color="#18A7E3")
-
-        elif status == self.PUBLISH_ERROR:
-            # big fat red
-            self.ui.status.show_dot(ring_color="#FF0000", fill_color="#FF0000")
-
-        elif status == self.FINALIZE_COMPLETE:
-            # blue dot
-            self.ui.status.show_dot(ring_color="#18A7E3", fill_color="#18A7E3")
-
-        elif status == self.FINALIZE_ERROR:
-            # red ring blue middle
-            self.ui.status.show_dot(ring_color="#FF0000", fill_color="#18A7E3")
-
-        else:
-            raise sgtk.TankError("Invalid item status!")
-
+        self.ui.status.setPixmap(self._icon_lookup[status])
 

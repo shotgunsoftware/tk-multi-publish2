@@ -115,12 +115,7 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         """
         Reset progress state
         """
-        if self.enabled:
-            # enabled nodes get a dotted ring
-            self._embedded_widget.set_status(self._embedded_widget.PROCESSING)
-        else:
-            # unchecked items just get empty
-            self._embedded_widget.set_status(self._embedded_widget.EMPTY)
+        self._embedded_widget.set_status(self._embedded_widget.NEUTRAL)
 
     def _set_status_upwards(self, status):
         """
@@ -130,25 +125,28 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         if self.parent():
             self.parent()._set_status_upwards(status)
 
-    def validate(self):
+    def validate(self, standalone):
         """
         Perform validation
         """
-        self._embedded_widget.set_status(self._embedded_widget.VALIDATION_COMPLETE)
+        if standalone:
+            self._embedded_widget.set_status(self._embedded_widget.VALIDATION_STANDALONE)
+        else:
+            self._embedded_widget.set_status(self._embedded_widget.VALIDATION)
         return True
 
     def publish(self):
         """
         Perform publish
         """
-        self._embedded_widget.set_status(self._embedded_widget.PUBLISH_COMPLETE)
+        self._embedded_widget.set_status(self._embedded_widget.PUBLISH)
         return True
 
     def finalize(self):
         """
         Perform finalize
         """
-        self._embedded_widget.set_status(self._embedded_widget.FINALIZE_COMPLETE)
+        self._embedded_widget.set_status(self._embedded_widget.FINALIZE)
         return True
 
     @property

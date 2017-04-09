@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>331</width>
+    <width>314</width>
     <height>34</height>
    </rect>
   </property>
@@ -66,25 +66,39 @@
     </widget>
    </item>
    <item>
-    <widget class="StatusDotWidget" name="status" native="true"/>
-   </item>
-   <item>
     <widget class="QToolButton" name="settings">
      <property name="text">
       <string>...</string>
      </property>
     </widget>
    </item>
+   <item>
+    <widget class="QLabel" name="status">
+     <property name="minimumSize">
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="resources.qrc">:/tk_multi_publish2/status_load.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>StatusDotWidget</class>
-   <extends>QWidget</extends>
-   <header>..status_dot_widget</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="resources.qrc"/>
  </resources>
