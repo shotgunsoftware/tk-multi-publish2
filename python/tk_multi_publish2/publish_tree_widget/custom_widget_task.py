@@ -53,6 +53,9 @@ class CustomTreeWidgetTask(CustomTreeWidgetBase):
         self.ui.status.clicked.connect(self._on_status_click)
 
     def _on_checkbox_click(self, state):
+        """
+        Callback that fires when the user clicks the checkbox
+        """
         if QtGui.QApplication.keyboardModifiers() == QtCore.Qt.ShiftModifier:
             logger.debug("shift held. propagating check to all plugins.")
             self._tree_node.set_check_state(state, apply_to_all_plugins=True)
@@ -60,11 +63,15 @@ class CustomTreeWidgetTask(CustomTreeWidgetBase):
             self._tree_node.set_check_state(state)
 
     def _on_settings_click(self):
-
+        """
+        Callback that fires when the user clicks the cog icon
+        """
         current_task = self._tree_node.task
         self._tree_node.treeWidget().settings_clicked.emit(current_task)
 
     def _on_status_click(self):
-
+        """
+        Callback that fires when the user clicks the status icon
+        """
         current_task = self._tree_node.task
         self._tree_node.treeWidget().status_clicked.emit(current_task)

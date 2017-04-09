@@ -57,6 +57,15 @@ class TreeNodeItem(TreeNodeBase):
         """
         return self._item
 
+    def get_publish_instance(self):
+        """
+        Returns the low level item or task instance
+        that this object represents
+
+        :returns: task or item instance
+        """
+        return self.item
+
 
 class TopLevelTreeNodeItem(TreeNodeItem):
     """

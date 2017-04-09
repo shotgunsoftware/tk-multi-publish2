@@ -56,13 +56,23 @@ class CustomTreeWidgetItem(CustomTreeWidgetBase):
         self.ui.status.clicked.connect(self._on_status_click)
 
     def nextCheckState(self):
+        """
+        Callback that handles QT tri-state logic
+        """
+        # QT tri-state logic is a little odd, see the docs for more
+        # details.
         self.ui.checkbox.setChecked(not self.ui.checkbox.isChecked())
         self._tree_node.set_check_state(self.ui.checkbox.checkState())
 
     def _on_checkbox_click(self, state):
+        """
+        Callback that fires when the user clicks the checkbox
+        """
         self._tree_node.set_check_state(state)
 
     def _on_status_click(self):
-
-        current_task = self._tree_node.task
-        self._tree_node.treeWidget().status_clicked.emit(current_task)
+        """
+        Callback that fires when the user clicks the status icon
+        """
+        current_item = self._tree_node.item
+        self._tree_node.treeWidget().status_clicked.emit(current_item)

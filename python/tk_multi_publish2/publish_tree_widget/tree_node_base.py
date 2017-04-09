@@ -52,6 +52,15 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         """
         raise NotImplementedError()
 
+    def get_publish_instance(self):
+        """
+        Returns the low level item or task instance
+        that this object represents
+
+        :returns: task or item instance
+        """
+        return None
+
     @property
     def check_state(self):
         return self.data(0, self.CHECKBOX_ROLE)

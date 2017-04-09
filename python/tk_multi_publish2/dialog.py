@@ -78,6 +78,7 @@ class AppDialog(QtGui.QWidget):
 
         # settings
         self.ui.items_tree.settings_clicked.connect(self._create_task_details)
+        self.ui.items_tree.status_clicked.connect(self._on_publish_status_clicked)
 
         # create menu on the cog button
         self._menu = QtGui.QMenu()
@@ -181,6 +182,15 @@ class AppDialog(QtGui.QWidget):
         #
         # else:
         #     raise TankError("Unknown selection")
+
+    def _on_publish_status_clicked(self, task_or_item):
+        """
+        Triggered when someone clicks the status icon in the tree
+        """
+        # make sure the progress widget is shown
+        self.ui.progress_widget.show()
+        # select item
+        self.ui.progress_widget.select_last_message(task_or_item)
 
     def _on_item_comment_change(self):
         """
@@ -398,7 +408,7 @@ class AppDialog(QtGui.QWidget):
         self._close_ui_on_publish_click = True
 
 
-    def _visit_tree_r(self, parent, action, action_name=None):
+    def _visit_tree_r(self, parent, action, action_name):
         """
         Recursive visitor helper function that descends the tree
         """
@@ -408,7 +418,11 @@ class AppDialog(QtGui.QWidget):
             child = parent.child(child_index)
             if child.enabled:
                 if action_name:
-                    self.ui.progress_widget.push("%s %s" % (action_name, child), child.icon)
+                    self.ui.progress_widget.push(
+                        "%s %s" % (action_name, child),
+                        child.icon,
+                        child.get_publish_instance()
+                    )
                 try:
                     # process this node
                     status = action(child)  # eg. child.validate(), child.publish() etc.

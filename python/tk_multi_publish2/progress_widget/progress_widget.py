@@ -27,6 +27,8 @@ class ProgressWidget(QtGui.QWidget):
 
     (PHASE_VALIDATE, PHASE_PUBLISH, PHASE_FINALIZE) = range(3)
 
+    _PUBLISH_INSTANCE_ROLE = QtCore.Qt.UserRole + 1001
+
     def __init__(self, parent):
         """
         :param parent: The model parent.
@@ -65,6 +67,41 @@ class ProgressWidget(QtGui.QWidget):
         self._logging_parent_item = None  # none means root
 
         self._current_phase = None
+
+    def select_last_message(self, publish_instance):
+        """
+        reveals the last log entry associated with the given publish instance.
+        """
+        # find the last message matching the task or item
+        def _check_r(parent):
+            for child_index in range(parent.childCount())[::-1]:
+                child = parent.child(child_index)
+
+                # depth first, backwards
+                match = _check_r(child)
+                if match:
+                    return match
+
+                if child.data(0, self._PUBLISH_INSTANCE_ROLE) == publish_instance:
+                    return child
+
+            return None
+
+        tree_node = _check_r(self._progress_details.log_tree.invisibleRootItem())
+
+        if tree_node:
+            # make sure the log ui is visible
+            self._progress_details.show()
+            # focus on node in tree
+            self._progress_details.log_tree.scrollToItem(
+                tree_node,
+                QtGui.QAbstractItemView.PositionAtCenter
+            )
+            # make it current
+            self._progress_details.log_tree.setCurrentItem(tree_node)
+
+
+
 
 
     def process_log_message(self, message, status):
@@ -130,16 +167,19 @@ class ProgressWidget(QtGui.QWidget):
         logger.debug("Setting progress to %s" % progress)
         self.ui.progress_bar.setValue(progress)
 
-    def push(self, text, icon=None):
+    def push(self, text, icon=None, publish_instance=None):
         """
         Push a child node to the tree. New log records will
         be added as children to this child node.
 
         :param text: Caption for the entry
         :param icon: QIcon for the entry
+        :param publish_instance: item or task associated with this level.
         """
         item = QtGui.QTreeWidgetItem()
         item.setText(0, text)
+        item.setData(0, self._PUBLISH_INSTANCE_ROLE, publish_instance)
+
         if self._logging_parent_item is None:
             self._progress_details.log_tree.invisibleRootItem().addChild(item)
         else:
