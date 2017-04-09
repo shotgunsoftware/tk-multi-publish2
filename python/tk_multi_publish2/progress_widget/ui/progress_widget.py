@@ -47,7 +47,7 @@ class Ui_ProgressWidget(object):
         self.verticalLayout_8.addLayout(self.horizontalLayout_8)
         self.progress_bar = QtGui.QProgressBar(self.frame)
         self.progress_bar.setMaximumSize(QtCore.QSize(16777215, 10))
-        self.progress_bar.setProperty("value", 24)
+        self.progress_bar.setProperty("value", 0)
         self.progress_bar.setTextVisible(False)
         self.progress_bar.setObjectName("progress_bar")
         self.verticalLayout_8.addWidget(self.progress_bar)
