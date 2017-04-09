@@ -48,7 +48,7 @@ class ProgressWidget(QtGui.QWidget):
 
         self._debug_brush = QtGui.QBrush(QtGui.QColor("#F57209"))  # green
         self._warning_brush = QtGui.QBrush(QtGui.QColor("#F57209"))  # orange
-        self._error_brush = QtGui.QBrush(QtGui.QColor("#FF2D5B  "))  # red
+        self._error_brush = QtGui.QBrush(QtGui.QColor("#FF2D5B"))  # red
 
         # set up the UI
         self.ui = Ui_ProgressWidget()

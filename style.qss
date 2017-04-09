@@ -38,6 +38,22 @@ QTreeView::branch {
 }
 
 
+QToolButton {
+    border: none;
+}
+
+QToolButton:hover {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(200, 200, 200, 18%);
+}
+
+QToolButton:pressed {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(200, 200, 200, 35%);
+}
+
 
 /* --------------------------------------------------------------------- */
 /* Right hand side tab control  */
@@ -206,28 +222,6 @@ CustomTreeWidgetContext QLabel {
     text-transform: uppercase;
 }
 
-
-
-
-/* tool button on tasks */
-
-CustomTreeWidgetBase QToolButton {
-    border: none;
-}
-
-CustomTreeWidgetBase QToolButton:hover {
-    border: none;
-    border-radius: 2px;
-    background-color: rgba(200, 200, 200, 18%);
-}
-
-CustomTreeWidgetBase QToolButton:pressed {
-    border: none;
-    border-radius: 2px;
-    background-color: rgba(200, 200, 200, 35%);
-}
-
-
 /* --------------------------------------------------------------------- */
 /* Right hand side logging tree */
 /* --------------------------------------------------------------------- */
@@ -265,23 +259,6 @@ ProgressWidget #frame {
     font-size: 18px;
     font-weight: 100;
 }
-
-ProgressWidget QToolButton {
-    border: none;
-}
-
-ProgressWidget QToolButton:hover {
-    border: none;
-    border-radius: 2px;
-    background-color: rgba(200, 200, 200, 18%);
-}
-
-ProgressWidget QToolButton:pressed {
-    border: none;
-    border-radius: 2px;
-    background-color: rgba(200, 200, 200, 35%);
-}
-
 
 /* --------------------------------------------------------------------- */
 /* Progress bar */
