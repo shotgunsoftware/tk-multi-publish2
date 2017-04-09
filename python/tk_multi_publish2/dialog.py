@@ -73,7 +73,7 @@ class AppDialog(QtGui.QWidget):
 
         # buttons
         self.ui.validate.clicked.connect(self.do_validate)
-        self.ui.publish.clicked.connect(self.do_publish)
+        self.ui.publish.clicked.connect(self._on_publish_click)
         self._close_ui_on_publish_click = False
 
         # create menu on the cog button
@@ -230,6 +230,8 @@ class AppDialog(QtGui.QWidget):
 
     def _refresh(self):
 
+        self.ui.progress_widget.hide()
+
         self._reload_plugin_scan()
 
         if len(self._plugin_manager.top_level_items) == 0:
@@ -294,6 +296,9 @@ class AppDialog(QtGui.QWidget):
 
         :returns: number of issues reported
         """
+
+        self.ui.progress_widget.show()
+
         self._expand_tree()
 
         parent = self.ui.items_tree.invisibleRootItem()
@@ -320,13 +325,21 @@ class AppDialog(QtGui.QWidget):
 
         return num_issues
 
+    def _on_publish_click(self):
+        """
+        User clicked the publish/close button
+        """
+        if self._close_ui_on_publish_click:
+            #
+            self.close()
+        else:
+            self.do_publish()
+
     def do_publish(self):
         """
         Perform a full publish
         """
-        if self._close_ui_on_publish_click:
-            # close
-            self.close()
+        self.ui.progress_widget.show()
 
         self._expand_tree()
 
