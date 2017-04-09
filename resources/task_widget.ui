@@ -22,6 +22,9 @@
    </property>
    <item>
     <widget class="QCheckBox" name="checkbox">
+     <property name="toolTip">
+      <string>hint: shift-click to toggle all items of this type</string>
+     </property>
      <property name="text">
       <string/>
      </property>

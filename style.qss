@@ -249,8 +249,11 @@ ProgressWidget #frame {
 }
 
 
-#progress_frame {
+/* --------------------------------------------------------------------- */
+/* Logging popup widget */
+/* --------------------------------------------------------------------- */
 
+#progress_frame {
     background-color: rgba(0, 0, 0, 70%);
     border-radius: 2px;
 }
@@ -258,6 +261,22 @@ ProgressWidget #frame {
 #progress_label {
     font-size: 18px;
     font-weight: 100;
+}
+
+ProgressWidget QToolButton {
+    border: none;
+}
+
+ProgressWidget QToolButton:hover {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(200, 200, 200, 18%);
+}
+
+ProgressWidget QToolButton:pressed {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(200, 200, 200, 35%);
 }
 
 
