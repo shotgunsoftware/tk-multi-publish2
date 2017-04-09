@@ -93,6 +93,26 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         context_item.setExpanded(True)
         self.addTopLevelItem(context_item)
 
+    def set_state_for_all_plugins(self, plugin, state):
+        """
+        set the state for all plugins
+        """
+
+        logger.debug(
+            "Setting state %d for all plugin %s" % (state, plugin)
+        )
+
+        def _check_r(parent):
+            for child_index in xrange(parent.childCount()):
+                child = parent.child(child_index)
+
+                if isinstance(child, TreeNodeTask) and child.task.plugin == plugin:
+                    child.set_check_state(state)
+
+                _check_r(child)
+
+        root = self.invisibleRootItem()
+        _check_r(root)
 
     def dropEvent(self, event):
         """

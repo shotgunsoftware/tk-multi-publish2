@@ -76,12 +76,6 @@ class CustomTreeWidgetBase(QtGui.QFrame):
         """
         self.ui.header.setText(title)
 
-    def _update_check_state(self, state):
-        """
-        Communicate the value of the checkbox back to the associated node
-        """
-        self._tree_node.set_check_state(state)
-
     def set_checkbox_value(self, state):
         """
         Set the value of the checkbox

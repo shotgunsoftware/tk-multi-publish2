@@ -55,7 +55,7 @@ class CustomTreeWidgetItem(CustomTreeWidgetBase):
 
     def nextCheckState(self):
         self.ui.checkbox.setChecked(not self.ui.checkbox.isChecked())
-        self._update_check_state(self.ui.checkbox.checkState())
+        self._tree_node.set_check_state(self.ui.checkbox.checkState())
 
     def _on_checkbox_click(self, state):
-        self._update_check_state(state)
+        self._tree_node.set_check_state(state)

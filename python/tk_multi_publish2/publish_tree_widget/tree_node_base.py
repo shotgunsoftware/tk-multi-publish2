@@ -65,26 +65,21 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         Called by child item when checkbox was ticked
         """
 
-        if QtGui.QApplication.keyboardModifiers() == QtCore.Qt.ShiftModifier:
-            # do it for all of the items
-            pass
-
-        else:
-            # do if for just this item
-            # first store it in our data model
-            self.setData(0, self.CHECKBOX_ROLE, state)
-            self._embedded_widget.set_checkbox_value(self.data(0, self.CHECKBOX_ROLE))
-            if state == QtCore.Qt.Checked:
-                # ensure all children are checked
-                for child_index in range(self.childCount()):
-                    self.child(child_index).set_check_state(QtCore.Qt.Checked)
-            elif state == QtCore.Qt.Unchecked:
-                # uncheck all children
-                for child_index in range(self.childCount()):
-                    self.child(child_index).set_check_state(QtCore.Qt.Unchecked)
-            # tell parent to recompute
-            if self.parent():
-                self.parent().recompute_check_state()
+        # do if for just this item
+        # first store it in our data model
+        self.setData(0, self.CHECKBOX_ROLE, state)
+        self._embedded_widget.set_checkbox_value(self.data(0, self.CHECKBOX_ROLE))
+        if state == QtCore.Qt.Checked:
+            # ensure all children are checked
+            for child_index in range(self.childCount()):
+                self.child(child_index).set_check_state(QtCore.Qt.Checked)
+        elif state == QtCore.Qt.Unchecked:
+            # uncheck all children
+            for child_index in range(self.childCount()):
+                self.child(child_index).set_check_state(QtCore.Qt.Unchecked)
+        # tell parent to recompute
+        if self.parent():
+            self.parent().recompute_check_state()
 
 
     def recompute_check_state(self):

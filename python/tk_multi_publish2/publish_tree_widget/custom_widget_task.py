@@ -49,5 +49,9 @@ class CustomTreeWidgetTask(CustomTreeWidgetBase):
         self.ui.checkbox.stateChanged.connect(self._on_checkbox_click)
 
     def _on_checkbox_click(self, state):
-        self._update_check_state(state)
+        if QtGui.QApplication.keyboardModifiers() == QtCore.Qt.ShiftModifier:
+            logger.debug("shift held. propagating check to all plugins.")
+            self._tree_node.set_check_state(state, apply_to_all_plugins=True)
+        else:
+            self._tree_node.set_check_state(state)
 
