@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>828</width>
-    <height>641</height>
+    <height>613</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -104,8 +104,8 @@
           <item>
            <widget class="QLabel" name="large_drop_area_label">
             <property name="text">
-             <string>Drag and Drop 
-Files you want to publish.</string>
+             <string>Drag and drop 
+files you want to publish.</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -152,13 +152,6 @@ Files you want to publish.</string>
             <number>0</number>
            </property>
            <item>
-            <widget class="QLabel" name="items_tree_label">
-             <property name="text">
-              <string>Please choose items to publish</string>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="PublishTreeWidget" name="items_tree">
              <property name="acceptDrops">
               <bool>true</bool>
@@ -192,7 +185,7 @@ Files you want to publish.</string>
               <number>0</number>
              </property>
              <widget class="QWidget" name="details_summary">
-              <layout class="QVBoxLayout" name="verticalLayout_8">
+              <layout class="QVBoxLayout" name="verticalLayout_6">
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_2">
                  <item>
@@ -218,14 +211,22 @@ Files you want to publish.</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLabel" name="summary_header">
-                   <property name="text">
-                    <string>SUMMARY</string>
-                   </property>
-                   <property name="wordWrap">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
+                  <layout class="QVBoxLayout" name="verticalLayout_12">
+                   <item>
+                    <widget class="QLabel" name="item_name">
+                     <property name="text">
+                      <string>Item name</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="item_type">
+                     <property name="text">
+                      <string>Item type</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
                  </item>
                 </layout>
                </item>
@@ -237,25 +238,33 @@ Files you want to publish.</string>
                 </widget>
                </item>
                <item>
-                <layout class="QFormLayout" name="formLayout">
-                 <property name="fieldGrowthPolicy">
-                  <enum>QFormLayout::FieldsStayAtSizeHint</enum>
-                 </property>
-                 <item row="0" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <item>
                   <widget class="QLabel" name="label_4">
                    <property name="text">
                     <string>Publishing to</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="0">
+                 <item>
+                  <widget class="QLabel" name="summary_context">
+                   <property name="text">
+                    <string>Current Context</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_6">
+                 <item>
                   <widget class="QLabel" name="label_2">
                    <property name="text">
                     <string>Thumbnail</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="1">
+                 <item>
                   <widget class="Thumbnail" name="summary_thumbnail">
                    <property name="minimumSize">
                     <size>
@@ -277,24 +286,45 @@ Files you want to publish.</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="3" column="0">
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_7">
+                 <item>
                   <widget class="QLabel" name="label_3">
                    <property name="text">
                     <string>Description</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="3" column="1">
+                 <item>
                   <widget class="QPlainTextEdit" name="summary_comments"/>
                  </item>
-                 <item row="0" column="1">
-                  <widget class="QLabel" name="summary_context">
-                   <property name="text">
-                    <string>Current Context</string>
-                   </property>
-                  </widget>
-                 </item>
                 </layout>
+               </item>
+               <item>
+                <widget class="Line" name="item_divider">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="item_settings_label">
+                 <property name="text">
+                  <string>Settings</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="SettingsWidget" name="item_settings" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -369,205 +399,6 @@ Files you want to publish.</string>
                </item>
               </layout>
              </widget>
-             <widget class="QWidget" name="details_plugin">
-              <layout class="QVBoxLayout" name="verticalLayout_10">
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_5">
-                 <item>
-                  <widget class="QLabel" name="plugin_icon">
-                   <property name="minimumSize">
-                    <size>
-                     <width>60</width>
-                     <height>60</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>60</width>
-                     <height>60</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="scaledContents">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="plugin_name">
-                   <property name="text">
-                    <string>Plugin Name</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <widget class="QLabel" name="plugin_description">
-                 <property name="text">
-                  <string>Description</string>
-                 </property>
-                 <property name="wordWrap">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="plugin_settings_label">
-                 <property name="text">
-                  <string>Settings</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="Line" name="plugin_divider">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="SettingsWidget" name="plugin_settings" native="true">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-             <widget class="QWidget" name="details_item">
-              <layout class="QVBoxLayout" name="verticalLayout_13">
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_6">
-                 <item>
-                  <widget class="QLabel" name="item_icon">
-                   <property name="minimumSize">
-                    <size>
-                     <width>60</width>
-                     <height>60</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>60</width>
-                     <height>60</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="scaledContents">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <layout class="QVBoxLayout" name="verticalLayout_12">
-                   <item>
-                    <widget class="QLabel" name="item_name">
-                     <property name="text">
-                      <string>Item name</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLabel" name="item_type">
-                     <property name="text">
-                      <string>Item type</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <widget class="QLabel" name="item_settings_label">
-                 <property name="text">
-                  <string>Settings</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="Line" name="item_divider">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_7">
-                 <item>
-                  <widget class="Thumbnail" name="item_thumbnail">
-                   <property name="minimumSize">
-                    <size>
-                     <width>160</width>
-                     <height>90</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>160</width>
-                     <height>90</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="scaledContents">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="item_description_2">
-                   <property name="text">
-                    <string>The thumbnail will be associated
-with all related publishes.
-Click to take a screen grab.</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
-                   </property>
-                   <property name="wordWrap">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <widget class="SettingsWidget" name="item_settings" native="true">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-             <widget class="QWidget" name="details_select">
-              <layout class="QVBoxLayout" name="verticalLayout_6">
-               <item>
-                <widget class="QLabel" name="please_select_an_item">
-                 <property name="text">
-                  <string>Please select an item 
-for more details</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
             </widget>
            </item>
           </layout>
@@ -575,18 +406,12 @@ for more details</string>
         </widget>
        </item>
        <item>
-        <widget class="QProgressBar" name="progress">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>10</height>
-          </size>
-         </property>
-         <property name="value">
-          <number>24</number>
-         </property>
-         <property name="textVisible">
-          <bool>false</bool>
+        <widget class="ProgressWidget" name="progress_widget" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
         </widget>
        </item>
@@ -612,41 +437,10 @@ for more details</string>
            <number>2</number>
           </property>
           <item>
-           <widget class="QToolButton" name="progress_toggle">
-            <property name="text">
-             <string>...</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="progress_icon">
-            <property name="minimumSize">
-             <size>
-              <width>32</width>
-              <height>32</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>32</width>
-              <height>32</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="pixmap">
-             <pixmap resource="resources.qrc">:/tk_multi_publish2/success.png</pixmap>
-            </property>
-            <property name="scaledContents">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="progress_label">
-            <property name="text">
-             <string>Progress</string>
+           <widget class="QPushButton" name="options">
+            <property name="icon">
+             <iconset>
+              <normaloff>:/tk_multi_publish2/tick.png</normaloff>:/tk_multi_publish2/tick.png</iconset>
             </property>
            </widget>
           </item>
@@ -662,14 +456,6 @@ for more details</string>
              </size>
             </property>
            </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="options">
-            <property name="icon">
-             <iconset resource="resources.qrc">
-              <normaloff>:/tk_multi_publish2/tick.png</normaloff>:/tk_multi_publish2/tick.png</iconset>
-            </property>
-           </widget>
           </item>
           <item>
            <widget class="QPushButton" name="validate">
@@ -689,9 +475,6 @@ for more details</string>
         </widget>
        </item>
       </layout>
-      <zorder>splitter</zorder>
-      <zorder>bottom_frame</zorder>
-      <zorder>progress</zorder>
      </widget>
     </widget>
    </item>
@@ -719,6 +502,12 @@ for more details</string>
    <class>PublishTreeWidget</class>
    <extends>QTreeWidget</extends>
    <header>..publish_tree_widget</header>
+  </customwidget>
+  <customwidget>
+   <class>ProgressWidget</class>
+   <extends>QWidget</extends>
+   <header>..progress_widget</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

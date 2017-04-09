@@ -1,13 +1,16 @@
 <RCC>
   <qresource prefix="tk_multi_publish2">
+    <file>status_validate.png</file>
+    <file>status_load.png</file>
+    <file>status_error.png</file>
+    <file>status_success.png</file>
+    <file>status_warning.png</file>
+    <file>status_publish.png</file>
     <file>icon_256.png</file>
     <file>cross.png</file>
-    <file>tick.png</file>
     <file>shotgun.png</file>
-    <file>failure.png</file>
     <file>item.png</file>
     <file>reload.png</file>
-    <file>success.png</file>
     <file>help_1.png</file>
     <file>help_2.png</file>
     <file>help_3.png</file>
