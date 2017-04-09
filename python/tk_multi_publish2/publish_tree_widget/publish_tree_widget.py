@@ -131,6 +131,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         for item in self._dragged_items:
             item.build_internal_widget()
             item.setExpanded(True)
+            item.setSelected(True)
             # and do it for all children
 
             def _check_r(parent):
