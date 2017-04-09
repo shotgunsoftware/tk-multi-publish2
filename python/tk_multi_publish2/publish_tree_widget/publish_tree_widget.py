@@ -24,6 +24,12 @@ class PublishTreeWidget(QtGui.QTreeWidget):
     Main widget
     """
 
+    # emitted when a settings button is clicked on a node
+    # the
+    settings_clicked = QtCore.Signal(object)
+    status_clicked = QtCore.Signal(object)
+
+
     def __init__(self, parent):
         """
         :param parent: The parent QWidget for this control

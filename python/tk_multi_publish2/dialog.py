@@ -76,6 +76,9 @@ class AppDialog(QtGui.QWidget):
         self.ui.publish.clicked.connect(self._on_publish_click)
         self._close_ui_on_publish_click = False
 
+        # settings
+        self.ui.items_tree.settings_clicked.connect(self._create_task_details)
+
         # create menu on the cog button
         self._menu = QtGui.QMenu()
         self._actions = []
