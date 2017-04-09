@@ -14,6 +14,7 @@ import sgtk
 
 from .ui.progress_widget import Ui_ProgressWidget
 from .progress_details_widget import ProgressDetailsWidget
+from .publish_logging import PublishLogWrapper
 
 class ProgressWidget(QtGui.QWidget):
     """
@@ -31,13 +32,20 @@ class ProgressWidget(QtGui.QWidget):
         self.ui = Ui_ProgressWidget()
         self.ui.setupUi(self)
 
-
         # parent our progress widget overlay
-        self._progress_details_widget = ProgressDetailsWidget(self, self.parent())
+        self._progress_details = ProgressDetailsWidget(self, self.parent())
 
-        self.ui.details_toggle.clicked.connect(self._progress_details_widget.toggle)
+        # set up our log dispatch
+        self._log_wrapper = PublishLogWrapper(self._progress_details.log_tree)
+
+        self.ui.details_toggle.clicked.connect(self._progress_details.toggle)
 
     @property
-    def log_tree(self):
+    def logger(self):
+        return self._log_wrapper.logger
 
-        return self._progress_details_widget.log_tree
+    def pop(self):
+        return self._log_wrapper.pop()
+
+    def push(self, heading, icon=None):
+        return self._log_wrapper.push(heading, icon)

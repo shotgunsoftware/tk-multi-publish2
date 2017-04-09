@@ -109,7 +109,7 @@ class PublishLogWrapper(object):
     that can be used for publishing.
     """
 
-    def __init__(self, progress_widget):
+    def __init__(self, tree_widget):
         """
         :param tree_widget: QTreeWidget to use for logging
         """
@@ -118,7 +118,7 @@ class PublishLogWrapper(object):
 
         self._logger = logging.getLogger(full_log_path)
 
-        self._handler = PublishLogHandler(progress_widget.log_tree)
+        self._handler = PublishLogHandler(tree_widget)
 
         # and handle it in the UI
         self._logger.addHandler(self._handler)

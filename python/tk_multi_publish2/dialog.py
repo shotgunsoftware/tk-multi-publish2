@@ -15,7 +15,6 @@ from sgtk.platform.qt import QtCore, QtGui
 
 from .ui.dialog import Ui_Dialog
 from .processing import PluginManager
-from .publish_logging import PublishLogWrapper
 
 # import frameworks
 settings = sgtk.platform.import_framework("tk-framework-shotgunutils", "settings")
@@ -71,9 +70,6 @@ class AppDialog(QtGui.QWidget):
         # drag and drop
         self.ui.frame.something_dropped.connect(self._on_drop)
         self.ui.large_drop_area.something_dropped.connect(self._on_drop)
-
-        # create a special logger for progress
-        self._log_wrapper = PublishLogWrapper(self.ui.progress_widget)
 
         # buttons
         self.ui.validate.clicked.connect(self.do_validate)
@@ -288,7 +284,7 @@ class AppDialog(QtGui.QWidget):
         """
         # run the hooks
 
-        self._plugin_manager = PluginManager(self._log_wrapper.logger)
+        self._plugin_manager = PluginManager(self.ui.progress_widget.logger)
         self.ui.items_tree.set_plugin_manager(self._plugin_manager)
 
 
@@ -302,7 +298,7 @@ class AppDialog(QtGui.QWidget):
 
         parent = self.ui.items_tree.invisibleRootItem()
 
-        self._log_wrapper.push("Running Validation pass")
+        self.ui.progress_widget.push("Running Validation pass")
 
         # set all nodes to "ready to go"
         def _begin_process_r(parent):
@@ -316,11 +312,11 @@ class AppDialog(QtGui.QWidget):
         try:
             num_issues = self._visit_tree_r(parent, lambda child: child.validate(), "Validating")
         finally:
-            self._log_wrapper.pop()
+            self.ui.progress_widget.pop()
             if num_issues > 0:
-                self._log_wrapper.logger.warning("Validation Complete. %d issues reported." % num_issues)
+                self.ui.progress_widget.logger.warning("Validation Complete. %d issues reported." % num_issues)
             else:
-                self._log_wrapper.logger.info("Validation Complete. All checks passed.")
+                self.ui.progress_widget.logger.info("Validation Complete. All checks passed.")
 
         return num_issues
 
@@ -336,31 +332,31 @@ class AppDialog(QtGui.QWidget):
 
         issues = self.do_validate()
         if issues > 0:
-            self._log_wrapper.logger.error("Validation errors detected. No proceeding with publish.")
+            self.ui.progress_widget.logger.error("Validation errors detected. No proceeding with publish.")
             return
 
         parent = self.ui.items_tree.invisibleRootItem()
 
-        self._log_wrapper.push("Running publishing pass")
+        self.ui.progress_widget.push("Running publishing pass")
         try:
             self._visit_tree_r(parent, lambda child: child.publish(), "Publishing")
         except Exception, e:
             # todo - design a retry setup?
-            self._log_wrapper.logger.error("Error while publishing. Aborting.")
+            self.ui.progress_widget.logger.error("Error while publishing. Aborting.")
             return
         finally:
-            self._log_wrapper.pop()
+            self.ui.progress_widget.pop()
 
-        self._log_wrapper.push("Running finalizing pass")
+        self.ui.progress_widget.push("Running finalizing pass")
         try:
             self._visit_tree_r(parent, lambda child: child.finalize(), "Finalizing")
         except Exception, e:
-            self._log_wrapper.logger.error("Error while finalizing. Aborting.")
+            self.ui.progress_widget.logger.error("Error while finalizing. Aborting.")
             return
         finally:
-            self._log_wrapper.pop()
+            self.ui.progress_widget.pop()
 
-        self._log_wrapper.logger.info("Publish Complete!")
+        self.ui.progress_widget.logger.info("Publish Complete!")
 
         # make the publish button say close
         self.ui.publish.setText("Close")
@@ -377,7 +373,7 @@ class AppDialog(QtGui.QWidget):
             child = parent.child(child_index)
             if child.enabled:
                 if action_name:
-                    self._log_wrapper.push("%s %s" % (action_name, child), child.icon)
+                    self.ui.progress_widget.push("%s %s" % (action_name, child), child.icon)
                 try:
                     # process this node
                     status = action(child)  # eg. child.validate(), child.publish() etc.
@@ -392,7 +388,7 @@ class AppDialog(QtGui.QWidget):
                     )
                 finally:
                     if action_name:
-                        self._log_wrapper.pop()
+                        self.ui.progress_widget.pop()
         return number_true_return_values
 
     def _on_drop(self, files):
