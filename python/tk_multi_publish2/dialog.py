@@ -290,29 +290,44 @@ class AppDialog(QtGui.QWidget):
         self.ui.items_tree.set_plugin_manager(self._plugin_manager)
 
 
+    def _prepare_tree(self, number_phases):
+
+        self.ui.progress_widget.show()
+
+        self._expand_tree()
+
+
+        parent = self.ui.items_tree.invisibleRootItem()
+
+        # set all nodes to "ready to go"
+        def _begin_process_r(parent):
+            total_number_nodes = 0
+            for child_index in xrange(parent.childCount()):
+                child = parent.child(child_index)
+                child.begin_process()
+                total_number_nodes += 1
+                total_number_nodes += _begin_process_r(child)
+            return total_number_nodes
+
+        total_number_nodes = _begin_process_r(parent)
+        # reset progress bar
+        self.ui.progress_widget.reset_progress(total_number_nodes * number_phases)
+
+
     def do_validate(self, standalone=True):
         """
         Perform a full validation
 
         :returns: number of issues reported
         """
+        if standalone:
+            self._prepare_tree(number_phases=1)
 
-        self.ui.progress_widget.show()
-
-        self._expand_tree()
-
-        parent = self.ui.items_tree.invisibleRootItem()
-
+        # inform the progress system of the current mode
+        self.ui.progress_widget.set_phase(self.ui.progress_widget.PHASE_VALIDATE)
         self.ui.progress_widget.push("Running Validation pass")
 
-        # set all nodes to "ready to go"
-        def _begin_process_r(parent):
-            for child_index in xrange(parent.childCount()):
-                child = parent.child(child_index)
-                child.begin_process()
-                _begin_process_r(child)
-        _begin_process_r(parent)
-
+        parent = self.ui.items_tree.invisibleRootItem()
         num_issues = 0
         try:
             num_issues = self._visit_tree_r(parent, lambda child: child.validate(standalone), "Validating")
@@ -339,18 +354,19 @@ class AppDialog(QtGui.QWidget):
         """
         Perform a full publish
         """
-        self.ui.progress_widget.show()
-
-        self._expand_tree()
+        self._prepare_tree(number_phases=3)
 
         issues = self.do_validate(standalone=False)
+
         if issues > 0:
             self.ui.progress_widget.logger.error("Validation errors detected. No proceeding with publish.")
             return
 
-        parent = self.ui.items_tree.invisibleRootItem()
-
+        # inform the progress system of the current mode
+        self.ui.progress_widget.set_phase(self.ui.progress_widget.PHASE_PUBLISH)
         self.ui.progress_widget.push("Running publishing pass")
+
+        parent = self.ui.items_tree.invisibleRootItem()
         try:
             self._visit_tree_r(parent, lambda child: child.publish(), "Publishing")
         except Exception, e:
@@ -359,6 +375,9 @@ class AppDialog(QtGui.QWidget):
             return
         finally:
             self.ui.progress_widget.pop()
+
+        # inform the progress system of the current mode
+        self.ui.progress_widget.set_phase(self.ui.progress_widget.PHASE_FINALIZE)
 
         self.ui.progress_widget.push("Running finalizing pass")
         try:
@@ -392,6 +411,9 @@ class AppDialog(QtGui.QWidget):
                     status = action(child)  # eg. child.validate(), child.publish() etc.
                     if not status:
                         number_true_return_values += 1
+
+                    # kick progress bar
+                    self.ui.progress_widget.increment_progress()
 
                     # now process all children
                     number_true_return_values += self._visit_tree_r(

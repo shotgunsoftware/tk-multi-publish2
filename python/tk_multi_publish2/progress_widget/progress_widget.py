@@ -16,6 +16,8 @@ from .ui.progress_widget import Ui_ProgressWidget
 from .progress_details_widget import ProgressDetailsWidget
 from .publish_logging import PublishLogWrapper
 
+logger = sgtk.platform.get_logger(__name__)
+
 class ProgressWidget(QtGui.QWidget):
     """
     Progress reporting and logging
@@ -23,12 +25,26 @@ class ProgressWidget(QtGui.QWidget):
 
     (INFO, ERROR, DEBUG, WARNING) = range(4)
 
+    (PHASE_VALIDATE, PHASE_PUBLISH, PHASE_FINALIZE) = range(3)
+
     def __init__(self, parent):
         """
         :param parent: The model parent.
         :type parent: :class:`~PySide.QtGui.QObject`
         """
         super(ProgressWidget, self).__init__(parent)
+
+        self._icon_lookup = {
+            self.PHASE_VALIDATE: QtGui.QPixmap(":/tk_multi_publish2/status_validate.png"),
+            self.PHASE_PUBLISH: QtGui.QPixmap(":/tk_multi_publish2/status_publish.png"),
+            self.PHASE_FINALIZE: QtGui.QPixmap(":/tk_multi_publish2/status_success.png"),
+        }
+
+        self._icon_error_lookup = {
+            self.PHASE_VALIDATE: QtGui.QPixmap(":/tk_multi_publish2/status_warning.png"),
+            self.PHASE_PUBLISH: QtGui.QPixmap(":/tk_multi_publish2/status_error.png"),
+            self.PHASE_FINALIZE: QtGui.QPixmap(":/tk_multi_publish2/status_error.png"),
+        }
 
         self._debug_brush = QtGui.QBrush(QtGui.QColor("#F57209"))  # green
         self._warning_brush = QtGui.QBrush(QtGui.QColor("#F57209"))  # orange
@@ -48,6 +64,8 @@ class ProgressWidget(QtGui.QWidget):
 
         self._logging_parent_item = None  # none means root
 
+        self._current_phase = None
+
 
     def process_log_message(self, message, status):
         """
@@ -57,6 +75,19 @@ class ProgressWidget(QtGui.QWidget):
         @param status:
         @return:
         """
+
+        # set main status message
+        self.ui.message.setText(message)
+
+        # set phase icon in logger
+        if self._current_phase is None:
+            icon = None
+        elif status != self.ERROR:
+            icon = self._icon_lookup[self._current_phase]
+        else:
+            icon = self._icon_error_lookup[self._current_phase]
+
+        self.ui.status_icon.setPixmap(icon)
 
         item = QtGui.QTreeWidgetItem(self._logging_parent_item)
         item.setText(0, message)
@@ -78,11 +109,26 @@ class ProgressWidget(QtGui.QWidget):
 
         QtCore.QCoreApplication.processEvents()
 
-
-
     @property
     def logger(self):
         return self._log_wrapper.logger
+
+    def set_phase(self, phase):
+        """
+        set the phase that we are currently in
+        """
+        self._current_phase = phase
+
+    def reset_progress(self, max_items):
+        logger.debug("Resetting progress bar. Number of items: %s" % max_items)
+        self.ui.progress_bar.setMaximum(max_items)
+        self.ui.progress_bar.reset()
+        self.ui.progress_bar.setValue(0)
+
+    def increment_progress(self):
+        progress = self.ui.progress_bar.value() + 1
+        logger.debug("Setting progress to %s" % progress)
+        self.ui.progress_bar.setValue(progress)
 
     def push(self, text, icon=None):
         """
