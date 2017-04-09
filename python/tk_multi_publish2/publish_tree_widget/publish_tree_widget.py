@@ -103,14 +103,14 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
         #
         for item in self._dragged_items:
-            item._create_widget()
+            item.build_internal_widget()
             item.setExpanded(True)
             # and do it for all children
 
             def _check_r(parent):
                 for child_index in xrange(parent.childCount()):
                     child = parent.child(child_index)
-                    child._create_widget()
+                    child.build_internal_widget()
                     child.setExpanded(True)
                     _check_r(child)
 

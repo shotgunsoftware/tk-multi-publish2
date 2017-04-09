@@ -52,19 +52,15 @@ class TreeNodeTask(TreeNodeBase):
     def __str__(self):
         return self._task.plugin.name
 
-    def _create_widget(self):
+    def _create_widget(self, parent):
         """
         Create the widget that is used to visualise the node
         """
         # create an item widget and associate it with this QTreeWidgetItem
-        tree_widget = self.treeWidget()
-        widget = CustomTreeWidgetTask(self, tree_widget)
-        tree_widget.setItemWidget(self, 0, widget)
-
+        widget = CustomTreeWidgetTask(self, parent)
         widget.set_header(self._task.plugin.name)
         widget.set_icon(self._task.plugin.icon)
         widget.set_checkbox_value(self.data(0, self.CHECKBOX_ROLE))
-
         return widget
 
     @property

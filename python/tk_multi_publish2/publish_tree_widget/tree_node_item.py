@@ -32,19 +32,16 @@ class TreeNodeItem(TreeNodeBase):
         super(TreeNodeItem, self).__init__(parent)
         self.setFlags(QtCore.Qt.ItemIsEnabled)
 
-    def _create_widget(self):
+    def _create_widget(self, parent):
         """
         Create the widget that is used to visualise the node
         """
         # create an item widget and associate it with this QTreeWidgetItem
-        tree_widget = self.treeWidget()
-        widget = CustomTreeWidgetItem(self, tree_widget)
-        tree_widget.setItemWidget(self, 0, widget)
+        widget = CustomTreeWidgetItem(self, parent)
         # update with any saved state
         widget.set_header("<b>%s</b><br>%s" % (self._item.name, self._item.display_type))
         widget.set_icon(self._item.icon)
         widget.set_checkbox_value(self.data(0, self.CHECKBOX_ROLE))
-
         return widget
 
     def __repr__(self):

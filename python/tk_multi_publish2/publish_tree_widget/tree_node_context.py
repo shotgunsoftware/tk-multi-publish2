@@ -43,14 +43,12 @@ class TreeNodeContext(TreeNodeBase):
     def __str__(self):
         return str(self._context)
 
-    def _create_widget(self):
+    def _create_widget(self, parent):
         """
         Create the widget that is used to visualise the node
         """
         # create an item widget and associate it with this QTreeWidgetItem
-        tree_widget = self.treeWidget()
-        widget = CustomTreeWidgetContext(self, tree_widget)
-        tree_widget.setItemWidget(self, 0, widget)
+        widget = CustomTreeWidgetContext(self, parent)
         # update with any saved state
         widget.set_header(str(self._context))
         return widget

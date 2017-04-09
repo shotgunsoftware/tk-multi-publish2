@@ -206,6 +206,23 @@ CustomTreeWidgetContext QLabel {
 
 
 
+/* tool button on tasks */
+
+CustomTreeWidgetTask QToolButton {
+    border: none;
+}
+
+CustomTreeWidgetTask QToolButton:hover {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(200, 200, 200, 18%);
+}
+
+CustomTreeWidgetTask QToolButton:pressed {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(200, 200, 200, 35%);
+}
 
 
 /* --------------------------------------------------------------------- */
