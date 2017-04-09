@@ -11,7 +11,7 @@ from tank.platform.qt import QtCore, QtGui
 class Ui_TaskWidget(object):
     def setupUi(self, TaskWidget):
         TaskWidget.setObjectName("TaskWidget")
-        TaskWidget.resize(314, 34)
+        TaskWidget.resize(314, 37)
         self.horizontalLayout = QtGui.QHBoxLayout(TaskWidget)
         self.horizontalLayout.setSpacing(4)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
@@ -36,14 +36,17 @@ class Ui_TaskWidget(object):
         self.header.setObjectName("header")
         self.horizontalLayout.addWidget(self.header)
         self.settings = QtGui.QToolButton(TaskWidget)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/tk_multi_publish2/settings.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.settings.setIcon(icon)
+        self.settings.setIconSize(QtCore.QSize(20, 20))
         self.settings.setObjectName("settings")
         self.horizontalLayout.addWidget(self.settings)
-        self.status = QtGui.QLabel(TaskWidget)
-        self.status.setMinimumSize(QtCore.QSize(20, 20))
-        self.status.setMaximumSize(QtCore.QSize(20, 20))
-        self.status.setText("")
-        self.status.setPixmap(QtGui.QPixmap(":/tk_multi_publish2/status_load.png"))
-        self.status.setScaledContents(True)
+        self.status = QtGui.QToolButton(TaskWidget)
+        icon1 = QtGui.QIcon()
+        icon1.addPixmap(QtGui.QPixmap(":/tk_multi_publish2/status_publish.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.status.setIcon(icon1)
+        self.status.setIconSize(QtCore.QSize(20, 20))
         self.status.setObjectName("status")
         self.horizontalLayout.addWidget(self.status)
 
@@ -55,5 +58,6 @@ class Ui_TaskWidget(object):
         self.checkbox.setToolTip(QtGui.QApplication.translate("TaskWidget", "hint: shift-click to toggle all items of this type", None, QtGui.QApplication.UnicodeUTF8))
         self.header.setText(QtGui.QApplication.translate("TaskWidget", "<big>Alembic Caches</big>", None, QtGui.QApplication.UnicodeUTF8))
         self.settings.setText(QtGui.QApplication.translate("TaskWidget", "...", None, QtGui.QApplication.UnicodeUTF8))
+        self.status.setText(QtGui.QApplication.translate("TaskWidget", "...", None, QtGui.QApplication.UnicodeUTF8))
 
 from . import resources_rc

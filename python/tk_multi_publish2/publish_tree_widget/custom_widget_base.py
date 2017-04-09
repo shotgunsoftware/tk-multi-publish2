@@ -62,6 +62,7 @@ class CustomTreeWidgetBase(QtGui.QFrame):
             self.FINALIZE_ERROR: QtGui.QPixmap(":/tk_multi_publish2/status_error.png"),
             self.VALIDATION_STANDALONE: QtGui.QPixmap(":/tk_multi_publish2/status_success.png"),
         }
+        self._status_icon = None
 
     @property
     def icon(self):
@@ -107,5 +108,18 @@ class CustomTreeWidgetBase(QtGui.QFrame):
         if status not in self._icon_lookup:
             raise ValueError("Invalid icon index!")
 
-        self.ui.status.setPixmap(self._icon_lookup[status])
+
+
+        if status == self.NEUTRAL:
+            self.ui.status.hide()
+        else:
+            self.ui.status.show()
+            self._status_icon = QtGui.QIcon()
+            self._status_icon.addPixmap(
+                self._icon_lookup[status],
+                QtGui.QIcon.Normal,
+                QtGui.QIcon.Off
+            )
+            self.ui.status.setIcon(self._status_icon)
+
 

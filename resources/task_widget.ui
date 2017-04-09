@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>314</width>
-    <height>34</height>
+    <height>37</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -70,30 +70,32 @@
      <property name="text">
       <string>...</string>
      </property>
+     <property name="icon">
+      <iconset resource="resources.qrc">
+       <normaloff>:/tk_multi_publish2/settings.png</normaloff>:/tk_multi_publish2/settings.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
+     </property>
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="status">
-     <property name="minimumSize">
-      <size>
-       <width>20</width>
-       <height>20</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>20</width>
-       <height>20</height>
-      </size>
-     </property>
+    <widget class="QToolButton" name="status">
      <property name="text">
-      <string/>
+      <string>...</string>
      </property>
-     <property name="pixmap">
-      <pixmap resource="resources.qrc">:/tk_multi_publish2/status_load.png</pixmap>
+     <property name="icon">
+      <iconset resource="resources.qrc">
+       <normaloff>:/tk_multi_publish2/status_publish.png</normaloff>:/tk_multi_publish2/status_publish.png</iconset>
      </property>
-     <property name="scaledContents">
-      <bool>true</bool>
+     <property name="iconSize">
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
      </property>
     </widget>
    </item>
