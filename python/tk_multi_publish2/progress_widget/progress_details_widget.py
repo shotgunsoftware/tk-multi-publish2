@@ -12,9 +12,9 @@
 from sgtk.platform.qt import QtCore, QtGui
 import sgtk
 
-from .ui.progress_widget import Ui_ProgressWidget
+from .ui.progress_details_widget import Ui_ProgressDetailsWidget
 
-class ProgressWidget(QtGui.QWidget):
+class ProgressDetailsWidget(QtGui.QWidget):
     """
     Progress reporting and logging
     """
@@ -22,24 +22,26 @@ class ProgressWidget(QtGui.QWidget):
     RIGHT_OFFSET = 6
     BOTTOM_OFFSET = 6
 
-    def __init__(self, progress_bar, parent):
+    def __init__(self, progress_widget, parent):
         """
         :param parent: The model parent.
         :type parent: :class:`~PySide.QtGui.QObject`
         """
-        super(ProgressWidget, self).__init__(parent)
-
-        self._progress_bar = progress_bar
+        super(ProgressDetailsWidget, self).__init__(parent)
 
         # set up the UI
-        self.ui = Ui_ProgressWidget()
+        self.ui = Ui_ProgressDetailsWidget()
         self.ui.setupUi(self)
+
+        self._progress_widget = progress_widget
 
         # hook up a listener to the parent window so this widget
         # follows along when the parent window changes size
         filter = ResizeEventFilter(parent)
         filter.resized.connect(self._on_parent_resized)
         parent.installEventFilter(filter)
+
+        self.ui.close.clicked.connect(self.toggle)
 
         self.hide()
 
@@ -63,13 +65,13 @@ class ProgressWidget(QtGui.QWidget):
 
     def __recompute_position(self):
 
-        pos = self._progress_bar.pos()
+        pos = self._progress_widget.pos()
 
 
         self.setGeometry(QtCore.QRect(
-            10,
-            10,
-            self.parentWidget().width() - 20,
+            0,
+            0,
+            self.parentWidget().width(),
             pos.y()
         ))
 

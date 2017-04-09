@@ -184,12 +184,12 @@ files you want to publish.</string>
              <property name="currentIndex">
               <number>0</number>
              </property>
-             <widget class="QWidget" name="details_summary">
+             <widget class="QWidget" name="details_item">
               <layout class="QVBoxLayout" name="verticalLayout_6">
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_2">
                  <item>
-                  <widget class="QLabel" name="summary_icon">
+                  <widget class="QLabel" name="item_icon">
                    <property name="minimumSize">
                     <size>
                      <width>60</width>
@@ -231,7 +231,7 @@ files you want to publish.</string>
                 </layout>
                </item>
                <item>
-                <widget class="Line" name="summary_divider">
+                <widget class="Line" name="item_divider_1">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
                  </property>
@@ -247,7 +247,7 @@ files you want to publish.</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLabel" name="summary_context">
+                  <widget class="QLabel" name="item_context">
                    <property name="text">
                     <string>Current Context</string>
                    </property>
@@ -265,7 +265,7 @@ files you want to publish.</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="Thumbnail" name="summary_thumbnail">
+                  <widget class="Thumbnail" name="item_thumbnail">
                    <property name="minimumSize">
                     <size>
                      <width>160</width>
@@ -298,12 +298,12 @@ files you want to publish.</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPlainTextEdit" name="summary_comments"/>
+                  <widget class="QPlainTextEdit" name="item_comments"/>
                  </item>
                 </layout>
                </item>
                <item>
-                <widget class="Line" name="item_divider">
+                <widget class="Line" name="item_divider_2">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
                  </property>

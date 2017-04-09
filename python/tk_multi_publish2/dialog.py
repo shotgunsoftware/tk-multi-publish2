@@ -16,7 +16,6 @@ from sgtk.platform.qt import QtCore, QtGui
 from .ui.dialog import Ui_Dialog
 from .processing import PluginManager
 from .publish_logging import PublishLogWrapper
-from .progress_widget import ProgressWidget
 
 # import frameworks
 settings = sgtk.platform.import_framework("tk-framework-shotgunutils", "settings")
@@ -32,7 +31,7 @@ class AppDialog(QtGui.QWidget):
     """
 
     # details ui panes
-    (SUMMARY_DETAILS, TASK_DETAILS, PLUGIN_DETAILS, ITEM_DETAILS, BLANK_DETAILS) = range(5)
+    (ITEM_DETAILS, TASK_DETAILS) = range(2)
 
     def __init__(self, parent=None):
         """
@@ -68,14 +67,10 @@ class AppDialog(QtGui.QWidget):
 
         # drag and drop
         self.ui.frame.something_dropped.connect(self._on_drop)
-
-        # parent our progress widget overlay
-        self._progress_widget = ProgressWidget(self.ui.progress, self)
-
-        self.ui.progress_toggle.clicked.connect(self._progress_widget.toggle)
+        self.ui.large_drop_area.something_dropped.connect(self._on_drop)
 
         # create a special logger for progress
-        self._log_wrapper = PublishLogWrapper(self._progress_widget.log_tree)
+        self._log_wrapper = PublishLogWrapper(self.ui.progress_widget)
 
         # buttons
         self.ui.validate.clicked.connect(self.do_validate)
@@ -117,13 +112,12 @@ class AppDialog(QtGui.QWidget):
         self._menu.addAction(self._uncheck_all_action)
 
         # when the description is updated
-        self.ui.summary_comments.textChanged.connect(self._on_publish_comment_change)
+        self.ui.item_comments.textChanged.connect(self._on_item_comment_change)
 
         # selection in tree view
         self.ui.items_tree.itemSelectionChanged.connect(self._update_details_from_selection)
 
         # thumbnails
-        self.ui.summary_thumbnail.screen_grabbed.connect(self._update_item_thumbnail)
         self.ui.item_thumbnail.screen_grabbed.connect(self._update_item_thumbnail)
 
         # currently displayed item
@@ -186,7 +180,7 @@ class AppDialog(QtGui.QWidget):
         # else:
         #     raise TankError("Unknown selection")
 
-    def _on_publish_comment_change(self):
+    def _on_item_comment_change(self):
         """
         Callback when someone types in the
         publish comments box in the overview details pane
@@ -195,16 +189,6 @@ class AppDialog(QtGui.QWidget):
         if not self._current_item:
             raise TankError("No current item set!")
         self._current_item.description = comments
-
-    def _on_summary_thumbnail_captured(self, pixmap):
-        """
-        Callback when a thumbnail is captured
-        @param pixmap:
-        @return:
-        """
-        if not self._current_item:
-            raise TankError("No current item set!")
-        self._current_item.thumbnail = pixmap
 
     def _update_item_thumbnail(self, pixmap):
         """
@@ -215,26 +199,18 @@ class AppDialog(QtGui.QWidget):
             raise TankError("No current item set!")
         self._current_item.thumbnail = pixmap
 
-    def _create_summary_details(self, item):
-
-        self._current_item = item
-        self.ui.details_stack.setCurrentIndex(self.SUMMARY_DETAILS)
-        self.ui.summary_icon.setPixmap(item.icon)
-        self.ui.summary_comments.setPlainText(item.description)
-        self.ui.summary_thumbnail.set_thumbnail(item.thumbnail)
-        self.ui.summary_header.setText("Publish summary for %s" % item.name)
-        self.ui.summary_context.setText(str(item.context))
-
-
     def _create_item_details(self, item):
 
         self._current_item = item
         self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
-
         self.ui.item_icon.setPixmap(item.icon)
+
         self.ui.item_name.setText(item.name)
         self.ui.item_type.setText(item.display_type)
+
+        self.ui.item_comments.setPlainText(item.description)
         self.ui.item_thumbnail.set_thumbnail(item.thumbnail)
+        self.ui.item_context.setText(str(item.context))
 
         self.ui.item_settings.set_static_data(
             [(p, item.properties[p]) for p in item.properties]
@@ -251,19 +227,6 @@ class AppDialog(QtGui.QWidget):
         self.ui.task_description.setText(task.plugin.description)
 
         self.ui.task_settings.set_data(task.settings.values())
-
-
-    def _create_plugin_details(self, plugin):
-
-        self._current_item = None
-        self.ui.details_stack.setCurrentIndex(self.PLUGIN_DETAILS)
-        self.ui.plugin_icon.setPixmap(plugin.icon)
-
-        self.ui.plugin_name.setText(plugin.name)
-
-        self.ui.plugin_description.setText(plugin.description)
-        self.ui.plugin_settings.set_data(plugin.settings.values())
-
 
 
     def _refresh(self):
