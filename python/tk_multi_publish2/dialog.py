@@ -317,8 +317,10 @@ class AppDialog(QtGui.QWidget):
             total_number_nodes = 0
             for child_index in xrange(parent.childCount()):
                 child = parent.child(child_index)
-                child.begin_process()
-                total_number_nodes += 1
+                child.reset_progress()
+                if child.enabled:
+                    # child is ticked
+                    total_number_nodes += 1
                 total_number_nodes += _begin_process_r(child)
             return total_number_nodes
 

@@ -65,7 +65,7 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
     def check_state(self):
         return self.data(0, self.CHECKBOX_ROLE)
 
-    @ property
+    @property
     def enabled(self):
         return self.check_state != QtCore.Qt.Unchecked
 
@@ -120,7 +120,7 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
 
 
 
-    def begin_process(self):
+    def reset_progress(self):
         """
         Reset progress state
         """
