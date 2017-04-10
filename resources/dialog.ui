@@ -152,10 +152,10 @@ files you want to publish.</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <property name="spacing">
-            <number>0</number>
+            <number>2</number>
            </property>
            <property name="margin">
-            <number>0</number>
+            <number>2</number>
            </property>
            <item>
             <widget class="PublishTreeWidget" name="items_tree">

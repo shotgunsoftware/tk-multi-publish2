@@ -25,9 +25,11 @@ class PublishTreeWidget(QtGui.QTreeWidget):
     """
 
     # emitted when a settings button is clicked on a node
-    # the
     settings_clicked = QtCore.Signal(object)
+    # emitted when a status icon is clicked
     status_clicked = QtCore.Signal(object)
+    # emitted when the tree has been rearranged using drag n drop
+    tree_reordered = QtCore.Signal()
 
 
     def __init__(self, parent):
@@ -94,10 +96,6 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             for item in items:
                 self._build_item_tree_r(item, level=0, tree_parent=context_item)
 
-        empty_ctx = self._bundle.sgtk.context_empty()
-        context_item = TreeNodeContext(empty_ctx, self)
-        context_item.setExpanded(True)
-        self.addTopLevelItem(context_item)
 
     def select_first_item(self):
         """
@@ -146,8 +144,9 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             item.build_internal_widget()
             item.setExpanded(True)
             item.setSelected(True)
-            # and do it for all children
+            item.synchronize_context()
 
+            # and do it for all children
             def _check_r(parent):
                 for child_index in xrange(parent.childCount()):
                     child = parent.child(child_index)
@@ -156,6 +155,8 @@ class PublishTreeWidget(QtGui.QTreeWidget):
                     _check_r(child)
 
             _check_r(item)
+
+        self.tree_reordered.emit()
 
     def dragEnterEvent(self, event):
         """

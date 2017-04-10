@@ -88,3 +88,10 @@ class TopLevelTreeNodeItem(TreeNodeItem):
             QtCore.Qt.ItemIsDragEnabled
         )
 
+    def synchronize_context(self):
+        """
+        Updates the context for the underlying item given the
+        current position in the tree
+        """
+        # our parent node is always a context node
+        self.item.context = self.parent().context

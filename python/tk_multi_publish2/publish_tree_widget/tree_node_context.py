@@ -53,6 +53,13 @@ class TreeNodeContext(TreeNodeBase):
         widget.set_header(str(self._context))
         return widget
 
+    @property
+    def context(self):
+        """
+        The associated context
+        """
+        return self._context
+
     def validate(self, standalone):
         """
         Perform validation

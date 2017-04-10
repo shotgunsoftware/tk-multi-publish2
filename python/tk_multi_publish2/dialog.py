@@ -70,6 +70,7 @@ class AppDialog(QtGui.QWidget):
         # drag and drop
         self.ui.frame.something_dropped.connect(self._on_drop)
         self.ui.large_drop_area.something_dropped.connect(self._on_drop)
+        self.ui.items_tree.tree_reordered.connect(self._refresh_ui)
 
         # buttons
         self.ui.validate.clicked.connect(self.do_validate)
