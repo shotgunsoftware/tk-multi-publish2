@@ -38,6 +38,8 @@ QTreeView::branch {
 }
 
 
+/* consistent default look for all tool buttons */
+
 QToolButton {
     border: none;
 }
@@ -62,37 +64,6 @@ QToolButton:pressed {
 #large_drop_area_label {
     font-size: 16px;
     font-weight: 100;
-}
-
-
-/* --------------------------------------------------------------------- */
-/* Right hand side tab control  */
-/* --------------------------------------------------------------------- */
-
-QTabWidget::pane {
-    border-top: 1px solid rgb(255, 255, 255, 20);
-    padding-top: 8px;
-}
-
-/* Style the tab using the tab sub-control.
-   Note that it reads QTabBar _not_ QTabWidget */
-QTabBar::tab {
-    font-size: 12px;
-    font-weight: 100;
-    padding-left: 18px;
-    padding-right: 18px;
-    padding-bottom: 8px;
-    padding-top: 0px;
-    border-bottom: 2px solid rgb(255, 255, 255, 5);
-}
-
-QTabBar::tab:hover {
-    color: {{SG_HIGHLIGHT_COLOR}};
-}
-
-QTabBar::tab:selected {
-    color: {{SG_HIGHLIGHT_COLOR}};
-    border-bottom: 2px solid {{SG_HIGHLIGHT_COLOR}};
 }
 
 
@@ -160,20 +131,6 @@ DropAreaFrame[dragging="true"] {
     border: 2px solid {{SG_HIGHLIGHT_COLOR}};
 }
 
-/* the two labels above the tree on the left hand side */
-#items_tree_label {
-    font-size: 14px;
-    font-weight: 100;
-    padding-bottom: 10px;
-}
-
-
-
-/* --------------------------------------------------------------------- */
-/* Publish tree widget */
-/* --------------------------------------------------------------------- */
-
-
 /* properties for the main tree widget */
 #items_tree {
     background-color: #292929;
@@ -197,22 +154,21 @@ DropAreaFrame[dragging="true"] {
 
 #items_tree::item {
     background-color: none;
-    padding: 1.5px;
 }
 
 /* Tree view items */
-CustomTreeWidgetItem {
+CustomTreeWidgetItem #frame {
+    padding: 4px;
     padding-left: 4px;
     padding-right: 4px;
-    padding-top: 14px;
-    padding-bottom: 14px;
-    border: 1px solid black;
     background-color: #343434;
 }
 
 /* Tree view items */
-CustomTreeWidgetTask {
+CustomTreeWidgetTask #frame {
     padding: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
     background-color: #343434;
 }
 
@@ -240,7 +196,6 @@ CustomTreeWidgetContext QLabel {
     font-style: italic;
     border: none;
     background-color: #292929;
-    border-radius-bottom-left: 4px;
     border-bottom-right-radius: 4px;
     border-bottom-left-radius: 4px;
     padding: 4px;
