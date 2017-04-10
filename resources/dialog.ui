@@ -198,7 +198,7 @@ files you want to publish.</string>
            <item>
             <widget class="QStackedWidget" name="details_stack">
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="details_item">
               <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -266,33 +266,30 @@ files you want to publish.</string>
                 </widget>
                </item>
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_5">
-                 <item>
-                  <widget class="QLabel" name="label_4">
-                   <property name="text">
-                    <string>Publishing to</string>
+                <layout class="QGridLayout" name="gridLayout">
+                 <item row="2" column="1">
+                  <widget class="QPlainTextEdit" name="item_comments">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>90</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>90</height>
+                    </size>
                    </property>
                   </widget>
                  </item>
-                 <item>
-                  <widget class="QLabel" name="item_context">
-                   <property name="text">
-                    <string>Current Context</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_6">
-                 <item>
-                  <widget class="QLabel" name="label_2">
-                   <property name="text">
-                    <string>Thumbnail</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
+                 <item row="2" column="0">
                   <widget class="Thumbnail" name="item_thumbnail">
                    <property name="minimumSize">
                     <size>
@@ -314,21 +311,52 @@ files you want to publish.</string>
                    </property>
                   </widget>
                  </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_7">
-                 <item>
-                  <widget class="QLabel" name="label_3">
+                 <item row="1" column="1">
+                  <widget class="QLabel" name="label_6">
                    <property name="text">
                     <string>Description</string>
                    </property>
                   </widget>
                  </item>
-                 <item>
-                  <widget class="QPlainTextEdit" name="item_comments"/>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_2">
+                   <property name="text">
+                    <string>Thumbnail</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_4">
+                   <property name="text">
+                    <string>Link</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QComboBox" name="comboBox"/>
                  </item>
                 </layout>
+               </item>
+               <item>
+                <widget class="Line" name="item_divider_3">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="item_summary_label">
+                 <property name="text">
+                  <string>Summary</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="item_summary">
+                 <property name="text">
+                  <string>Summary</string>
+                 </property>
+                </widget>
                </item>
                <item>
                 <widget class="Line" name="item_divider_2">
@@ -438,7 +466,7 @@ files you want to publish.</string>
                <item>
                 <widget class="QLabel" name="please_select_an_item">
                  <property name="text">
-                  <string>Please select an item in the list.</string>
+                  <string>Please select a single item in the list.</string>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignCenter</set>

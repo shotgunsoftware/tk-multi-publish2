@@ -80,7 +80,7 @@ QToolButton:pressed {
 }
 
 
-#item_settings_label, #task_settings_label, #plugin_settings_label {
+#item_settings_label, #item_summary_label, #task_settings_label{
     font-size: 16px;
     font-weight: 100;
     padding-top: 18px;
@@ -93,8 +93,8 @@ QToolButton:pressed {
 }
 
 /* divider lines in the details UI */
-#summary_divider, #task_divider, #item_divider, #plugin_divider {
-    border-top: 1px solid rgba(255, 255, 255, 20);
+#item_divider_1, #item_divider_2, #item_divider_3, #task_divider {
+    border-top: 1px solid rgba(255, 255, 255, 20%);
 }
 
 
