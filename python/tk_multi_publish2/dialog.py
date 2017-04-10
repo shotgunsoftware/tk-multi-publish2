@@ -8,6 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import traceback
 
 import sgtk
 from sgtk import TankError
@@ -348,6 +349,8 @@ class AppDialog(QtGui.QWidget):
         except Exception, e:
             # todo - design a retry setup?
             self.ui.progress_widget.logger.error("Error while publishing. Aborting.")
+            # ensure the full error shows up in the log file
+            logger.error("Finalize error stack:\n%s" % (traceback.format_exc(),))
             return
         finally:
             self.ui.progress_widget.pop()
@@ -360,6 +363,8 @@ class AppDialog(QtGui.QWidget):
             self._visit_tree_r(parent, lambda child: child.finalize(), "Finalizing")
         except Exception, e:
             self.ui.progress_widget.logger.error("Error while finalizing. Aborting.")
+            # ensure the full error shows up in the log file
+            logger.error("Finalize error stack:\n%s" % (traceback.format_exc(),))
             return
         finally:
             self.ui.progress_widget.pop()

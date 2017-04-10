@@ -12,7 +12,6 @@ import os
 import re
 
 import sgtk
-from sgtk.util.filesystem import copy_file, copy_folder
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -35,65 +34,6 @@ class BasicPathInfo(HookBaseClass):
     """
     Methods for basic file path parsing.
     """
-
-    def create_next_version_path(self, path):
-        """
-        A method to create the next version of the supplied path.
-
-        The method will create a copy of the supplied path (file or folder) at
-        the next available version. The method will fail if a version cannot be
-        detected in the filename or if the next version path already exists.
-
-        This method is often called in the ``finalize`` phase of publish plugins
-        when an automatic version up setting is enabled.
-
-        :param path: The path to version up.
-
-        :return: A dictionary of info about the results of the action::
-
-            {
-                # the destination path
-                "next_version_path": "/path/to/next/version/of/file.v002.ext",
-
-                # True if successful, False otherwise
-                "success": True
-
-                # Reason why the version failed. None otherwise
-                "reason": "Path already exists."
-            }
-        """
-
-        next_version_path = self._get_next_version_path(path)
-
-        # default values
-        success = False
-        reason = None
-
-        # nothing to do if the next version path can't be determined or if it
-        # already exists.
-        if not next_version_path:
-            reason = "Could not determine next version path."
-        elif os.path.exists(next_version_path):
-            reason = "Path already exists (%s)" % (next_version_path,)
-        else:
-
-            # if here, all good. try to copy the file/folder
-            try:
-                if os.path.isdir(path):
-                    copy_folder(path, next_version_path)
-                else:
-                    copy_file(path, next_version_path)
-            except Exception, e:
-                reason = "Exception raised during path copy: %s" % (str(e),)
-            else:
-                success = True
-
-        # return the promised dictionary
-        return dict(
-            next_version_path=next_version_path,
-            success=success,
-            reason=reason
-        )
 
     def get_publish_name(self, path):
         """
@@ -226,12 +166,12 @@ class BasicPathInfo(HookBaseClass):
         # build the path in the same folder
         return os.path.join(folder, seq_filename)
 
-    def _get_next_version_path(self, path):
+    def get_next_version_path(self, path):
         """
         Given a file path, return a path to the next version.
 
-        This is typically used by auto-versioning logic in plugins that make
-        copies of files/folders post publish.
+        This is typically used by auto-versioning logic in plugins that need to
+        save the current work file to the next version number.
 
         If no version can be identified in the supplied path, ``None`` will be
         returned, indicating that the next version path can't be determined.

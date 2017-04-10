@@ -19,31 +19,19 @@ logger = sgtk.platform.get_logger(__name__)
 
 # ---- file/path util functions
 
-def create_next_version_path(path):
+def get_next_version_path(path):
     """
-    A method to create the next version of the supplied path.
+    Given a file path, return a path to the next version.
 
-    The method will create a copy of the supplied path (file or folder) at the
-    next available version. The method will fail if a version cannot be detected
-    in the filename or if the next version path already exists.
+    This is typically used by auto-versioning logic in plugins that need to
+    save the current work file to the next version number.
 
-    This method is often called in the ``finalize`` phase of publish plugins
-    when an automatic version up setting is enabled.
+    If no version can be identified in the supplied path, ``None`` will be
+    returned, indicating that the next version path can't be determined.
 
-    :param path: The path to version up.
+    :param path: The path to a file, likely one to be published.
 
-    :return: A dictionary of info about the results of the action::
-
-        {
-            # the destination path
-            "next_version_path": "/path/to/next/version/of/file.v002.ext",
-
-            # True if successful, False otherwise
-            "success": True
-
-            # Reason why the version failed. None otherwise
-            "reason": "Path already exists."
-        }
+    :return: The path to the next version of the supplied path.
     """
 
     # the logic for this method lives in a hook that can be overridden by
@@ -53,9 +41,10 @@ def create_next_version_path(path):
     publisher = sgtk.platform.current_bundle()
     return publisher.execute_hook_method(
         "path_info",
-        "create_next_version_path",
+        "get_next_version_path",
         path=path
     )
+
 
 def get_file_path_components(path):
     """
@@ -335,10 +324,11 @@ def clear_status_for_conflicting_publishes(context, publish_data):
             "data": {"sg_status_list": None}  # will clear the status
         })
 
-    logger.debug(
-        "Batch updating publish data: %s" %
-        (pprint.pformat(batch_data),)
-    )
+    if batch_data:
+        logger.debug(
+            "Batch updating publish data: %s" %
+            (pprint.pformat(batch_data),)
+        )
 
-    # execute all the updates!
-    publisher.shotgun.batch(batch_data)
+        # execute all the updates!
+        publisher.shotgun.batch(batch_data)
