@@ -81,40 +81,6 @@ class AppDialog(QtGui.QWidget):
         self.ui.items_tree.settings_clicked.connect(self._create_task_details)
         self.ui.items_tree.status_clicked.connect(self._on_publish_status_clicked)
 
-        # create menu on the cog button
-        self._menu = QtGui.QMenu()
-        self._actions = []
-        self.ui.options.setMenu(self._menu)
-
-        self._refresh_action = QtGui.QAction("Refresh", self)
-        self._refresh_action.setIcon(QtGui.QIcon(QtGui.QPixmap(":/tk_multi_publish2/reload.png")))
-        self._refresh_action.triggered.connect(self._refresh)
-        self._menu.addAction(self._refresh_action)
-
-        self._separator_1 = QtGui.QAction(self)
-        self._separator_1.setSeparator(True)
-        self._menu.addAction(self._separator_1)
-
-        self._expand_action = QtGui.QAction("Expand All", self)
-        self._expand_action.triggered.connect(self._expand_tree)
-        self._menu.addAction(self._expand_action)
-
-        self._collapse_action = QtGui.QAction("Collapse All", self)
-        self._collapse_action.triggered.connect(self._collapse_tree)
-        self._menu.addAction(self._collapse_action)
-
-        self._separator_2 = QtGui.QAction(self)
-        self._separator_2.setSeparator(True)
-        self._menu.addAction(self._separator_2)
-
-        self._check_all_action = QtGui.QAction("Check All", self)
-        self._check_all_action.triggered.connect(lambda: self._check_all(True))
-        self._menu.addAction(self._check_all_action)
-
-        self._uncheck_all_action = QtGui.QAction("Uncheck All", self)
-        self._uncheck_all_action.triggered.connect(lambda: self._check_all(False))
-        self._menu.addAction(self._uncheck_all_action)
-
         # when the description is updated
         self.ui.item_comments.textChanged.connect(self._on_item_comment_change)
 
@@ -123,6 +89,11 @@ class AppDialog(QtGui.QWidget):
 
         # thumbnails
         self.ui.item_thumbnail.screen_grabbed.connect(self._update_item_thumbnail)
+
+        # tool buttons
+        self.ui.delete_items.clicked.connect(self._delete_selected)
+        self.ui.expand_all.clicked.connect(self.ui.items_tree.expandAll)
+        self.ui.collapse_all.clicked.connect(self._collapse_tree)
 
         # currently displayed item
         self._current_item = None
@@ -164,9 +135,6 @@ class AppDialog(QtGui.QWidget):
             self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
             self._create_item_details(tree_item.item)
 
-        # elif tree_item.parent() is None and isinstance(tree_item, PublishTreeWidgetItem):
-        #     # top level item
-        #     self._create_summary_details(tree_item.item)
 
     def _on_publish_status_clicked(self, task_or_item):
         """
@@ -260,17 +228,18 @@ class AppDialog(QtGui.QWidget):
         """
         Contract all the nodes in the currently active left hand side tree
         """
-        for item_index in xrange(self.ui.items_tree.topLevelItemCount()):
-            item = self.ui.items_tree.topLevelItem(item_index)
-            self.ui.items_tree.collapseItem(item)
+        for context_index in xrange(self.ui.items_tree.topLevelItemCount()):
+            context_item = self.ui.items_tree.topLevelItem(context_index)
+            for child_index in xrange(context_item.childCount()):
+                child_item = context_item.child(child_index)
+                self.ui.items_tree.collapseItem(child_item)
 
-    def _expand_tree(self):
+    def _delete_selected(self):
         """
-        Expand all the nodes in the currently active left hand side tree
+        Delete all selected items
         """
-        for item_index in xrange(self.ui.items_tree.topLevelItemCount()):
-            item = self.ui.items_tree.topLevelItem(item_index)
-            self.ui.items_tree.expandItem(item)
+        for item in self.ui.items_tree.selectedItems():
+            item.parent().removeChild(item)
 
     def _check_all(self, checked):
         """
@@ -300,8 +269,7 @@ class AppDialog(QtGui.QWidget):
 
         self.ui.progress_widget.show()
 
-        self._expand_tree()
-
+        self.ui.items_tree.expandAll()
 
         parent = self.ui.items_tree.invisibleRootItem()
 

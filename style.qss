@@ -157,7 +157,7 @@ FieldValueLabel {
 
 /* left hand side frame when someone drag something in */
 DropAreaFrame[dragging="true"] {
-    border: 1px solid {{SG_HIGHLIGHT_COLOR}};
+    border: 2px solid {{SG_HIGHLIGHT_COLOR}};
 }
 
 /* the two labels above the tree on the left hand side */
@@ -282,4 +282,32 @@ ProgressWidget #progress_bar {
 
 ProgressWidget #progress_bar::chunk {
     background-color: {{SG_HIGHLIGHT_COLOR}}; 
+}
+
+/* --------------------------------------------------------------------- */
+/* Bottom toolbar */
+/* --------------------------------------------------------------------- */
+
+#bottom_frame {
+    border-top: 2px solid rgba(20, 20, 20, 18%);
+    padding-bottom: 4px;
+}
+
+#bottom_frame QToolButton {
+    border: none;
+    padding: 4px;
+    border-radius: 2px;
+    background-color: rgba(20, 20, 20, 18%);
+}
+
+#bottom_frame QToolButton:hover {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(20, 20, 20, 30%);
+}
+
+#bottom_frame QToolButton:pressed {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(20, 20, 20, 50%);
 }

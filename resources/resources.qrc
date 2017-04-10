@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="tk_multi_publish2">
+    <file>trash.png</file>
     <file>contract.png</file>
     <file>expand.png</file>
     <file>settings.png</file>
