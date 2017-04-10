@@ -13,7 +13,14 @@ configuration:
     collector:
         type: hook
         description: "Logic for extracting items from the scene and from dropped files."
-        default_value: "{self}/collector.py:{self}/maya.basic/collector.py"
+
+    path_info:
+        type: hook
+        description:
+          "This hook contains methods that are used during publishing to infer
+           information from file paths. This includes version and frame number
+           identification, publish display name, image sequence paths, etc."
+        default_value: "{self}/path_info.py"
 
     publish_plugins:
         type: list
@@ -27,40 +34,8 @@ configuration:
                     type: hook
                 settings:
                     type: dict
-
-        default_value:
-
-            - name: Publish to Shotgun
-              hook: "{self}/file_publisher.py"
-              settings:
-                Publish all file types: false
-                File Types:
-                - [Nuke Script, nk]
-                - [Photoshop Image, psd, psb]
-                - [3dsmax Scene, max]
-                - [Houdini Scene, hip]
-                - [Maya Scene, ma, mb]
-                - [Hiero Project, hrox]
-                - [Alembic Cache, abc]
-                - [Rendered Image, dpx, exr]
-                - [Texture, tiff, tx, tga, dds]
-                - [Image, jpeg, jpg, png]
-
-            - name: Send to Shotgun review
-              hook: "{self}/version_creator.py"
-              settings: {}
-
-            - name: Publish current Maya Scene
-              hook: "{self}/maya.basic/scene_publisher.py"
-              settings: {}
-
-            - name: Playblast to Shotgun Review
-              hook: "{self}/maya.basic/playblast_publisher.py"
-              settings: {}
-
-            - name: Publish alembic to Shotgun
-              hook: "{self}/maya.basic/alembic_publisher.py"
-              settings: {}
+        allows_empty: True
+        default_value: []
 
 # the Shotgun fields that this app needs in order to operate correctly
 requires_shotgun_fields:

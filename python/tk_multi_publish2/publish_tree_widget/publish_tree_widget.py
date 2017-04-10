@@ -62,12 +62,24 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             # orphan. Don't create it
             return None
 
+
         if level == 0:
             ui_item = TopLevelTreeNodeItem(item, tree_parent)
         else:
             ui_item = TreeNodeItem(item, tree_parent)
-        ui_item.setExpanded(True)
 
+        # pick up defaults from the plugin
+        checked = item.properties.get("default_checked", True)
+        expanded = item.properties.get("default_expanded", True)
+
+        ui_item.setExpanded(expanded)
+
+        if checked:
+            ui_item.set_check_state(QtCore.Qt.Checked)
+        else:
+            ui_item.set_check_state(QtCore.Qt.Unchecked)
+
+        # create children
         for task in item.tasks:
             task = TreeNodeTask(task, ui_item)
 
