@@ -133,5 +133,5 @@ class TreeNodeTask(TreeNodeBase):
             self._set_status_upwards(self._embedded_widget.FINALIZE_ERROR)
             raise
         else:
-            self._embedded_widget.set_status(self._embedded_widget.FINALIZE_COMPLETE)
+            self._embedded_widget.set_status(self._embedded_widget.FINALIZE)
         return True
