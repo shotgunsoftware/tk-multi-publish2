@@ -33,7 +33,7 @@ class AppDialog(QtGui.QWidget):
     (DRAG_SCREEN, PUBLISH_SCREEN) = range(2)
 
     # details ui panes
-    (ITEM_DETAILS, TASK_DETAILS) = range(2)
+    (ITEM_DETAILS, TASK_DETAILS, PLEASE_SELECT_DETAILS) = range(3)
 
     def __init__(self, parent=None):
         """
@@ -154,34 +154,18 @@ class AppDialog(QtGui.QWidget):
         """
         items = self.ui.items_tree.selectedItems()
 
-        # TODO ---- FIX THIS
+        if len(items) != 1:
+            self.ui.details_stack.setCurrentIndex(self.PLEASE_SELECT_DETAILS)
 
-        # if len(items) == 0:
-        #     tree_item = None
-        # else:
-        #     tree_item = items[0]
-        #
-        # # make sure we are focused on the details tab
-        # self.ui.right_tabs.setCurrentIndex(self.DETAILS_TAB)
-        #
-        # if tree_item is None:
-        #     self.ui.details_stack.setCurrentIndex(self.BLANK_DETAILS)
-        #
+        else:
+            # 1 item selected
+            tree_item = items[0]
+            self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
+            self._create_item_details(tree_item.item)
+
         # elif tree_item.parent() is None and isinstance(tree_item, PublishTreeWidgetItem):
         #     # top level item
         #     self._create_summary_details(tree_item.item)
-        #
-        # elif isinstance(tree_item, PublishTreeWidgetItem):
-        #     self._create_item_details(tree_item.item)
-        #
-        # elif isinstance(tree_item, PublishTreeWidgetTask):
-        #     self._create_task_details(tree_item.task)
-        #
-        # elif isinstance(tree_item, PublishTreeWidgetPlugin):
-        #     self._create_plugin_details(tree_item.plugin)
-        #
-        # else:
-        #     raise TankError("Unknown selection")
 
     def _on_publish_status_clicked(self, task_or_item):
         """
@@ -240,28 +224,36 @@ class AppDialog(QtGui.QWidget):
 
         self.ui.task_settings.set_data(task.settings.values())
 
-
     def _refresh(self):
-
+        """
+        Full refresh. All existing configuration is dropped
+        """
         self.ui.progress_widget.hide()
-
         self._reload_plugin_scan()
+        self._refresh_ui()
 
+    def _on_drop(self, files):
+        """
+        When someone drops stuff into the publish.
+        """
+        # add files and rebuild tree
+        self._plugin_manager.add_external_files(files)
+        self._refresh_ui()
+
+    def _refresh_ui(self):
+        """
+        Redraws the ui and rebuilds data based on
+        the low level plugin representation
+        """
         if len(self._plugin_manager.top_level_items) == 0:
             # nothing in list. show the full screen drag and drop ui
             self.ui.main_stack.setCurrentIndex(self.DRAG_SCREEN)
         else:
             self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
             self.ui.items_tree.build_tree()
-            self._select_top_items()
-
-    def _select_top_items(self):
-
-        # select the top item
-        if self.ui.items_tree.topLevelItemCount() > 0:
-            self.ui.items_tree.setCurrentItem(
-                self.ui.items_tree.topLevelItem(0)
-            )
+            # select the first item if nothing is already selected
+            if len(self.ui.items_tree.selectedItems()) == 0:
+                self.ui.items_tree.select_first_item()
 
     def _collapse_tree(self):
         """
@@ -349,7 +341,7 @@ class AppDialog(QtGui.QWidget):
         finally:
             self.ui.progress_widget.pop()
             if num_issues > 0:
-                self.ui.progress_widget.logger.warning("Validation Complete. %d issues reported." % num_issues)
+                self.ui.progress_widget.logger.error("Validation Complete. %d issues reported." % num_issues)
             else:
                 self.ui.progress_widget.logger.info("Validation Complete. All checks passed.")
 
@@ -445,15 +437,6 @@ class AppDialog(QtGui.QWidget):
                         self.ui.progress_widget.pop()
         return number_true_return_values
 
-    def _on_drop(self, files):
-        """
-        When someone drops stuff into the publish.
-        """
-        # make sure we switch main mode to the publish screen
-        self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
-        # add files and rebuild tree
-        self._plugin_manager.add_external_files(files)
-        self.ui.items_tree.build_tree()
 
     def is_first_launch(self):
         """

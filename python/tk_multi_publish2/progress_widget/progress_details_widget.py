@@ -57,8 +57,11 @@ class ProgressDetailsWidget(QtGui.QWidget):
             self.hide()
         else:
             self.show()
-            self.__recompute_position()
 
+    def show(self):
+        super(ProgressDetailsWidget, self).show()
+        self.__recompute_position()
+        self.ui.log_tree.expandAll()
 
     @property
     def log_tree(self):

@@ -99,6 +99,20 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         context_item.setExpanded(True)
         self.addTopLevelItem(context_item)
 
+    def select_first_item(self):
+        """
+        Selects the first item in the tree
+        """
+        print "select first item"
+        # select the top item
+        if self.topLevelItemCount() > 0:
+            # first context item
+            first_context_item = self.topLevelItem(0)
+            if first_context_item.childCount() > 0:
+                # we got an item
+                first_item = first_context_item.child(0)
+                self.setCurrentItem(first_item)
+
     def set_state_for_all_plugins(self, plugin, state):
         """
         set the state for all plugins

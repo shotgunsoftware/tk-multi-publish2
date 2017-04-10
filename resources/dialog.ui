@@ -412,6 +412,20 @@ files you want to publish.</string>
                </item>
               </layout>
              </widget>
+             <widget class="QWidget" name="details_please_select">
+              <layout class="QVBoxLayout" name="verticalLayout_8">
+               <item>
+                <widget class="QLabel" name="please_select_an_item">
+                 <property name="text">
+                  <string>Please select an item in the list.</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </widget>
            </item>
           </layout>
@@ -454,6 +468,40 @@ files you want to publish.</string>
             <property name="icon">
              <iconset>
               <normaloff>:/tk_multi_publish2/tick.png</normaloff>:/tk_multi_publish2/tick.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="toolButton">
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/tk_multi_publish2/expand.png</normaloff>:/tk_multi_publish2/expand.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="toolButton_2">
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/tk_multi_publish2/contract.png</normaloff>:/tk_multi_publish2/contract.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
             </property>
            </widget>
           </item>
