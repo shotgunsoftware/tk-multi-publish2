@@ -30,7 +30,10 @@ class TreeNodeItem(TreeNodeBase):
         """
         self._item = item
         super(TreeNodeItem, self).__init__(parent)
-        self.setFlags(QtCore.Qt.ItemIsEnabled)
+        self.setFlags(
+            QtCore.Qt.ItemIsEnabled |
+            QtCore.Qt.ItemIsSelectable
+        )
 
     def _create_widget(self, parent):
         """

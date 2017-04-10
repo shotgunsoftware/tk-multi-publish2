@@ -163,6 +163,13 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         """
         # record selection for use later.
         self._dragged_items = self.selectedItems()
+
+        # ignore any selections which aren't purely made from TopLevelTreeNodeItems
+        for item in self._dragged_items:
+            if not isinstance(item, TopLevelTreeNodeItem):
+                logger.debug("Selection contains non-top level nodes. Ignoring")
+                return
+
         super(PublishTreeWidget, self).dragEnterEvent(event)
 
     def mouseMoveEvent(self, event):

@@ -161,6 +161,8 @@ class ProgressWidget(QtGui.QWidget):
         self.ui.progress_bar.setMaximum(max_items)
         self.ui.progress_bar.reset()
         self.ui.progress_bar.setValue(0)
+        # clear tree
+        self._progress_details.log_tree.clear()
 
     def increment_progress(self):
         progress = self.ui.progress_bar.value() + 1
