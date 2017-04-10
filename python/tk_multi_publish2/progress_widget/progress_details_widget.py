@@ -21,9 +21,6 @@ class ProgressDetailsWidget(QtGui.QWidget):
     Progress reporting and logging
     """
 
-    RIGHT_OFFSET = 6
-    BOTTOM_OFFSET = 6
-
     def __init__(self, progress_widget, parent):
         """
         :param parent: The model parent.
@@ -72,11 +69,10 @@ class ProgressDetailsWidget(QtGui.QWidget):
 
         pos = self._progress_widget.pos()
 
-
         self.setGeometry(QtCore.QRect(
+            pos.x(),
             0,
-            0,
-            self.parentWidget().width(),
+            self._progress_widget.width(),
             pos.y()
         ))
 

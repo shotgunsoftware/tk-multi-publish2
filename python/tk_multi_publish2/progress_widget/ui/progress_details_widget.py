@@ -13,6 +13,8 @@ class Ui_ProgressDetailsWidget(object):
         ProgressDetailsWidget.setObjectName("ProgressDetailsWidget")
         ProgressDetailsWidget.resize(696, 358)
         self.verticalLayout = QtGui.QVBoxLayout(ProgressDetailsWidget)
+        self.verticalLayout.setSpacing(0)
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
         self.progress_frame = QtGui.QFrame(ProgressDetailsWidget)
         self.progress_frame.setFrameShape(QtGui.QFrame.StyledPanel)

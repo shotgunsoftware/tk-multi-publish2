@@ -177,6 +177,8 @@ DropAreaFrame[dragging="true"] {
 /* properties for the main tree widget */
 #items_tree {
     background-color: #292929;
+    border: none;
+    margin: 0px;
     /* push the whole tree 20px to the side */
     margin-left: -20px;
 }
@@ -232,47 +234,56 @@ CustomTreeWidgetContext QLabel {
     text-transform: uppercase;
 }
 
-/* --------------------------------------------------------------------- */
-/* Right hand side logging tree */
-/* --------------------------------------------------------------------- */
-
-#log_tree {
-    font-size: 12px;
+#text_below_item_tree {
+    font-size: 10px;
     font-weight: 100;
+    font-style: italic;
+    border: none;
+    background-color: #292929;
+    border-radius-bottom-left: 4px;
+    border-bottom-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    padding: 4px;
+    margin: 0px;
 }
-
-#log_tree::item {
-    margin: 4px;
-}
-
 
 /* --------------------------------------------------------------------- */
 /* Progress widget */
 /* --------------------------------------------------------------------- */
 
-ProgressWidget #frame {
-    background-color: rgba(0, 0, 0, 30%);
+
+
+/* Logging popup widget */
+
+ProgressDetailsWidget #progress_frame {
+    background-color: #292929;
     border-radius: 4px;
 }
 
-
-/* --------------------------------------------------------------------- */
-/* Logging popup widget */
-/* --------------------------------------------------------------------- */
-
-#progress_frame {
-    background-color: rgba(0, 0, 0, 70%);
-    border-radius: 2px;
-}
-
-#progress_label {
+ProgressDetailsWidget #progress_label {
     font-size: 18px;
     font-weight: 100;
 }
 
-/* --------------------------------------------------------------------- */
-/* Progress bar */
-/* --------------------------------------------------------------------- */
+ProgressDetailsWidget #log_tree {
+    font-size: 12px;
+    font-weight: 100;
+}
+
+ProgressDetailsWidget #log_tree::item {
+    margin: 4px;
+}
+
+
+
+
+/* Small progress widget */
+
+ProgressWidget #frame {
+    background-color: #292929;
+    border-radius: 4px;
+}
+
 
 ProgressWidget #progress_bar {
     border: none;
@@ -283,6 +294,10 @@ ProgressWidget #progress_bar {
 ProgressWidget #progress_bar::chunk {
     background-color: {{SG_HIGHLIGHT_COLOR}}; 
 }
+
+
+
+
 
 /* --------------------------------------------------------------------- */
 /* Bottom toolbar */
