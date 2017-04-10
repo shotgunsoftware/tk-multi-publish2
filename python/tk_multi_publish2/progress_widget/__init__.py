@@ -8,14 +8,4 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-"""
-Wrapper for the various widgets used from frameworks so that they can be used
-easily from with Qt Designer
-"""
-
-import sgtk
-
-global_search_widget = sgtk.platform.import_framework("tk-framework-qtwidgets", "global_search_widget")
-GlobalSearchWidget = global_search_widget.GlobalSearchWidget
-
-
+from .progress_widget import ProgressWidget

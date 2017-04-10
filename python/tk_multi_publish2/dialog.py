@@ -15,8 +15,6 @@ from sgtk.platform.qt import QtCore, QtGui
 
 from .ui.dialog import Ui_Dialog
 from .processing import PluginManager
-from .tree_item import PublishTreeWidgetItem, PublishTreeWidgetTask, PublishTreeWidgetPlugin
-from .publish_logging import PublishLogWrapper
 
 # import frameworks
 settings = sgtk.platform.import_framework("tk-framework-shotgunutils", "settings")
@@ -31,18 +29,11 @@ class AppDialog(QtGui.QWidget):
     Main dialog window for the App
     """
 
-    # the yin-yang modes
-    (ITEM_CENTRIC, PLUGIN_CENTRIC) = range(2)
+    # main drag and drop areas
+    (DRAG_SCREEN, PUBLISH_SCREEN) = range(2)
 
     # details ui panes
-    (SUMMARY_DETAILS, TASK_DETAILS, PLUGIN_DETAILS, ITEM_DETAILS, BLANK_DETAILS) = range(5)
-
-    # main right hand side tabs
-    (DETAILS_TAB, PROGRESS_TAB) = range(2)
-
-    # modes for handling context
-    (DISPLAY_CONTEXT, EDIT_CONTEXT) = range(2)
-
+    (ITEM_DETAILS, TASK_DETAILS, PLEASE_SELECT_DETAILS) = range(3)
 
     def __init__(self, parent=None):
         """
@@ -55,9 +46,11 @@ class AppDialog(QtGui.QWidget):
         self._settings_manager = settings.UserSettings(sgtk.platform.current_bundle())
 
         # create a background task manager
-        self._task_manager = task_manager.BackgroundTaskManager(self,
-                                                                start_processing=True,
-                                                                max_threads=2)
+        self._task_manager = task_manager.BackgroundTaskManager(
+            self,
+            start_processing=True,
+            max_threads=2
+        )
 
         self._bundle = sgtk.platform.current_bundle()
 
@@ -74,87 +67,39 @@ class AppDialog(QtGui.QWidget):
         # matter (as long as it's there)
         self.ui.splitter.setSizes([360, 100])
 
-        # set up tree view to look slick
-        self.ui.items_tree.setIndentation(20)
-
         # drag and drop
         self.ui.frame.something_dropped.connect(self._on_drop)
-
-        # create a special logger for progress
-        self._log_wrapper = PublishLogWrapper(self.ui.log_tree)
+        self.ui.large_drop_area.something_dropped.connect(self._on_drop)
+        self.ui.items_tree.tree_reordered.connect(self._refresh_ui)
 
         # buttons
-        self.ui.swap.clicked.connect(self._swap_view)
         self.ui.validate.clicked.connect(self.do_validate)
-        self.ui.publish.clicked.connect(self.do_publish)
+        self.ui.publish.clicked.connect(self._on_publish_click)
         self._close_ui_on_publish_click = False
 
-        # create menu on the cog button
-        self._menu = QtGui.QMenu()
-        self._actions = []
-        self.ui.options.setMenu(self._menu)
-
-        self._refresh_action = QtGui.QAction("Refresh", self)
-        self._refresh_action.setIcon(QtGui.QIcon(QtGui.QPixmap(":/tk_multi_publish2/reload.png")))
-        self._refresh_action.triggered.connect(self._refresh)
-        self._menu.addAction(self._refresh_action)
-
-        self._separator_1 = QtGui.QAction(self)
-        self._separator_1.setSeparator(True)
-        self._menu.addAction(self._separator_1)
-
-        self._expand_action = QtGui.QAction("Expand All", self)
-        self._expand_action.triggered.connect(self._expand_tree)
-        self._menu.addAction(self._expand_action)
-
-        self._collapse_action = QtGui.QAction("Collapse All", self)
-        self._collapse_action.triggered.connect(self._collapse_tree)
-        self._menu.addAction(self._collapse_action)
-
-        self._separator_2 = QtGui.QAction(self)
-        self._separator_2.setSeparator(True)
-        self._menu.addAction(self._separator_2)
-
-        self._check_all_action = QtGui.QAction("Check All", self)
-        self._check_all_action.triggered.connect(lambda: self._check_all(True))
-        self._menu.addAction(self._check_all_action)
-
-        self._uncheck_all_action = QtGui.QAction("Uncheck All", self)
-        self._uncheck_all_action.triggered.connect(lambda: self._check_all(False))
-        self._menu.addAction(self._uncheck_all_action)
+        # settings
+        self.ui.items_tree.settings_clicked.connect(self._create_task_details)
+        self.ui.items_tree.status_clicked.connect(self._on_publish_status_clicked)
 
         # when the description is updated
-        self.ui.summary_comments.textChanged.connect(self._on_publish_comment_change)
-
-        # context edit - TEMPORARY, PENDING DESIGN
-        self.ui.summary_context_edit.clicked.connect(self._enable_context_edit_mode)
-        self.ui.summary_context_select.set_bg_task_manager(self._task_manager)
-        self.ui.summary_context_select.set_searchable_entity_types(
-            {
-                "Asset": [],
-                "Shot": [],
-                "Task": [],
-                "Project": [],
-            }
-        )
-        self.ui.summary_context_select.entity_selected.connect(self._update_context)
+        self.ui.item_comments.textChanged.connect(self._on_item_comment_change)
 
         # selection in tree view
         self.ui.items_tree.itemSelectionChanged.connect(self._update_details_from_selection)
-        self.ui.reversed_items_tree.itemSelectionChanged.connect(self._update_details_from_selection)
 
         # thumbnails
-        self.ui.summary_thumbnail.screen_grabbed.connect(self._update_item_thumbnail)
         self.ui.item_thumbnail.screen_grabbed.connect(self._update_item_thumbnail)
 
-        # current yin-yang mode
-        self._display_mode = self.ITEM_CENTRIC
+        # tool buttons
+        self.ui.delete_items.clicked.connect(self._delete_selected)
+        self.ui.expand_all.clicked.connect(self.ui.items_tree.expandAll)
+        self.ui.collapse_all.clicked.connect(self._collapse_tree)
 
         # currently displayed item
         self._current_item = None
 
         # start up our plugin manager
-        self._plugin_manager = PluginManager(self._log_wrapper.logger)
+        self._plugin_manager = None
 
         # start it up
         self._refresh()
@@ -168,8 +113,6 @@ class AppDialog(QtGui.QWidget):
         logger.debug("CloseEvent Received. Begin shutting down UI.")
 
         try:
-            # shut down global search widget
-            self.ui.summary_context_select.destroy()
             # shut down main threadpool
             self._task_manager.shut_down()
         except Exception, e:
@@ -181,68 +124,36 @@ class AppDialog(QtGui.QWidget):
         details section reflects the selected item
         in the left hand side tree.
         """
-        if self._display_mode == self.ITEM_CENTRIC:
-            items = self.ui.items_tree.selectedItems()
-        else:
-            items = self.ui.reversed_items_tree.selectedItems()
+        items = self.ui.items_tree.selectedItems()
 
-        if len(items) == 0:
-            tree_item = None
+        if len(items) != 1:
+            self.ui.details_stack.setCurrentIndex(self.PLEASE_SELECT_DETAILS)
+
         else:
+            # 1 item selected
             tree_item = items[0]
-
-        # make sure we are focused on the details tab
-        self.ui.right_tabs.setCurrentIndex(self.DETAILS_TAB)
-
-        if tree_item is None:
-            self.ui.details_stack.setCurrentIndex(self.BLANK_DETAILS)
-
-        elif tree_item.parent() is None and isinstance(tree_item, PublishTreeWidgetItem):
-            # top level item
-            self._create_summary_details(tree_item.item)
-
-        elif isinstance(tree_item, PublishTreeWidgetItem):
+            self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
             self._create_item_details(tree_item.item)
 
-        elif isinstance(tree_item, PublishTreeWidgetTask):
-            self._create_task_details(tree_item.task)
 
-        elif isinstance(tree_item, PublishTreeWidgetPlugin):
-            self._create_plugin_details(tree_item.plugin)
+    def _on_publish_status_clicked(self, task_or_item):
+        """
+        Triggered when someone clicks the status icon in the tree
+        """
+        # make sure the progress widget is shown
+        self.ui.progress_widget.show()
+        # select item
+        self.ui.progress_widget.select_last_message(task_or_item)
 
-        else:
-            raise TankError("Unknown selection")
-
-    def _enable_context_edit_mode(self):
-        logger.debug("editing context")
-        self.ui.context_stack.setCurrentIndex(self.EDIT_CONTEXT)
-        self.ui.summary_context_select.setText("")
-
-    def _update_context(self, entity_type, entity_id):
-        self.ui.context_stack.setCurrentIndex(self.DISPLAY_CONTEXT)
-        ctx = self._bundle.sgtk.context_from_entity(entity_type, entity_id)
-        self._current_item.context = ctx
-        self.ui.summary_context.setText(str(ctx))
-
-    def _on_publish_comment_change(self):
+    def _on_item_comment_change(self):
         """
         Callback when someone types in the
         publish comments box in the overview details pane
         """
-        comments = self.ui.summary_comments.toPlainText()
+        comments = self.ui.item_comments.toPlainText()
         if not self._current_item:
             raise TankError("No current item set!")
         self._current_item.description = comments
-
-    def _on_summary_thumbnail_captured(self, pixmap):
-        """
-        Callback when a thumbnail is captured
-        @param pixmap:
-        @return:
-        """
-        if not self._current_item:
-            raise TankError("No current item set!")
-        self._current_item.thumbnail = pixmap
 
     def _update_item_thumbnail(self, pixmap):
         """
@@ -253,26 +164,18 @@ class AppDialog(QtGui.QWidget):
             raise TankError("No current item set!")
         self._current_item.thumbnail = pixmap
 
-    def _create_summary_details(self, item):
-
-        self._current_item = item
-        self.ui.details_stack.setCurrentIndex(self.SUMMARY_DETAILS)
-        self.ui.summary_icon.setPixmap(item.icon)
-        self.ui.summary_comments.setPlainText(item.description)
-        self.ui.summary_thumbnail.set_thumbnail(item.thumbnail)
-        self.ui.summary_header.setText("Publish summary for %s" % item.name)
-        self.ui.summary_context.setText(str(item.context))
-
-
     def _create_item_details(self, item):
 
         self._current_item = item
         self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
-
         self.ui.item_icon.setPixmap(item.icon)
+
         self.ui.item_name.setText(item.name)
         self.ui.item_type.setText(item.display_type)
+
+        self.ui.item_comments.setPlainText(item.description)
         self.ui.item_thumbnail.set_thumbnail(item.thumbnail)
+        self.ui.item_context.addItem(str(item.context))
 
         self.ui.item_settings.set_static_data(
             [(p, item.properties[p]) for p in item.properties]
@@ -290,65 +193,53 @@ class AppDialog(QtGui.QWidget):
 
         self.ui.task_settings.set_data(task.settings.values())
 
-
-    def _create_plugin_details(self, plugin):
-
-        self._current_item = None
-        self.ui.details_stack.setCurrentIndex(self.PLUGIN_DETAILS)
-        self.ui.plugin_icon.setPixmap(plugin.icon)
-
-        self.ui.plugin_name.setText(plugin.name)
-
-        self.ui.plugin_description.setText(plugin.description)
-        self.ui.plugin_settings.set_data(plugin.settings.values())
-
-
-
     def _refresh(self):
-
+        """
+        Full refresh. All existing configuration is dropped
+        """
+        self.ui.progress_widget.hide()
         self._reload_plugin_scan()
-        self._build_tree()
-        self._select_top_items()
+        self._refresh_ui()
 
-    def _select_top_items(self):
+    def _on_drop(self, files):
+        """
+        When someone drops stuff into the publish.
+        """
+        # add files and rebuild tree
+        self._plugin_manager.add_external_files(files)
+        self._refresh_ui()
 
-        # select the top item
-        if self.ui.items_tree.topLevelItemCount() > 0:
-            self.ui.items_tree.setCurrentItem(
-                self.ui.items_tree.topLevelItem(0)
-            )
-
-        # select the top item
-        if self.ui.reversed_items_tree.topLevelItemCount() > 0:
-            self.ui.reversed_items_tree.setCurrentItem(
-                self.ui.reversed_items_tree.topLevelItem(0)
-            )
+    def _refresh_ui(self):
+        """
+        Redraws the ui and rebuilds data based on
+        the low level plugin representation
+        """
+        if len(self._plugin_manager.top_level_items) == 0:
+            # nothing in list. show the full screen drag and drop ui
+            self.ui.main_stack.setCurrentIndex(self.DRAG_SCREEN)
+        else:
+            self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
+            self.ui.items_tree.build_tree()
+            # select the first item if nothing is already selected
+            if len(self.ui.items_tree.selectedItems()) == 0:
+                self.ui.items_tree.select_first_item()
 
     def _collapse_tree(self):
         """
         Contract all the nodes in the currently active left hand side tree
         """
-        if self._display_mode == self.ITEM_CENTRIC:
-            for item_index in xrange(self.ui.items_tree.topLevelItemCount()):
-                item = self.ui.items_tree.topLevelItem(item_index)
-                self.ui.items_tree.collapseItem(item)
-        else:
-            for item_index in xrange(self.ui.reversed_items_tree.topLevelItemCount()):
-                item = self.ui.reversed_items_tree.topLevelItem(item_index)
-                self.ui.reversed_items_tree.collapseItem(item)
+        for context_index in xrange(self.ui.items_tree.topLevelItemCount()):
+            context_item = self.ui.items_tree.topLevelItem(context_index)
+            for child_index in xrange(context_item.childCount()):
+                child_item = context_item.child(child_index)
+                self.ui.items_tree.collapseItem(child_item)
 
-    def _expand_tree(self):
+    def _delete_selected(self):
         """
-        Expand all the nodes in the currently active left hand side tree
+        Delete all selected items
         """
-        if self._display_mode == self.ITEM_CENTRIC:
-            for item_index in xrange(self.ui.items_tree.topLevelItemCount()):
-                item = self.ui.items_tree.topLevelItem(item_index)
-                self.ui.items_tree.expandItem(item)
-        else:
-            for item_index in xrange(self.ui.reversed_items_tree.topLevelItemCount()):
-                item = self.ui.reversed_items_tree.topLevelItem(item_index)
-                self.ui.reversed_items_tree.expandItem(item)
+        for item in self.ui.items_tree.selectedItems():
+            item.parent().removeChild(item)
 
     def _check_all(self, checked):
         """
@@ -360,189 +251,127 @@ class AppDialog(QtGui.QWidget):
                 child.checkbox.setChecked(checked)
                 _check_r(child)
 
-        if self._display_mode == self.ITEM_CENTRIC:
-            parent = self.ui.items_tree.invisibleRootItem()
-        else:
-            parent = self.ui.reversed_items_tree.invisibleRootItem()
+        parent = self.ui.items_tree.invisibleRootItem()
 
         _check_r(parent)
-
-    def _swap_view(self):
-        """
-        Swaps left hand side tree views between
-        item centric and plugin centric modes.
-        """
-        if self._display_mode == self.ITEM_CENTRIC:
-            self._display_mode = self.PLUGIN_CENTRIC
-            self.ui.items_tree_stack.setCurrentIndex(self.PLUGIN_CENTRIC)
-        else:
-            self._display_mode = self.ITEM_CENTRIC
-            self.ui.items_tree_stack.setCurrentIndex(self.ITEM_CENTRIC)
-        self._update_details_from_selection()
-
-
-    def _build_item_tree_r(self, parent, item):
-        """
-        Build the tree of items
-        """
-        if len(item.tasks) == 0 and len(item.children) == 0:
-            # orphan. Don't create it
-            return None
-
-        checked = item.properties.get("default_checked", True)
-        expanded = item.properties.get("default_expanded", True)
-
-        if checked:
-            check_state = QtCore.Qt.Checked
-        else:
-            check_state = QtCore.Qt.Unchecked
-
-        ui_item = PublishTreeWidgetItem(item, parent)
-        ui_item.setExpanded(expanded)
-        ui_item.checkbox.setCheckState(check_state)
-
-        for task in item.tasks:
-            task = PublishTreeWidgetTask(task, ui_item)
-
-        for child in item.children:
-            self._build_item_tree_r(ui_item, child)
-
-        return ui_item
-
-    def _build_plugin_tree_r(self, parent, plugin):
-        """
-        Build the tree of plugins
-        """
-        # show all plugins
-        # if len(plugin.tasks) == 0:
-        #     # orphan. Don't create it
-        #     return None
-
-        ui_item = PublishTreeWidgetPlugin(plugin, parent)
-        ui_item.setExpanded(True)
-
-        for task in plugin.tasks:
-            item = PublishTreeWidgetItem(task.item, ui_item)
-
-        return ui_item
-
-    def _build_tree(self):
-        """
-        Rebuilds the lefthand side tree
-        """
-        # first build the items tree
-        self.ui.items_tree.clear()
-        for item in self._plugin_manager.top_level_items:
-            ui_item = self._build_item_tree_r(self.ui.items_tree, item)
-            if ui_item:
-                self.ui.items_tree.addTopLevelItem(ui_item)
-
-        # now build the reverse one
-        self.ui.reversed_items_tree.clear()
-        for item in self._plugin_manager.plugins:
-            ui_item = self._build_plugin_tree_r(self.ui.reversed_items_tree, item)
-            if ui_item:
-                self.ui.reversed_items_tree.addTopLevelItem(ui_item)
-
 
     def _reload_plugin_scan(self):
         """
 
         """
         # run the hooks
-        self._plugin_manager = PluginManager(self._log_wrapper.logger)
+
+        self._plugin_manager = PluginManager(self.ui.progress_widget.logger)
+        self.ui.items_tree.set_plugin_manager(self._plugin_manager)
 
 
-    def do_validate(self):
+    def _prepare_tree(self, number_phases):
+
+        self.ui.progress_widget.show()
+
+        self.ui.items_tree.expandAll()
+
+        parent = self.ui.items_tree.invisibleRootItem()
+
+        # set all nodes to "ready to go"
+        def _begin_process_r(parent):
+            total_number_nodes = 0
+            for child_index in xrange(parent.childCount()):
+                child = parent.child(child_index)
+                child.reset_progress()
+                if child.enabled:
+                    # child is ticked
+                    total_number_nodes += 1
+                total_number_nodes += _begin_process_r(child)
+            return total_number_nodes
+
+        total_number_nodes = _begin_process_r(parent)
+        # reset progress bar
+        self.ui.progress_widget.reset_progress(total_number_nodes * number_phases)
+
+
+    def do_validate(self, standalone=True):
         """
         Perform a full validation
 
         :returns: number of issues reported
         """
-        # make sure we swap the tree
-        if self._display_mode != self.ITEM_CENTRIC:
-            self._swap_view()
+        if standalone:
+            self._prepare_tree(number_phases=1)
 
-        # and expand it
-        self._expand_tree()
-
-        # flip right hand side to show the logs
-        self.ui.right_tabs.setCurrentIndex(self.PROGRESS_TAB)
+        # inform the progress system of the current mode
+        self.ui.progress_widget.set_phase(self.ui.progress_widget.PHASE_VALIDATE)
+        self.ui.progress_widget.push("Running Validation pass")
 
         parent = self.ui.items_tree.invisibleRootItem()
-
-        self._log_wrapper.push("Running Validation pass")
-
-        # set all nodes to "ready to go"
-        def _begin_process_r(parent):
-            for child_index in xrange(parent.childCount()):
-                child = parent.child(child_index)
-                child.begin_process()
-                _begin_process_r(child)
-        _begin_process_r(parent)
-
+        num_issues = 0
         try:
-            num_issues = self._visit_tree_r(parent, lambda child: child.validate(), "Validating")
+            num_issues = self._visit_tree_r(parent, lambda child: child.validate(standalone), "Validating")
         finally:
-            self._log_wrapper.pop()
+            self.ui.progress_widget.pop()
             if num_issues > 0:
-                self._log_wrapper.logger.warning("Validation Complete. %d issues reported." % num_issues)
+                self.ui.progress_widget.logger.error("Validation Complete. %d issues reported." % num_issues)
             else:
-                self._log_wrapper.logger.info("Validation Complete. All checks passed.")
+                self.ui.progress_widget.logger.info("Validation Complete. All checks passed.")
 
         return num_issues
+
+    def _on_publish_click(self):
+        """
+        User clicked the publish/close button
+        """
+        if self._close_ui_on_publish_click:
+            #
+            self.close()
+        else:
+            self.do_publish()
 
     def do_publish(self):
         """
         Perform a full publish
         """
-        if self._close_ui_on_publish_click:
-            # close
-            self.close()
+        self._prepare_tree(number_phases=3)
 
-        # make sure we swap the tree
-        if self._display_mode != self.ITEM_CENTRIC:
-            self._swap_view()
+        issues = self.do_validate(standalone=False)
 
-        # and expand it
-        self._expand_tree()
-
-        self.ui.right_tabs.setCurrentIndex(self.PROGRESS_TAB)
-
-        issues = self.do_validate()
         if issues > 0:
-            self._log_wrapper.logger.error("Validation errors detected. No proceeding with publish.")
+            self.ui.progress_widget.logger.error("Validation errors detected. No proceeding with publish.")
             return
 
-        parent = self.ui.items_tree.invisibleRootItem()
+        # inform the progress system of the current mode
+        self.ui.progress_widget.set_phase(self.ui.progress_widget.PHASE_PUBLISH)
+        self.ui.progress_widget.push("Running publishing pass")
 
-        self._log_wrapper.push("Running publishing pass")
+        parent = self.ui.items_tree.invisibleRootItem()
         try:
             self._visit_tree_r(parent, lambda child: child.publish(), "Publishing")
         except Exception, e:
             # todo - design a retry setup?
-            self._log_wrapper.logger.error("Error while publishing. Aborting.")
+            self.ui.progress_widget.logger.error("Error while publishing. Aborting.")
             return
         finally:
-            self._log_wrapper.pop()
+            self.ui.progress_widget.pop()
 
-        self._log_wrapper.push("Running finalizing pass")
+        # inform the progress system of the current mode
+        self.ui.progress_widget.set_phase(self.ui.progress_widget.PHASE_FINALIZE)
+
+        self.ui.progress_widget.push("Running finalizing pass")
         try:
             self._visit_tree_r(parent, lambda child: child.finalize(), "Finalizing")
         except Exception, e:
-            self._log_wrapper.logger.error("Error while finalizing. Aborting.")
+            self.ui.progress_widget.logger.error("Error while finalizing. Aborting.")
             return
         finally:
-            self._log_wrapper.pop()
+            self.ui.progress_widget.pop()
 
-        self._log_wrapper.logger.info("Publish Complete!")
+        self.ui.progress_widget.logger.info("Publish Complete!")
 
         # make the publish button say close
         self.ui.publish.setText("Close")
         self._close_ui_on_publish_click = True
 
 
-    def _visit_tree_r(self, parent, action, action_name=None):
+    def _visit_tree_r(self, parent, action, action_name):
         """
         Recursive visitor helper function that descends the tree
         """
@@ -552,12 +381,19 @@ class AppDialog(QtGui.QWidget):
             child = parent.child(child_index)
             if child.enabled:
                 if action_name:
-                    self._log_wrapper.push("%s %s" % (action_name, child), child.icon)
+                    self.ui.progress_widget.push(
+                        "%s %s" % (action_name, child),
+                        child.icon,
+                        child.get_publish_instance()
+                    )
                 try:
                     # process this node
-                    status = action(child) # eg. child.validate(), child.publish() etc.
+                    status = action(child)  # eg. child.validate(), child.publish() etc.
                     if not status:
                         number_true_return_values += 1
+
+                    # kick progress bar
+                    self.ui.progress_widget.increment_progress()
 
                     # now process all children
                     number_true_return_values += self._visit_tree_r(
@@ -567,15 +403,9 @@ class AppDialog(QtGui.QWidget):
                     )
                 finally:
                     if action_name:
-                        self._log_wrapper.pop()
+                        self.ui.progress_widget.pop()
         return number_true_return_values
 
-    def _on_drop(self, files):
-        """
-        When someone drops stuff into the publish.
-        """
-        self._plugin_manager.add_external_files(files)
-        self._build_tree()
 
     def is_first_launch(self):
         """

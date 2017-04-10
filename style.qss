@@ -15,6 +15,7 @@ not expressly granted therein are reserved by Shotgun Software Inc.
 /* --------------------------------------------------------------------- */
 
 
+
 /* Get rid of borders for main Listing Views */
 QListView, QTableView, QScrollArea, QFrame {
     border: none;
@@ -36,34 +37,33 @@ QTreeView::branch {
     background: none;
 }
 
-/* --------------------------------------------------------------------- */
-/* Right hand side tab control  */
-/* --------------------------------------------------------------------- */
 
-QTabWidget::pane {
-    border-top: 1px solid rgb(255, 255, 255, 20);
-    padding-top: 8px;
+/* consistent default look for all tool buttons */
+
+QToolButton {
+    border: none;
 }
 
-/* Style the tab using the tab sub-control.
-   Note that it reads QTabBar _not_ QTabWidget */
-QTabBar::tab {
-    font-size: 12px;
+QToolButton:hover {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(200, 200, 200, 18%);
+}
+
+QToolButton:pressed {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(200, 200, 200, 35%);
+}
+
+
+/* --------------------------------------------------------------------- */
+/* Full screen drop area */
+/* --------------------------------------------------------------------- */
+
+#large_drop_area_label {
+    font-size: 16px;
     font-weight: 100;
-    padding-left: 18px;
-    padding-right: 18px;
-    padding-bottom: 8px;
-    padding-top: 0px;
-    border-bottom: 2px solid rgb(255, 255, 255, 5);
-}
-
-QTabBar::tab:hover {
-    color: {{SG_HIGHLIGHT_COLOR}};
-}
-
-QTabBar::tab:selected {
-    color: {{SG_HIGHLIGHT_COLOR}};
-    border-bottom: 2px solid {{SG_HIGHLIGHT_COLOR}};
 }
 
 
@@ -80,7 +80,7 @@ QTabBar::tab:selected {
 }
 
 
-#item_settings_label, #task_settings_label, #plugin_settings_label {
+#item_settings_label, #item_summary_label, #task_settings_label{
     font-size: 16px;
     font-weight: 100;
     padding-top: 18px;
@@ -93,8 +93,8 @@ QTabBar::tab:selected {
 }
 
 /* divider lines in the details UI */
-#summary_divider, #task_divider, #item_divider, #plugin_divider {
-    border-top: 1px solid rgba(255, 255, 255, 20);
+#item_divider_1, #item_divider_2, #item_divider_3, #task_divider {
+    border-top: 1px solid rgba(255, 255, 255, 20%);
 }
 
 
@@ -128,42 +128,156 @@ FieldValueLabel {
 
 /* left hand side frame when someone drag something in */
 DropAreaFrame[dragging="true"] {
-    border: 1px solid {{SG_HIGHLIGHT_COLOR}};
+    border: 2px solid {{SG_HIGHLIGHT_COLOR}};
 }
 
-/* the two labels above the tree on the left hand side */
-#items_tree_label, #reversed_items_tree_label {
-    font-size: 14px;
-    font-weight: 100;
-    padding-bottom: 10px;
+/* properties for the main tree widget */
+#items_tree {
+    background-color: #292929;
+    border: none;
+    margin: 0px;
+    /* push the whole tree 20px to the side */
+    margin-left: -20px;
 }
 
+/* disable all the 'tree handles' */
+#items_tree::branch {
+    border-image: none;
+    image: none;
+    background: none;
+}
+
+/* selection of tree items */
+#items_tree::item:selected {
+    background-color: {{SG_HIGHLIGHT_COLOR}};
+}
+
+#items_tree::item {
+    background-color: none;
+}
 
 /* Tree view items */
-Item {
+CustomTreeWidgetItem #frame {
+    padding: 4px;
     padding-left: 4px;
-    padding-top: 2px;
+    padding-right: 4px;
+    background-color: #343434;
+}
+
+/* Tree view items */
+CustomTreeWidgetTask #frame {
+    padding: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
+    background-color: #343434;
+}
+
+/* the widget that displays the contexts */
+CustomTreeWidgetContext {
+    padding-left: 4px;
+    padding-right: 4px;
     padding-bottom: 4px;
+    padding-top: 10px;
+    border-bottom: 1px solid #494C4F;
+
+    /* make sure we push it all the way in to compensate for the -20px margin of the widget */
+    margin-left: 20px;
 }
 
-#items_tree, #reversed_items_tree {
-    background-color: #444;
+CustomTreeWidgetContext QLabel {
+    font-size: 12px;
+    font-weight: 100;
+    text-transform: uppercase;
 }
 
-
+#text_below_item_tree {
+    font-size: 10px;
+    font-weight: 100;
+    font-style: italic;
+    border: none;
+    background-color: #292929;
+    border-bottom-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    padding: 4px;
+    margin: 0px;
+}
 
 /* --------------------------------------------------------------------- */
-/* Right hand side logging tree */
+/* Progress widget */
 /* --------------------------------------------------------------------- */
 
-#log_tree {
+
+
+/* Logging popup widget */
+
+ProgressDetailsWidget #progress_frame {
+    background-color: #292929;
+    border-radius: 4px;
+}
+
+ProgressDetailsWidget #progress_label {
+    font-size: 18px;
+    font-weight: 100;
+}
+
+ProgressDetailsWidget #log_tree {
     font-size: 12px;
     font-weight: 100;
 }
 
-#log_tree::item {
+ProgressDetailsWidget #log_tree::item {
     margin: 4px;
 }
 
 
 
+
+/* Small progress widget */
+
+ProgressWidget #frame {
+    background-color: #292929;
+    border-radius: 4px;
+}
+
+
+ProgressWidget #progress_bar {
+    border: none;
+    background-color: none;
+    margin: 3px;
+}
+
+ProgressWidget #progress_bar::chunk {
+    background-color: {{SG_HIGHLIGHT_COLOR}}; 
+}
+
+
+
+
+
+/* --------------------------------------------------------------------- */
+/* Bottom toolbar */
+/* --------------------------------------------------------------------- */
+
+#bottom_frame {
+    border-top: 2px solid rgba(20, 20, 20, 18%);
+    padding-bottom: 4px;
+}
+
+#bottom_frame QToolButton {
+    border: none;
+    padding: 4px;
+    border-radius: 2px;
+    background-color: rgba(20, 20, 20, 18%);
+}
+
+#bottom_frame QToolButton:hover {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(20, 20, 20, 30%);
+}
+
+#bottom_frame QToolButton:pressed {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(20, 20, 20, 50%);
+}

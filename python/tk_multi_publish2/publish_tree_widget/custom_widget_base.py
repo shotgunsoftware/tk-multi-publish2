@@ -11,12 +11,11 @@
 
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
-from .ui.item import Ui_Item
 
 logger = sgtk.platform.get_logger(__name__)
 
 
-class Item(QtGui.QFrame):
+class CustomTreeWidgetBase(QtGui.QFrame):
     """
     Widget representing a single item in the left hand side tree view.
     (Connected to a designer ui setup)
@@ -37,33 +36,33 @@ class Item(QtGui.QFrame):
     # status of checkbox / progress
     (
         NEUTRAL,
-        PROCESSING,
-        VALIDATION_COMPLETE,
+        VALIDATION,
+        VALIDATION_STANDALONE,
         VALIDATION_ERROR,
+        PUBLISH,
         PUBLISH_ERROR,
-        PUBLISH_COMPLETE,
-        FINALIZE_COMPLETE,
+        FINALIZE,
         FINALIZE_ERROR,
-        EMPTY
-    ) = range(9)
+    ) = range(8)
 
-    def __init__(self, parent=None):
+    def __init__(self, tree_node, parent=None):
         """
         :param parent: The parent QWidget for this control
         """
-        QtGui.QFrame.__init__(self, parent)
+        super(CustomTreeWidgetBase, self).__init__(parent)
+        self._tree_node = tree_node
 
-        # set up the UI
-        self.ui = Ui_Item()
-        self.ui.setupUi(self)
-        self.set_status(self.NEUTRAL)
-
-    @property
-    def checkbox(self):
-        """
-        The checkbox widget associated with this item
-        """
-        return self.ui.checkbox
+        self._icon_lookup = {
+            self.NEUTRAL: None,
+            self.VALIDATION: QtGui.QPixmap(":/tk_multi_publish2/status_validate.png"),
+            self.VALIDATION_ERROR: QtGui.QPixmap(":/tk_multi_publish2/status_warning.png"),
+            self.PUBLISH: QtGui.QPixmap(":/tk_multi_publish2/status_publish.png"),
+            self.PUBLISH_ERROR: QtGui.QPixmap(":/tk_multi_publish2/status_error.png"),
+            self.FINALIZE: QtGui.QPixmap(":/tk_multi_publish2/status_success.png"),
+            self.FINALIZE_ERROR: QtGui.QPixmap(":/tk_multi_publish2/status_error.png"),
+            self.VALIDATION_STANDALONE: QtGui.QPixmap(":/tk_multi_publish2/status_success.png"),
+        }
+        self._status_icon = None
 
     @property
     def icon(self):
@@ -88,53 +87,39 @@ class Item(QtGui.QFrame):
         """
         self.ui.header.setText(title)
 
+    def set_checkbox_value(self, state):
+        """
+        Set the value of the checkbox
+        """
+        if state == QtCore.Qt.Checked:
+            self.ui.checkbox.setCheckState(QtCore.Qt.Checked)
+        elif state == QtCore.Qt.PartiallyChecked:
+            self.ui.checkbox.setCheckState(QtCore.Qt.PartiallyChecked)
+        else:
+            self.ui.checkbox.setCheckState(QtCore.Qt.Unchecked)
+
     def set_status(self, status):
         """
         Set the status for the plugin
         :param status: An integer representing on of the
             status constants defined by the class
         """
-        # reset
-        self.ui.status.show_nothing()
-        self.ui.stack.setCurrentIndex(0)
+
+        if status not in self._icon_lookup:
+            raise ValueError("Invalid icon index!")
+
+
 
         if status == self.NEUTRAL:
-            self.ui.stack.setCurrentIndex(1)
-
-        elif status == self.EMPTY:
-            pass
-
-        elif status == self.PROCESSING:
-            # gray ring
-            self.ui.status.show_dot(ring_color="#808080", fill_color=None, dotted=True)
-
-        elif status == self.VALIDATION_COMPLETE:
-            # blue ring
-            self.ui.status.show_dot(ring_color="#18A7E3", fill_color=None)
-
-        elif status == self.VALIDATION_ERROR:
-            # orange ring
-            self.ui.status.show_dot(ring_color="#FF8000", fill_color=None)
-
-        elif status == self.PUBLISH_COMPLETE:
-            # blue fill gray ring
-            self.ui.status.show_dot(ring_color="#FFF", fill_color="#18A7E3")
-
-        elif status == self.PUBLISH_ERROR:
-            # big fat red
-            self.ui.status.show_dot(ring_color="#FF0000", fill_color="#FF0000")
-
-        elif status == self.FINALIZE_COMPLETE:
-            # blue dot
-            self.ui.status.show_dot(ring_color="#18A7E3", fill_color="#18A7E3")
-
-        elif status == self.FINALIZE_ERROR:
-            # red ring blue middle
-            self.ui.status.show_dot(ring_color="#FF0000", fill_color="#18A7E3")
-
+            self.ui.status.hide()
         else:
-            raise sgtk.TankError("Invalid item status!")
-
-
+            self.ui.status.show()
+            self._status_icon = QtGui.QIcon()
+            self._status_icon.addPixmap(
+                self._icon_lookup[status],
+                QtGui.QIcon.Normal,
+                QtGui.QIcon.Off
+            )
+            self.ui.status.setIcon(self._status_icon)
 
 
