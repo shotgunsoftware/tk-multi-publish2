@@ -333,7 +333,7 @@ files you want to publish.</string>
                   </widget>
                  </item>
                  <item row="0" column="1">
-                  <widget class="QComboBox" name="comboBox"/>
+                  <widget class="QComboBox" name="item_context"/>
                  </item>
                 </layout>
                </item>

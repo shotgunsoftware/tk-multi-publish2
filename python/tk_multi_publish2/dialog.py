@@ -150,7 +150,7 @@ class AppDialog(QtGui.QWidget):
         Callback when someone types in the
         publish comments box in the overview details pane
         """
-        comments = self.ui.summary_comments.toPlainText()
+        comments = self.ui.item_comments.toPlainText()
         if not self._current_item:
             raise TankError("No current item set!")
         self._current_item.description = comments
@@ -175,7 +175,7 @@ class AppDialog(QtGui.QWidget):
 
         self.ui.item_comments.setPlainText(item.description)
         self.ui.item_thumbnail.set_thumbnail(item.thumbnail)
-        self.ui.item_context.setText(str(item.context))
+        self.ui.item_context.addItem(str(item.context))
 
         self.ui.item_settings.set_static_data(
             [(p, item.properties[p]) for p in item.properties]
