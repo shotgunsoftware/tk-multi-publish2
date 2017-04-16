@@ -17,14 +17,14 @@ SimpleShotgunModel = shotgun_model.SimpleShotgunModel
 
 
 
-class TaskWidget(QtGui.QComboBox):
+class TaskComboBox(QtGui.QComboBox):
     """
     Context setting combo box with a built in hierarchy tree
     """
 
     def __init__(self, parent):
 
-        super(TaskWidget, self).__init__(parent)
+        super(TaskComboBox, self).__init__(parent)
         self._bundle = sgtk.platform.current_bundle()
 
         self.addItem("Recent")

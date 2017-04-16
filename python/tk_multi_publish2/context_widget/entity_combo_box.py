@@ -17,14 +17,14 @@ SimpleShotgunHierarchyModel = shotgun_model.SimpleShotgunHierarchyModel
 
 
 
-class ContextWidget(QtGui.QComboBox):
+class EntityComboBox(QtGui.QComboBox):
     """
     Context setting combo box with a built in hierarchy tree
     """
 
     def __init__(self, parent):
 
-        super(ContextWidget, self).__init__(parent)
+        super(EntityComboBox, self).__init__(parent)
         self._bundle = sgtk.platform.current_bundle()
         self._skip_next_hide = False
 
@@ -69,7 +69,7 @@ class ContextWidget(QtGui.QComboBox):
 
     def showPopup(self):
         # self.setRootModelIndex(self.model().index(QDir::rootPath()))
-        super(ContextWidget, self).showPopup()
+        super(EntityComboBox, self).showPopup()
 
 
     def hidePopup(self):
@@ -78,7 +78,7 @@ class ContextWidget(QtGui.QComboBox):
         if self._skip_next_hide:
             self._skip_next_hide = False
         else:
-            super(ContextWidget, self).hidePopup()
+            super(EntityComboBox, self).hidePopup()
 
 
     def eventFilter(self, obj, event):

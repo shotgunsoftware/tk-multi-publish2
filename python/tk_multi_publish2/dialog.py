@@ -61,8 +61,8 @@ class AppDialog(QtGui.QWidget):
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
 
-        self.ui.item_context_entity.set_up(self._task_manager)
-        self.ui.item_context_task.set_up(self._task_manager)
+        self.ui.context_widget.set_up(self._task_manager)
+        self.ui.context_widget.context_changed.connect(self._on_item_context_change)
 
         # make sure the splitter expands the detail area only
         self.ui.splitter.setStretchFactor(0, 0)
@@ -106,7 +106,6 @@ class AppDialog(QtGui.QWidget):
 
         # start up our plugin manager
         self._plugin_manager = None
-
 
         # start it up
         self._refresh()
@@ -182,7 +181,8 @@ class AppDialog(QtGui.QWidget):
 
         self.ui.item_comments.setPlainText(item.description)
         self.ui.item_thumbnail.set_thumbnail(item.thumbnail)
-        self.ui.item_context_entity.addItem(str(item.context))
+
+        self.ui.context_widget.set_context(item.context)
 
         self.ui.item_settings.set_static_data(
             [(p, item.properties[p]) for p in item.properties]
@@ -418,4 +418,13 @@ class AppDialog(QtGui.QWidget):
         return number_true_return_values
 
 
+    def _on_item_context_change(self, context):
+        """
+        Fires when a new context is selected for the current item
+        """
 
+        logger.debug("Context change for %s")
+        if not self._current_item:
+            raise TankError("No current item set!")
+        self._current_item.context = context
+        self._refresh_ui()
