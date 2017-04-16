@@ -140,26 +140,32 @@ class Ui_Dialog(object):
         self.item_comments.setMinimumSize(QtCore.QSize(0, 90))
         self.item_comments.setMaximumSize(QtCore.QSize(16777215, 90))
         self.item_comments.setObjectName("item_comments")
-        self.gridLayout.addWidget(self.item_comments, 2, 1, 1, 1)
+        self.gridLayout.addWidget(self.item_comments, 3, 1, 1, 1)
         self.item_thumbnail = Thumbnail(self.details_item)
         self.item_thumbnail.setMinimumSize(QtCore.QSize(160, 90))
         self.item_thumbnail.setMaximumSize(QtCore.QSize(160, 90))
         self.item_thumbnail.setText("")
         self.item_thumbnail.setScaledContents(True)
         self.item_thumbnail.setObjectName("item_thumbnail")
-        self.gridLayout.addWidget(self.item_thumbnail, 2, 0, 1, 1)
+        self.gridLayout.addWidget(self.item_thumbnail, 3, 0, 1, 1)
         self.label_6 = QtGui.QLabel(self.details_item)
         self.label_6.setObjectName("label_6")
-        self.gridLayout.addWidget(self.label_6, 1, 1, 1, 1)
+        self.gridLayout.addWidget(self.label_6, 2, 1, 1, 1)
         self.label_2 = QtGui.QLabel(self.details_item)
         self.label_2.setObjectName("label_2")
-        self.gridLayout.addWidget(self.label_2, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.label_2, 2, 0, 1, 1)
         self.label_4 = QtGui.QLabel(self.details_item)
         self.label_4.setObjectName("label_4")
         self.gridLayout.addWidget(self.label_4, 0, 0, 1, 1)
-        self.item_context = QtGui.QComboBox(self.details_item)
-        self.item_context.setObjectName("item_context")
-        self.gridLayout.addWidget(self.item_context, 0, 1, 1, 1)
+        self.item_context_entity = ContextWidget(self.details_item)
+        self.item_context_entity.setObjectName("item_context_entity")
+        self.gridLayout.addWidget(self.item_context_entity, 0, 1, 1, 1)
+        self.item_context_task = TaskWidget(self.details_item)
+        self.item_context_task.setObjectName("item_context_task")
+        self.gridLayout.addWidget(self.item_context_task, 1, 1, 1, 1)
+        self.label_7 = QtGui.QLabel(self.details_item)
+        self.label_7.setObjectName("label_7")
+        self.gridLayout.addWidget(self.label_7, 1, 0, 1, 1)
         self.verticalLayout_6.addLayout(self.gridLayout)
         self.item_divider_3 = QtGui.QFrame(self.details_item)
         self.item_divider_3.setFrameShape(QtGui.QFrame.HLine)
@@ -311,6 +317,7 @@ class Ui_Dialog(object):
         self.label_6.setText(QtGui.QApplication.translate("Dialog", "Description", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("Dialog", "Thumbnail", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setText(QtGui.QApplication.translate("Dialog", "Link", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_7.setText(QtGui.QApplication.translate("Dialog", "Task", None, QtGui.QApplication.UnicodeUTF8))
         self.item_summary_label.setText(QtGui.QApplication.translate("Dialog", "Summary", None, QtGui.QApplication.UnicodeUTF8))
         self.item_summary.setText(QtGui.QApplication.translate("Dialog", "Summary", None, QtGui.QApplication.UnicodeUTF8))
         self.item_settings_label.setText(QtGui.QApplication.translate("Dialog", "Settings", None, QtGui.QApplication.UnicodeUTF8))
@@ -327,9 +334,11 @@ class Ui_Dialog(object):
         self.validate.setText(QtGui.QApplication.translate("Dialog", "Validate", None, QtGui.QApplication.UnicodeUTF8))
         self.publish.setText(QtGui.QApplication.translate("Dialog", "Publish", None, QtGui.QApplication.UnicodeUTF8))
 
+from ..thumbnail import Thumbnail
+from ..context_widget import ContextWidget
+from ..task_widget import TaskWidget
+from ..progress_widget import ProgressWidget
 from ..publish_tree_widget import PublishTreeWidget
 from ..settings_widget import SettingsWidget
-from ..progress_widget import ProgressWidget
 from ..drop_area import DropAreaFrame
-from ..thumbnail import Thumbnail
 from . import resources_rc

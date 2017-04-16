@@ -21,12 +21,8 @@ def show_dialog(app):
     from .dialog import AppDialog
 
     # start ui
-    w = app.engine.show_dialog("Shotgun Publish", app, AppDialog)
+    app.engine.show_dialog("Shotgun Publish", app, AppDialog)
 
-    # pop up help screen
-    if w.is_first_launch():
-        # wait a bit before show window
-        QtCore.QTimer.singleShot(1400, w.show_help_popup)
 
 
 

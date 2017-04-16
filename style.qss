@@ -133,7 +133,9 @@ DropAreaFrame[dragging="true"] {
 
 /* properties for the main tree widget */
 #items_tree {
+    padding: 2px;
     background-color: #292929;
+    alternate-background-color: #292929;
     border: none;
     margin: 0px;
     /* push the whole tree 20px to the side */
@@ -162,6 +164,17 @@ CustomTreeWidgetItem #frame {
     padding-left: 4px;
     padding-right: 4px;
     background-color: #343434;
+}
+
+/* Tree view items */
+CustomTreeWidgetSummary #frame {
+    padding: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
+    background-color: #343434;
+
+    /* make sure we push it all the way in to compensate for the -20px margin of the widget */
+    margin-left: 20px;
 }
 
 /* Tree view items */
@@ -223,6 +236,8 @@ ProgressDetailsWidget #progress_label {
 ProgressDetailsWidget #log_tree {
     font-size: 12px;
     font-weight: 100;
+    background-color: #292929;
+    alternate-background-color: #292929;
 }
 
 ProgressDetailsWidget #log_tree::item {
@@ -251,6 +266,18 @@ ProgressWidget #progress_bar::chunk {
 }
 
 
+/* --------------------------------------------------------------------- */
+/* context selection */
+/* --------------------------------------------------------------------- */
+
+#context_widget_tree {
+    font-size: 12px;
+    font-weight: 100;
+}
+
+#context_widget_tree::item {
+    margin: 4px;
+}
 
 
 

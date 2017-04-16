@@ -21,6 +21,8 @@ from .processing import PluginManager
 settings = sgtk.platform.import_framework("tk-framework-shotgunutils", "settings")
 help_screen = sgtk.platform.import_framework("tk-framework-qtwidgets", "help_screen")
 task_manager = sgtk.platform.import_framework("tk-framework-shotgunutils", "task_manager")
+shotgun_model = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_model")
+
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -58,6 +60,9 @@ class AppDialog(QtGui.QWidget):
         # set up the UI
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
+
+        self.ui.item_context_entity.set_up(self._task_manager)
+        self.ui.item_context_task.set_up(self._task_manager)
 
         # make sure the splitter expands the detail area only
         self.ui.splitter.setStretchFactor(0, 0)
@@ -101,6 +106,7 @@ class AppDialog(QtGui.QWidget):
 
         # start up our plugin manager
         self._plugin_manager = None
+
 
         # start it up
         self._refresh()
@@ -176,7 +182,7 @@ class AppDialog(QtGui.QWidget):
 
         self.ui.item_comments.setPlainText(item.description)
         self.ui.item_thumbnail.set_thumbnail(item.thumbnail)
-        self.ui.item_context.addItem(str(item.context))
+        self.ui.item_context_entity.addItem(str(item.context))
 
         self.ui.item_settings.set_static_data(
             [(p, item.properties[p]) for p in item.properties]
@@ -412,27 +418,4 @@ class AppDialog(QtGui.QWidget):
         return number_true_return_values
 
 
-    def is_first_launch(self):
-        """
-        Returns true if this is the first time UI is being launched
-        """
-        ui_launched = self._settings_manager.retrieve("ui_launched", False, self._settings_manager.SCOPE_ENGINE)
-        if ui_launched == False:
-            # store in settings that we now have launched
-            self._settings_manager.store("ui_launched", True, self._settings_manager.SCOPE_ENGINE)
-
-        return not ui_launched
-
-    def show_help_popup(self):
-        """
-        Someone clicked the show help screen action
-        """
-        app = sgtk.platform.current_bundle()
-        help_pix = [
-            QtGui.QPixmap(":/tk_multi_publish2/help_1.png"),
-            QtGui.QPixmap(":/tk_multi_publish2/help_2.png"),
-            QtGui.QPixmap(":/tk_multi_publish2/help_3.png"),
-            QtGui.QPixmap(":/tk_multi_publish2/help_4.png")
-        ]
-        help_screen.show_help_screen(self.window(), app, help_pix)
 

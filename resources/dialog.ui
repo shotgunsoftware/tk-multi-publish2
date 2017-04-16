@@ -267,7 +267,7 @@ files you want to publish.</string>
                </item>
                <item>
                 <layout class="QGridLayout" name="gridLayout">
-                 <item row="2" column="1">
+                 <item row="3" column="1">
                   <widget class="QPlainTextEdit" name="item_comments">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -289,7 +289,7 @@ files you want to publish.</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="0">
+                 <item row="3" column="0">
                   <widget class="Thumbnail" name="item_thumbnail">
                    <property name="minimumSize">
                     <size>
@@ -311,14 +311,14 @@ files you want to publish.</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="1">
+                 <item row="2" column="1">
                   <widget class="QLabel" name="label_6">
                    <property name="text">
                     <string>Description</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="0">
+                 <item row="2" column="0">
                   <widget class="QLabel" name="label_2">
                    <property name="text">
                     <string>Thumbnail</string>
@@ -333,7 +333,17 @@ files you want to publish.</string>
                   </widget>
                  </item>
                  <item row="0" column="1">
-                  <widget class="QComboBox" name="item_context"/>
+                  <widget class="ContextWidget" name="item_context_entity"/>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="TaskWidget" name="item_context_task"/>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_7">
+                   <property name="text">
+                    <string>Task</string>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </item>
@@ -654,6 +664,16 @@ files you want to publish.</string>
    <extends>QWidget</extends>
    <header>..progress_widget</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ContextWidget</class>
+   <extends>QComboBox</extends>
+   <header>..context_widget</header>
+  </customwidget>
+  <customwidget>
+   <class>TaskWidget</class>
+   <extends>QComboBox</extends>
+   <header>..task_widget</header>
   </customwidget>
  </customwidgets>
  <resources>

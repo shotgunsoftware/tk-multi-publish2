@@ -49,6 +49,7 @@ UI_PYTHON_PATH=../python/tk_multi_publish2/publish_tree_widget/ui
 build_ui item_widget
 build_ui task_widget
 build_ui context_widget
+build_ui summary_widget
 
 
 # build progress UIs:
