@@ -86,6 +86,15 @@ class Item(object):
         """
         return Item("_root", "_root", "_root", parent=None)
 
+    def remove_item(self, item):
+        """
+        Takes out the given child item from the list of children
+        """
+        new_children = []
+        for child in self._children:
+            if child != item:
+                new_children.append(child)
+        self._children = new_children
 
     def is_root(self):
         """

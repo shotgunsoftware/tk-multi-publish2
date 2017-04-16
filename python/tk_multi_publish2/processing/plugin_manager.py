@@ -70,6 +70,12 @@ class PluginManager(object):
         """
         return self._root_item.children
 
+    def remove_top_level_item(self, item):
+        """
+        Removed the given item from the list of top level items
+        """
+        self._root_item.remove_item(item)
+
     @property
     def plugins(self):
         """

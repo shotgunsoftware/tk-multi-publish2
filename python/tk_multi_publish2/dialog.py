@@ -275,8 +275,18 @@ class AppDialog(QtGui.QWidget):
         if res == QtGui.QMessageBox.Cancel:
             return
 
-        for item in self.ui.items_tree.selectedItems():
-            item.parent().removeChild(item)
+        processing_items = []
+
+        # delete from the tree
+        for tree_item in self.ui.items_tree.selectedItems():
+            processing_items.append(tree_item.item)
+            #tree_item.parent().removeChild(tree_item)
+
+        for item in processing_items:
+            self._plugin_manager.remove_top_level_item(item)
+
+        self._refresh_ui()
+
 
     def _check_all(self, checked):
         """
