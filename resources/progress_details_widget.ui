@@ -74,8 +74,11 @@
       </item>
       <item>
        <widget class="QTreeWidget" name="log_tree">
-        <property name="selectionMode">
-         <enum>QAbstractItemView::NoSelection</enum>
+        <property name="horizontalScrollMode">
+         <enum>QAbstractItemView::ScrollPerItem</enum>
+        </property>
+        <property name="uniformRowHeights">
+         <bool>true</bool>
         </property>
         <property name="wordWrap">
          <bool>true</bool>

@@ -27,6 +27,7 @@ class ProgressHandler(object):
     (PHASE_LOAD, PHASE_VALIDATE, PHASE_PUBLISH, PHASE_FINALIZE) = range(4)
 
     _PUBLISH_INSTANCE_ROLE = QtCore.Qt.UserRole + 1001
+    _NUM_ERRORS_ROLE = QtCore.Qt.UserRole + 1002
 
     def __init__(self, icon_label, status_label, progress_bar):
         """
@@ -128,6 +129,16 @@ class ProgressHandler(object):
 
         item = QtGui.QTreeWidgetItem(self._logging_parent_item)
 
+        # count the errors on the parent item
+        if self._logging_parent_item and status == self.ERROR:
+
+            self._logging_parent_item.setData(
+                0,
+                self._NUM_ERRORS_ROLE,
+                self._logging_parent_item.data(0, self._NUM_ERRORS_ROLE) + 1
+            )
+
+        # better formatting in case of errors and warnings
         if status == self.DEBUG:
             message = "Debug: %s" % message
         elif status == self.WARNING:
@@ -160,7 +171,6 @@ class ProgressHandler(object):
                 #     "callback": self._hello_world,
                 #     "args": {"foo": 123, "bar": 456}
                 # }
-
 
                 embedded_widget = QtGui.QToolButton(self._progress_details.log_tree)
                 embedded_widget.setText(action.get("label"))
@@ -219,6 +229,7 @@ class ProgressHandler(object):
         item = QtGui.QTreeWidgetItem()
         item.setText(0, text)
         item.setData(0, self._PUBLISH_INSTANCE_ROLE, publish_instance)
+        item.setData(0, self._NUM_ERRORS_ROLE, 0)
 
         if self._logging_parent_item is None:
             self._progress_details.log_tree.invisibleRootItem().addChild(item)
@@ -241,8 +252,27 @@ class ProgressHandler(object):
         Pops any active child section.
         If no child sections exist, this operation will not
         have any effect.
+
+        :returns: number of errors emitted in the subtree
         """
         logger.debug("Popping log tree hierarchy.")
+
         # top level items return None
         if self._logging_parent_item:
+            num_errors = self._logging_parent_item.data(0, self._NUM_ERRORS_ROLE)
             self._logging_parent_item = self._logging_parent_item.parent()
+
+            if self._logging_parent_item:
+                # now calculate the number of errors for this node by aggregating the
+                # error counts for all children
+                parent_errors = 0
+                for child_index in xrange(self._logging_parent_item.childCount()):
+                    child_item = self._logging_parent_item.child(child_index)
+                    parent_errors += child_item.data(0, self._NUM_ERRORS_ROLE)
+
+                self._logging_parent_item.setData(0, self._NUM_ERRORS_ROLE, parent_errors)
+
+        else:
+            num_errors = 0
+
+        return num_errors

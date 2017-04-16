@@ -217,12 +217,22 @@ class AppDialog(QtGui.QWidget):
         """
         When someone drops stuff into the publish.
         """
-        # add files and rebuild
-        #  tree
+        # add files and rebuild tree
         self._progress_handler.set_phase(self._progress_handler.PHASE_LOAD)
         self._progress_handler.push("Processing dropped files")
-        self._plugin_manager.add_external_files(files)
-        self._progress_handler.pop()
+
+        try:
+            self._plugin_manager.add_external_files(files)
+        finally:
+            num_errors = self._progress_handler.pop()
+
+        if num_errors == 0:
+            self._progress_handler.logger.info("Successfully added %d items." % len(files))
+        elif num_errors == 1:
+            self._progress_handler.logger.error("An error was reported. Please see the log for details.")
+        else:
+            self._progress_handler.logger.error("%d errors reported. Please see the log for details." % len(files))
+
         self._refresh_ui()
 
     def _refresh_ui(self):
@@ -313,7 +323,11 @@ class AppDialog(QtGui.QWidget):
         self._plugin_manager = PluginManager(self._progress_handler.logger)
         self.ui.items_tree.set_plugin_manager(self._plugin_manager)
 
-        self._progress_handler.pop()
+        num_errors = self._progress_handler.pop()
+        if num_errors == 0:
+            self._progress_handler.logger.info("Successfully initialized publisher.")
+        else:
+            self._progress_handler.logger.error("Errors reported. See log for details.")
 
 
     def _prepare_tree(self, number_phases):
