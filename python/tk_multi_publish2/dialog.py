@@ -254,6 +254,27 @@ class AppDialog(QtGui.QWidget):
         """
         Delete all selected items
         """
+        # check with the user
+
+        num_items = len(self.ui.items_tree.selectedItems())
+
+        if num_items == 0:
+            return
+
+        if num_items > 1:
+            msg = "This will remove %d items from the list." % num_items
+        else:
+            msg = "Remove the item from the list?"
+
+        res = QtGui.QMessageBox.question(
+            self,
+            "Remove items?",
+            msg,
+            QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel)
+
+        if res == QtGui.QMessageBox.Cancel:
+            return
+
         for item in self.ui.items_tree.selectedItems():
             item.parent().removeChild(item)
 
