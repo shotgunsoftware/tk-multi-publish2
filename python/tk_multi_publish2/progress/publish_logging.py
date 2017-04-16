@@ -35,6 +35,13 @@ class PublishLogHandler(logging.Handler):
 
         :param record: std log record to handle logging for
         """
+        if hasattr(record, "action_button"):
+            # render an action button in the UI
+            action = record.action_button
+            action["type"] = "button"
+        else:
+            action = None
+
         # for simplicity, add a 'basename' property to the record to
         # only contain the leaf part of the logging name
         # sgtk.env.asset.tk-maya -> tk-maya
@@ -51,7 +58,7 @@ class PublishLogHandler(logging.Handler):
             status = self._progress_widget.INFO
 
         # request that the log manager processes the message
-        self._progress_widget.process_log_message(record.msg, status)
+        self._progress_widget.process_log_message(record.msg, status, action)
 
 
 class PublishLogWrapper(object):

@@ -42,6 +42,9 @@ class ProgressDetailsWidget(QtGui.QWidget):
 
         self.ui.close.clicked.connect(self.toggle)
 
+        # make sure the first column takes up as much space as poss.
+        self.ui.log_tree.header().setResizeMode(0, QtGui.QHeaderView.Stretch)
+
         self.hide()
 
 

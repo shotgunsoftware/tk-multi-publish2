@@ -105,7 +105,7 @@ class ProgressHandler(object):
             self._progress_details.log_tree.setCurrentItem(tree_node)
 
 
-    def process_log_message(self, message, status):
+    def process_log_message(self, message, status, action):
         """
         Called from the internal logger
 
@@ -150,6 +150,33 @@ class ProgressHandler(object):
             item.setForeground(0, self._error_brush)
         elif status == self.DEBUG:
             item.setForeground(0, self._debug_brush)
+
+        # see if an action is attached
+        if action:
+            logger.debug("Rendering log action %s" % action)
+            if action["type"] == "button":
+                # {
+                #     "label": "Hello, world!",
+                #     "callback": self._hello_world,
+                #     "args": {"foo": 123, "bar": 456}
+                # }
+
+
+                embedded_widget = QtGui.QToolButton(self._progress_details.log_tree)
+                embedded_widget.setText(action.get("label"))
+                if action.get("tooltip"):
+                    embedded_widget.setToolTip(action.get("tooltip"))
+
+
+                embedded_widget.clicked.connect(lambda: action["callback"](**action["args"]))
+                self._progress_details.log_tree.setItemWidget(
+                    item,
+                    1,
+                    embedded_widget
+                )
+
+            else:
+                logger.error("detected unsupported action syntax %s" % action)
 
         self._progress_details.log_tree.setCurrentItem(item)
 
