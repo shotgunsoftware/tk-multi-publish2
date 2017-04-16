@@ -76,6 +76,10 @@ class Plugin(object):
             # plugin does not have an icon
             pass
 
+        # load default pixmap if hook doesn't define one
+        if pixmap is None:
+            pixmap = QtGui.QPixmap(":/tk_multi_publish2/item.png")
+
         return pixmap
 
     def _validate_and_resolve_config(self):
@@ -175,7 +179,7 @@ class Plugin(object):
     @property
     def icon(self):
         """
-        The associated icon, as a pixmap.
+        The associated icon, as a pixmap, or None if no pixmap exists.
         """
         return self._icon_pixmap
 

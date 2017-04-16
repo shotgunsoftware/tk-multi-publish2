@@ -285,14 +285,15 @@ class Item(object):
         The icon is a small square image used to represent the item visually
 
         If no icon has been defined for this node, the parent
-        icon is returned, or None if this doesn't exist
+        icon is returned, or a default one if not defined
         """
         if self._icon_pixmap:
             return self._icon_pixmap
         elif self.parent:
             return self.parent.icon_pixmap
         else:
-            return None
+            # return default
+            return QtGui.QPixmap(":/tk_multi_publish2/item.png")
 
     def set_icon_from_path(self, path):
         """
