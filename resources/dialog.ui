@@ -267,28 +267,6 @@ files you want to publish.</string>
                </item>
                <item>
                 <layout class="QGridLayout" name="gridLayout">
-                 <item row="3" column="1">
-                  <widget class="QPlainTextEdit" name="item_comments">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>90</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>16777215</width>
-                     <height>90</height>
-                    </size>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="3" column="0">
                   <widget class="Thumbnail" name="item_thumbnail">
                    <property name="minimumSize">
@@ -335,13 +313,61 @@ files you want to publish.</string>
                  <item row="0" column="1">
                   <widget class="ContextWidget" name="item_context_entity"/>
                  </item>
-                 <item row="1" column="1">
-                  <widget class="TaskWidget" name="item_context_task"/>
-                 </item>
                  <item row="1" column="0">
                   <widget class="QLabel" name="label_7">
                    <property name="text">
                     <string>Task</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="TaskWidget" name="item_context_task"/>
+                 </item>
+                 <item row="3" column="1" colspan="2">
+                  <widget class="QPlainTextEdit" name="item_comments">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>90</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>90</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QToolButton" name="item_favorites">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="resources.qrc">
+                     <normaloff>:/tk_multi_publish2/star.png</normaloff>:/tk_multi_publish2/star.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>20</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                   <property name="popupMode">
+                    <enum>QToolButton::InstantPopup</enum>
                    </property>
                   </widget>
                  </item>
