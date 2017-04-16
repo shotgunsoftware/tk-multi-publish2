@@ -85,6 +85,9 @@
       </item>
       <item>
        <widget class="QToolButton" name="status">
+        <property name="toolTip">
+         <string>Click for details</string>
+        </property>
         <property name="text">
          <string>...</string>
         </property>

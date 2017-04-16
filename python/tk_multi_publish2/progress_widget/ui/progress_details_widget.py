@@ -51,5 +51,6 @@ class Ui_ProgressDetailsWidget(object):
     def retranslateUi(self, ProgressDetailsWidget):
         ProgressDetailsWidget.setWindowTitle(QtGui.QApplication.translate("ProgressDetailsWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
         self.progress_label.setText(QtGui.QApplication.translate("ProgressDetailsWidget", "Progress Details", None, QtGui.QApplication.UnicodeUTF8))
+        self.close.setToolTip(QtGui.QApplication.translate("ProgressDetailsWidget", "Close", None, QtGui.QApplication.UnicodeUTF8))
 
 from . import resources_rc

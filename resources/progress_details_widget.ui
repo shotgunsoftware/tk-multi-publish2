@@ -52,6 +52,9 @@
             <height>30</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>Close</string>
+          </property>
           <property name="text">
            <string/>
           </property>

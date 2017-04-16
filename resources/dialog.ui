@@ -281,6 +281,9 @@ files you want to publish.</string>
                      <height>90</height>
                     </size>
                    </property>
+                   <property name="toolTip">
+                    <string>Click to take a screenshot.</string>
+                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -352,6 +355,9 @@ files you want to publish.</string>
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
+                   </property>
+                   <property name="toolTip">
+                    <string>Recent tasks and your assignments</string>
                    </property>
                    <property name="text">
                     <string/>
