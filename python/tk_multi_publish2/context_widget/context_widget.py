@@ -35,7 +35,6 @@ class ContextWidget(QtGui.QWidget):
 
         self._bundle = sgtk.platform.current_bundle()
 
-
         self._grid_layout = QtGui.QGridLayout(self)
         self._grid_layout.setContentsMargins(4, 4, 4, 4)
         self._grid_layout.setSpacing(4)
@@ -69,6 +68,7 @@ class ContextWidget(QtGui.QWidget):
         self._favorites_button.clicked.connect(self._test)
 
 
+
     def set_up(self, task_manager):
         """
         Does the post-init setup of the widget
@@ -83,6 +83,11 @@ class ContextWidget(QtGui.QWidget):
         Register a context with the widget
         """
         logger.debug("Setting up %s for context %s" % (self, context))
+
+        entity = context.entity or context.project or None
+        self._entity_combo_box.set_entity(entity)
+
+        self._task_combo_box.set_task(context.task)
 
     def _test(self):
 

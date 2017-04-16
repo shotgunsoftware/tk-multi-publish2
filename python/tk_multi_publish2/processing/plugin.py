@@ -214,14 +214,20 @@ class Plugin(object):
         :param item: Item to analyze
         :return: True if validation passed, False otherwise.
         """
+        status = False
         try:
-            return self._plugin.validate(self._logger, settings, item)
+            status = self._plugin.validate(self._logger, settings, item)
         except Exception, e:
             self._logger.exception("Error Validating: %s" % e)
             raise
         finally:
             # give qt a chance to do stuff
             QtCore.QCoreApplication.processEvents()
+
+        if status:
+            self._logger.info("Validation successful!")
+
+        return status
 
     def run_publish(self, settings, item):
         """
@@ -236,6 +242,7 @@ class Plugin(object):
             self._logger.exception("Error Publishing: %s" % e)
             raise
         finally:
+            self._logger.info("Publish complete!")
             # give qt a chance to do stuff
             QtCore.QCoreApplication.processEvents()
 
@@ -252,6 +259,7 @@ class Plugin(object):
             self._logger.exception("Error finalizing: %s" % e)
             raise
         finally:
+            self._logger.info("Finalize complete!")
             # give qt a chance to do stuff
             QtCore.QCoreApplication.processEvents()
 

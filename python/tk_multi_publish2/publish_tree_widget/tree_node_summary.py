@@ -45,4 +45,22 @@ class TreeNodeSummary(TreeNodeBase):
     def __repr__(self):
         return "<TreeNodeSummary>"
 
+    def validate(self, standalone):
+        """
+        Perform validation
+        """
+        return True
+
+    def publish(self):
+        """
+        Perform publish
+        """
+        return True
+
+    def finalize(self):
+        """
+        Perform finalize
+        """
+        return True
+
 

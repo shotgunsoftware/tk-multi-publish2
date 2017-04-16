@@ -10,7 +10,9 @@
 
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
- 
+
+logger = sgtk.platform.get_logger(__name__)
+
 # import the shotgun_model and view modules from the shotgun utils framework
 shotgun_model = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_model")
 SimpleShotgunHierarchyModel = shotgun_model.SimpleShotgunHierarchyModel
@@ -46,12 +48,27 @@ class EntityComboBox(QtGui.QComboBox):
             bg_task_manager=task_manager
         )
 
+        if self._bundle.context.project:
+            # for a project context, show items for current project
+
+            # TODO: remove hard coded paths - instead resolve the entity via the
+            # self._bundle.shotgun.nav_search_entity() method - which currently
+            # seems broken :(
+
+            root_path = "/Project/%d" % self._bundle.context.project["id"]
+        else:
+            # show everything
+            root_path = "/"
+
+        # Show a hierarchy of published files. The rationale here is that
+        # when you are in a DCC, your primary objective is to publish files, so
+        # the hierarchy should outline items *for which files can be published.*
         published_file_entity_type = sgtk.util.get_published_file_entity_type(self._bundle.sgtk)
         seed = "%s.entity" % (published_file_entity_type,)
 
         self._context_model.load_data(
             seed,
-            path="/",
+            path=root_path,
             entity_fields={"__all__": ["code"]}
         )
 
@@ -67,14 +84,15 @@ class EntityComboBox(QtGui.QComboBox):
 
         self.view().viewport().installEventFilter(self)
 
-    def showPopup(self):
-        # self.setRootModelIndex(self.model().index(QDir::rootPath()))
-        super(EntityComboBox, self).showPopup()
+
+
+    def set_entity(self, entity):
+
+
+        pass
 
 
     def hidePopup(self):
-        #self.setRootModelIndex(self.view().currentIndex().parent())
-        #self.setCurrentIndex(self.view().currentIndex().row())
         if self._skip_next_hide:
             self._skip_next_hide = False
         else:

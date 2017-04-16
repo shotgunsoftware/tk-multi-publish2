@@ -6,14 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>909</width>
-    <height>707</height>
+    <width>798</width>
+    <height>593</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Shotgun Publish</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_7">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="margin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QStackedWidget" name="main_stack">
      <property name="currentIndex">
@@ -132,6 +138,9 @@ files you want to publish.</string>
      </widget>
      <widget class="QWidget" name="main_ui_frame">
       <layout class="QVBoxLayout" name="verticalLayout_4">
+       <property name="spacing">
+        <number>2</number>
+       </property>
        <item>
         <widget class="QSplitter" name="splitter">
          <property name="sizePolicy">
@@ -485,12 +494,18 @@ files you want to publish.</string>
         </widget>
        </item>
        <item>
-        <widget class="ProgressWidget" name="progress_widget" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+        <widget class="QProgressBar" name="progress_bar">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>10</height>
+          </size>
+         </property>
+         <property name="value">
+          <number>0</number>
+         </property>
+         <property name="textVisible">
+          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -512,7 +527,16 @@ files you want to publish.</string>
           <property name="spacing">
            <number>2</number>
           </property>
-          <property name="margin">
+          <property name="leftMargin">
+           <number>2</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>2</number>
+          </property>
+          <property name="bottomMargin">
            <number>2</number>
           </property>
           <item>
@@ -598,13 +622,54 @@ files you want to publish.</string>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>638</width>
-              <height>11</height>
+              <width>10</width>
+              <height>10</height>
              </size>
             </property>
            </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="progress_status_icon">
+            <property name="minimumSize">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="pixmap">
+             <pixmap resource="resources.qrc">:/tk_multi_publish2/status_success.png</pixmap>
+            </property>
+            <property name="scaledContents">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="ProgressStatusLabel" name="progress_message">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Progress message....</string>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QPushButton" name="validate">
@@ -653,16 +718,15 @@ files you want to publish.</string>
    <header>..publish_tree_widget</header>
   </customwidget>
   <customwidget>
-   <class>ProgressWidget</class>
-   <extends>QWidget</extends>
-   <header>..progress_widget</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>ContextWidget</class>
    <extends>QWidget</extends>
    <header>..context_widget</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ProgressStatusLabel</class>
+   <extends>QLabel</extends>
+   <header>..progress_status_label</header>
   </customwidget>
  </customwidgets>
  <resources>

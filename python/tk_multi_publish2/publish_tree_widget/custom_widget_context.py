@@ -46,7 +46,7 @@ class CustomTreeWidgetContext(CustomTreeWidgetBase):
 
         :param pixmap: Square icon pixmap to use
         """
-        logger.warning("The context widget does not support thumbnails!")
+        pass
 
     def set_status(self, status):
         """
@@ -54,7 +54,7 @@ class CustomTreeWidgetContext(CustomTreeWidgetBase):
         :param status: An integer representing on of the
             status constants defined by the class
         """
-        logger.warning("The context widget does not support status!")
+        pass
 
     def set_checkbox_value(self, state):
         pass

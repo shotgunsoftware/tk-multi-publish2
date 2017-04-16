@@ -16,6 +16,7 @@ from sgtk.platform.qt import QtCore, QtGui
 
 from .ui.dialog import Ui_Dialog
 from .processing import PluginManager
+from .progress import ProgressHandler
 
 # import frameworks
 settings = sgtk.platform.import_framework("tk-framework-shotgunutils", "settings")
@@ -107,6 +108,13 @@ class AppDialog(QtGui.QWidget):
         # start up our plugin manager
         self._plugin_manager = None
 
+        # set up progress reportin
+        self._progress_handler = ProgressHandler(
+            self.ui.progress_status_icon,
+            self.ui.progress_message,
+            self.ui.progress_bar
+        )
+
         # start it up
         self._refresh()
 
@@ -147,9 +155,7 @@ class AppDialog(QtGui.QWidget):
         Triggered when someone clicks the status icon in the tree
         """
         # make sure the progress widget is shown
-        self.ui.progress_widget.show()
-        # select item
-        self.ui.progress_widget.select_last_message(task_or_item)
+        self._progress_handler.select_last_message(task_or_item)
 
     def _on_item_comment_change(self):
         """
@@ -204,7 +210,6 @@ class AppDialog(QtGui.QWidget):
         """
         Full refresh. All existing configuration is dropped
         """
-        self.ui.progress_widget.hide()
         self._reload_plugin_scan()
         self._refresh_ui()
 
@@ -212,8 +217,12 @@ class AppDialog(QtGui.QWidget):
         """
         When someone drops stuff into the publish.
         """
-        # add files and rebuild tree
+        # add files and rebuild
+        #  tree
+        self._progress_handler.set_phase(self._progress_handler.PHASE_LOAD)
+        self._progress_handler.push("Processing dropped files")
         self._plugin_manager.add_external_files(files)
+        self._progress_handler.pop()
         self._refresh_ui()
 
     def _refresh_ui(self):
@@ -267,14 +276,16 @@ class AppDialog(QtGui.QWidget):
 
         """
         # run the hooks
+        self._progress_handler.set_phase(self._progress_handler.PHASE_LOAD)
+        self._progress_handler.push("Collecting information")
 
-        self._plugin_manager = PluginManager(self.ui.progress_widget.logger)
+        self._plugin_manager = PluginManager(self._progress_handler.logger)
         self.ui.items_tree.set_plugin_manager(self._plugin_manager)
+
+        self._progress_handler.pop()
 
 
     def _prepare_tree(self, number_phases):
-
-        self.ui.progress_widget.show()
 
         self.ui.items_tree.expandAll()
 
@@ -294,7 +305,7 @@ class AppDialog(QtGui.QWidget):
 
         total_number_nodes = _begin_process_r(parent)
         # reset progress bar
-        self.ui.progress_widget.reset_progress(total_number_nodes * number_phases)
+        self._progress_handler.reset_progress(total_number_nodes * number_phases)
 
 
     def do_validate(self, standalone=True):
@@ -307,19 +318,19 @@ class AppDialog(QtGui.QWidget):
             self._prepare_tree(number_phases=1)
 
         # inform the progress system of the current mode
-        self.ui.progress_widget.set_phase(self.ui.progress_widget.PHASE_VALIDATE)
-        self.ui.progress_widget.push("Running Validation pass")
+        self._progress_handler.set_phase(self._progress_handler.PHASE_VALIDATE)
+        self._progress_handler.push("Running validation pass")
 
         parent = self.ui.items_tree.invisibleRootItem()
         num_issues = 0
         try:
             num_issues = self._visit_tree_r(parent, lambda child: child.validate(standalone), "Validating")
         finally:
-            self.ui.progress_widget.pop()
+            self._progress_handler.pop()
             if num_issues > 0:
-                self.ui.progress_widget.logger.error("Validation Complete. %d issues reported." % num_issues)
+                self._progress_handler.logger.error("Validation Complete. %d issues reported." % num_issues)
             else:
-                self.ui.progress_widget.logger.info("Validation Complete. All checks passed.")
+                self._progress_handler.logger.info("Validation Complete. All checks passed.")
 
         return num_issues
 
@@ -342,40 +353,40 @@ class AppDialog(QtGui.QWidget):
         issues = self.do_validate(standalone=False)
 
         if issues > 0:
-            self.ui.progress_widget.logger.error("Validation errors detected. No proceeding with publish.")
+            self._progress_handler.logger.error("Validation errors detected. No proceeding with publish.")
             return
 
         # inform the progress system of the current mode
-        self.ui.progress_widget.set_phase(self.ui.progress_widget.PHASE_PUBLISH)
-        self.ui.progress_widget.push("Running publishing pass")
+        self._progress_handler.set_phase(self._progress_handler.PHASE_PUBLISH)
+        self._progress_handler.push("Running publishing pass")
 
         parent = self.ui.items_tree.invisibleRootItem()
         try:
             self._visit_tree_r(parent, lambda child: child.publish(), "Publishing")
         except Exception, e:
             # todo - design a retry setup?
-            self.ui.progress_widget.logger.error("Error while publishing. Aborting.")
+            self._progress_handler.logger.error("Error while publishing. Aborting.")
             # ensure the full error shows up in the log file
             logger.error("Finalize error stack:\n%s" % (traceback.format_exc(),))
             return
         finally:
-            self.ui.progress_widget.pop()
+            self._progress_handler.pop()
 
         # inform the progress system of the current mode
-        self.ui.progress_widget.set_phase(self.ui.progress_widget.PHASE_FINALIZE)
+        self._progress_handlerself._progress_handler.set_phase(self._progress_handler.PHASE_FINALIZE)
 
-        self.ui.progress_widget.push("Running finalizing pass")
+        self._progress_handler.push("Running finalizing pass")
         try:
             self._visit_tree_r(parent, lambda child: child.finalize(), "Finalizing")
         except Exception, e:
-            self.ui.progress_widget.logger.error("Error while finalizing. Aborting.")
+            self._progress_handler.logger.error("Error while finalizing. Aborting.")
             # ensure the full error shows up in the log file
             logger.error("Finalize error stack:\n%s" % (traceback.format_exc(),))
             return
         finally:
-            self.ui.progress_widget.pop()
+            self._progress_handler.pop()
 
-        self.ui.progress_widget.logger.info("Publish Complete!")
+        self._progress_handler.logger.info("Publish Complete!")
 
         # make the publish button say close
         self.ui.publish.setText("Close")
@@ -392,7 +403,7 @@ class AppDialog(QtGui.QWidget):
             child = parent.child(child_index)
             if child.enabled:
                 if action_name:
-                    self.ui.progress_widget.push(
+                    self._progress_handler.push(
                         "%s %s" % (action_name, child),
                         child.icon,
                         child.get_publish_instance()
@@ -404,7 +415,7 @@ class AppDialog(QtGui.QWidget):
                         number_true_return_values += 1
 
                     # kick progress bar
-                    self.ui.progress_widget.increment_progress()
+                    self._progress_handler.increment_progress()
 
                     # now process all children
                     number_true_return_values += self._visit_tree_r(
@@ -414,7 +425,7 @@ class AppDialog(QtGui.QWidget):
                     )
                 finally:
                     if action_name:
-                        self.ui.progress_widget.pop()
+                        self._progress_handler.pop()
         return number_true_return_values
 
 

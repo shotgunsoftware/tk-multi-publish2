@@ -32,3 +32,28 @@ class CustomTreeWidgetSummary(CustomTreeWidgetBase):
         self.ui = Ui_SummaryWidget()
         self.ui.setupUi(self)
 
+    @property
+    def icon(self):
+        """
+        The icon pixmap associated with this item
+        """
+        return None
+
+    def set_icon(self, pixmap):
+        """
+        Set the icon to be used
+
+        :param pixmap: Square icon pixmap to use
+        """
+        pass
+
+    def set_status(self, status):
+        """
+        Set the status for the plugin
+        :param status: An integer representing on of the
+            status constants defined by the class
+        """
+        pass
+
+    def set_checkbox_value(self, state):
+        pass

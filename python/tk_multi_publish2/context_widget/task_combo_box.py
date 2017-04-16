@@ -10,7 +10,9 @@
 
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
- 
+
+logger = sgtk.platform.get_logger(__name__)
+
 # import the shotgun_model and view modules from the shotgun utils framework
 shotgun_model = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_model")
 SimpleShotgunModel = shotgun_model.SimpleShotgunModel
@@ -66,3 +68,6 @@ class TaskComboBox(QtGui.QComboBox):
         )
 
 
+    def set_entity(self, task):
+
+        logger.debug("Set task!")

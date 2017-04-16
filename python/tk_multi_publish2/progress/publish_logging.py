@@ -68,7 +68,7 @@ class PublishLogWrapper(object):
         self._bundle = sgtk.platform.current_bundle()
 
         # set up a logger
-        full_log_path = "%s.plugins" % self._bundle.logger.name
+        full_log_path = "%s.hook" % self._bundle.logger.name
 
         self._logger = logging.getLogger(full_log_path)
 
@@ -76,10 +76,13 @@ class PublishLogWrapper(object):
 
         # and handle it in the UI
         self._logger.addHandler(self._handler)
+        logger.debug("Installed log handler for publishing @ %s" % full_log_path)
 
-        # don't spam with debug messages
-        # user can see those in console or log files.
-        self._handler.setLevel(logging.INFO)
+        # log level follows the global settings
+        if sgtk.LogManager().global_debug:
+            self._handler.setLevel(logging.DEBUG)
+        else:
+            self._handler.setLevel(logging.INFO)
 
         formatter = logging.Formatter(
             "[%(levelname)s %(basename)s] %(message)s"
