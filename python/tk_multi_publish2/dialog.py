@@ -81,8 +81,9 @@ class AppDialog(QtGui.QWidget):
 
         # buttons
         self.ui.validate.clicked.connect(self.do_validate)
-        self.ui.publish.clicked.connect(self._on_publish_click)
-        self._close_ui_on_publish_click = False
+        self.ui.publish.clicked.connect(self.do_publish)
+        self.ui.close.clicked.connect(self.close)
+        self.ui.close.hide()
 
         # settings
         self.ui.items_tree.settings_clicked.connect(self._create_task_details)
@@ -290,7 +291,6 @@ class AppDialog(QtGui.QWidget):
         # delete from the tree
         for tree_item in self.ui.items_tree.selectedItems():
             processing_items.append(tree_item.item)
-            #tree_item.parent().removeChild(tree_item)
 
         for item in processing_items:
             self._plugin_manager.remove_top_level_item(item)
@@ -379,16 +379,6 @@ class AppDialog(QtGui.QWidget):
 
         return num_issues
 
-    def _on_publish_click(self):
-        """
-        User clicked the publish/close button
-        """
-        if self._close_ui_on_publish_click:
-            #
-            self.close()
-        else:
-            self.do_publish()
-
     def do_publish(self):
         """
         Perform a full publish
@@ -433,9 +423,11 @@ class AppDialog(QtGui.QWidget):
 
         self._progress_handler.logger.info("Publish Complete!")
 
-        # make the publish button say close
-        self.ui.publish.setText("Close")
-        self._close_ui_on_publish_click = True
+        # disable stuff
+        self.ui.validate.hide()
+        self.ui.publish.hide()
+        self.ui.close.show()
+        self.ui.splitter.setEnabled(False)
 
 
     def _visit_tree_r(self, parent, action, action_name):

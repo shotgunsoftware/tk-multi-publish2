@@ -309,6 +309,9 @@ class Ui_Dialog(object):
         self.publish = QtGui.QPushButton(self.bottom_frame)
         self.publish.setObjectName("publish")
         self.horizontalLayout.addWidget(self.publish)
+        self.close = QtGui.QPushButton(self.bottom_frame)
+        self.close.setObjectName("close")
+        self.horizontalLayout.addWidget(self.close)
         self.verticalLayout_4.addWidget(self.bottom_frame)
         self.main_stack.addWidget(self.main_ui_frame)
         self.verticalLayout_7.addWidget(self.main_stack)
@@ -345,6 +348,7 @@ class Ui_Dialog(object):
         self.progress_message.setText(QtGui.QApplication.translate("Dialog", "Progress message....", None, QtGui.QApplication.UnicodeUTF8))
         self.validate.setText(QtGui.QApplication.translate("Dialog", "Validate", None, QtGui.QApplication.UnicodeUTF8))
         self.publish.setText(QtGui.QApplication.translate("Dialog", "Publish", None, QtGui.QApplication.UnicodeUTF8))
+        self.close.setText(QtGui.QApplication.translate("Dialog", "Close", None, QtGui.QApplication.UnicodeUTF8))
 
 from ..thumbnail import Thumbnail
 from ..context_widget import ContextWidget
