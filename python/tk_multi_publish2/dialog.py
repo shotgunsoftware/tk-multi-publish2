@@ -418,7 +418,7 @@ class AppDialog(QtGui.QWidget):
             self._progress_handler.pop()
 
         # inform the progress system of the current mode
-        self._progress_handlerself._progress_handler.set_phase(self._progress_handler.PHASE_FINALIZE)
+        self._progress_handler.set_phase(self._progress_handler.PHASE_FINALIZE)
 
         self._progress_handler.push("Running finalizing pass")
         try:
