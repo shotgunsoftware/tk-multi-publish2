@@ -65,9 +65,10 @@ class ContextWidget(QtGui.QWidget):
         self._grid_layout.addWidget(self._favorites_button, 1, 1, 1, 1)
 
 
-        self._favorites_button.clicked.connect(self._test)
+        self._entity_combo_box.currentIndexChanged.connect(self._on_entity_update)
+        self._task_combo_box.currentIndexChanged.connect(self._on_task_update)
 
-
+        self.setEnabled(False)
 
     def set_up(self, task_manager):
         """
@@ -75,8 +76,6 @@ class ContextWidget(QtGui.QWidget):
         """
         self._entity_combo_box.set_up(task_manager)
         self._task_combo_box.set_up(task_manager)
-
-
 
     def set_context(self, context):
         """
@@ -86,12 +85,10 @@ class ContextWidget(QtGui.QWidget):
 
         entity = context.entity or context.project or None
         self._entity_combo_box.set_entity(entity)
-
         self._task_combo_box.set_task(context.task)
 
-    def _test(self):
+    def _on_entity_update(self):
+        pass
 
-        ctx = self._bundle.sgtk.context_from_entity("Asset", 1226)
-
-
-        self.context_changed.emit(ctx)
+    def _on_task_update(self):
+        pass

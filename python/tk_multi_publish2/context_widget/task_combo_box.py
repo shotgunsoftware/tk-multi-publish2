@@ -25,24 +25,8 @@ class TaskComboBox(QtGui.QComboBox):
     """
 
     def __init__(self, parent):
-
         super(TaskComboBox, self).__init__(parent)
         self._bundle = sgtk.platform.current_bundle()
-
-        self.addItem("Recent")
-        self.addItem("Foo bar")
-        self.addItem("Foo bar")
-        self.addItem("Foo bar")
-        self.insertSeparator(self.count())
-        self.addItem("My Tasks")
-        self.addItem("Foo bar")
-        self.addItem("Foo bar")
-        self.addItem("Foo bar")
-        self.insertSeparator(self.count())
-        self.addItem("Associated Tasks")
-        self.addItem("Foo bar")
-        self.addItem("Foo bar")
-        self.addItem("Foo bar")
 
 
     def set_up(self, task_manager):
@@ -68,6 +52,6 @@ class TaskComboBox(QtGui.QComboBox):
         )
 
 
-    def set_entity(self, task):
+    def set_task(self, task):
 
         logger.debug("Set task!")

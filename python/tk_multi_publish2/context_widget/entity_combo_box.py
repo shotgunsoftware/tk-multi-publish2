@@ -88,7 +88,6 @@ class EntityComboBox(QtGui.QComboBox):
 
     def set_entity(self, entity):
 
-
         pass
 
 
