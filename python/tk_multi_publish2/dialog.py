@@ -127,6 +127,9 @@ class AppDialog(QtGui.QWidget):
         """
         logger.debug("CloseEvent Received. Begin shutting down UI.")
 
+        # deallocate loggers
+        self._progress_handler.shut_down()
+
         try:
             # shut down main threadpool
             self._task_manager.shut_down()

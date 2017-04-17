@@ -96,6 +96,12 @@ class PublishLogWrapper(object):
         )
         self._handler.setFormatter(formatter)
 
+    def shut_down(self):
+        """
+        Deallocate logging
+        """
+        self._logger.removeHandler(self._handler)
+
     @property
     def logger(self):
         """

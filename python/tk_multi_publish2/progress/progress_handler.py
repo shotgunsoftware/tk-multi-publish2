@@ -73,6 +73,13 @@ class ProgressHandler(object):
 
         self._current_phase = None
 
+    def shut_down(self):
+        """
+        Deallocate all loggers
+        """
+        logger.debug("Shutting down publish logging...")
+        self._log_wrapper.shut_down()
+
     def select_last_message(self, publish_instance):
         """
         reveals the last log entry associated with the given publish instance.
