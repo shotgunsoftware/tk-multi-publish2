@@ -148,7 +148,7 @@ class PluginManager(object):
                     task = Task.create_task(plugin, item, is_required, is_enabled)
                     self._tasks.append(task)
 
-        # TODO: need to do a cull to remove any items in the tree which do not have tasks?
+
 
     def _get_matching_items(self, item_filters, all_items):
         """

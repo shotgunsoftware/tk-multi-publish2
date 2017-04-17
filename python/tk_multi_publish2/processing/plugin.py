@@ -201,6 +201,7 @@ class Plugin(object):
             return self._plugin.accept(self._logger, self.settings, item)
         except Exception, e:
             self._logger.exception("Error running accept for %s" % self)
+            self._plugin.logger.error("Error running accept for %s" % self)
             return {"accepted": False}
         finally:
             # give qt a chance to do stuff
@@ -226,6 +227,8 @@ class Plugin(object):
 
         if status:
             self._logger.info("Validation successful!")
+        else:
+            self._logger.info("Validation failed.")
 
         return status
 
@@ -239,7 +242,7 @@ class Plugin(object):
         try:
             self._plugin.publish(self._logger, settings, item)
         except Exception, e:
-            self._logger.exception("Error Publishing: %s" % e)
+            self._logger.exception("Error publishing: %s" % e)
             raise
         finally:
             self._logger.info("Publish complete!")
