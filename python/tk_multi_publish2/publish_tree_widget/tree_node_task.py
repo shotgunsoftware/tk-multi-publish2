@@ -38,13 +38,10 @@ class TreeNodeTask(TreeNodeBase):
 
         # set up defaults based on task settings
         self._embedded_widget.set_checkbox_value(
-            QtCore.Qt.Checked if self._task.enabled else QtCore.Qt.Unchecked
+            QtCore.Qt.Checked if self._task.checked else QtCore.Qt.Unchecked
         )
 
-        if self._task.required:
-            self._embedded_widget.ui.checkbox.setEnabled(False)
-        else:
-            self._embedded_widget.ui.checkbox.setEnabled(True)
+        self._embedded_widget.ui.checkbox.setEnabled(self._task.enabled)
 
     def __repr__(self):
         return "<TreeNodeTask %s>" % str(self)

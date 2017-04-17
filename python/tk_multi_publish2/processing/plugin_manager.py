@@ -142,10 +142,25 @@ class PluginManager(object):
                 accept_data = plugin.run_accept(item)
                 if accept_data.get("accepted"):
                     # this item was accepted by the plugin!
-                    # create a task
-                    is_required = accept_data.get("required") is True
-                    is_enabled = accept_data.get("enabled") is True
-                    task = Task.create_task(plugin, item, is_required, is_enabled)
+                    # look for bools accepted/visible/enabled/checked
+
+                    # TODO ---- Implement support for this!
+                    # all things are visible by default unless stated otherwise
+                    is_visible = True
+                    if "visible" in accept_data:
+                        is_visible = accept_data["visible"]
+
+                    # all things are checked by default unless stated otherwise
+                    is_checked = True
+                    if "checked" in accept_data:
+                        is_visible = accept_data["checked"]
+
+                    # all things are enabled by default unless stated otherwise
+                    is_enabled = True
+                    if "enabled" in accept_data:
+                        is_enabled = accept_data["enabled"]
+
+                    task = Task.create_task(plugin, item, is_visible, is_enabled, is_checked)
                     self._tasks.append(task)
 
 

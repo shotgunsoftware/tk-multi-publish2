@@ -21,18 +21,20 @@ class Task(object):
     on a particular collector item.
     """
 
-    def __init__(self, plugin, item, required, enabled):
+    def __init__(self, plugin, item, visible, enabled, checked):
         """
         :param plugin: The plugin instance associated with this task
         :param item: The collector item associated with this task
-        :param bool required: Indicates that the task is required
+        :param bool visible: Indicates that the task is visible
         :param bool enabled: Indicates that the task is enabled
+        :param bool checked: Indicates that the task is checked
         """
         self._plugin = plugin
         self._item = item
         self._settings = []
+        self._visible = visible
         self._enabled = enabled
-        self._required = required
+        self._checked = checked
 
     def __repr__(self):
         """
@@ -41,17 +43,18 @@ class Task(object):
         return "<Task: %s for %s >" % (self._plugin, self._item)
 
     @classmethod
-    def create_task(cls, plugin, item, is_required, is_enabled):
+    def create_task(cls, plugin, item, is_visible, is_enabled, is_checked):
         """
         Factory method for new tasks.
 
         :param plugin: Plugin instance
         :param item: Item object
-        :param is_required: bool to indicate if this options is required
-        :param is_enabled: bool to indicate if node is enabled
+        :param is_visible: bool to indicate if this option should be shown
+        :param is_enabled: bool to indicate if node is enabled (clickable)
+        :param is_checked: bool to indicate if this node is checked
         :return: Task instance
         """
-        task = Task(plugin, item, is_required, is_enabled)
+        task = Task(plugin, item, is_visible, is_enabled, is_checked)
         plugin.add_task(task)
         item.add_task(task)
         logger.debug("Created %s" % task)
@@ -72,17 +75,24 @@ class Task(object):
         return self._plugin
 
     @property
-    def required(self):
+    def visible(self):
         """
-        Returns if this Task is required by the publishing
+        Returns if this Task should be visible in the UI.
+        Invisible tasks are still processed but not seen in the UI
         """
-        return self._required
+        return self._visible
+
+    @property
+    def checked(self):
+        """
+        Returns if this task should be turned on or off by default
+        """
+        return self._checked
 
     @property
     def enabled(self):
         """
-        Returns if this
-        @return:
+        Returns if this task's checked state can be manipulated by the user or not.
         """
         return self._enabled
 

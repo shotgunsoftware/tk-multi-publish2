@@ -195,7 +195,7 @@ class Plugin(object):
         Executes the hook accept method for the given item
 
         :param item: Item to analyze
-        :returns: dictionary with boolean keys 'accepted' and 'required'
+        :returns: dictionary with boolean keys accepted/visible/enabled/checked
         """
         try:
             return self._plugin.accept(self.settings, item)
