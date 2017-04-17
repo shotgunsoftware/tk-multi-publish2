@@ -56,12 +56,16 @@ class ProgressStatusLabel(QtGui.QLabel):
     def setText(self, message):
         # set main status message but limit it by the current width of the
         # label and only the first line
-        self.repaint()
         chopped_message = message.split("\n")[0]
-        metrics = QtGui.QFontMetrics(self.font())
-        elided_message = metrics.elidedText(
-            chopped_message,
-            QtCore.Qt.ElideRight,
-            self.width()
-        )
-        super(ProgressStatusLabel, self).setText(elided_message)
+
+        if len(chopped_message) < 100:
+            super(ProgressStatusLabel, self).setText(chopped_message)
+        else:
+            metrics = QtGui.QFontMetrics(self.font())
+
+            elided_message = metrics.elidedText(
+                chopped_message,
+                QtCore.Qt.ElideRight,
+                self.width()
+            )
+            super(ProgressStatusLabel, self).setText(elided_message)

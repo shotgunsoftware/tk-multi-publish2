@@ -673,6 +673,12 @@ files you want to publish.</string>
           </item>
           <item>
            <widget class="QPushButton" name="validate">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
              <string>Validate</string>
             </property>
@@ -680,6 +686,12 @@ files you want to publish.</string>
           </item>
           <item>
            <widget class="QPushButton" name="publish">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
              <string>Publish</string>
             </property>
@@ -687,6 +699,12 @@ files you want to publish.</string>
           </item>
           <item>
            <widget class="QPushButton" name="close">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
              <string>Close</string>
             </property>
