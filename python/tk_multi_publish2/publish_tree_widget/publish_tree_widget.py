@@ -118,7 +118,6 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         """
         Selects the first item in the tree
         """
-        print "select first item"
         # select the top item
         if self.topLevelItemCount() > 0:
             # first context item
