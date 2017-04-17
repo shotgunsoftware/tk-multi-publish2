@@ -14,12 +14,7 @@
     <file>cross.png</file>
     <file>shotgun.png</file>
     <file>item.png</file>
-    <file>reload.png</file>
-    <file>help_1.png</file>
-    <file>help_2.png</file>
-    <file>help_3.png</file>
-    <file>screenshot.png</file>
-    <file>help_4.png</file>
     <file>camera.png</file>
+      <file>star.png</file>
   </qresource>
 </RCC>

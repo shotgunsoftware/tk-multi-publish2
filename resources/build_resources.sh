@@ -49,11 +49,11 @@ UI_PYTHON_PATH=../python/tk_multi_publish2/publish_tree_widget/ui
 build_ui item_widget
 build_ui task_widget
 build_ui context_widget
+build_ui summary_widget
 
 
 # build progress UIs:
 echo "building progress interfaces..."
-UI_PYTHON_PATH=../python/tk_multi_publish2/progress_widget/ui
-build_ui progress_widget
+UI_PYTHON_PATH=../python/tk_multi_publish2/progress/ui
 build_ui progress_details_widget
 

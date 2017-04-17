@@ -59,6 +59,7 @@ class Ui_ItemWidget(object):
     def retranslateUi(self, ItemWidget):
         ItemWidget.setWindowTitle(QtGui.QApplication.translate("ItemWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
         self.header.setText(QtGui.QApplication.translate("ItemWidget", "<big>Alembic Caches</big><br>foo", None, QtGui.QApplication.UnicodeUTF8))
+        self.status.setToolTip(QtGui.QApplication.translate("ItemWidget", "Click for details", None, QtGui.QApplication.UnicodeUTF8))
         self.status.setText(QtGui.QApplication.translate("ItemWidget", "...", None, QtGui.QApplication.UnicodeUTF8))
 
 from . import resources_rc

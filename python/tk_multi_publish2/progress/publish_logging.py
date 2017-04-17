@@ -35,6 +35,13 @@ class PublishLogHandler(logging.Handler):
 
         :param record: std log record to handle logging for
         """
+        if hasattr(record, "action_button"):
+            # render an action button in the UI
+            action = record.action_button
+            action["type"] = "button"
+        else:
+            action = None
+
         # for simplicity, add a 'basename' property to the record to
         # only contain the leaf part of the logging name
         # sgtk.env.asset.tk-maya -> tk-maya
@@ -51,7 +58,7 @@ class PublishLogHandler(logging.Handler):
             status = self._progress_widget.INFO
 
         # request that the log manager processes the message
-        self._progress_widget.process_log_message(record.msg, status)
+        self._progress_widget.process_log_message(record.msg, status, action)
 
 
 class PublishLogWrapper(object):
@@ -68,7 +75,7 @@ class PublishLogWrapper(object):
         self._bundle = sgtk.platform.current_bundle()
 
         # set up a logger
-        full_log_path = "%s.plugins" % self._bundle.logger.name
+        full_log_path = "%s.hook" % self._bundle.logger.name
 
         self._logger = logging.getLogger(full_log_path)
 
@@ -76,10 +83,13 @@ class PublishLogWrapper(object):
 
         # and handle it in the UI
         self._logger.addHandler(self._handler)
+        logger.debug("Installed log handler for publishing @ %s" % full_log_path)
 
-        # don't spam with debug messages
-        # user can see those in console or log files.
-        self._handler.setLevel(logging.INFO)
+        # log level follows the global settings
+        if sgtk.LogManager().global_debug:
+            self._handler.setLevel(logging.DEBUG)
+        else:
+            self._handler.setLevel(logging.INFO)
 
         formatter = logging.Formatter(
             "[%(levelname)s %(basename)s] %(message)s"

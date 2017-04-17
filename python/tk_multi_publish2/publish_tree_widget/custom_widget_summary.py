@@ -11,26 +11,25 @@
 
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
-from .ui.context_widget import Ui_ContextWidget
+from .ui.summary_widget import Ui_SummaryWidget
 from .custom_widget_base import CustomTreeWidgetBase
-
 
 logger = sgtk.platform.get_logger(__name__)
 
 
-class CustomTreeWidgetContext(CustomTreeWidgetBase):
+class CustomTreeWidgetSummary(CustomTreeWidgetBase):
     """
-    Context display widget
+    Widget representing the summary of all items
     """
 
     def __init__(self, tree_node, parent=None):
         """
         :param parent: The parent QWidget for this control
         """
-        super(CustomTreeWidgetContext, self).__init__(tree_node, parent)
+        super(CustomTreeWidgetSummary, self).__init__(tree_node, parent)
 
         # set up the UI
-        self.ui = Ui_ContextWidget()
+        self.ui = Ui_SummaryWidget()
         self.ui.setupUi(self)
 
     @property

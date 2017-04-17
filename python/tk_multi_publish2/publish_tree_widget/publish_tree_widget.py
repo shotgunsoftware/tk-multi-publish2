@@ -15,6 +15,7 @@ from sgtk.platform.qt import QtCore, QtGui
 from .tree_node_context import TreeNodeContext
 from .tree_node_task import TreeNodeTask
 from .tree_node_item import TreeNodeItem, TopLevelTreeNodeItem
+from .tree_node_summary import TreeNodeSummary
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -92,14 +93,18 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         """
         Rebuilds the tree
         """
+        logger.debug("Building tree.")
+        self.clear()
+
+        # add summary
+        #summary = TreeNodeSummary(self)
+        #self.addTopLevelItem(summary)
 
         # group items by context
         items_by_context = collections.defaultdict(list)
         for item in self._plugin_manager.top_level_items:
             items_by_context[item.context].append(item)
 
-        logger.debug("Building tree.")
-        self.clear()
 
         for (context, items) in items_by_context.iteritems():
             context_item = TreeNodeContext(context, self)
@@ -113,7 +118,6 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         """
         Selects the first item in the tree
         """
-        print "select first item"
         # select the top item
         if self.topLevelItemCount() > 0:
             # first context item

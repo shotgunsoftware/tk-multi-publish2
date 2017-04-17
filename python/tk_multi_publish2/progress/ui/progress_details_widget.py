@@ -39,9 +39,15 @@ class Ui_ProgressDetailsWidget(object):
         self.horizontalLayout.addWidget(self.close)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
         self.log_tree = QtGui.QTreeWidget(self.progress_frame)
+        self.log_tree.setHorizontalScrollMode(QtGui.QAbstractItemView.ScrollPerItem)
+        self.log_tree.setUniformRowHeights(True)
+        self.log_tree.setWordWrap(True)
+        self.log_tree.setColumnCount(2)
         self.log_tree.setObjectName("log_tree")
         self.log_tree.headerItem().setText(0, "1")
+        self.log_tree.headerItem().setText(1, "2")
         self.log_tree.header().setVisible(False)
+        self.log_tree.header().setStretchLastSection(False)
         self.verticalLayout_2.addWidget(self.log_tree)
         self.verticalLayout.addWidget(self.progress_frame)
 
@@ -51,5 +57,6 @@ class Ui_ProgressDetailsWidget(object):
     def retranslateUi(self, ProgressDetailsWidget):
         ProgressDetailsWidget.setWindowTitle(QtGui.QApplication.translate("ProgressDetailsWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
         self.progress_label.setText(QtGui.QApplication.translate("ProgressDetailsWidget", "Progress Details", None, QtGui.QApplication.UnicodeUTF8))
+        self.close.setToolTip(QtGui.QApplication.translate("ProgressDetailsWidget", "Close", None, QtGui.QApplication.UnicodeUTF8))
 
 from . import resources_rc

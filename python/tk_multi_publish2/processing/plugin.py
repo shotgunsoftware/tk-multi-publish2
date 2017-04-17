@@ -76,6 +76,10 @@ class Plugin(object):
             # plugin does not have an icon
             pass
 
+        # load default pixmap if hook doesn't define one
+        if pixmap is None:
+            pixmap = QtGui.QPixmap(":/tk_multi_publish2/item.png")
+
         return pixmap
 
     def _validate_and_resolve_config(self):
@@ -175,7 +179,7 @@ class Plugin(object):
     @property
     def icon(self):
         """
-        The associated icon, as a pixmap.
+        The associated icon, as a pixmap, or None if no pixmap exists.
         """
         return self._icon_pixmap
 
@@ -197,6 +201,7 @@ class Plugin(object):
             return self._plugin.accept(self._logger, self.settings, item)
         except Exception, e:
             self._logger.exception("Error running accept for %s" % self)
+            self._plugin.logger.error("Error running accept for %s" % self)
             return {"accepted": False}
         finally:
             # give qt a chance to do stuff
@@ -210,14 +215,22 @@ class Plugin(object):
         :param item: Item to analyze
         :return: True if validation passed, False otherwise.
         """
+        status = False
         try:
-            return self._plugin.validate(self._logger, settings, item)
+            status = self._plugin.validate(self._logger, settings, item)
         except Exception, e:
             self._logger.exception("Error Validating: %s" % e)
             raise
         finally:
             # give qt a chance to do stuff
             QtCore.QCoreApplication.processEvents()
+
+        if status:
+            self._logger.info("Validation successful!")
+        else:
+            self._logger.info("Validation failed.")
+
+        return status
 
     def run_publish(self, settings, item):
         """
@@ -229,9 +242,10 @@ class Plugin(object):
         try:
             self._plugin.publish(self._logger, settings, item)
         except Exception, e:
-            self._logger.exception("Error Publishing: %s" % e)
+            self._logger.exception("Error publishing: %s" % e)
             raise
         finally:
+            self._logger.info("Publish complete!")
             # give qt a chance to do stuff
             QtCore.QCoreApplication.processEvents()
 
@@ -248,6 +262,7 @@ class Plugin(object):
             self._logger.exception("Error finalizing: %s" % e)
             raise
         finally:
+            self._logger.info("Finalize complete!")
             # give qt a chance to do stuff
             QtCore.QCoreApplication.processEvents()
 

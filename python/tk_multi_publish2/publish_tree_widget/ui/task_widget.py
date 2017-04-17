@@ -67,7 +67,9 @@ class Ui_TaskWidget(object):
         TaskWidget.setWindowTitle(QtGui.QApplication.translate("TaskWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
         self.checkbox.setToolTip(QtGui.QApplication.translate("TaskWidget", "hint: shift-click to toggle all items of this type", None, QtGui.QApplication.UnicodeUTF8))
         self.header.setText(QtGui.QApplication.translate("TaskWidget", "<big>Alembic Caches</big>", None, QtGui.QApplication.UnicodeUTF8))
+        self.settings.setToolTip(QtGui.QApplication.translate("TaskWidget", "Click for publish settings", None, QtGui.QApplication.UnicodeUTF8))
         self.settings.setText(QtGui.QApplication.translate("TaskWidget", "...", None, QtGui.QApplication.UnicodeUTF8))
+        self.status.setToolTip(QtGui.QApplication.translate("TaskWidget", "Click for more details", None, QtGui.QApplication.UnicodeUTF8))
         self.status.setText(QtGui.QApplication.translate("TaskWidget", "...", None, QtGui.QApplication.UnicodeUTF8))
 
 from . import resources_rc

@@ -70,6 +70,12 @@ class PluginManager(object):
         """
         return self._root_item.children
 
+    def remove_top_level_item(self, item):
+        """
+        Removed the given item from the list of top level items
+        """
+        self._root_item.remove_item(item)
+
     @property
     def plugins(self):
         """
@@ -142,7 +148,7 @@ class PluginManager(object):
                     task = Task.create_task(plugin, item, is_required, is_enabled)
                     self._tasks.append(task)
 
-        # TODO: need to do a cull to remove any items in the tree which do not have tasks?
+
 
     def _get_matching_items(self, item_filters, all_items):
         """

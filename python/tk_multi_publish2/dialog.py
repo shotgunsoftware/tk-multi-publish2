@@ -16,11 +16,14 @@ from sgtk.platform.qt import QtCore, QtGui
 
 from .ui.dialog import Ui_Dialog
 from .processing import PluginManager
+from .progress import ProgressHandler
 
 # import frameworks
 settings = sgtk.platform.import_framework("tk-framework-shotgunutils", "settings")
 help_screen = sgtk.platform.import_framework("tk-framework-qtwidgets", "help_screen")
 task_manager = sgtk.platform.import_framework("tk-framework-shotgunutils", "task_manager")
+shotgun_model = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_model")
+
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -59,6 +62,9 @@ class AppDialog(QtGui.QWidget):
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
 
+        self.ui.context_widget.set_up(self._task_manager)
+        self.ui.context_widget.context_changed.connect(self._on_item_context_change)
+
         # make sure the splitter expands the detail area only
         self.ui.splitter.setStretchFactor(0, 0)
         self.ui.splitter.setStretchFactor(1, 1)
@@ -75,8 +81,9 @@ class AppDialog(QtGui.QWidget):
 
         # buttons
         self.ui.validate.clicked.connect(self.do_validate)
-        self.ui.publish.clicked.connect(self._on_publish_click)
-        self._close_ui_on_publish_click = False
+        self.ui.publish.clicked.connect(self.do_publish)
+        self.ui.close.clicked.connect(self.close)
+        self.ui.close.hide()
 
         # settings
         self.ui.items_tree.settings_clicked.connect(self._create_task_details)
@@ -101,6 +108,13 @@ class AppDialog(QtGui.QWidget):
 
         # start up our plugin manager
         self._plugin_manager = None
+
+        # set up progress reportin
+        self._progress_handler = ProgressHandler(
+            self.ui.progress_status_icon,
+            self.ui.progress_message,
+            self.ui.progress_bar
+        )
 
         # start it up
         self._refresh()
@@ -142,9 +156,7 @@ class AppDialog(QtGui.QWidget):
         Triggered when someone clicks the status icon in the tree
         """
         # make sure the progress widget is shown
-        self.ui.progress_widget.show()
-        # select item
-        self.ui.progress_widget.select_last_message(task_or_item)
+        self._progress_handler.select_last_message(task_or_item)
 
     def _on_item_comment_change(self):
         """
@@ -176,7 +188,8 @@ class AppDialog(QtGui.QWidget):
 
         self.ui.item_comments.setPlainText(item.description)
         self.ui.item_thumbnail.set_thumbnail(item.thumbnail)
-        self.ui.item_context.addItem(str(item.context))
+
+        self.ui.context_widget.set_context(item.context)
 
         self.ui.item_settings.set_static_data(
             [(p, item.properties[p]) for p in item.properties]
@@ -198,7 +211,6 @@ class AppDialog(QtGui.QWidget):
         """
         Full refresh. All existing configuration is dropped
         """
-        self.ui.progress_widget.hide()
         self._reload_plugin_scan()
         self._refresh_ui()
 
@@ -207,7 +219,25 @@ class AppDialog(QtGui.QWidget):
         When someone drops stuff into the publish.
         """
         # add files and rebuild tree
-        self._plugin_manager.add_external_files(files)
+        self._progress_handler.set_phase(self._progress_handler.PHASE_LOAD)
+        self._progress_handler.push("Processing dropped files")
+
+        try:
+            self._plugin_manager.add_external_files(files)
+        finally:
+            num_errors = self._progress_handler.pop()
+
+        if num_errors == 0:
+            self._progress_handler.logger.info("Successfully added %d items." % len(files))
+        elif num_errors == 1:
+            self._progress_handler.logger.error("An error was reported. Please see the log for details.")
+        else:
+            self._progress_handler.logger.error("%d errors reported. Please see the log for details." % len(files))
+
+        # warn users about running in a project-only context
+        if self._bundle.context.entity is None:
+            self._progress_handler.logger.error("Please assign items a more specific work area!")
+
         self._refresh_ui()
 
     def _refresh_ui(self):
@@ -239,8 +269,38 @@ class AppDialog(QtGui.QWidget):
         """
         Delete all selected items
         """
-        for item in self.ui.items_tree.selectedItems():
-            item.parent().removeChild(item)
+        # check with the user
+
+        num_items = len(self.ui.items_tree.selectedItems())
+
+        if num_items == 0:
+            return
+
+        if num_items > 1:
+            msg = "This will remove %d items from the list." % num_items
+        else:
+            msg = "Remove the item from the list?"
+
+        res = QtGui.QMessageBox.question(
+            self,
+            "Remove items?",
+            msg,
+            QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel)
+
+        if res == QtGui.QMessageBox.Cancel:
+            return
+
+        processing_items = []
+
+        # delete from the tree
+        for tree_item in self.ui.items_tree.selectedItems():
+            processing_items.append(tree_item.item)
+
+        for item in processing_items:
+            self._plugin_manager.remove_top_level_item(item)
+
+        self._refresh_ui()
+
 
     def _check_all(self, checked):
         """
@@ -261,14 +321,24 @@ class AppDialog(QtGui.QWidget):
 
         """
         # run the hooks
+        self._progress_handler.set_phase(self._progress_handler.PHASE_LOAD)
+        self._progress_handler.push("Collecting information")
 
-        self._plugin_manager = PluginManager(self.ui.progress_widget.logger)
+        self._plugin_manager = PluginManager(self._progress_handler.logger)
         self.ui.items_tree.set_plugin_manager(self._plugin_manager)
+
+        num_errors = self._progress_handler.pop()
+        if num_errors == 0:
+            self._progress_handler.logger.info("Successfully initialized publisher.")
+        else:
+            self._progress_handler.logger.error("Errors reported. See log for details.")
+
+        # warn users about running in a project-only context
+        if self._bundle.context.entity is None:
+            self._progress_handler.logger.error("Please assign items a more specific work area!")
 
 
     def _prepare_tree(self, number_phases):
-
-        self.ui.progress_widget.show()
 
         self.ui.items_tree.expandAll()
 
@@ -288,7 +358,7 @@ class AppDialog(QtGui.QWidget):
 
         total_number_nodes = _begin_process_r(parent)
         # reset progress bar
-        self.ui.progress_widget.reset_progress(total_number_nodes * number_phases)
+        self._progress_handler.reset_progress(total_number_nodes * number_phases)
 
 
     def do_validate(self, standalone=True):
@@ -301,31 +371,21 @@ class AppDialog(QtGui.QWidget):
             self._prepare_tree(number_phases=1)
 
         # inform the progress system of the current mode
-        self.ui.progress_widget.set_phase(self.ui.progress_widget.PHASE_VALIDATE)
-        self.ui.progress_widget.push("Running Validation pass")
+        self._progress_handler.set_phase(self._progress_handler.PHASE_VALIDATE)
+        self._progress_handler.push("Running validation pass")
 
         parent = self.ui.items_tree.invisibleRootItem()
         num_issues = 0
         try:
             num_issues = self._visit_tree_r(parent, lambda child: child.validate(standalone), "Validating")
         finally:
-            self.ui.progress_widget.pop()
+            self._progress_handler.pop()
             if num_issues > 0:
-                self.ui.progress_widget.logger.error("Validation Complete. %d issues reported." % num_issues)
+                self._progress_handler.logger.error("Validation Complete. %d issues reported." % num_issues)
             else:
-                self.ui.progress_widget.logger.info("Validation Complete. All checks passed.")
+                self._progress_handler.logger.info("Validation Complete. All checks passed.")
 
         return num_issues
-
-    def _on_publish_click(self):
-        """
-        User clicked the publish/close button
-        """
-        if self._close_ui_on_publish_click:
-            #
-            self.close()
-        else:
-            self.do_publish()
 
     def do_publish(self):
         """
@@ -336,44 +396,46 @@ class AppDialog(QtGui.QWidget):
         issues = self.do_validate(standalone=False)
 
         if issues > 0:
-            self.ui.progress_widget.logger.error("Validation errors detected. No proceeding with publish.")
+            self._progress_handler.logger.error("Validation errors detected. No proceeding with publish.")
             return
 
         # inform the progress system of the current mode
-        self.ui.progress_widget.set_phase(self.ui.progress_widget.PHASE_PUBLISH)
-        self.ui.progress_widget.push("Running publishing pass")
+        self._progress_handler.set_phase(self._progress_handler.PHASE_PUBLISH)
+        self._progress_handler.push("Running publishing pass")
 
         parent = self.ui.items_tree.invisibleRootItem()
         try:
             self._visit_tree_r(parent, lambda child: child.publish(), "Publishing")
         except Exception, e:
             # todo - design a retry setup?
-            self.ui.progress_widget.logger.error("Error while publishing. Aborting.")
+            self._progress_handler.logger.error("Error while publishing. Aborting.")
             # ensure the full error shows up in the log file
             logger.error("Finalize error stack:\n%s" % (traceback.format_exc(),))
             return
         finally:
-            self.ui.progress_widget.pop()
+            self._progress_handler.pop()
 
         # inform the progress system of the current mode
-        self.ui.progress_widget.set_phase(self.ui.progress_widget.PHASE_FINALIZE)
+        self._progress_handler.set_phase(self._progress_handler.PHASE_FINALIZE)
 
-        self.ui.progress_widget.push("Running finalizing pass")
+        self._progress_handler.push("Running finalizing pass")
         try:
             self._visit_tree_r(parent, lambda child: child.finalize(), "Finalizing")
         except Exception, e:
-            self.ui.progress_widget.logger.error("Error while finalizing. Aborting.")
+            self._progress_handler.logger.error("Error while finalizing. Aborting.")
             # ensure the full error shows up in the log file
             logger.error("Finalize error stack:\n%s" % (traceback.format_exc(),))
             return
         finally:
-            self.ui.progress_widget.pop()
+            self._progress_handler.pop()
 
-        self.ui.progress_widget.logger.info("Publish Complete!")
+        self._progress_handler.logger.info("Publish Complete!")
 
-        # make the publish button say close
-        self.ui.publish.setText("Close")
-        self._close_ui_on_publish_click = True
+        # disable stuff
+        self.ui.validate.hide()
+        self.ui.publish.hide()
+        self.ui.close.show()
+        self.ui.splitter.setEnabled(False)
 
 
     def _visit_tree_r(self, parent, action, action_name):
@@ -386,7 +448,7 @@ class AppDialog(QtGui.QWidget):
             child = parent.child(child_index)
             if child.enabled:
                 if action_name:
-                    self.ui.progress_widget.push(
+                    self._progress_handler.push(
                         "%s %s" % (action_name, child),
                         child.icon,
                         child.get_publish_instance()
@@ -398,7 +460,7 @@ class AppDialog(QtGui.QWidget):
                         number_true_return_values += 1
 
                     # kick progress bar
-                    self.ui.progress_widget.increment_progress()
+                    self._progress_handler.increment_progress()
 
                     # now process all children
                     number_true_return_values += self._visit_tree_r(
@@ -408,31 +470,17 @@ class AppDialog(QtGui.QWidget):
                     )
                 finally:
                     if action_name:
-                        self.ui.progress_widget.pop()
+                        self._progress_handler.pop()
         return number_true_return_values
 
 
-    def is_first_launch(self):
+    def _on_item_context_change(self, context):
         """
-        Returns true if this is the first time UI is being launched
+        Fires when a new context is selected for the current item
         """
-        ui_launched = self._settings_manager.retrieve("ui_launched", False, self._settings_manager.SCOPE_ENGINE)
-        if ui_launched == False:
-            # store in settings that we now have launched
-            self._settings_manager.store("ui_launched", True, self._settings_manager.SCOPE_ENGINE)
 
-        return not ui_launched
-
-    def show_help_popup(self):
-        """
-        Someone clicked the show help screen action
-        """
-        app = sgtk.platform.current_bundle()
-        help_pix = [
-            QtGui.QPixmap(":/tk_multi_publish2/help_1.png"),
-            QtGui.QPixmap(":/tk_multi_publish2/help_2.png"),
-            QtGui.QPixmap(":/tk_multi_publish2/help_3.png"),
-            QtGui.QPixmap(":/tk_multi_publish2/help_4.png")
-        ]
-        help_screen.show_help_screen(self.window(), app, help_pix)
-
+        logger.debug("Context change for %s")
+        if not self._current_item:
+            raise TankError("No current item set!")
+        self._current_item.context = context
+        self._refresh_ui()

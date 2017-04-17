@@ -86,6 +86,15 @@ class Item(object):
         """
         return Item("_root", "_root", "_root", parent=None)
 
+    def remove_item(self, item):
+        """
+        Takes out the given child item from the list of children
+        """
+        new_children = []
+        for child in self._children:
+            if child != item:
+                new_children.append(child)
+        self._children = new_children
 
     def is_root(self):
         """
@@ -285,14 +294,15 @@ class Item(object):
         The icon is a small square image used to represent the item visually
 
         If no icon has been defined for this node, the parent
-        icon is returned, or None if this doesn't exist
+        icon is returned, or a default one if not defined
         """
         if self._icon_pixmap:
             return self._icon_pixmap
         elif self.parent:
             return self.parent.icon_pixmap
         else:
-            return None
+            # return default
+            return QtGui.QPixmap(":/tk_multi_publish2/item.png")
 
     def set_icon_from_path(self, path):
         """

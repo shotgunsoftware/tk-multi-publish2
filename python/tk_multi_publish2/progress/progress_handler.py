@@ -12,57 +12,62 @@
 from sgtk.platform.qt import QtCore, QtGui
 import sgtk
 
-from .ui.progress_widget import Ui_ProgressWidget
 from .progress_details_widget import ProgressDetailsWidget
 from .publish_logging import PublishLogWrapper
 
 logger = sgtk.platform.get_logger(__name__)
 
-class ProgressWidget(QtGui.QWidget):
+class ProgressHandler(object):
     """
     Progress reporting and logging
     """
 
     (INFO, ERROR, DEBUG, WARNING) = range(4)
 
-    (PHASE_VALIDATE, PHASE_PUBLISH, PHASE_FINALIZE) = range(3)
+    (PHASE_LOAD, PHASE_VALIDATE, PHASE_PUBLISH, PHASE_FINALIZE) = range(4)
 
     _PUBLISH_INSTANCE_ROLE = QtCore.Qt.UserRole + 1001
+    _NUM_ERRORS_ROLE = QtCore.Qt.UserRole + 1002
 
-    def __init__(self, parent):
+    def __init__(self, icon_label, status_label, progress_bar):
         """
         :param parent: The model parent.
         :type parent: :class:`~PySide.QtGui.QObject`
         """
-        super(ProgressWidget, self).__init__(parent)
+        super(ProgressHandler, self).__init__()
+
+        self._icon_label = icon_label
+        self._status_label = status_label
+        self._progress_bar = progress_bar
 
         self._icon_lookup = {
+            self.PHASE_LOAD: QtGui.QPixmap(":/tk_multi_publish2/status_load.png"),
             self.PHASE_VALIDATE: QtGui.QPixmap(":/tk_multi_publish2/status_validate.png"),
             self.PHASE_PUBLISH: QtGui.QPixmap(":/tk_multi_publish2/status_publish.png"),
             self.PHASE_FINALIZE: QtGui.QPixmap(":/tk_multi_publish2/status_success.png"),
         }
 
         self._icon_error_lookup = {
+            self.PHASE_LOAD: QtGui.QPixmap(":/tk_multi_publish2/status_warning.png"),
             self.PHASE_VALIDATE: QtGui.QPixmap(":/tk_multi_publish2/status_warning.png"),
             self.PHASE_PUBLISH: QtGui.QPixmap(":/tk_multi_publish2/status_error.png"),
             self.PHASE_FINALIZE: QtGui.QPixmap(":/tk_multi_publish2/status_error.png"),
         }
 
-        self._debug_brush = QtGui.QBrush(QtGui.QColor("#F57209"))  # green
+
+        self._debug_brush = QtGui.QBrush(QtGui.QColor("#05AB6C"))  # green
         self._warning_brush = QtGui.QBrush(QtGui.QColor("#F57209"))  # orange
         self._error_brush = QtGui.QBrush(QtGui.QColor("#FF2D5B"))  # red
 
-        # set up the UI
-        self.ui = Ui_ProgressWidget()
-        self.ui.setupUi(self)
 
         # parent our progress widget overlay
-        self._progress_details = ProgressDetailsWidget(self, self.parent())
+        self._progress_details = ProgressDetailsWidget(self._progress_bar, self._progress_bar.parent())
+
+        # clicking on the log toggles the logging window
+        self._status_label.clicked.connect(self._progress_details.toggle)
 
         # set up our log dispatch
         self._log_wrapper = PublishLogWrapper(self)
-
-        self.ui.details_toggle.clicked.connect(self._progress_details.toggle)
 
         self._logging_parent_item = None  # none means root
 
@@ -101,10 +106,7 @@ class ProgressWidget(QtGui.QWidget):
             self._progress_details.log_tree.setCurrentItem(tree_node)
 
 
-
-
-
-    def process_log_message(self, message, status):
+    def process_log_message(self, message, status, action):
         """
         Called from the internal logger
 
@@ -113,8 +115,7 @@ class ProgressWidget(QtGui.QWidget):
         @return:
         """
 
-        # set main status message
-        self.ui.message.setText(message)
+        self._status_label.setText(message)
 
         # set phase icon in logger
         if self._current_phase is None:
@@ -124,10 +125,29 @@ class ProgressWidget(QtGui.QWidget):
         else:
             icon = self._icon_error_lookup[self._current_phase]
 
-        self.ui.status_icon.setPixmap(icon)
+        self._icon_label.setPixmap(icon)
 
         item = QtGui.QTreeWidgetItem(self._logging_parent_item)
+
+        # count the errors on the parent item
+        if self._logging_parent_item and status == self.ERROR:
+
+            self._logging_parent_item.setData(
+                0,
+                self._NUM_ERRORS_ROLE,
+                self._logging_parent_item.data(0, self._NUM_ERRORS_ROLE) + 1
+            )
+
+        # better formatting in case of errors and warnings
+        if status == self.DEBUG:
+            message = "Debug: %s" % message
+        elif status == self.WARNING:
+            message = "Warning: %s" % message
+
         item.setText(0, message)
+        item.setToolTip(0, message)
+        item.setIcon(0, icon)
+
         if self._logging_parent_item:
             self._logging_parent_item.addChild(item)
         else:
@@ -141,6 +161,32 @@ class ProgressWidget(QtGui.QWidget):
             item.setForeground(0, self._error_brush)
         elif status == self.DEBUG:
             item.setForeground(0, self._debug_brush)
+
+        # see if an action is attached
+        if action:
+            logger.debug("Rendering log action %s" % action)
+            if action["type"] == "button":
+                # {
+                #     "label": "Hello, world!",
+                #     "callback": self._hello_world,
+                #     "args": {"foo": 123, "bar": 456}
+                # }
+
+                embedded_widget = QtGui.QToolButton(self._progress_details.log_tree)
+                embedded_widget.setText(action.get("label"))
+                if action.get("tooltip"):
+                    embedded_widget.setToolTip(action.get("tooltip"))
+
+
+                embedded_widget.clicked.connect(lambda: action["callback"](**action["args"]))
+                self._progress_details.log_tree.setItemWidget(
+                    item,
+                    1,
+                    embedded_widget
+                )
+
+            else:
+                logger.error("detected unsupported action syntax %s" % action)
 
         self._progress_details.log_tree.setCurrentItem(item)
 
@@ -158,16 +204,14 @@ class ProgressWidget(QtGui.QWidget):
 
     def reset_progress(self, max_items):
         logger.debug("Resetting progress bar. Number of items: %s" % max_items)
-        self.ui.progress_bar.setMaximum(max_items)
-        self.ui.progress_bar.reset()
-        self.ui.progress_bar.setValue(0)
-        # clear tree
-        self._progress_details.log_tree.clear()
+        self._progress_bar.setMaximum(max_items)
+        self._progress_bar.reset()
+        self._progress_bar.setValue(0)
 
     def increment_progress(self):
-        progress = self.ui.progress_bar.value() + 1
+        progress = self._progress_bar.value() + 1
         logger.debug("Setting progress to %s" % progress)
-        self.ui.progress_bar.setValue(progress)
+        self._progress_bar.setValue(progress)
 
     def push(self, text, icon=None, publish_instance=None):
         """
@@ -178,9 +222,14 @@ class ProgressWidget(QtGui.QWidget):
         :param icon: QIcon for the entry
         :param publish_instance: item or task associated with this level.
         """
+        logger.debug("Pushing subsection to log tree: %s" % text)
+
+        self._status_label.setText(text)
+
         item = QtGui.QTreeWidgetItem()
         item.setText(0, text)
         item.setData(0, self._PUBLISH_INSTANCE_ROLE, publish_instance)
+        item.setData(0, self._NUM_ERRORS_ROLE, 0)
 
         if self._logging_parent_item is None:
             self._progress_details.log_tree.invisibleRootItem().addChild(item)
@@ -189,6 +238,11 @@ class ProgressWidget(QtGui.QWidget):
 
         if icon:
             item.setIcon(0, icon)
+            self._icon_label.setPixmap(icon)
+        elif self._current_phase:
+            std_icon = self._icon_lookup[self._current_phase]
+            item.setIcon(0, std_icon)
+            self._icon_label.setPixmap(std_icon)
 
         self._progress_details.log_tree.setCurrentItem(item)
         self._logging_parent_item = item
@@ -198,7 +252,27 @@ class ProgressWidget(QtGui.QWidget):
         Pops any active child section.
         If no child sections exist, this operation will not
         have any effect.
+
+        :returns: number of errors emitted in the subtree
         """
+        logger.debug("Popping log tree hierarchy.")
+
         # top level items return None
         if self._logging_parent_item:
+            num_errors = self._logging_parent_item.data(0, self._NUM_ERRORS_ROLE)
             self._logging_parent_item = self._logging_parent_item.parent()
+
+            if self._logging_parent_item:
+                # now calculate the number of errors for this node by aggregating the
+                # error counts for all children
+                parent_errors = 0
+                for child_index in xrange(self._logging_parent_item.childCount()):
+                    child_item = self._logging_parent_item.child(child_index)
+                    parent_errors += child_item.data(0, self._NUM_ERRORS_ROLE)
+
+                self._logging_parent_item.setData(0, self._NUM_ERRORS_ROLE, parent_errors)
+
+        else:
+            num_errors = 0
+
+        return num_errors

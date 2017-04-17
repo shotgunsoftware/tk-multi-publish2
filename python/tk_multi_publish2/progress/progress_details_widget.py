@@ -28,6 +28,8 @@ class ProgressDetailsWidget(QtGui.QWidget):
         """
         super(ProgressDetailsWidget, self).__init__(parent)
 
+        self._bundle = sgtk.platform.current_bundle()
+
         # set up the UI
         self.ui = Ui_ProgressDetailsWidget()
         self.ui.setupUi(self)
@@ -41,6 +43,13 @@ class ProgressDetailsWidget(QtGui.QWidget):
         parent.installEventFilter(filter)
 
         self.ui.close.clicked.connect(self.toggle)
+
+        # make sure the first column takes up as much space as poss.
+        if self._bundle.engine.has_qt5:
+            # see http://doc.qt.io/qt-5/qheaderview-obsolete.html#setResizeMode
+            self.ui.log_tree.header().setSectionResizeMode(0, QtGui.QHeaderView.Stretch)
+        else:
+            self.ui.log_tree.header().setResizeMode(0, QtGui.QHeaderView.Stretch)
 
         self.hide()
 
