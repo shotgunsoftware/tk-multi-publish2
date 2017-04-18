@@ -195,10 +195,10 @@ class Plugin(object):
         Executes the hook accept method for the given item
 
         :param item: Item to analyze
-        :returns: dictionary with boolean keys 'accepted' and 'required'
+        :returns: dictionary with boolean keys accepted/visible/enabled/checked
         """
         try:
-            return self._plugin.accept(self._logger, self.settings, item)
+            return self._plugin.accept(self.settings, item)
         except Exception, e:
             self._logger.exception("Error running accept for %s" % self)
             self._plugin.logger.error("Error running accept for %s" % self)
@@ -217,7 +217,7 @@ class Plugin(object):
         """
         status = False
         try:
-            status = self._plugin.validate(self._logger, settings, item)
+            status = self._plugin.validate(settings, item)
         except Exception, e:
             self._logger.exception("Error Validating: %s" % e)
             raise
@@ -246,7 +246,7 @@ class Plugin(object):
         :param item: Item to analyze
         """
         try:
-            self._plugin.publish(self._logger, settings, item)
+            self._plugin.publish(settings, item)
         except Exception, e:
             self._logger.exception("Error publishing: %s" % e)
             raise
@@ -263,7 +263,7 @@ class Plugin(object):
         :param item: Item to analyze
         """
         try:
-            self._plugin.finalize(self._logger, settings, item)
+            self._plugin.finalize(settings, item)
         except Exception, e:
             self._logger.exception("Error finalizing: %s" % e)
             raise
