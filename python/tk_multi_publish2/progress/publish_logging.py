@@ -35,10 +35,24 @@ class PublishLogHandler(logging.Handler):
 
         :param record: std log record to handle logging for
         """
+
+        # look for actions attached to the record
         if hasattr(record, "action_button"):
-            # render an action button in the UI
+            # generic button
             action = record.action_button
             action["type"] = "button"
+        elif hasattr(record, "action_show_folder"):
+            # show folder in file browser
+            action = record.action_show_folder
+            action["type"] = "show_folder"
+        elif hasattr(record, "action_show_in_shotgun"):
+            # show entity in shotgun
+            action = record.action_show_in_shotgun
+            action["type"] = "show_in_shotgun"
+        elif hasattr(record, "action_show_more_info"):
+            # show additional supplied data in a popup
+            action = record.action_show_more_info
+            action["type"] = "show_more_info"
         else:
             action = None
 
