@@ -225,10 +225,16 @@ class Plugin(object):
             # give qt a chance to do stuff
             QtCore.QCoreApplication.processEvents()
 
+        # check that we are not trying to publish to a project
+        # (with no task set) or site level context
+        if item.context.project is None or (item.context.entity is None and item.context.task is None):
+            status = False
+            self._logger.error("Please link '%s' to a Shotgun object and task!" % item.name)
+
         if status:
             self._logger.info("Validation successful!")
         else:
-            self._logger.info("Validation failed.")
+            self._logger.error("Validation failed.")
 
         return status
 

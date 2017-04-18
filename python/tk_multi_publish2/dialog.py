@@ -244,10 +244,6 @@ class AppDialog(QtGui.QWidget):
         else:
             self._progress_handler.logger.error("%d errors reported. Please see the log for details." % len(files))
 
-        # warn users about running in a project-only context
-        if self._bundle.context.entity is None:
-            self._progress_handler.logger.error("Please assign items a more specific work area!")
-
         self._refresh_ui()
 
     def _refresh_ui(self):
@@ -342,10 +338,6 @@ class AppDialog(QtGui.QWidget):
             self._progress_handler.logger.info("Successfully initialized publisher.")
         else:
             self._progress_handler.logger.error("Errors reported. See log for details.")
-
-        # warn users about running in a project-only context
-        if self._bundle.context.entity is None:
-            self._progress_handler.logger.error("Please assign items a more specific work area!")
 
 
     def _prepare_tree(self, number_phases):

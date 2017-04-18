@@ -162,11 +162,14 @@ class ProgressHandler(object):
             self._progress_details.log_tree.addTopLevelItem(item)
 
         # assign color
-        if status == self.WARNING:
-            item.setForeground(0, self._warning_brush)
-        elif status == self.ERROR:
-            item.setForeground(0, self._error_brush)
-        elif status == self.DEBUG:
+        # if status == self.WARNING:
+        #     item.setForeground(0, self._warning_brush)
+        # elif status == self.ERROR:
+        #     item.setForeground(0, self._error_brush)
+        # elif status == self.DEBUG:
+        #     item.setForeground(0, self._debug_brush)
+
+        if status == self.DEBUG:
             item.setForeground(0, self._debug_brush)
 
         # see if an action is attached
