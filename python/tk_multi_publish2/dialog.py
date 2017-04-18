@@ -23,6 +23,7 @@ settings = sgtk.platform.import_framework("tk-framework-shotgunutils", "settings
 help_screen = sgtk.platform.import_framework("tk-framework-qtwidgets", "help_screen")
 task_manager = sgtk.platform.import_framework("tk-framework-shotgunutils", "task_manager")
 shotgun_model = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_model")
+shotgun_globals = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_globals")
 
 
 logger = sgtk.platform.get_logger(__name__)
@@ -55,6 +56,9 @@ class AppDialog(QtGui.QWidget):
             start_processing=True,
             max_threads=2
         )
+
+        # register the data fetcher with the global schema manager
+        shotgun_globals.register_bg_task_manager(self._task_manager)
 
         self._bundle = sgtk.platform.current_bundle()
 
@@ -126,6 +130,9 @@ class AppDialog(QtGui.QWidget):
         need to be called here.
         """
         logger.debug("CloseEvent Received. Begin shutting down UI.")
+
+        # register the data fetcher with the global schema manager
+        shotgun_globals.unregister_bg_task_manager(self._task_manager)
 
         # deallocate loggers
         self._progress_handler.shut_down()

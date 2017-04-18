@@ -350,13 +350,6 @@ files you want to publish.</string>
                 </layout>
                </item>
                <item>
-                <widget class="Line" name="item_divider_3">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item>
                 <widget class="QLabel" name="item_summary_label">
                  <property name="text">
                   <string>Summary</string>
@@ -366,14 +359,7 @@ files you want to publish.</string>
                <item>
                 <widget class="QLabel" name="item_summary">
                  <property name="text">
-                  <string>Summary</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="Line" name="item_divider_2">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
+                  <string/>
                  </property>
                 </widget>
                </item>

@@ -11,12 +11,8 @@
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
 
+from .task_model import TaskModel
 logger = sgtk.platform.get_logger(__name__)
-
-# import the shotgun_model and view modules from the shotgun utils framework
-shotgun_model = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_model")
-SimpleShotgunModel = shotgun_model.SimpleShotgunModel
-
 
 
 class TaskComboBox(QtGui.QComboBox):
@@ -28,30 +24,48 @@ class TaskComboBox(QtGui.QComboBox):
         super(TaskComboBox, self).__init__(parent)
         self._bundle = sgtk.platform.current_bundle()
 
-
     def set_up(self, task_manager):
         """
         Does the post-init setup of the widget
         """
-
-        self._model = SimpleShotgunModel(
+        # create a model to drive the combo
+        self._model = TaskModel(
             self,
             bg_task_manager=task_manager
         )
+        # make sure it's alphabetically sorted
+        self._proxy = QtGui.QSortFilterProxyModel(self)
+        self._proxy.setSourceModel(self._model)
+        self._proxy.sort(0)
+        self._proxy.setDynamicSortFilter(True)
+        self.setModel(self._proxy)
 
-        self._hierarchy_proxy = QtGui.QSortFilterProxyModel(self)
-        self._hierarchy_proxy.setSourceModel(self._model)
-        # Sort alphabetically
-        self._hierarchy_proxy.sort(0)
-        self._hierarchy_proxy.setDynamicSortFilter(True)
+    def set_task(self, entity, task):
+        """
+        Sets the task associated with this combo
+        :param dict entity: Sg dictionary with name, type and id
+        :param dict task: Sg dictionary with name, type and id
+        """
+        self._model.set_task(entity, task)
 
-        self.setModel(self._hierarchy_proxy)
+    def get_selected_task_id(self):
+        """
+        Returns the currently selected task or None
+        """
+        current_index = self.view().selectionModel().currentIndex()
 
-        self._model.load_data(
-            entity_type="Asset"
+        # get the item from the source model
+        selected_item = self._model.itemFromIndex(
+            # get the source hierarchy model index
+            self._proxy.mapToSource(current_index)
         )
+        if selected_item is None:
+            # nothing selected in combo
+            return None
 
+        sg_data = selected_item.get_sg_data()
+        if sg_data is None:
+            # the 'please select a task' item
+            return None
 
-    def set_task(self, task):
-
-        logger.debug("Set task!")
+        return selected_item.get_sg_data().get("id")
