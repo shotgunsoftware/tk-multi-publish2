@@ -55,7 +55,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
     def set_plugin_manager(self, plugin_manager):
         self._plugin_manager = plugin_manager
 
-    def _build_item_tree_r(self, item, level, tree_parent):
+    def _build_item_tree_r(self, item, enabled, level, tree_parent):
         """
         Build the tree of items
         """
@@ -63,29 +63,29 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             # orphan. Don't create it
             return None
 
-
         if level == 0:
             ui_item = TopLevelTreeNodeItem(item, tree_parent)
         else:
             ui_item = TreeNodeItem(item, tree_parent)
 
-        # pick up defaults from the plugin
-        checked = item.properties.get("default_checked", True)
-        expanded = item.properties.get("default_expanded", True)
+        # set expand state for item
+        ui_item.setExpanded(item.expanded)
 
-        ui_item.setExpanded(expanded)
-
-        if checked:
-            ui_item.set_check_state(QtCore.Qt.Checked)
-        else:
-            ui_item.set_check_state(QtCore.Qt.Unchecked)
+        # see if the node is enabled. This setting propagates down
+        enabled &= item.enabled
 
         # create children
         for task in item.tasks:
             task = TreeNodeTask(task, ui_item)
 
         for child in item.children:
-            self._build_item_tree_r(child, level+1, ui_item)
+            self._build_item_tree_r(child, enabled, level+1, ui_item)
+
+        # lastly, handle the item level check state.
+        # if the item has been marked as checked=False
+        # uncheck it now (which will affect all children)
+        if not item.checked:
+            ui_item.set_check_state(QtCore.Qt.Unchecked)
 
         return ui_item
 
@@ -111,7 +111,12 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             context_item.setExpanded(True)
             self.addTopLevelItem(context_item)
             for item in items:
-                self._build_item_tree_r(item, level=0, tree_parent=context_item)
+                self._build_item_tree_r(
+                    item,
+                    enabled=True,
+                    level=0,
+                    tree_parent=context_item
+                )
 
 
     def select_first_item(self):
