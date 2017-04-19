@@ -51,6 +51,9 @@ class Item(object):
         self._description = None
         self._created_temp_files = []
         self._bundle = sgtk.platform.current_bundle()
+        self._checked = True
+        self._enabled = True
+        self._expanded = True
 
     def __repr__(self):
         """
@@ -251,6 +254,54 @@ class Item(object):
         self._thumb_pixmap = pixmap
 
     thumbnail = property(_get_thumbnail, _set_thumbnail)
+
+    def _get_expanded(self):
+        """
+        Flag to indicate that this item's children should be expanded.
+        """
+        return self._expanded
+
+    def _set_expanded(self, expand_state):
+        # setter for expanded
+        self._expanded = expand_state
+
+    expanded = property(_get_expanded, _set_expanded)
+
+    def _get_checked(self):
+        """
+        Flag to indicate that this item should be checked by default.
+
+        Please note that the final state of the node is also affected by
+        the child tasks. Below are some examples of how this interaction
+        plays out in practice:
+
+        - If all child tasks/items return ``checked: False`` in their accept
+          method, the parent item will be unchecked, regardless
+          of the state of this property.
+
+        - If one or more child tasks return ``checked: True`` and the item
+          checked state is False, the item and all its sub-items will be
+          unchecked.
+        """
+        return self._checked
+
+    def _set_checked(self, check_state):
+        # setter for checked
+        self._checked = check_state
+
+    checked = property(_get_checked, _set_checked)
+
+    def _get_enabled(self):
+        """
+        Flag to indicate that this item and its children should be enabled.
+        """
+        return self._enabled
+
+    def _set_enabled(self, enabled):
+        # setter for enabled
+        self._enabled = enabled
+
+    enabled = property(_get_enabled, _set_enabled)
 
     def set_thumbnail_from_path(self, path):
         """
