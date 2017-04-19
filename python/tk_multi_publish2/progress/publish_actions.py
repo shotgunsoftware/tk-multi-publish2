@@ -10,7 +10,9 @@
 
 import os
 import sys
+import traceback
 import sgtk
+from sgtk.platform.qt import QtCore, QtGui
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -56,7 +58,6 @@ def show_in_shotgun(entity):
     """
 
     publisher = sgtk.platform.current_bundle()
-    engine = publisher.engine
 
     url = "%s/detail/%s/%d" % (
         publisher.sgtk.shotgun_url,
@@ -65,7 +66,6 @@ def show_in_shotgun(entity):
     )
 
     try:
-        from sgtk.platform.qt import QtCore, QtGui
         logger.debug("Opening entity url: '%s'." % (url,))
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
     except Exception, e:
@@ -82,6 +82,5 @@ def show_more_info(pixmap, message, text, color, parent):
     try:
         MoreInfoDialog(pixmap, message, text, color, parent)
     except Exception, e:
-        import traceback
         traceback.print_exc()
         logger.error("Failed to launch more info dialog. Reason: %s" % (e,))

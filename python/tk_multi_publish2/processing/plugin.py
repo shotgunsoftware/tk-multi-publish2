@@ -8,6 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import traceback
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
 from .setting import Setting
@@ -200,7 +201,6 @@ class Plugin(object):
         try:
             return self._plugin.accept(self.settings, item)
         except Exception, e:
-            import traceback
             error_msg = traceback.format_exc()
             self._logger.exception(
                 "Error running accept for %s" % self,
@@ -223,7 +223,6 @@ class Plugin(object):
         try:
             status = self._plugin.validate(settings, item)
         except Exception, e:
-            import traceback
             error_msg = traceback.format_exc()
             self._logger.exception(
                 "Error Validating: %s" % (e,),
@@ -251,7 +250,6 @@ class Plugin(object):
         try:
             self._plugin.publish(settings, item)
         except Exception, e:
-            import traceback
             error_msg = traceback.format_exc()
             self._logger.exception(
                 "Error publishing: %s" % (e,),
@@ -273,7 +271,6 @@ class Plugin(object):
         try:
             self._plugin.finalize(settings, item)
         except Exception, e:
-            import traceback
             error_msg = traceback.format_exc()
             self._logger.exception(
                 "Error finalizing: %s" % (e,),

@@ -356,14 +356,16 @@ class ProgressHandler(object):
                 action["tooltip"] = "Show additional logging info"
 
         else:
-            raise sgtk.TankError(
-                "Detected unsupported action syntax %s" % (action,))
+            logger.warning(
+                "Detected unrecognized action type: %s" % (action["type"],))
+            return
 
         # make sure the required keys are defined
         for key in ["label", "callback", "args"]:
             if key not in action:
-                raise sgtk.TankError(
+                logger.warning(
                     "Key '%s' is required for progress action." % (key,))
+                return
 
         # create the button!
         embedded_widget = QtGui.QToolButton(self._progress_details.log_tree)
