@@ -40,12 +40,7 @@ class MoreInfoDialog(QtGui.QDialog):
         # set the color of the text edit text. this allows tags like <pre> to
         # be colored as well.
         self.ui.text_edit.setStyleSheet(
-            """
-            QTextEdit {
-                color: %s;
-            }
-            """ % (color.name(),)
-        )
+            "QTextEdit {color: %s;}" % (color.name(),))
 
         # set the pixmap
         if pixmap:

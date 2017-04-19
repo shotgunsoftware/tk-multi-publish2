@@ -10,7 +10,6 @@
 
 import os
 import sys
-import traceback
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
 
@@ -82,5 +81,17 @@ def show_more_info(pixmap, message, text, color, parent):
     try:
         MoreInfoDialog(pixmap, message, text, color, parent)
     except Exception, e:
-        traceback.print_exc()
         logger.error("Failed to launch more info dialog. Reason: %s" % (e,))
+
+def open_url(url):
+    """
+    Opens the supplied url via desktop services.
+
+    :param url: The url to open
+    """
+
+    try:
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
+    except Exception, e:
+        logger.error("Failed to launch more info dialog. Reason: %s" % (e,))
+

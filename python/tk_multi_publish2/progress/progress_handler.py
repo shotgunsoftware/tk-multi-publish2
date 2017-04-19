@@ -14,7 +14,12 @@ import sgtk
 
 from .progress_details_widget import ProgressDetailsWidget
 from .publish_logging import PublishLogWrapper
-from .publish_actions import show_folder, show_in_shotgun, show_more_info
+from .publish_actions import (
+    show_folder,
+    show_in_shotgun,
+    show_more_info,
+    open_url,
+)
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -355,6 +360,26 @@ class ProgressHandler(object):
             if "tooltip" not in action:
                 action["tooltip"] = "Show additional logging info"
 
+        elif action["type"] == "open_url":
+            # A common action for opening a supplied url.
+            # example: opening documentation in a browser
+            # {
+            #     "label": "Show Docs",
+            #     "tooltip": "Show the associated documentation.",
+            #     "url": url,
+            # }
+
+            action["callback"] = open_url
+            action["args"] = dict(url=action.get("url"))
+
+            # add a label if not supplied
+            if "label" not in action:
+                action["label"] = "Open URL"
+
+            # add a tooltip if not supplied
+            if "tooltip" not in action:
+                action["tooltip"] = "Opens a url in the appropriate browser"
+
         else:
             logger.warning(
                 "Detected unrecognized action type: %s" % (action["type"],))
@@ -366,6 +391,8 @@ class ProgressHandler(object):
                 logger.warning(
                     "Key '%s' is required for progress action." % (key,))
                 return
+
+        text_color = item.foreground(0).color()
 
         # create the button!
         embedded_widget = QtGui.QToolButton(self._progress_details.log_tree)

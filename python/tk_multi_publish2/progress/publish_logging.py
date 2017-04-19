@@ -53,6 +53,10 @@ class PublishLogHandler(logging.Handler):
             # show additional supplied data in a popup
             action = record.action_show_more_info
             action["type"] = "show_more_info"
+        elif hasattr(record, "action_open_url"):
+            # open a url in a browser
+            action = record.action_open_url
+            action["type"] = "open_url"
         else:
             action = None
 
@@ -122,8 +126,3 @@ class PublishLogWrapper(object):
         The associated logger
         """
         return self._logger
-
-
-
-
-
