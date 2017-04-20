@@ -146,19 +146,13 @@ class PluginManager(object):
 
                     # TODO ---- Implement support for this!
                     # all things are visible by default unless stated otherwise
-                    is_visible = True
-                    if "visible" in accept_data:
-                        is_visible = accept_data["visible"]
+                    is_visible = accept_data.get("visible", True)
 
                     # all things are checked by default unless stated otherwise
-                    is_checked = True
-                    if "checked" in accept_data:
-                        is_visible = accept_data["checked"]
+                    is_checked = accept_data.get("checked", True)
 
                     # all things are enabled by default unless stated otherwise
-                    is_enabled = True
-                    if "enabled" in accept_data:
-                        is_enabled = accept_data["enabled"]
+                    is_enabled = accept_data.get("enabled", True)
 
                     task = Task.create_task(plugin, item, is_visible, is_enabled, is_checked)
                     self._tasks.append(task)
