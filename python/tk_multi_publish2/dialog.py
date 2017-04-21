@@ -451,7 +451,7 @@ class AppDialog(QtGui.QWidget):
             if child.enabled:
                 if action_name:
                     self._progress_handler.push(
-                        "%s %s" % (action_name, child),
+                        "%s - %s" % (action_name, child),
                         child.icon,
                         child.get_publish_instance()
                     )

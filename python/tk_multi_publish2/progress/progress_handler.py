@@ -14,8 +14,15 @@ import sgtk
 
 from .progress_details_widget import ProgressDetailsWidget
 from .publish_logging import PublishLogWrapper
+from .publish_actions import (
+    show_folder,
+    show_in_shotgun,
+    show_more_info,
+    open_url,
+)
 
 logger = sgtk.platform.get_logger(__name__)
+
 
 class ProgressHandler(object):
     """
@@ -119,10 +126,12 @@ class ProgressHandler(object):
 
         @param message:
         @param status:
+        @param action:
         @return:
         """
 
-        self._status_label.setText(message)
+        if status != self.DEBUG:
+            self._status_label.setText(message)
 
         # set phase icon in logger
         if self._current_phase is None:
@@ -172,31 +181,9 @@ class ProgressHandler(object):
         if status == self.DEBUG:
             item.setForeground(0, self._debug_brush)
 
-        # see if an action is attached
         if action:
-            logger.debug("Rendering log action %s" % action)
-            if action["type"] == "button":
-                # {
-                #     "label": "Hello, world!",
-                #     "callback": self._hello_world,
-                #     "args": {"foo": 123, "bar": 456}
-                # }
-
-                embedded_widget = QtGui.QToolButton(self._progress_details.log_tree)
-                embedded_widget.setText(action.get("label"))
-                if action.get("tooltip"):
-                    embedded_widget.setToolTip(action.get("tooltip"))
-
-
-                embedded_widget.clicked.connect(lambda: action["callback"](**action["args"]))
-                self._progress_details.log_tree.setItemWidget(
-                    item,
-                    1,
-                    embedded_widget
-                )
-
-            else:
-                logger.error("detected unsupported action syntax %s" % action)
+            # add any action button to the log item
+            self._process_action(item, action)
 
         self._progress_details.log_tree.setCurrentItem(item)
 
@@ -286,3 +273,134 @@ class ProgressHandler(object):
             num_errors = 0
 
         return num_errors
+
+    def _process_action(self, item, action):
+        """
+        Process an action attached to a record, represented by the supplied item
+
+        :param item: The item created for the record
+        :param action: The action dictionary attached to the record
+        """
+
+        logger.debug("Rendering log action %s" % action)
+        if action["type"] == "button":
+            # A generic button with a supplied callback:
+            # {
+            #     "label": "Hello, world!",
+            #     "tooltip": "This button says hello to the world."
+            #     "callback": self._hello_world,
+            #     "args": {"foo": 123, "bar": 456}
+            # }
+
+            if "args" not in action:
+                # allows plugins to not have to define args if the callback
+                # does not require them.
+                action["args"] = dict()
+
+        elif action["type"] == "show_folder":
+            # A common action for showing the folder for a supplied path in
+            # the system's file browser. The label and tooltip are optional.
+            # {
+            #     "label": "Show Publish Folder",
+            #     "tooltip": "Show the publish path in a file browser.",
+            #     "path": path
+            # }
+
+            action["callback"] = show_folder
+            action["args"] = dict(path=action.get("path"))
+
+            # add a label if not supplied
+            if "label" not in action:
+                action["label"] = "Show Folder"
+
+            # add a tooltip if not supplied
+            if "tooltip" not in action:
+                action["tooltip"] = "Reveal in the system's file browser"
+
+        elif action["type"] == "show_in_shotgun":
+            # A common action for showing an entity's detail page in Shotgun
+            # The label and tooltip are optional.
+            # {
+            #     "label": "Show Version in Shotgun",
+            #     "tooltip": "Show the uploaded version in Shotgun.",
+            #     "entity": entity
+            # }
+
+            action["callback"] = show_in_shotgun
+            action["args"] = dict(entity=action.get("entity"))
+
+            # add a label if not supplied
+            if "label" not in action:
+                action["label"] = "Show Folder"
+
+            # add a tooltip if not supplied
+            if "tooltip" not in action:
+                action["tooltip"] = "Reveal the entity in Shotgun"
+
+        elif action["type"] == "show_more_info":
+            # A common action for showing more information than what
+            # typically fits on a single line of logging output
+            # {
+            #     "label": "Show Error",
+            #     "tooltip": "Show the full error stack trace.",
+            #     "text": formatted_stack_trace,
+            # }
+
+            action["callback"] = show_more_info
+            action["args"] = dict(
+                pixmap=item.icon(0).pixmap(16, 16),
+                message=item.text(0),   # the one line log message
+                text=action.get("text", ""),
+                parent=self._progress_details.log_tree
+            )
+
+            # add a label if not supplied
+            if "label" not in action:
+                action["label"] = "More Info..."
+
+            # add a tooltip if not supplied
+            if "tooltip" not in action:
+                action["tooltip"] = "Show additional logging info"
+
+        elif action["type"] == "open_url":
+            # A common action for opening a supplied url.
+            # example: opening documentation in a browser
+            # {
+            #     "label": "Show Docs",
+            #     "tooltip": "Show the associated documentation.",
+            #     "url": url,
+            # }
+
+            action["callback"] = open_url
+            action["args"] = dict(url=action.get("url"))
+
+            # add a label if not supplied
+            if "label" not in action:
+                action["label"] = "Open URL"
+
+            # add a tooltip if not supplied
+            if "tooltip" not in action:
+                action["tooltip"] = "Opens a url in the appropriate browser"
+
+        else:
+            logger.warning(
+                "Detected unrecognized action type: %s" % (action["type"],))
+            return
+
+        # make sure the required keys are defined
+        for key in ["label", "callback", "args"]:
+            if key not in action:
+                logger.warning(
+                    "Key '%s' is required for progress action." % (key,))
+                return
+
+        # create the button!
+        embedded_widget = QtGui.QToolButton(self._progress_details.log_tree)
+        embedded_widget.setText(action["label"])
+        embedded_widget.setToolTip(action.get("tooltip", ""))
+        embedded_widget.clicked.connect(
+            lambda: action["callback"](**action["args"])
+        )
+
+        self._progress_details.log_tree.setItemWidget(
+            item, 1, embedded_widget)
