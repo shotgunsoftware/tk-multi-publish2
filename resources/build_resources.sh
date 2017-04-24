@@ -56,4 +56,5 @@ build_ui summary_widget
 echo "building progress interfaces..."
 UI_PYTHON_PATH=../python/tk_multi_publish2/progress/ui
 build_ui progress_details_widget
+build_ui more_info_widget
 
