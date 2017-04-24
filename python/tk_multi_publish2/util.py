@@ -10,6 +10,7 @@
 
 import os
 import pprint
+import sys
 
 import sgtk
 
@@ -65,7 +66,7 @@ def get_file_path_components(path):
             "extension": "ext",
         }
 
-        # path="/path/to/the/foler"
+        # path="/path/to/the/folder"
 
         {
             "path": "/path/to/the/folder",
@@ -85,13 +86,17 @@ def get_file_path_components(path):
     # break it up into the major components
     (folder, filename) = os.path.split(path)
 
-    # extract the extension and remove the "."
-    (_, extension) = os.path.splitext(filename)
-    if extension:
-        extension = extension.lstrip(".")
-    else:
-        # prevent extension = ""
+    if os.path.isdir(path):
+        # folder
         extension = None
+    else:
+        # file. extract the extension and remove the "."
+        (_, extension) = os.path.splitext(filename)
+        if extension:
+            extension = extension.lstrip(".")
+        else:
+            # prevent extension = ""
+            extension = None
 
     file_info = dict(
         path=path,

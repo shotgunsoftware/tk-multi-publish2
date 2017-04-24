@@ -100,7 +100,7 @@ class PluginManager(object):
 
         :param bool collect_current_scene: Boolean to indicate if collection should
             be performed for the current scene, e.g. if the collector hook's
-            process_current_scene() method should be executed.
+            process_current_session() method should be executed.
         :param paths: List of paths for which the collector hook's method
             process_file() should be executed for
         """
@@ -113,7 +113,7 @@ class PluginManager(object):
         if collect_current_scene:
             self._bundle.execute_hook_method(
                 "collector",
-                "process_current_scene",
+                "process_current_session",
                 parent_item=self._root_item
             )
 
@@ -142,10 +142,19 @@ class PluginManager(object):
                 accept_data = plugin.run_accept(item)
                 if accept_data.get("accepted"):
                     # this item was accepted by the plugin!
-                    # create a task
-                    is_required = accept_data.get("required") is True
-                    is_enabled = accept_data.get("enabled") is True
-                    task = Task.create_task(plugin, item, is_required, is_enabled)
+                    # look for bools accepted/visible/enabled/checked
+
+                    # TODO ---- Implement support for this!
+                    # all things are visible by default unless stated otherwise
+                    is_visible = accept_data.get("visible", True)
+
+                    # all things are checked by default unless stated otherwise
+                    is_checked = accept_data.get("checked", True)
+
+                    # all things are enabled by default unless stated otherwise
+                    is_enabled = accept_data.get("enabled", True)
+
+                    task = Task.create_task(plugin, item, is_visible, is_enabled, is_checked)
                     self._tasks.append(task)
 
 

@@ -8,6 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import traceback
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
 from .setting import Setting
@@ -195,13 +196,16 @@ class Plugin(object):
         Executes the hook accept method for the given item
 
         :param item: Item to analyze
-        :returns: dictionary with boolean keys 'accepted' and 'required'
+        :returns: dictionary with boolean keys accepted/visible/enabled/checked
         """
         try:
-            return self._plugin.accept(self._logger, self.settings, item)
+            return self._plugin.accept(self.settings, item)
         except Exception, e:
-            self._logger.exception("Error running accept for %s" % self)
-            self._plugin.logger.error("Error running accept for %s" % self)
+            error_msg = traceback.format_exc()
+            self._logger.exception(
+                "Error running accept for %s" % self,
+                extra=self._get_error_extra_info(error_msg)
+            )
             return {"accepted": False}
         finally:
             # give qt a chance to do stuff
@@ -217,9 +221,13 @@ class Plugin(object):
         """
         status = False
         try:
-            status = self._plugin.validate(self._logger, settings, item)
+            status = self._plugin.validate(settings, item)
         except Exception, e:
-            self._logger.exception("Error Validating: %s" % e)
+            error_msg = traceback.format_exc()
+            self._logger.exception(
+                "Error Validating: %s" % (e,),
+                extra=self._get_error_extra_info(error_msg)
+            )
             raise
         finally:
             # give qt a chance to do stuff
@@ -246,9 +254,13 @@ class Plugin(object):
         :param item: Item to analyze
         """
         try:
-            self._plugin.publish(self._logger, settings, item)
+            self._plugin.publish(settings, item)
         except Exception, e:
-            self._logger.exception("Error publishing: %s" % e)
+            error_msg = traceback.format_exc()
+            self._logger.exception(
+                "Error publishing: %s" % (e,),
+                extra=self._get_error_extra_info(error_msg)
+            )
             raise
         finally:
             self._logger.info("Publish complete!")
@@ -263,12 +275,32 @@ class Plugin(object):
         :param item: Item to analyze
         """
         try:
-            self._plugin.finalize(self._logger, settings, item)
+            self._plugin.finalize(settings, item)
         except Exception, e:
-            self._logger.exception("Error finalizing: %s" % e)
+            error_msg = traceback.format_exc()
+            self._logger.exception(
+                "Error finalizing: %s" % (e,),
+                extra=self._get_error_extra_info(error_msg)
+            )
             raise
         finally:
             self._logger.info("Finalize complete!")
             # give qt a chance to do stuff
             QtCore.QCoreApplication.processEvents()
 
+    def _get_error_extra_info(self, error_msg):
+        """
+        A little wrapper to return a dictionary of data to show a button in the
+        publisher with the supplied error message.
+
+        :param error_msg: The error message to display.
+        :return: An logging "extra" dictionary to show the error message.
+        """
+
+        return {
+            "action_show_more_info": {
+                "label": "Error Details",
+                "tooltip": "Show the full error tack trace",
+                "text": "<pre>%s</pre>" % (error_msg,)
+            }
+        }
