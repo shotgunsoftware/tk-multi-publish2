@@ -305,3 +305,26 @@ ProgressDetailsWidget #log_tree::item {
     border-radius: 2px;
     background-color: rgba(20, 20, 20, 50%);
 }
+
+
+
+/* --------------------------------------------------------------------- */
+/* Summary Overlay */
+/* --------------------------------------------------------------------- */
+
+
+#summary_frame #label {
+    font-size: 26px;
+    font-weight: 100;
+}
+
+#summary_frame #details {
+    font-size: 12px;
+    font-weight: 100;
+    font-style: italic;
+}
+
+#summary_frame {
+    background-color: rgba(20, 20, 20, 95%);
+}
+

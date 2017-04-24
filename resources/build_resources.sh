@@ -38,6 +38,7 @@ echo "building user interfaces..."
 UI_PYTHON_PATH=../python/tk_multi_publish2/ui
 build_ui dialog
 build_ui settings_widget
+build_ui summary_overlay
 
 # build resources
 echo "building resources..."

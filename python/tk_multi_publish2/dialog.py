@@ -17,6 +17,7 @@ from sgtk.platform.qt import QtCore, QtGui
 from .ui.dialog import Ui_Dialog
 from .processing import PluginManager
 from .progress import ProgressHandler
+from .summary_overlay import SummaryOverlay
 
 # import frameworks
 settings = sgtk.platform.import_framework("tk-framework-shotgunutils", "settings")
@@ -24,7 +25,6 @@ help_screen = sgtk.platform.import_framework("tk-framework-qtwidgets", "help_scr
 task_manager = sgtk.platform.import_framework("tk-framework-shotgunutils", "task_manager")
 shotgun_model = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_model")
 shotgun_globals = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_globals")
-overlay = sgtk.platform.import_framework("tk-framework-qtwidgets", "overlay_widget")
 
 
 logger = sgtk.platform.get_logger(__name__)
@@ -91,7 +91,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.close.hide()
 
         # overlay
-        self._overlay = overlay.ShotgunOverlayWidget(self.ui.splitter)
+        self._overlay = SummaryOverlay(self.ui.main_frame)
 
         # settings
         self.ui.items_tree.settings_clicked.connect(self._create_task_details)
@@ -461,16 +461,11 @@ class AppDialog(QtGui.QWidget):
         self.ui.validate.hide()
         self.ui.publish.hide()
         self.ui.close.show()
-        ##self.ui.splitter.setEnabled(False)
-        if publish_failed:
-            self._overlay.show_message_pixmap(
-                QtGui.QPixmap(":/tk_multi_publish2/publish_failed.png")
-            )
 
+        if publish_failed:
+            self._overlay.show_fail()
         else:
-            self._overlay.show_message_pixmap(
-                QtGui.QPixmap(":/tk_multi_publish2/publish_success.png")
-            )
+            self._overlay.show_success()
 
 
 
