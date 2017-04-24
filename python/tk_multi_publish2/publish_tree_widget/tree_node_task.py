@@ -91,10 +91,25 @@ class TreeNodeTask(TreeNodeBase):
         """
         return self.task
 
+    def create_summary(self):
+        """
+        Creates summary of actions
+
+        :returns: List of strings
+        """
+        if self.enabled:
+            return [self._task.plugin.name]
+        else:
+            return []
+
     def validate(self, standalone):
         """
         Perform validation
         """
+        if not self.enabled:
+            # nothing to do!
+            return True
+
         try:
             status = self._task.validate()
         except Exception, e:
@@ -114,6 +129,10 @@ class TreeNodeTask(TreeNodeBase):
         """
         Perform publish
         """
+        if not self.enabled:
+            # nothing to do!
+            return True
+
         try:
             self._task.publish()
         except Exception, e:
@@ -127,6 +146,10 @@ class TreeNodeTask(TreeNodeBase):
         """
         Perform finalize
         """
+        if not self.enabled:
+            # nothing to do!
+            return True
+
         try:
             self._task.finalize()
         except Exception, e:

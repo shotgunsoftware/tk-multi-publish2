@@ -16,6 +16,7 @@ from .custom_widget_item import CustomTreeWidgetItem
 logger = sgtk.platform.get_logger(__name__)
 
 from .tree_node_base import TreeNodeBase
+from .tree_node_task import TreeNodeTask
 
 
 class TreeNodeItem(TreeNodeBase):
@@ -52,6 +53,36 @@ class TreeNodeItem(TreeNodeBase):
 
     def __str__(self):
         return "%s %s" % (self._item.display_type, self._item.name)
+
+    def create_summary(self):
+        """
+        Creates summary of actions
+
+        :returns: List of strings
+        """
+        if self.enabled:
+
+            items_summaries = []
+            task_summaries = []
+
+            for child_index in xrange(self.childCount()):
+                child_item = self.child(child_index)
+
+                if isinstance(child_item, TreeNodeTask):
+                    task_summaries.extend(child_item.create_summary())
+                else:
+                    # sub-items
+                    items_summaries.extend(child_item.create_summary())
+
+            if len(task_summaries) > 0:
+                summary = ["<b>%s</b>: %s" % (self.item.name, ", ".join(task_summaries))]
+            summary.extend(items_summaries)
+
+            return summary
+        else:
+            return []
+
+
 
     @property
     def item(self):

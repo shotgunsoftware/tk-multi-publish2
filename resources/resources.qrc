@@ -16,5 +16,7 @@
     <file>item.png</file>
     <file>camera.png</file>
       <file>star.png</file>
+      <file>publish_complete.png</file>
+      <file>publish_failed.png</file>
   </qresource>
 </RCC>

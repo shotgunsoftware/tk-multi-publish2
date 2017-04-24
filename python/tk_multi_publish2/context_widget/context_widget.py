@@ -44,7 +44,7 @@ class ContextWidget(QtGui.QWidget):
 
         self._entity_combo_box = EntityComboBox(self)
         self._entity_combo_box.setObjectName("entity_combo_box")
-        self._grid_layout.addWidget(self._entity_combo_box, 0, 0, 1, 1)
+        self._grid_layout.addWidget(self._entity_combo_box, 0, 0, 1, 2)
 
         self._task_combo_box= TaskComboBox(self)
         self._task_combo_box.setObjectName("task_combo_box")

@@ -275,14 +275,31 @@ files you want to publish.</string>
                 </widget>
                </item>
                <item>
-                <layout class="QGridLayout" name="gridLayout">
-                 <item row="0" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <property name="spacing">
+                  <number>30</number>
+                 </property>
+                 <item>
                   <widget class="QLabel" name="link_label">
                    <property name="text">
                     <string>Link</string>
                    </property>
                   </widget>
                  </item>
+                 <item>
+                  <widget class="ContextWidget" name="context_widget" native="true">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QGridLayout" name="gridLayout">
                  <item row="1" column="0">
                   <widget class="QLabel" name="label_2">
                    <property name="text">
@@ -344,9 +361,6 @@ files you want to publish.</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="1" colspan="2">
-                  <widget class="ContextWidget" name="context_widget" native="true"/>
-                 </item>
                 </layout>
                </item>
                <item>
@@ -360,6 +374,9 @@ files you want to publish.</string>
                 <widget class="QLabel" name="item_summary">
                  <property name="text">
                   <string/>
+                 </property>
+                 <property name="wordWrap">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>
@@ -425,8 +442,17 @@ files you want to publish.</string>
                </item>
                <item>
                 <widget class="QLabel" name="task_description">
+                 <property name="maximumSize">
+                  <size>
+                   <width>350</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>task desc</string>
+                 </property>
+                 <property name="textFormat">
+                  <enum>Qt::RichText</enum>
                  </property>
                  <property name="wordWrap">
                   <bool>true</bool>

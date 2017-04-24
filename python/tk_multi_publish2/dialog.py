@@ -24,6 +24,7 @@ help_screen = sgtk.platform.import_framework("tk-framework-qtwidgets", "help_scr
 task_manager = sgtk.platform.import_framework("tk-framework-shotgunutils", "task_manager")
 shotgun_model = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_model")
 shotgun_globals = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_globals")
+overlay = sgtk.platform.import_framework("tk-framework-qtwidgets", "overlay_widget")
 
 
 logger = sgtk.platform.get_logger(__name__)
@@ -88,6 +89,9 @@ class AppDialog(QtGui.QWidget):
         self.ui.publish.clicked.connect(self.do_publish)
         self.ui.close.clicked.connect(self.close)
         self.ui.close.hide()
+
+        # overlay
+        self._overlay = overlay.ShotgunOverlayWidget(self.ui.splitter)
 
         # settings
         self.ui.items_tree.settings_clicked.connect(self._create_task_details)
@@ -159,6 +163,7 @@ class AppDialog(QtGui.QWidget):
             tree_item = items[0]
             self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
             self._create_item_details(tree_item.item)
+            self._create_summary(tree_item)
 
 
     def _on_publish_status_clicked(self, task_or_item):
@@ -207,9 +212,18 @@ class AppDialog(QtGui.QWidget):
             self.ui.link_label.hide()
             self.ui.context_widget.hide()
 
+        # render settings
         self.ui.item_settings.set_static_data(
             [(p, item.properties[p]) for p in item.properties]
         )
+
+
+    def _create_summary(self, tree_item):
+
+        summary = tree_item.create_summary()
+        # generate a summary
+        self.ui.item_summary.setText("<br>".join(line for line in summary))
+
 
     def _create_task_details(self, task):
 
@@ -399,6 +413,8 @@ class AppDialog(QtGui.QWidget):
         """
         Perform a full publish
         """
+        publish_failed = False
+
         self._prepare_tree(number_phases=3)
 
         issues = self.do_validate(standalone=False)
@@ -417,6 +433,7 @@ class AppDialog(QtGui.QWidget):
         except Exception, e:
             # todo - design a retry setup?
             self._progress_handler.logger.error("Error while publishing. Aborting.")
+            publish_failed = True
             # ensure the full error shows up in the log file
             logger.error("Finalize error stack:\n%s" % (traceback.format_exc(),))
             return
@@ -431,6 +448,7 @@ class AppDialog(QtGui.QWidget):
             self._visit_tree_r(parent, lambda child: child.finalize(), "Finalizing")
         except Exception, e:
             self._progress_handler.logger.error("Error while finalizing. Aborting.")
+            publish_failed = True
             # ensure the full error shows up in the log file
             logger.error("Finalize error stack:\n%s" % (traceback.format_exc(),))
             return
@@ -443,7 +461,18 @@ class AppDialog(QtGui.QWidget):
         self.ui.validate.hide()
         self.ui.publish.hide()
         self.ui.close.show()
-        self.ui.splitter.setEnabled(False)
+        ##self.ui.splitter.setEnabled(False)
+        if publish_failed:
+            self._overlay.show_message_pixmap(
+                QtGui.QPixmap(":/tk_multi_publish2/publish_failed.png")
+            )
+
+        else:
+            self._overlay.show_message_pixmap(
+                QtGui.QPixmap(":/tk_multi_publish2/publish_success.png")
+            )
+
+
 
 
     def _visit_tree_r(self, parent, action, action_name):

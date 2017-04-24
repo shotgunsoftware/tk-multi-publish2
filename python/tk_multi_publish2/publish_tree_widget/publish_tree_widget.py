@@ -97,8 +97,8 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         self.clear()
 
         # add summary
-        #summary = TreeNodeSummary(self)
-        #self.addTopLevelItem(summary)
+        summary = TreeNodeSummary(self)
+        self.addTopLevelItem(summary)
 
         # group items by context
         items_by_context = collections.defaultdict(list)
