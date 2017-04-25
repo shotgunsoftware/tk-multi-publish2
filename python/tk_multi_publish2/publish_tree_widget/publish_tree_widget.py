@@ -97,9 +97,10 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         logger.debug("Building tree.")
         self.clear()
 
-        # add summary
-        summary = TreeNodeSummary(self)
-        self.addTopLevelItem(summary)
+        # add summary if > 1 item
+        if len(self._plugin_manager.top_level_items) > 1:
+            summary = TreeNodeSummary(self)
+            self.addTopLevelItem(summary)
 
         # group items by context
         items_by_context = collections.defaultdict(list)
@@ -122,15 +123,25 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
     def select_first_item(self):
         """
-        Selects the first item in the tree
+        Selects the summary if it exists,
+        otherwise selects he first item in the tree.
         """
-        # select the top item
-        if self.topLevelItemCount() > 0:
-            # first context item
-            first_context_item = self.topLevelItem(0)
-            if first_context_item.childCount() > 0:
-                # we got an item
-                first_item = first_context_item.child(0)
+        if self.topLevelItemCount() == 0:
+            return
+
+        first_top_level_item = self.topLevelItem(0)
+        if isinstance(first_top_level_item, TreeNodeSummary):
+            self.setCurrentItem(first_top_level_item)
+
+        else:
+            # no summary. find first item node
+            first_item = None
+            for context_index in xrange(self.topLevelItemCount()):
+                context_item = self.topLevelItem(context_index)
+                for child_index in xrange(context_item.childCount()):
+                    first_item = context_item.child(child_index)
+                    break
+            if first_item:
                 self.setCurrentItem(first_item)
 
     def set_state_for_all_plugins(self, plugin, state):

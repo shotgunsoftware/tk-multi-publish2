@@ -322,17 +322,7 @@ class AppDialog(QtGui.QWidget):
         """
         self._reload_plugin_scan()
         self._refresh_ui()
-
-        # lastly, select the first item in the tree
-        first_item = None
-        for context_index in xrange(self.ui.items_tree.topLevelItemCount()):
-            context_item = self.ui.items_tree.topLevelItem(context_index)
-            for child_index in xrange(context_item.childCount()):
-                first_item = context_item.child(child_index)
-                break
-        if first_item:
-            self.ui.items_tree.setCurrentItem(first_item)
-
+        self.ui.items_tree.select_first_item()
 
     def _on_drop(self, files):
         """
@@ -361,10 +351,7 @@ class AppDialog(QtGui.QWidget):
         self._refresh_ui()
 
         # lastly, select the summary
-        self.ui.items_tree.setCurrentItem(
-            # summary is always top node
-            self.ui.items_tree.topLevelItem(0)
-        )
+        self.ui.items_tree.select_first_item()
 
     def _refresh_ui(self):
         """
@@ -536,7 +523,6 @@ class AppDialog(QtGui.QWidget):
             publish_failed = True
             # ensure the full error shows up in the log file
             logger.error("Finalize error stack:\n%s" % (traceback.format_exc(),))
-            return
         finally:
             self._progress_handler.pop()
 
@@ -551,11 +537,10 @@ class AppDialog(QtGui.QWidget):
             publish_failed = True
             # ensure the full error shows up in the log file
             logger.error("Finalize error stack:\n%s" % (traceback.format_exc(),))
-            return
         finally:
             self._progress_handler.pop()
 
-        self._progress_handler.logger.info("Publish Complete!")
+        self._progress_handler.logger.info("Publish Complete! For details, click here.")
 
         # disable stuff
         self.ui.validate.hide()
@@ -611,8 +596,11 @@ class AppDialog(QtGui.QWidget):
         Fires when a new context is selected for the current item
         """
 
-        logger.debug("Context change for %s")
-        if not self._current_item:
-            raise TankError("No current item set!")
-        self._current_item.context = context
+        if self._current_item is None:
+            # this is the summary item - so update all items!
+            for top_level_item in self._plugin_manager.top_level_items:
+                top_level_item.context = context
+        else:
+            self._current_item.context = context
+
         self._refresh_ui()
