@@ -293,8 +293,11 @@ class AppDialog(QtGui.QWidget):
         self._progress_handler.push("Processing dropped files")
 
         try:
+            self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
+            self._overlay.show_loading()
             self._plugin_manager.add_external_files(files)
         finally:
+            self._overlay.hide()
             num_errors = self._progress_handler.pop()
 
         if num_errors == 0:
