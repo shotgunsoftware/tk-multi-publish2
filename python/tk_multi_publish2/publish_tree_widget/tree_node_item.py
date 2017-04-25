@@ -75,14 +75,19 @@ class TreeNodeItem(TreeNodeBase):
                     # sub-items
                     items_summaries.extend(child_item.create_summary())
 
+            summary = []
+
             if len(task_summaries) > 0:
-                summary = ["<b>%s</b>: %s" % (self.item.name, ", ".join(task_summaries))]
+
+                summary_str = "<b>%s</b><br>" % self.item.name
+                summary_str += "<br>".join(["&ndash; %s" % task_summary for task_summary in task_summaries])
+                summary.append(summary_str)
+
             summary.extend(items_summaries)
 
             return summary
         else:
             return []
-
 
 
     @property

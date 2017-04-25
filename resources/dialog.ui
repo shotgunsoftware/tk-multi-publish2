@@ -375,7 +375,7 @@ files you want to publish.</string>
                   <item>
                    <widget class="QLabel" name="item_summary_label">
                     <property name="text">
-                     <string>Summary</string>
+                     <string>Publish Summary</string>
                     </property>
                    </widget>
                   </item>
@@ -472,13 +472,6 @@ files you want to publish.</string>
                    <widget class="QLabel" name="task_settings_label">
                     <property name="text">
                      <string>Settings</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="Line" name="task_divider">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
                     </property>
                    </widget>
                   </item>
