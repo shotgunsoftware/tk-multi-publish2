@@ -49,10 +49,11 @@ class CustomTreeWidgetItem(CustomTreeWidgetBase):
 
         self.set_status(self.NEUTRAL)
 
+        # hide the drag handle by default
+        self.ui.drag_handle.hide()
+
         self.ui.checkbox.stateChanged.connect(self._on_checkbox_click)
-
         self.ui.checkbox.nextCheckState = self.nextCheckState
-
         self.ui.status.clicked.connect(self._on_status_click)
 
     def nextCheckState(self):

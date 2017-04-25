@@ -73,7 +73,14 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         """
         Called by child item when checkbox was ticked
         """
+        self._set_check_state_r(state)
+        # emit tree level signal
+        self.treeWidget().checked.emit(self)
 
+    def _set_check_state_r(self, state):
+        """
+        Called by child item when checkbox was ticked
+        """
         # do if for just this item
         # first store it in our data model
         self.setData(0, self.CHECKBOX_ROLE, state)
@@ -81,15 +88,14 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         if state == QtCore.Qt.Checked:
             # ensure all children are checked
             for child_index in range(self.childCount()):
-                self.child(child_index).set_check_state(QtCore.Qt.Checked)
+                self.child(child_index)._set_check_state_r(QtCore.Qt.Checked)
         elif state == QtCore.Qt.Unchecked:
             # uncheck all children
             for child_index in range(self.childCount()):
-                self.child(child_index).set_check_state(QtCore.Qt.Unchecked)
+                self.child(child_index)._set_check_state_r(QtCore.Qt.Unchecked)
         # tell parent to recompute
         if self.parent():
             self.parent().recompute_check_state()
-
 
     def recompute_check_state(self):
 
@@ -118,7 +124,13 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         if self.parent():
             self.parent().recompute_check_state()
 
+    def create_summary(self):
+        """
+        Creates summary of actions
 
+        :returns: List of strings
+        """
+        return []
 
     def reset_progress(self):
         """

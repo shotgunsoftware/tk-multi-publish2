@@ -53,6 +53,17 @@ class TreeNodeContext(TreeNodeBase):
         widget.set_header(str(self._context))
         return widget
 
+    def create_summary(self):
+        """
+        Creates summary of actions
+
+        :returns: List of strings
+        """
+        if self.enabled:
+            return ["<div style='color:#0AA3F8'>Linked with <b>%s</b></div>" % self._context]
+        else:
+            return []
+
     @property
     def context(self):
         """

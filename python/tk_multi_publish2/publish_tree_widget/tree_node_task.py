@@ -17,8 +17,6 @@ from .custom_widget_task import CustomTreeWidgetTask
 logger = sgtk.platform.get_logger(__name__)
 
 
-
-
 class TreeNodeTask(TreeNodeBase):
     """
     Tree item for a publish task
@@ -34,7 +32,10 @@ class TreeNodeTask(TreeNodeBase):
         super(TreeNodeTask, self).__init__(parent)
 
         # tasks cannot be dragged or dropped on
-        self.setFlags(QtCore.Qt.ItemIsEnabled)
+        self.setFlags(
+            QtCore.Qt.ItemIsEnabled |
+            QtCore.Qt.ItemIsSelectable
+        )
 
         # set up defaults based on task settings
         self._embedded_widget.set_checkbox_value(
@@ -59,7 +60,6 @@ class TreeNodeTask(TreeNodeBase):
         widget.set_icon(self._task.plugin.icon)
         widget.set_checkbox_value(self.data(0, self.CHECKBOX_ROLE))
         return widget
-
 
     def set_check_state(self, state, apply_to_all_plugins=False):
         """
@@ -88,10 +88,25 @@ class TreeNodeTask(TreeNodeBase):
         """
         return self.task
 
+    def create_summary(self):
+        """
+        Creates summary of actions
+
+        :returns: List of strings
+        """
+        if self.enabled:
+            return [self._task.plugin.name]
+        else:
+            return []
+
     def validate(self, standalone):
         """
         Perform validation
         """
+        if not self.enabled:
+            # nothing to do!
+            return True
+
         try:
             status = self._task.validate()
         except Exception, e:
@@ -111,6 +126,10 @@ class TreeNodeTask(TreeNodeBase):
         """
         Perform publish
         """
+        if not self.enabled:
+            # nothing to do!
+            return True
+
         try:
             self._task.publish()
         except Exception, e:
@@ -124,6 +143,10 @@ class TreeNodeTask(TreeNodeBase):
         """
         Perform finalize
         """
+        if not self.enabled:
+            # nothing to do!
+            return True
+
         try:
             self._task.finalize()
         except Exception, e:

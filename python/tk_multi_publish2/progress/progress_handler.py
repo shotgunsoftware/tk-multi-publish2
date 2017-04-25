@@ -396,6 +396,7 @@ class ProgressHandler(object):
 
         # create the button!
         embedded_widget = QtGui.QToolButton(self._progress_details.log_tree)
+        embedded_widget.setObjectName("log_action_button")
         embedded_widget.setText(action["label"])
         embedded_widget.setToolTip(action.get("tooltip", ""))
         embedded_widget.clicked.connect(

@@ -25,12 +25,13 @@ class PublishTreeWidget(QtGui.QTreeWidget):
     Main widget
     """
 
-    # emitted when a settings button is clicked on a node
-    settings_clicked = QtCore.Signal(object)
     # emitted when a status icon is clicked
     status_clicked = QtCore.Signal(object)
     # emitted when the tree has been rearranged using drag n drop
     tree_reordered = QtCore.Signal()
+    # emitted when a checkbox has been clicked in the tree
+    # passed the TreeNodeBase instance
+    checked = QtCore.Signal(object)
 
 
     def __init__(self, parent):
@@ -45,7 +46,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         self.invisibleRootItem().setFlags(QtCore.Qt.ItemIsEnabled)
 
         # 20 px indent for items
-        self.setIndentation(20)
+        self.setIndentation(28)
         # no indentation for the top level items
         self.setRootIsDecorated(False)
         # turn off keyboard focus - this is to disable the
@@ -97,8 +98,8 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         self.clear()
 
         # add summary
-        #summary = TreeNodeSummary(self)
-        #self.addTopLevelItem(summary)
+        summary = TreeNodeSummary(self)
+        self.addTopLevelItem(summary)
 
         # group items by context
         items_by_context = collections.defaultdict(list)

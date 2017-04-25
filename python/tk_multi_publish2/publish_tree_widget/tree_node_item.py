@@ -16,6 +16,7 @@ from .custom_widget_item import CustomTreeWidgetItem
 logger = sgtk.platform.get_logger(__name__)
 
 from .tree_node_base import TreeNodeBase
+from .tree_node_task import TreeNodeTask
 
 
 class TreeNodeItem(TreeNodeBase):
@@ -45,6 +46,7 @@ class TreeNodeItem(TreeNodeBase):
         widget.set_header("<b>%s</b><br>%s" % (self._item.name, self._item.display_type))
         widget.set_icon(self._item.icon)
         widget.set_checkbox_value(self.data(0, self.CHECKBOX_ROLE))
+
         return widget
 
     def __repr__(self):
@@ -52,6 +54,41 @@ class TreeNodeItem(TreeNodeBase):
 
     def __str__(self):
         return "%s %s" % (self._item.display_type, self._item.name)
+
+    def create_summary(self):
+        """
+        Creates summary of actions
+
+        :returns: List of strings
+        """
+        if self.enabled:
+
+            items_summaries = []
+            task_summaries = []
+
+            for child_index in xrange(self.childCount()):
+                child_item = self.child(child_index)
+
+                if isinstance(child_item, TreeNodeTask):
+                    task_summaries.extend(child_item.create_summary())
+                else:
+                    # sub-items
+                    items_summaries.extend(child_item.create_summary())
+
+            summary = []
+
+            if len(task_summaries) > 0:
+
+                summary_str = "<b>%s</b><br>" % self.item.name
+                summary_str += "<br>".join(["&ndash; %s" % task_summary for task_summary in task_summaries])
+                summary.append(summary_str)
+
+            summary.extend(items_summaries)
+
+            return summary
+        else:
+            return []
+
 
     @property
     def item(self):
@@ -87,6 +124,18 @@ class TopLevelTreeNodeItem(TreeNodeItem):
             QtCore.Qt.ItemIsSelectable |
             QtCore.Qt.ItemIsDragEnabled
         )
+
+    def _create_widget(self, parent):
+        """
+        Create the widget that is used to visualise the node
+        """
+        widget = super(TopLevelTreeNodeItem, self)._create_widget(parent)
+
+        # show the drag handle for top level nodes
+        widget.ui.drag_handle.show()
+
+        return widget
+
 
     def synchronize_context(self):
         """

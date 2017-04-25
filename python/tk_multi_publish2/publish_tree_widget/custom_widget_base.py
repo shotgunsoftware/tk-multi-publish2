@@ -108,8 +108,6 @@ class CustomTreeWidgetBase(QtGui.QFrame):
         if status not in self._icon_lookup:
             raise ValueError("Invalid icon index!")
 
-
-
         if status == self.NEUTRAL:
             self.ui.status.hide()
         else:

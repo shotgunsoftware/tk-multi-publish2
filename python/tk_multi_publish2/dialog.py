@@ -15,8 +15,9 @@ from sgtk import TankError
 from sgtk.platform.qt import QtCore, QtGui
 
 from .ui.dialog import Ui_Dialog
-from .processing import PluginManager
+from .processing import PluginManager, Task, Item
 from .progress import ProgressHandler
+from .summary_overlay import SummaryOverlay
 
 # import frameworks
 settings = sgtk.platform.import_framework("tk-framework-shotgunutils", "settings")
@@ -89,8 +90,10 @@ class AppDialog(QtGui.QWidget):
         self.ui.close.clicked.connect(self.close)
         self.ui.close.hide()
 
+        # overlay
+        self._overlay = SummaryOverlay(self.ui.main_frame)
+
         # settings
-        self.ui.items_tree.settings_clicked.connect(self._create_task_details)
         self.ui.items_tree.status_clicked.connect(self._on_publish_status_clicked)
 
         # when the description is updated
@@ -98,6 +101,9 @@ class AppDialog(QtGui.QWidget):
 
         # selection in tree view
         self.ui.items_tree.itemSelectionChanged.connect(self._update_details_from_selection)
+
+        # clicking in the tree view
+        self.ui.items_tree.checked.connect(self._update_details_from_selection)
 
         # thumbnails
         self.ui.item_thumbnail.screen_grabbed.connect(self._update_item_thumbnail)
@@ -113,12 +119,18 @@ class AppDialog(QtGui.QWidget):
         # start up our plugin manager
         self._plugin_manager = None
 
-        # set up progress reportin
+        # set up progress reporting
         self._progress_handler = ProgressHandler(
             self.ui.progress_status_icon,
             self.ui.progress_message,
             self.ui.progress_bar
         )
+
+        # hide settings for now
+        self.ui.item_settings_label.hide()
+        self.ui.task_settings_label.hide()
+        self.ui.item_settings.hide()
+        self.ui.task_settings.hide()
 
         # start it up
         self._refresh()
@@ -157,8 +169,15 @@ class AppDialog(QtGui.QWidget):
         else:
             # 1 item selected
             tree_item = items[0]
-            self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
-            self._create_item_details(tree_item.item)
+
+            publish_object = tree_item.get_publish_instance()
+            if isinstance(publish_object, Task):
+                self._create_task_details(publish_object)
+            elif isinstance(publish_object, Item):
+                self._create_item_details(tree_item)
+            elif publish_object is None:
+                # top node summary
+                self._create_master_summary_details()
 
 
     def _on_publish_status_clicked(self, task_or_item):
@@ -174,9 +193,12 @@ class AppDialog(QtGui.QWidget):
         publish comments box in the overview details pane
         """
         comments = self.ui.item_comments.toPlainText()
-        if not self._current_item:
-            raise TankError("No current item set!")
-        self._current_item.description = comments
+        if self._current_item is None:
+            # this is the summary item - so update all items!
+            for top_level_item in self._plugin_manager.top_level_items:
+                top_level_item.description = comments
+        else:
+            self._current_item.description = comments
 
     def _update_item_thumbnail(self, pixmap):
         """
@@ -187,7 +209,11 @@ class AppDialog(QtGui.QWidget):
             raise TankError("No current item set!")
         self._current_item.thumbnail = pixmap
 
-    def _create_item_details(self, item):
+    def _create_item_details(self, tree_item):
+        """
+        Render details pane for a given item
+        """
+        item = tree_item.get_publish_instance()
 
         self._current_item = item
         self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
@@ -195,6 +221,9 @@ class AppDialog(QtGui.QWidget):
 
         self.ui.item_name.setText(item.name)
         self.ui.item_type.setText(item.display_type)
+
+        self.ui.item_thumbnail_label.show()
+        self.ui.item_thumbnail.show()
 
         self.ui.item_comments.setPlainText(item.description)
         self.ui.item_thumbnail.set_thumbnail(item.thumbnail)
@@ -207,12 +236,74 @@ class AppDialog(QtGui.QWidget):
             self.ui.link_label.hide()
             self.ui.context_widget.hide()
 
-        self.ui.item_settings.set_static_data(
-            [(p, item.properties[p]) for p in item.properties]
-        )
+        # create summary
+        self.ui.item_summary_label.show()
+        summary = tree_item.create_summary()
+        # generate a summary
+
+        if len(summary) == 0:
+            summary_text = "Nothing will published."
+
+        else:
+            summary_text = "<p>The following items will be published:</p>"
+            summary_text += "".join(["<p>%s</p>" % line for line in summary])
+
+        self.ui.item_summary.setText(summary_text)
+
+        # skip settings for now
+        ## render settings
+        #self.ui.item_settings.set_static_data(
+        #    [(p, item.properties[p]) for p in item.properties]
+        #)
+
+    def _create_master_summary_details(self):
+        """
+        Render the master summary representation
+        """
+        self._current_item = None
+        self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
+
+        self.ui.item_name.setText("Publish Summary")
+        self.ui.item_icon.setPixmap(QtGui.QPixmap(":/tk_multi_publish2/icon_256.png"))
+
+        self.ui.item_thumbnail_label.hide()
+        self.ui.item_thumbnail.hide()
+
+        self.ui.item_comments.setPlainText("")
+
+        # set context
+        self.ui.link_label.show()
+        self.ui.context_widget.show()
+        self.ui.context_widget.set_context(self._bundle.context)
+
+        # create summary for all items
+        # no need to have a summary since the main label says summary
+        self.ui.item_summary_label.hide()
+        summary = []
+        num_items = 0
+        for context_index in xrange(self.ui.items_tree.topLevelItemCount()):
+            context_item = self.ui.items_tree.topLevelItem(context_index)
+            summary.extend(context_item.create_summary())
+            for child_index in xrange(context_item.childCount()):
+                child_item = context_item.child(child_index)
+                summary_entries = child_item.create_summary()
+                summary.extend(summary_entries)
+                num_items += len(summary_entries)
+
+        if len(summary) == 0:
+            summary_text = "Nothing will published."
+
+        else:
+            summary_text = "".join(["<p>%s</p>" % line for line in summary])
+
+        self.ui.item_summary.setText(summary_text)
+        self.ui.item_type.setText("Publishing %d items" % num_items)
+
 
     def _create_task_details(self, task):
-
+        """
+        Render details pane for a given task
+        """
         self._current_item = None
         self.ui.details_stack.setCurrentIndex(self.TASK_DETAILS)
 
@@ -221,7 +312,9 @@ class AppDialog(QtGui.QWidget):
 
         self.ui.task_description.setText(task.plugin.description)
 
-        self.ui.task_settings.set_data(task.settings.values())
+        # skip settings for now
+        #self.ui.task_settings.set_data(task.settings.values())
+
 
     def _refresh(self):
         """
@@ -229,6 +322,17 @@ class AppDialog(QtGui.QWidget):
         """
         self._reload_plugin_scan()
         self._refresh_ui()
+
+        # lastly, select the first item in the tree
+        first_item = None
+        for context_index in xrange(self.ui.items_tree.topLevelItemCount()):
+            context_item = self.ui.items_tree.topLevelItem(context_index)
+            for child_index in xrange(context_item.childCount()):
+                first_item = context_item.child(child_index)
+                break
+        if first_item:
+            self.ui.items_tree.setCurrentItem(first_item)
+
 
     def _on_drop(self, files):
         """
@@ -239,8 +343,11 @@ class AppDialog(QtGui.QWidget):
         self._progress_handler.push("Processing dropped files")
 
         try:
+            self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
+            self._overlay.show_loading()
             self._plugin_manager.add_external_files(files)
         finally:
+            self._overlay.hide()
             num_errors = self._progress_handler.pop()
 
         if num_errors == 0:
@@ -250,7 +357,14 @@ class AppDialog(QtGui.QWidget):
         else:
             self._progress_handler.logger.error("%d errors reported. Please see the log for details." % len(files))
 
+        # rebuild the tree
         self._refresh_ui()
+
+        # lastly, select the summary
+        self.ui.items_tree.setCurrentItem(
+            # summary is always top node
+            self.ui.items_tree.topLevelItem(0)
+        )
 
     def _refresh_ui(self):
         """
@@ -399,6 +513,8 @@ class AppDialog(QtGui.QWidget):
         """
         Perform a full publish
         """
+        publish_failed = False
+
         self._prepare_tree(number_phases=3)
 
         issues = self.do_validate(standalone=False)
@@ -417,6 +533,7 @@ class AppDialog(QtGui.QWidget):
         except Exception, e:
             # todo - design a retry setup?
             self._progress_handler.logger.error("Error while publishing. Aborting.")
+            publish_failed = True
             # ensure the full error shows up in the log file
             logger.error("Finalize error stack:\n%s" % (traceback.format_exc(),))
             return
@@ -431,6 +548,7 @@ class AppDialog(QtGui.QWidget):
             self._visit_tree_r(parent, lambda child: child.finalize(), "Finalizing")
         except Exception, e:
             self._progress_handler.logger.error("Error while finalizing. Aborting.")
+            publish_failed = True
             # ensure the full error shows up in the log file
             logger.error("Finalize error stack:\n%s" % (traceback.format_exc(),))
             return
@@ -443,7 +561,13 @@ class AppDialog(QtGui.QWidget):
         self.ui.validate.hide()
         self.ui.publish.hide()
         self.ui.close.show()
-        self.ui.splitter.setEnabled(False)
+
+        if publish_failed:
+            self._overlay.show_fail()
+        else:
+            self._overlay.show_success()
+
+
 
 
     def _visit_tree_r(self, parent, action, action_name):
