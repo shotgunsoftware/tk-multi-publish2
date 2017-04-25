@@ -139,7 +139,8 @@ DropAreaFrame[dragging="true"] {
     border: none;
     margin: 0px;
     /* push the whole tree 20px to the side */
-    margin-left: -20px;
+    margin-left: -28px;
+
 }
 
 /* disable all the 'tree handles' */
@@ -174,7 +175,7 @@ CustomTreeWidgetSummary #frame {
     background-color: #343434;
 
     /* make sure we push it all the way in to compensate for the -20px margin of the widget */
-    margin-left: 20px;
+    margin-left: 28px;
 }
 
 /* Tree view items */
@@ -194,7 +195,7 @@ CustomTreeWidgetContext {
     border-bottom: 1px solid #494C4F;
 
     /* make sure we push it all the way in to compensate for the -20px margin of the widget */
-    margin-left: 20px;
+    margin-left: 28px;
 }
 
 CustomTreeWidgetContext QLabel {

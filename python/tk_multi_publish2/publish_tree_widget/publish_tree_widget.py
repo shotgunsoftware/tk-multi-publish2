@@ -43,7 +43,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         self.invisibleRootItem().setFlags(QtCore.Qt.ItemIsEnabled)
 
         # 20 px indent for items
-        self.setIndentation(20)
+        self.setIndentation(28)
         # no indentation for the top level items
         self.setRootIsDecorated(False)
         # turn off keyboard focus - this is to disable the

@@ -46,6 +46,7 @@ class TreeNodeItem(TreeNodeBase):
         widget.set_header("<b>%s</b><br>%s" % (self._item.name, self._item.display_type))
         widget.set_icon(self._item.icon)
         widget.set_checkbox_value(self.data(0, self.CHECKBOX_ROLE))
+
         return widget
 
     def __repr__(self):
@@ -118,6 +119,18 @@ class TopLevelTreeNodeItem(TreeNodeItem):
             QtCore.Qt.ItemIsSelectable |
             QtCore.Qt.ItemIsDragEnabled
         )
+
+    def _create_widget(self, parent):
+        """
+        Create the widget that is used to visualise the node
+        """
+        widget = super(TopLevelTreeNodeItem, self)._create_widget(parent)
+
+        # show the drag handle for top level nodes
+        widget.ui.drag_handle.show()
+
+        return widget
+
 
     def synchronize_context(self):
         """
