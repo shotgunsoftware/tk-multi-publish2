@@ -18,7 +18,9 @@ logger = sgtk.platform.get_logger(__name__)
 
 class SummaryOverlay(QtGui.QWidget):
     """
-    Status summary
+    An overlay which sits on top of the details and treeview
+    in the main UI. Used to present progress and status,
+    e.g. "loading items" or "publish failed!"
     """
 
     def __init__(self, parent):
@@ -44,7 +46,7 @@ class SummaryOverlay(QtGui.QWidget):
 
     def show_success(self):
         """
-        Toggles visibility on and off
+        Shows standard "publish completed successfully!" prompt
         """
         self.ui.icon.setPixmap(
             QtGui.QPixmap(":/tk_multi_publish2/publish_complete.png")
@@ -55,7 +57,7 @@ class SummaryOverlay(QtGui.QWidget):
 
     def show_fail(self):
         """
-        Toggles visibility on and off
+        Shows standard "publish failed!" prompt
         """
         self.ui.icon.setPixmap(
             QtGui.QPixmap(":/tk_multi_publish2/publish_failed.png")
@@ -66,7 +68,7 @@ class SummaryOverlay(QtGui.QWidget):
 
     def show_loading(self):
         """
-
+        Shows standard "loading stuff" prompt
         """
         self.ui.icon.setPixmap(
             QtGui.QPixmap(":/tk_multi_publish2/overlay_loading.png")
@@ -76,18 +78,18 @@ class SummaryOverlay(QtGui.QWidget):
         self.show()
 
     def show(self):
+        """
+        Subclassed show method
+        """
         super(SummaryOverlay, self).show()
-        self.__recompute_position()
-
-    def __recompute_position(self):
-        self.resize(self.parentWidget().size())
+        self._on_parent_resized()
 
     def _on_parent_resized(self):
         """
         Special slot hooked up to the event filter.
         When associated widget is resized this slot is being called.
         """
-        self.__recompute_position()
+        self.resize(self.parentWidget().size())
 
 
 class ResizeEventFilter(QtCore.QObject):

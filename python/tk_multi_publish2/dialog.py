@@ -210,7 +210,9 @@ class AppDialog(QtGui.QWidget):
         self._current_item.thumbnail = pixmap
 
     def _create_item_details(self, tree_item):
-
+        """
+        Render details pane for a given item
+        """
         item = tree_item.get_publish_instance()
 
         self._current_item = item
@@ -256,7 +258,7 @@ class AppDialog(QtGui.QWidget):
 
     def _create_master_summary_details(self):
         """
-        Create the master summary view
+        Render the master summary representation
         """
         self._current_item = None
         self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
@@ -299,7 +301,9 @@ class AppDialog(QtGui.QWidget):
 
 
     def _create_task_details(self, task):
-
+        """
+        Render details pane for a given task
+        """
         self._current_item = None
         self.ui.details_stack.setCurrentIndex(self.TASK_DETAILS)
 
