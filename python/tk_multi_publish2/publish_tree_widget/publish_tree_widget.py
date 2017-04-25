@@ -29,6 +29,9 @@ class PublishTreeWidget(QtGui.QTreeWidget):
     status_clicked = QtCore.Signal(object)
     # emitted when the tree has been rearranged using drag n drop
     tree_reordered = QtCore.Signal()
+    # emitted when a checkbox has been clicked in the tree
+    # passed the TreeNodeBase instance
+    checked = QtCore.Signal(object)
 
 
     def __init__(self, parent):

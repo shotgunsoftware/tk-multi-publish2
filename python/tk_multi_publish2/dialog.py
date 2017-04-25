@@ -102,6 +102,9 @@ class AppDialog(QtGui.QWidget):
         # selection in tree view
         self.ui.items_tree.itemSelectionChanged.connect(self._update_details_from_selection)
 
+        # clicking in the tree view
+        self.ui.items_tree.checked.connect(self._update_details_from_selection)
+
         # thumbnails
         self.ui.item_thumbnail.screen_grabbed.connect(self._update_item_thumbnail)
 
@@ -273,7 +276,6 @@ class AppDialog(QtGui.QWidget):
 
         # hide settings for now
         self.ui.task_settings_label.hide()
-
         #self.ui.task_settings.set_data(task.settings.values())
 
 
