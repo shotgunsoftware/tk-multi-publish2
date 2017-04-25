@@ -45,14 +45,6 @@ class TreeNodeSummary(TreeNodeBase):
     def __repr__(self):
         return "<TreeNodeSummary>"
 
-    def create_summary(self):
-        """
-        Creates summary of actions
-
-        :returns: List of strings
-        """
-        return ["foo"]
-
     def validate(self, standalone):
         """
         Perform validation

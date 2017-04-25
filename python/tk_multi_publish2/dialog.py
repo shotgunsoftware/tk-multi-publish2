@@ -119,12 +119,18 @@ class AppDialog(QtGui.QWidget):
         # start up our plugin manager
         self._plugin_manager = None
 
-        # set up progress reportin
+        # set up progress reporting
         self._progress_handler = ProgressHandler(
             self.ui.progress_status_icon,
             self.ui.progress_message,
             self.ui.progress_bar
         )
+
+        # hide settings for now
+        self.ui.item_settings_label.hide()
+        self.ui.task_settings_label.hide()
+        self.ui.item_settings.hide()
+        self.ui.task_settings.hide()
 
         # start it up
         self._refresh()
@@ -168,8 +174,7 @@ class AppDialog(QtGui.QWidget):
             if isinstance(publish_object, Task):
                 self._create_task_details(publish_object)
             elif isinstance(publish_object, Item):
-                self._create_item_details(publish_object)
-                self._create_summary(tree_item)
+                self._create_item_details(tree_item)
             elif publish_object is None:
                 # top node summary
                 self._create_master_summary_details()
@@ -201,7 +206,9 @@ class AppDialog(QtGui.QWidget):
             raise TankError("No current item set!")
         self._current_item.thumbnail = pixmap
 
-    def _create_item_details(self, item):
+    def _create_item_details(self, tree_item):
+
+        item = tree_item.get_publish_instance()
 
         self._current_item = item
         self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
@@ -209,6 +216,9 @@ class AppDialog(QtGui.QWidget):
 
         self.ui.item_name.setText(item.name)
         self.ui.item_type.setText(item.display_type)
+
+        self.ui.item_thumbnail_label.show()
+        self.ui.item_thumbnail.show()
 
         self.ui.item_comments.setPlainText(item.description)
         self.ui.item_thumbnail.set_thumbnail(item.thumbnail)
@@ -221,9 +231,20 @@ class AppDialog(QtGui.QWidget):
             self.ui.link_label.hide()
             self.ui.context_widget.hide()
 
-        # hide settings for now
-        self.ui.item_settings_label.hide()
+        # create summary
+        summary = tree_item.create_summary()
+        # generate a summary
 
+        if len(summary) == 0:
+            summary_text = "Nothing will published."
+
+        else:
+            summary_text = "<p>The following items will be published:</p>"
+            summary_text += "".join(["<p>%s</p>" % line for line in summary])
+
+        self.ui.item_summary.setText(summary_text)
+
+        # skip settings for now
         ## render settings
         #self.ui.item_settings.set_static_data(
         #    [(p, item.properties[p]) for p in item.properties]
@@ -240,19 +261,24 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_type.setText("Publishing 26 items")
         self.ui.item_icon.setPixmap(QtGui.QPixmap(":/tk_multi_publish2/icon_256.png"))
 
-        self.ui.item_comments.setPlainText("")
-        self.ui.item_thumbnail.set_thumbnail(None)
+        self.ui.item_thumbnail_label.hide()
+        self.ui.item_thumbnail.hide()
 
+        self.ui.item_comments.setPlainText("")
+
+        # set context
         self.ui.link_label.show()
         self.ui.context_widget.show()
         self.ui.context_widget.set_context(self._bundle.context)
 
-    def _create_summary(self, tree_item):
-        """
-        Render summary text
-        """
-        summary = tree_item.create_summary()
-        # generate a summary
+        # create summary for all items
+        summary = []
+        for context_index in xrange(self.ui.items_tree.topLevelItemCount()):
+            context_item = self.ui.items_tree.topLevelItem(context_index)
+            summary.extend(context_item.create_summary())
+            for child_index in xrange(context_item.childCount()):
+                child_item = context_item.child(child_index)
+                summary.extend(child_item.create_summary())
 
         if len(summary) == 0:
             summary_text = "Nothing will published."
@@ -262,6 +288,8 @@ class AppDialog(QtGui.QWidget):
             summary_text += "".join(["<p>%s</p>" % line for line in summary])
 
         self.ui.item_summary.setText(summary_text)
+
+
 
 
     def _create_task_details(self, task):
@@ -274,8 +302,7 @@ class AppDialog(QtGui.QWidget):
 
         self.ui.task_description.setText(task.plugin.description)
 
-        # hide settings for now
-        self.ui.task_settings_label.hide()
+        # skip settings for now
         #self.ui.task_settings.set_data(task.settings.values())
 
 

@@ -124,7 +124,13 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         if self.parent():
             self.parent().recompute_check_state()
 
+    def create_summary(self):
+        """
+        Creates summary of actions
 
+        :returns: List of strings
+        """
+        return []
 
     def reset_progress(self):
         """
