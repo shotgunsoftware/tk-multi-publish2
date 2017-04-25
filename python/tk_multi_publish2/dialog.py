@@ -193,9 +193,12 @@ class AppDialog(QtGui.QWidget):
         publish comments box in the overview details pane
         """
         comments = self.ui.item_comments.toPlainText()
-        if not self._current_item:
-            raise TankError("No current item set!")
-        self._current_item.description = comments
+        if self._current_item is None:
+            # this is the summary item - so update all items!
+            for top_level_item in self._plugin_manager.top_level_items:
+                top_level_item.description = comments
+        else:
+            self._current_item.description = comments
 
     def _update_item_thumbnail(self, pixmap):
         """
@@ -232,6 +235,7 @@ class AppDialog(QtGui.QWidget):
             self.ui.context_widget.hide()
 
         # create summary
+        self.ui.item_summary_label.show()
         summary = tree_item.create_summary()
         # generate a summary
 
@@ -258,7 +262,6 @@ class AppDialog(QtGui.QWidget):
         self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
 
         self.ui.item_name.setText("Publish Summary")
-        self.ui.item_type.setText("Publishing 26 items")
         self.ui.item_icon.setPixmap(QtGui.QPixmap(":/tk_multi_publish2/icon_256.png"))
 
         self.ui.item_thumbnail_label.hide()
@@ -272,24 +275,27 @@ class AppDialog(QtGui.QWidget):
         self.ui.context_widget.set_context(self._bundle.context)
 
         # create summary for all items
+        # no need to have a summary since the main label says summary
+        self.ui.item_summary_label.hide()
         summary = []
+        num_items = 0
         for context_index in xrange(self.ui.items_tree.topLevelItemCount()):
             context_item = self.ui.items_tree.topLevelItem(context_index)
             summary.extend(context_item.create_summary())
             for child_index in xrange(context_item.childCount()):
                 child_item = context_item.child(child_index)
-                summary.extend(child_item.create_summary())
+                summary_entries = child_item.create_summary()
+                summary.extend(summary_entries)
+                num_items += len(summary_entries)
 
         if len(summary) == 0:
             summary_text = "Nothing will published."
 
         else:
-            summary_text = "<p>The following items will be published:</p>"
-            summary_text += "".join(["<p>%s</p>" % line for line in summary])
+            summary_text = "".join(["<p>%s</p>" % line for line in summary])
 
         self.ui.item_summary.setText(summary_text)
-
-
+        self.ui.item_type.setText("Publishing %d items" % num_items)
 
 
     def _create_task_details(self, task):
@@ -312,6 +318,17 @@ class AppDialog(QtGui.QWidget):
         """
         self._reload_plugin_scan()
         self._refresh_ui()
+
+        # lastly, select the first item in the tree
+        first_item = None
+        for context_index in xrange(self.ui.items_tree.topLevelItemCount()):
+            context_item = self.ui.items_tree.topLevelItem(context_index)
+            for child_index in xrange(context_item.childCount()):
+                first_item = context_item.child(child_index)
+                break
+        if first_item:
+            self.ui.items_tree.setCurrentItem(first_item)
+
 
     def _on_drop(self, files):
         """
@@ -336,7 +353,14 @@ class AppDialog(QtGui.QWidget):
         else:
             self._progress_handler.logger.error("%d errors reported. Please see the log for details." % len(files))
 
+        # rebuild the tree
         self._refresh_ui()
+
+        # lastly, select the summary
+        self.ui.items_tree.setCurrentItem(
+            # summary is always top node
+            self.ui.items_tree.topLevelItem(0)
+        )
 
     def _refresh_ui(self):
         """
