@@ -48,8 +48,6 @@ class CustomTreeWidgetTask(CustomTreeWidgetBase):
 
         self.ui.checkbox.stateChanged.connect(self._on_checkbox_click)
 
-        self.ui.settings.clicked.connect(self._on_settings_click)
-
         self.ui.status.clicked.connect(self._on_status_click)
 
     def _on_checkbox_click(self, state):
@@ -61,13 +59,6 @@ class CustomTreeWidgetTask(CustomTreeWidgetBase):
             self._tree_node.set_check_state(state, apply_to_all_plugins=True)
         else:
             self._tree_node.set_check_state(state)
-
-    def _on_settings_click(self):
-        """
-        Callback that fires when the user clicks the cog icon
-        """
-        current_task = self._tree_node.task
-        self._tree_node.treeWidget().settings_clicked.emit(current_task)
 
     def _on_status_click(self):
         """

@@ -15,7 +15,7 @@ from sgtk import TankError
 from sgtk.platform.qt import QtCore, QtGui
 
 from .ui.dialog import Ui_Dialog
-from .processing import PluginManager
+from .processing import PluginManager, Task, Item
 from .progress import ProgressHandler
 from .summary_overlay import SummaryOverlay
 
@@ -94,7 +94,6 @@ class AppDialog(QtGui.QWidget):
         self._overlay = SummaryOverlay(self.ui.main_frame)
 
         # settings
-        self.ui.items_tree.settings_clicked.connect(self._create_task_details)
         self.ui.items_tree.status_clicked.connect(self._on_publish_status_clicked)
 
         # when the description is updated
@@ -161,9 +160,13 @@ class AppDialog(QtGui.QWidget):
         else:
             # 1 item selected
             tree_item = items[0]
-            self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
-            self._create_item_details(tree_item.item)
-            self._create_summary(tree_item)
+
+            publish_object = tree_item.get_publish_instance()
+            if isinstance(publish_object, Task):
+                self._create_task_details(publish_object)
+            else:
+                self._create_item_details(publish_object)
+                self._create_summary(tree_item)
 
 
     def _on_publish_status_clicked(self, task_or_item):
@@ -219,7 +222,6 @@ class AppDialog(QtGui.QWidget):
 
 
     def _create_summary(self, tree_item):
-
         summary = tree_item.create_summary()
         # generate a summary
         self.ui.item_summary.setText("<br>".join(line for line in summary))

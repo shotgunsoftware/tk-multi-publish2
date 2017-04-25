@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="tk_multi_publish2">
+    <file>drag_handle.png</file>
     <file>trash.png</file>
     <file>contract.png</file>
     <file>expand.png</file>
@@ -15,8 +16,8 @@
     <file>shotgun.png</file>
     <file>item.png</file>
     <file>camera.png</file>
-      <file>star.png</file>
-      <file>publish_complete.png</file>
-      <file>publish_failed.png</file>
+    <file>star.png</file>
+    <file>publish_complete.png</file>
+    <file>publish_failed.png</file>
   </qresource>
 </RCC>

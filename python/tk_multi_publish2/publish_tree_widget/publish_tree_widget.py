@@ -25,8 +25,6 @@ class PublishTreeWidget(QtGui.QTreeWidget):
     Main widget
     """
 
-    # emitted when a settings button is clicked on a node
-    settings_clicked = QtCore.Signal(object)
     # emitted when a status icon is clicked
     status_clicked = QtCore.Signal(object)
     # emitted when the tree has been rearranged using drag n drop
