@@ -272,9 +272,12 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_comments.setPlainText("")
 
         # set context
-        self.ui.link_label.show()
-        self.ui.context_widget.show()
-        self.ui.context_widget.set_context(self._bundle.context)
+        self.ui.link_label.hide()
+        self.ui.context_widget.hide()
+
+        #self.ui.link_label.show()
+        #self.ui.context_widget.show()
+        #self.ui.context_widget.set_context(self._bundle.context)
 
         # create summary for all items
         # no need to have a summary since the main label says summary
