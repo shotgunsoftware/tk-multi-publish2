@@ -222,8 +222,23 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_name.setText(item.name)
         self.ui.item_type.setText(item.display_type)
 
-        self.ui.item_thumbnail_label.show()
-        self.ui.item_thumbnail.show()
+        # check the state of screenshot
+        if item.thumbnail_enabled:
+            # display and make thumbnail editable
+            self.ui.item_thumbnail_label.show()
+            self.ui.item_thumbnail.show()
+            self.ui.item_thumbnail.setEnabled(True)
+
+        elif not item.thumbnail_enabled and item.thumbnail:
+            # show thumbnail but disabled
+            self.ui.item_thumbnail_label.show()
+            self.ui.item_thumbnail.show()
+            self.ui.item_thumbnail.setEnabled(False)
+
+        else:
+            # hide thumbnail
+            self.ui.item_thumbnail_label.hide()
+            self.ui.item_thumbnail.hide()
 
         self.ui.item_comments.setPlainText(item.description)
         self.ui.item_thumbnail.set_thumbnail(item.thumbnail)

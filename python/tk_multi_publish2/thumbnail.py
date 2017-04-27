@@ -33,11 +33,25 @@ class Thumbnail(QtGui.QLabel):
         """
         QtGui.QLabel.__init__(self, parent)
         self._thumbnail = None
+        self._enabled = True
         self._bundle = sgtk.platform.current_bundle()
         self.setCursor(QtCore.Qt.PointingHandCursor)
         self._no_thumb_pixmap = QtGui.QPixmap(":/tk_multi_publish2/camera.png")
 
         self.set_thumbnail(self._no_thumb_pixmap)
+
+    def setEnabled(self, enabled):
+        """
+        Overrides base class setEnabled
+
+        :param bool enabled: flag to indicate enabled state of the widget
+        """
+        self._enabled = enabled
+        if enabled:
+            self.setCursor(QtCore.Qt.PointingHandCursor)
+        else:
+            self.unsetCursor()
+
 
     def set_thumbnail(self, pixmap):
         """
@@ -55,6 +69,10 @@ class Thumbnail(QtGui.QLabel):
         Fires when the mouse is pressed
         """
         QtGui.QLabel.mousePressEvent(self, event)
+
+        if not self._enabled:
+            # no mouse click response if widget is disabled.
+            return
 
         self._bundle.log_debug("Prompting for screenshot...")
 

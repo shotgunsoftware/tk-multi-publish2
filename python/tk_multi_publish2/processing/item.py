@@ -54,6 +54,7 @@ class Item(object):
         self._checked = True
         self._enabled = True
         self._expanded = True
+        self._thumbnail_enabled = True
 
     def __repr__(self):
         """
@@ -196,6 +197,25 @@ class Item(object):
         self._display_type = display_type
 
     display_type = property(_get_display_type, _set_display_type)
+
+    def _get_thumbnail_enabled(self):
+        """
+        Flag to indicate that thumbnails can be interacted with.
+        - If ``True`, thumbnails will be visible and editable
+          in the publish UI (via screen capture).
+        - If ``False`` and a thumbnail has been set via the :meth:`thumbnail`
+          property, the thumbnail will be visible but screen capture will
+          be disabled.
+        - If ``False`` and no thumbnail has been specified, no thumbnail will
+          appear in the UI.
+        """
+        return self._thumbnail_enabled
+
+    def _set_thumbnail_enabled(self, enabled):
+        # setter for thumbnail_enabled
+        self._thumbnail_enabled = enabled
+
+    thumbnail_enabled = property(_get_thumbnail_enabled, _set_thumbnail_enabled)
 
     def _get_context(self):
         """
