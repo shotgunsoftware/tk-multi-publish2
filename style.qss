@@ -97,6 +97,10 @@ QToolButton:pressed {
     border-top: 1px solid rgba(255, 255, 255, 20%);
 }
 
+/* thumbnail background */
+#item_thumbnail {
+    background-color: #292929;
+}
 
 /* --------------------------------------------------------------------- */
 /* Settings widgets, used in details section */

@@ -97,46 +97,13 @@ class Thumbnail(QtGui.QLabel):
         :param pixmap:  A QPixmap object containing the screenshot image.
         """
         self._thumbnail = pixmap
-        # format it to 16:9
-        thumb = self.__format_thumbnail(pixmap)
+
+        # format it to fit the label size
+        thumb = self._thumbnail.scaled(
+            self.width(),
+            self.height(),
+            QtCore.Qt.KeepAspectRatio,
+            QtCore.Qt.SmoothTransformation
+        )
+
         self.setPixmap(thumb)
-
-    def __format_thumbnail(self, pixmap_obj):
-        """
-        Format a given pixmap to 16:9 ratio
-
-        :param pixmap_obj: input screenshot
-        :returns: 320x180 pixmap (16:9 ratio)
-        """
-        CANVAS_WIDTH = 320
-        CANVAS_HEIGHT = 180
-
-        # get the 512 base image
-        base_image = QtGui.QPixmap(CANVAS_WIDTH, CANVAS_HEIGHT)
-        base_image.fill(QtCore.Qt.transparent)
-
-        # scale it down to fit inside a frame of maximum 512x512
-        thumb_scaled = pixmap_obj.scaled(CANVAS_WIDTH,
-                                         CANVAS_HEIGHT,
-                                         QtCore.Qt.KeepAspectRatioByExpanding,
-                                         QtCore.Qt.SmoothTransformation)
-
-        # now composite the thumbnail on top of the base image
-        # bottom align it to make it look nice
-        thumb_img = thumb_scaled.toImage()
-        brush = QtGui.QBrush(thumb_img)
-
-        painter = QtGui.QPainter(base_image)
-        painter.setRenderHint(QtGui.QPainter.Antialiasing)
-        painter.setBrush(brush)
-
-        pen = QtGui.QPen()
-        pen.setWidth(0)
-        painter.setPen(pen)
-
-        # note how we have to compensate for the corner radius
-        painter.drawRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
-
-        painter.end()
-
-        return base_image
