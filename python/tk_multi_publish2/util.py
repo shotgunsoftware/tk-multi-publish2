@@ -10,7 +10,6 @@
 
 import os
 import pprint
-import sys
 
 import sgtk
 
@@ -19,6 +18,33 @@ logger = sgtk.platform.get_logger(__name__)
 
 
 # ---- file/path util functions
+
+def get_version_path(path, version):
+    """
+    Given a path without a version number, return the path with the supplied
+    version number.
+
+    If a version number is detected in the supplied path, the path will be
+    returned as-is.
+
+    :param path: The path to inject a version number.
+    :param version: The version number to inject.
+
+    :return: The modified path with the supplied version number inserted.
+    """
+
+    # the logic for this method lives in a hook that can be overridden by
+    # clients. exposing the method here in the publish utils api prevents
+    # clients from having to call other hooks directly in their
+    # collector/publisher hook implementations.
+    publisher = sgtk.platform.current_bundle()
+    return publisher.execute_hook_method(
+        "path_info",
+        "get_version_path",
+        path=path,
+        version=version
+    )
+
 
 def get_next_version_path(path):
     """

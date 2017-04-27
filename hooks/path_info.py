@@ -166,6 +166,46 @@ class BasicPathInfo(HookBaseClass):
         # build the path in the same folder
         return os.path.join(folder, seq_filename)
 
+    def get_version_path(self, path, version):
+        """
+        Given a path without a version number, return the path with the supplied
+        version number.
+
+        If a version number is detected in the supplied path, the path will be
+        returned as-is.
+
+        :param path: The path to inject a version number.
+        :param version: The version number to inject.
+
+        :return: The modified path with the supplied version number inserted.
+        """
+
+        publisher = self.parent
+
+        logger = publisher.logger
+        logger.debug("Getting version %s of path: %s ..." % (version, path))
+
+        path_info = publisher.util.get_file_path_components(path)
+        filename = path_info["filename"]
+
+        # see if there's a version in the supplied path
+        version_pattern_match = re.search(VERSION_REGEX, filename)
+
+        if version_pattern_match:
+            # version number already in the path. return the original path
+            return path
+
+        (basename, ext) = os.path.splitext(filename)
+
+        # construct the new filename with the version number inserted
+        version_filename = "%s.%s%s" % (basename, version, ext)
+
+        # construct the new, full path
+        version_path = os.path.join(path_info["folder"], version_filename)
+
+        logger.debug("Returning version path: %s" % (version_path,))
+        return version_path
+
     def get_next_version_path(self, path):
         """
         Given a file path, return a path to the next version.
