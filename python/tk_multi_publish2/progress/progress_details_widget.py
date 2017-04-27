@@ -8,9 +8,9 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-
-from sgtk.platform.qt import QtCore, QtGui
+import os
 import sgtk
+from sgtk.platform.qt import QtCore, QtGui
 
 from .ui.progress_details_widget import Ui_ProgressDetailsWidget
 
@@ -42,6 +42,7 @@ class ProgressDetailsWidget(QtGui.QWidget):
         filter.resized.connect(self._on_parent_resized)
         parent.installEventFilter(filter)
 
+        self.ui.open_log_button.clicked.connect(self._open_log_file)
         self.ui.close.clicked.connect(self.toggle)
 
         # make sure the first column takes up as much space as poss.
@@ -93,8 +94,27 @@ class ProgressDetailsWidget(QtGui.QWidget):
         """
         self.__recompute_position()
 
+    def _open_log_file(self):
+        """
+        Opens the log file for the current engine.
+        """
 
+        # TODO:
+        # We should be able to get the log file path directly from the log
+        # manager. See internal ticket #42283
+        log_file = os.path.join(
+            sgtk.LogManager().log_folder,
+            "%s.log" % (self._bundle.engine.name,)
+        )
 
+        log_file_url = "file://%s" % (log_file,)
+
+        try:
+            logger.debug("Opening log file: '%s'." % (log_file,))
+            QtGui.QDesktopServices.openUrl(QtCore.QUrl(log_file_url))
+        except Exception, e:
+            logger.error(
+                "Failed to open log file: '%s'. Reason: %s" % (log_file, e))
 
 
 class ResizeEventFilter(QtCore.QObject):

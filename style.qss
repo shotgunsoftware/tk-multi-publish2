@@ -265,6 +265,26 @@ ProgressDetailsWidget #log_tree::item {
     background-color: rgba(200, 200, 200, 35%);
 }
 
+#open_log_button {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(200, 200, 200, 18%);
+}
+
+#open_log_button:hover {
+    color: {{SG_HIGHLIGHT_COLOR}};
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(200, 200, 200, 18%);
+}
+
+#open_log_button:pressed {
+    color: {{SG_HIGHLIGHT_COLOR}};
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(200, 200, 200, 35%);
+}
+
 /* Small progress widget */
 
 #progress_message:hover {
