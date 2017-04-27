@@ -82,22 +82,16 @@ class EntityModel(SimpleShotgunHierarchyModel):
 
         :param dict sg_entity_dict: Shotgun dict with name, id and type
         """
+
+        root_entity = None
+
         if self._bundle.context.project:
             # for a project context, show items for current project
-
-            # TODO: remove hard coded paths - instead resolve the entity via the
-            # self._bundle.shotgun.nav_search_entity() method - which currently
-            # seems broken :(
-            root_path = "/Project/%d" % self._bundle.context.project["id"]
-        else:
-            # show everything
-            root_path = "/"
-
-        self._current_entity = sg_entity_dict
+            root_entity = self._bundle.context.project
 
         self.load_data(
             self._seed,
-            path=root_path,
+            root=root_entity,
             entity_fields={"__all__": ["code"]}
         )
 
