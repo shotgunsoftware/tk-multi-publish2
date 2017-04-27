@@ -11,7 +11,7 @@ from tank.platform.qt import QtCore, QtGui
 class Ui_ItemWidget(object):
     def setupUi(self, ItemWidget):
         ItemWidget.setObjectName("ItemWidget")
-        ItemWidget.resize(300, 45)
+        ItemWidget.resize(337, 48)
         ItemWidget.setMinimumSize(QtCore.QSize(0, 45))
         self.verticalLayout = QtGui.QVBoxLayout(ItemWidget)
         self.verticalLayout.setSpacing(0)
@@ -50,10 +50,12 @@ class Ui_ItemWidget(object):
         self.header.setObjectName("header")
         self.horizontalLayout.addWidget(self.header)
         self.status = QtGui.QToolButton(self.frame)
+        self.status.setMinimumSize(QtCore.QSize(30, 30))
+        self.status.setMaximumSize(QtCore.QSize(30, 30))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/tk_multi_publish2/status_validate.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.status.setIcon(icon)
-        self.status.setIconSize(QtCore.QSize(20, 20))
+        self.status.setIconSize(QtCore.QSize(24, 24))
         self.status.setObjectName("status")
         self.horizontalLayout.addWidget(self.status)
         self.checkbox = QtGui.QCheckBox(self.frame)

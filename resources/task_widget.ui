@@ -45,14 +45,14 @@
        <widget class="QLabel" name="icon">
         <property name="minimumSize">
          <size>
-          <width>24</width>
-          <height>24</height>
+          <width>18</width>
+          <height>18</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>24</width>
-          <height>24</height>
+          <width>18</width>
+          <height>18</height>
          </size>
         </property>
         <property name="pixmap">
@@ -81,6 +81,18 @@
       </item>
       <item>
        <widget class="QToolButton" name="status">
+        <property name="minimumSize">
+         <size>
+          <width>30</width>
+          <height>22</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>22</height>
+         </size>
+        </property>
         <property name="toolTip">
          <string>Click for more details</string>
         </property>
@@ -93,8 +105,8 @@
         </property>
         <property name="iconSize">
          <size>
-          <width>20</width>
-          <height>20</height>
+          <width>16</width>
+          <height>16</height>
          </size>
         </property>
        </widget>

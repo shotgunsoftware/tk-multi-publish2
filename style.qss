@@ -183,7 +183,7 @@ CustomTreeWidgetTask #frame {
     padding: 4px;
     padding-left: 4px;
     padding-right: 4px;
-    background-color: #343434;
+    background-color: #303030;
 }
 
 /* the widget that displays the contexts */
