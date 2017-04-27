@@ -113,6 +113,15 @@ class AppDialog(QtGui.QWidget):
         self.ui.expand_all.clicked.connect(self.ui.items_tree.expandAll)
         self.ui.collapse_all.clicked.connect(self._collapse_tree)
 
+        # help button
+        help_url = self._bundle.get_setting("help_url")
+        if help_url:
+            # connect the help button to the help url provided in the settings
+            self.ui.help.clicked.connect(lambda: self._open_url(help_url))
+        else:
+            # no url. hide the button!
+            self.ui.help.hide()
+
         # currently displayed item
         self._current_item = None
 
@@ -622,3 +631,12 @@ class AppDialog(QtGui.QWidget):
             self._current_item.context = context
 
         self._refresh_ui()
+
+    def _open_url(self, url):
+        """Opens the supplied url in the appropriate browser."""
+
+        try:
+            logger.debug("Opening url: '%s'." % (url,))
+            QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
+        except Exception, e:
+            logger.error("Failed to open url: '%s'. Reason: %s" % (url, e))

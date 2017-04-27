@@ -37,6 +37,15 @@ configuration:
         allows_empty: True
         default_value: []
 
+    help_url:
+        type: str
+        description:
+          "The url to open when the 'help' button is clicked in the publisher.
+           The url should typically lead to a page that outlines the studio's
+           publishing workflow. If no url is provided, the help button will
+           not be displayed."
+        default_value: ""
+
 # the Shotgun fields that this app needs in order to operate correctly
 requires_shotgun_fields:
 
