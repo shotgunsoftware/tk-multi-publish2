@@ -199,7 +199,7 @@ class ProgressHandler(object):
         """
         self._current_phase = phase
 
-    def reset_progress(self, max_items):
+    def reset_progress(self, max_items=1):
         logger.debug("Resetting progress bar. Number of items: %s" % max_items)
         self._progress_bar.setMaximum(max_items)
         self._progress_bar.reset()

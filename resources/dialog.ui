@@ -798,6 +798,26 @@ files you want to publish.</string>
            </widget>
           </item>
           <item>
+           <widget class="QToolButton" name="stop_processing">
+            <property name="toolTip">
+             <string>Stop Processing</string>
+            </property>
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/tk_multi_publish2/cross.png</normaloff>:/tk_multi_publish2/cross.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="validate">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">

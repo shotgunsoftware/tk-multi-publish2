@@ -114,6 +114,12 @@ class AppDialog(QtGui.QWidget):
         self.ui.collapse_all.clicked.connect(self._collapse_tree)
         self.ui.refresh.clicked.connect(self._refresh_ui)
 
+        # stop processing logic
+        # hide the stop processing button by default
+        self.ui.stop_processing.hide()
+        self._stop_processing_flagged = False
+        self.ui.stop_processing.clicked.connect(self._trigger_stop_processing)
+
         # help button
         help_url = self._bundle.get_setting("help_url")
         if help_url:
@@ -502,6 +508,8 @@ class AppDialog(QtGui.QWidget):
         """
         Perform a full validation
 
+        :param bool standalone: Indicates that the validation runs on its own,
+            not part of a publish workflow.
         :returns: number of issues reported
         """
         if standalone:
@@ -513,14 +521,25 @@ class AppDialog(QtGui.QWidget):
 
         parent = self.ui.items_tree.invisibleRootItem()
         num_issues = 0
+        self.ui.stop_processing.show()
         try:
             num_issues = self._visit_tree_r(parent, lambda child: child.validate(standalone), "Validating")
         finally:
             self._progress_handler.pop()
-            if num_issues > 0:
+            if self._stop_processing_flagged:
+                self._progress_handler.logger.info("Processing aborted by user.")
+            elif num_issues > 0:
                 self._progress_handler.logger.error("Validation Complete. %d issues reported." % num_issues)
             else:
                 self._progress_handler.logger.info("Validation Complete. All checks passed.")
+
+            if standalone:
+                # reset process aborted flag
+                self._stop_processing_flagged = False
+                self.ui.stop_processing.hide()
+                # reset the progress
+                self._progress_handler.reset_progress()
+
 
         return num_issues
 
@@ -532,52 +551,79 @@ class AppDialog(QtGui.QWidget):
 
         self._prepare_tree(number_phases=3)
 
-        issues = self.do_validate(standalone=False)
-
-        if issues > 0:
-            self._progress_handler.logger.error("Validation errors detected. No proceeding with publish.")
-            return
-
-        # inform the progress system of the current mode
-        self._progress_handler.set_phase(self._progress_handler.PHASE_PUBLISH)
-        self._progress_handler.push("Running publishing pass")
-
-        parent = self.ui.items_tree.invisibleRootItem()
         try:
-            self._visit_tree_r(parent, lambda child: child.publish(), "Publishing")
-        except Exception, e:
-            # todo - design a retry setup?
-            self._progress_handler.logger.error("Error while publishing. Aborting.")
-            publish_failed = True
-            # ensure the full error shows up in the log file
-            logger.error("Finalize error stack:\n%s" % (traceback.format_exc(),))
+            # show cancel button
+            self.ui.stop_processing.show()
+
+            issues = self.do_validate(standalone=False)
+
+            if issues > 0:
+                self._progress_handler.logger.error("Validation errors detected. No proceeding with publish.")
+                return
+
+            if self._stop_processing_flagged:
+                # stop processing
+                return
+
+            # inform the progress system of the current mode
+            self._progress_handler.set_phase(self._progress_handler.PHASE_PUBLISH)
+            self._progress_handler.push("Running publishing pass")
+
+            parent = self.ui.items_tree.invisibleRootItem()
+
+            try:
+                self._visit_tree_r(parent, lambda child: child.publish(), "Publishing")
+            except Exception, e:
+                # ensure the full error shows up in the log file
+                logger.error("Publish error stack:\n%s" % (traceback.format_exc(),))
+                # and log to ui
+                self._progress_handler.logger.error("Error while publishing. Aborting.")
+                publish_failed = True
+            finally:
+                self._progress_handler.pop()
+
+            if not publish_failed and not self._stop_processing_flagged:
+                # proceed with finalizing phase
+
+                # inform the progress system of the current mode
+                self._progress_handler.set_phase(self._progress_handler.PHASE_FINALIZE)
+
+                self._progress_handler.push("Running finalizing pass")
+                try:
+                    self._visit_tree_r(parent, lambda child: child.finalize(), "Finalizing")
+                except Exception, e:
+                    # ensure the full error shows up in the log file
+                    logger.error("Finalize error stack:\n%s" % (traceback.format_exc(),))
+                    # and log to ui
+                    self._progress_handler.logger.error("Error while finalizing. Aborting.")
+                    publish_failed = True
+                finally:
+                    self._progress_handler.pop()
+
+            # if stop processing was flagged, don't show summary at end
+            if self._stop_processing_flagged:
+                self._progress_handler.logger.info("Processing aborted by user.")
+                return
+
         finally:
-            self._progress_handler.pop()
+            # hide cancel button
+            self.ui.stop_processing.hide()
+            # reset abort state
+            self._stop_processing_flagged = False
+            # reset the progress
+            self._progress_handler.reset_progress()
 
-        # inform the progress system of the current mode
-        self._progress_handler.set_phase(self._progress_handler.PHASE_FINALIZE)
-
-        self._progress_handler.push("Running finalizing pass")
-        try:
-            self._visit_tree_r(parent, lambda child: child.finalize(), "Finalizing")
-        except Exception, e:
-            self._progress_handler.logger.error("Error while finalizing. Aborting.")
-            publish_failed = True
-            # ensure the full error shows up in the log file
-            logger.error("Finalize error stack:\n%s" % (traceback.format_exc(),))
-        finally:
-            self._progress_handler.pop()
-
-        self._progress_handler.logger.info("Publish Complete! For details, click here.")
-
-        # disable stuff
+        # disable validate and publish buttons
+        # show close button instead
         self.ui.validate.hide()
         self.ui.publish.hide()
         self.ui.close.show()
 
         if publish_failed:
+            self._progress_handler.logger.error("Publish Failed! For details, click here.")
             self._overlay.show_fail()
         else:
+            self._progress_handler.logger.info("Publish Complete! For details, click here.")
             self._overlay.show_success()
 
 
@@ -585,11 +631,17 @@ class AppDialog(QtGui.QWidget):
 
     def _visit_tree_r(self, parent, action, action_name):
         """
-        Recursive visitor helper function that descends the tree
+        Recursive visitor helper function that descends the tree.
+        Checks the stop processing flag and in case it is triggered,
+        aborts the recursion
         """
         number_true_return_values = 0
 
         for child_index in xrange(parent.childCount()):
+
+            if self._stop_processing_flagged:
+                return number_true_return_values
+
             child = parent.child(child_index)
             if child.enabled:
                 if action_name:
@@ -641,3 +693,10 @@ class AppDialog(QtGui.QWidget):
             QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
         except Exception, e:
             logger.error("Failed to open url: '%s'. Reason: %s" % (url, e))
+
+    def _trigger_stop_processing(self):
+        """
+        Triggers a request to stop processing
+        """
+        logger.info("Processing aborted.")
+        self._stop_processing_flagged = True
