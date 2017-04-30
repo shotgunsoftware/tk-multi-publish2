@@ -112,6 +112,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.delete_items.clicked.connect(self._delete_selected)
         self.ui.expand_all.clicked.connect(self.ui.items_tree.expandAll)
         self.ui.collapse_all.clicked.connect(self._collapse_tree)
+        self.ui.refresh.clicked.connect(self._refresh_ui)
 
         # help button
         help_url = self._bundle.get_setting("help_url")
@@ -142,7 +143,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.task_settings.hide()
 
         # start it up
-        self._refresh()
+        self._full_rebuild()
 
     def closeEvent(self, event):
         """
@@ -343,7 +344,7 @@ class AppDialog(QtGui.QWidget):
         #self.ui.task_settings.set_data(task.settings.values())
 
 
-    def _refresh(self):
+    def _full_rebuild(self):
         """
         Full refresh. All existing configuration is dropped
         """

@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="tk_multi_publish2">
+    <file>refresh.png</file>
     <file>drag_handle.png</file>
     <file>help.png</file>
     <file>contract.png</file>
