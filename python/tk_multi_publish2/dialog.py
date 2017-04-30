@@ -384,17 +384,21 @@ class AppDialog(QtGui.QWidget):
         try:
             self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
             self._overlay.show_loading()
-            self._plugin_manager.add_external_files(files)
+            num_items_created = self._plugin_manager.add_external_files(files)
         finally:
             self._overlay.hide()
             num_errors = self._progress_handler.pop()
 
-        if num_errors == 0:
-            self._progress_handler.logger.info("Successfully added %d items." % len(files))
+        if num_errors == 0 and num_items_created == 0:
+            self._progress_handler.logger.info("Nothing was added.")
+        elif num_errors == 0 and num_items_created == 1:
+            self._progress_handler.logger.info("One item was added.")
+        elif num_errors == 0 and num_items_created > 1:
+            self._progress_handler.logger.info("%d items were added." % num_items_created)
         elif num_errors == 1:
             self._progress_handler.logger.error("An error was reported. Please see the log for details.")
         else:
-            self._progress_handler.logger.error("%d errors reported. Please see the log for details." % len(files))
+            self._progress_handler.logger.error("%d errors reported. Please see the log for details." % num_errors)
 
         # rebuild the tree
         self._refresh_ui()

@@ -34,6 +34,9 @@ class PluginManager(object):
 
         self._logger = publish_logger
 
+        # track files dropped onto the manager
+        self._dropped_paths = []
+
         logger.debug("Loading plugin configuration")
         self._plugins = []
 
@@ -90,9 +93,23 @@ class PluginManager(object):
         Runs the collector for the given set of paths
 
         :param str paths: List of full file path
+        :returns: Number of items created by collectors
         """
-        logger.debug("Adding external files '%s'" % paths)
-        self._collect(collect_current_scene=False, paths=paths)
+        # make sure we don't drop the same file twice
+        paths_to_process = []
+        for path in paths:
+            if path not in self._dropped_paths:
+                logger.debug("Adding external file '%s'" % path)
+                paths_to_process.append(path)
+            else:
+                logger.warning("Skipping duplicate path '%s'" % path)
+
+        self._dropped_paths.extend(paths_to_process)
+        num_items_created = self._collect(
+            collect_current_scene=False,
+            paths=paths_to_process
+        )
+        return num_items_created
 
     def _collect(self, collect_current_scene, paths=None):
         """
@@ -103,6 +120,7 @@ class PluginManager(object):
             process_current_session() method should be executed.
         :param paths: List of paths for which the collector hook's method
             process_file() should be executed for
+        :returns: Number of items created by collectors
         """
         # get existing items
         all_items_before = self._get_item_tree_as_list()
@@ -157,6 +175,7 @@ class PluginManager(object):
                     task = Task.create_task(plugin, item, is_visible, is_enabled, is_checked)
                     self._tasks.append(task)
 
+        return len(all_new_items)
 
 
     def _get_matching_items(self, item_filters, all_items):
