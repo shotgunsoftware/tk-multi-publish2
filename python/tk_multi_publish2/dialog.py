@@ -499,6 +499,17 @@ class AppDialog(QtGui.QWidget):
         else:
             self._progress_handler.logger.error("Errors reported. See log for details.")
 
+    # set all nodes to "ready to go"
+    def _reset_tree_icon_r(self, parent):
+        """
+        Clear the current progress icon recursively
+        for the given tree node
+        """
+        for child_index in xrange(parent.childCount()):
+            child = parent.child(child_index)
+            child.reset_progress()
+            self._reset_tree_icon_r(child)
+
 
     def _prepare_tree(self, number_phases):
 
@@ -506,12 +517,13 @@ class AppDialog(QtGui.QWidget):
 
         parent = self.ui.items_tree.invisibleRootItem()
 
+        self._reset_tree_icon_r(parent)
+
         # set all nodes to "ready to go"
         def _begin_process_r(parent):
             total_number_nodes = 0
             for child_index in xrange(parent.childCount()):
                 child = parent.child(child_index)
-                child.reset_progress()
                 if child.enabled:
                     # child is ticked
                     total_number_nodes += 1
@@ -589,6 +601,9 @@ class AppDialog(QtGui.QWidget):
             self._progress_handler.push("Running publishing pass")
 
             parent = self.ui.items_tree.invisibleRootItem()
+
+            # clear all icons
+            self._reset_tree_icon_r(parent)
 
             try:
                 self._visit_tree_r(parent, lambda child: child.publish(), "Publishing")
