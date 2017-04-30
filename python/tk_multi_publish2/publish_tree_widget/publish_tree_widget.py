@@ -103,12 +103,27 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             self.addTopLevelItem(summary)
 
         # group items by context
-        items_by_context = collections.defaultdict(list)
+        # create a dictionary keyed by context
+        # string representation
+        items_by_context = {}
         for item in self._plugin_manager.top_level_items:
-            items_by_context[item.context].append(item)
 
+            ctx_key = str(item.context)
+            if ctx_key not in items_by_context:
+                items_by_context[ctx_key] = {
+                    "context": item.context,
+                    "items": []
+                }
 
-        for (context, items) in items_by_context.iteritems():
+            items_by_context[ctx_key]["items"].append(item)
+
+        # now build the tree
+        for context_str in sorted(items_by_context.keys()):
+
+            # extract the objects for this context
+            context = items_by_context[context_str]["context"]
+            items = items_by_context[context_str]["items"]
+
             context_item = TreeNodeContext(context, self)
             context_item.setExpanded(True)
             self.addTopLevelItem(context_item)
