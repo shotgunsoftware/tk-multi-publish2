@@ -70,14 +70,17 @@ class ProgressStatusLabel(QtGui.QLabel):
         # label and only the first line
         chopped_message = message.split("\n")[0]
 
-        if len(chopped_message) < 100:
-            super(ProgressStatusLabel, self).setText(chopped_message)
-        else:
-            metrics = QtGui.QFontMetrics(self.font())
+        metrics = QtGui.QFontMetrics(self.font())
 
-            elided_message = metrics.elidedText(
-                chopped_message,
-                QtCore.Qt.ElideRight,
-                self.width()
-            )
-            super(ProgressStatusLabel, self).setText(elided_message)
+        # Max text length is widget length minus an
+        # offset, so we make sure we can fit the
+        # elided text (with the added "...") in
+        # the widget without it expanding.
+        text_width = self.width() - 10
+
+        elided_message = metrics.elidedText(
+            chopped_message,
+            QtCore.Qt.ElideRight,
+            text_width
+        )
+        super(ProgressStatusLabel, self).setText(elided_message)
