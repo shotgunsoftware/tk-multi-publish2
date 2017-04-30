@@ -87,6 +87,18 @@ class ProgressHandler(object):
         logger.debug("Shutting down publish logging...")
         self._log_wrapper.shut_down()
 
+    def is_showing_details(self):
+        """
+        Returns true if the log details are shown, false if not
+        """
+        return self._progress_details.isVisible()
+
+    def hide_details(self):
+        """
+        Hides details window if it's shown
+        """
+        self._progress_details.hide()
+
     def select_last_message(self, publish_instance):
         """
         reveals the last log entry associated with the given publish instance.

@@ -151,6 +151,21 @@ class AppDialog(QtGui.QWidget):
         # start it up
         self._full_rebuild()
 
+    def keyPressEvent(self, event):
+        """
+        Qt Keypress event
+        """
+        # if our log details ui is showing and escape
+        # is pressed, capture it and hide the log details ui
+        if self._progress_handler.is_showing_details() and \
+                event.key() == QtCore.Qt.Key_Escape:
+            # hide log window
+            self._progress_handler.hide_details()
+
+        else:
+            super(AppDialog, self).keyPressEvent(event)
+
+
     def closeEvent(self, event):
         """
         Executed when the main dialog is closed.
