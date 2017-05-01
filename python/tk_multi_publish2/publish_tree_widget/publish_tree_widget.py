@@ -10,7 +10,7 @@
 
 
 import sgtk
-import collections
+from collections import defaultdict
 from sgtk.platform.qt import QtCore, QtGui
 from .tree_node_context import TreeNodeContext
 from .tree_node_task import TreeNodeTask
@@ -135,6 +135,57 @@ class PublishTreeWidget(QtGui.QTreeWidget):
                     tree_parent=context_item
                 )
 
+    def get_full_summary(self):
+        """
+        Compute a full summary report.
+
+        :returns: (num_items, string with html)
+        """
+        summary = []
+        num_items = 0
+        for context_index in xrange(self.topLevelItemCount()):
+            context_item = self.topLevelItem(context_index)
+            summary.extend(context_item.create_summary())
+            tasks = self._summarize_tasks_r(context_item)
+
+            # values of the tasks dictionary contains
+            # how many items there are for each type
+            num_items += sum(tasks.values())
+            # iterate over dictionary and build histogram
+            for task_name, num_tasks in tasks.iteritems():
+                if num_tasks == 1:
+                    summary.append("&ndash; %s: 1 item<br>" % task_name)
+                else:
+                    summary.append("&ndash; %s: %s items<br>" % (task_name, num_tasks))
+
+        if len(summary) == 0:
+            summary_text = "Nothing will published."
+
+        else:
+            summary_text = "".join(["%s" % line for line in summary])
+
+        return (num_items, summary_text)
+
+    def _summarize_tasks_r(self, node):
+        """
+        Recurses down and counts tasks
+
+        :param node: The root node to begin recursion from
+        :returns: Dictionary keyed by task name and where the
+            value represents the number of instances of that task.
+        """
+        tasks = defaultdict(int)
+        for child_index in xrange(node.childCount()):
+            child = node.child(child_index)
+            if isinstance(child, TreeNodeTask):
+                task_obj = child.task
+                tasks[task_obj.plugin.name] += 1
+            else:
+                # process children
+                child_tasks = self._summarize_tasks_r(child)
+                for task_name, num_task_instances in child_tasks.iteritems():
+                    tasks[task_name] += num_task_instances
+        return tasks
 
     def select_first_item(self):
         """

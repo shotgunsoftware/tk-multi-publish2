@@ -60,7 +60,7 @@ class TreeNodeContext(TreeNodeBase):
         :returns: List of strings
         """
         if self.enabled:
-            return ["<div style='color:#0AA3F8'>Linked with <b>%s</b></div>" % self._context]
+            return ["<div style='color:#0AA3F8'><b>%s</b></div>" % self._context]
         else:
             return []
 

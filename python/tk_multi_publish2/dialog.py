@@ -19,6 +19,7 @@ from .processing import PluginManager, Task, Item
 from .progress import ProgressHandler
 from .summary_overlay import SummaryOverlay
 
+
 # import frameworks
 settings = sgtk.platform.import_framework("tk-framework-shotgunutils", "settings")
 help_screen = sgtk.platform.import_framework("tk-framework-qtwidgets", "help_screen")
@@ -271,6 +272,7 @@ class AppDialog(QtGui.QWidget):
             self.ui.item_thumbnail_label.hide()
             self.ui.item_thumbnail.hide()
 
+        self.ui.item_description_label.setText("Description")
         self.ui.item_comments.setPlainText(item.description)
         self.ui.item_thumbnail.set_thumbnail(item.thumbnail)
 
@@ -315,39 +317,20 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_thumbnail_label.hide()
         self.ui.item_thumbnail.hide()
 
+        self.ui.item_description_label.setText("Description to assign to all items")
         self.ui.item_comments.setPlainText("")
 
         # set context
         self.ui.link_label.hide()
         self.ui.context_widget.hide()
 
-        #self.ui.link_label.show()
-        #self.ui.context_widget.show()
-        #self.ui.context_widget.set_context(self._bundle.context)
-
         # create summary for all items
         # no need to have a summary since the main label says summary
         self.ui.item_summary_label.hide()
-        summary = []
-        num_items = 0
-        for context_index in xrange(self.ui.items_tree.topLevelItemCount()):
-            context_item = self.ui.items_tree.topLevelItem(context_index)
-            summary.extend(context_item.create_summary())
-            for child_index in xrange(context_item.childCount()):
-                child_item = context_item.child(child_index)
-                summary_entries = child_item.create_summary()
-                summary.extend(summary_entries)
-                num_items += len(summary_entries)
 
-        if len(summary) == 0:
-            summary_text = "Nothing will published."
-
-        else:
-            summary_text = "".join(["<p>%s</p>" % line for line in summary])
-
-        self.ui.item_summary.setText(summary_text)
+        (num_items, summary) = self.ui.items_tree.get_full_summary()
+        self.ui.item_summary.setText(summary)
         self.ui.item_type.setText("Publishing %d items" % num_items)
-
 
     def _create_task_details(self, task):
         """
@@ -363,7 +346,6 @@ class AppDialog(QtGui.QWidget):
 
         # skip settings for now
         #self.ui.task_settings.set_data(task.settings.values())
-
 
     def _full_rebuild(self):
         """

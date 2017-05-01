@@ -339,7 +339,7 @@ files you want to publish.</string>
                      </widget>
                     </item>
                     <item row="1" column="1" colspan="2">
-                     <widget class="QLabel" name="label_6">
+                     <widget class="QLabel" name="item_description_label">
                       <property name="text">
                        <string>Description</string>
                       </property>
