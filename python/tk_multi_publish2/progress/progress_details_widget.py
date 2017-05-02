@@ -107,11 +107,10 @@ class ProgressDetailsWidget(QtGui.QWidget):
             "%s.log" % (self._bundle.engine.name,)
         )
 
-        log_file_url = "file://%s" % (log_file,)
-
         try:
             logger.debug("Opening log file: '%s'." % (log_file,))
-            QtGui.QDesktopServices.openUrl(QtCore.QUrl(log_file_url))
+            url = QtCore.QUrl.fromLocalFile(log_file)
+            QtGui.QDesktopServices.openUrl(url)
         except Exception, e:
             logger.error(
                 "Failed to open log file: '%s'. Reason: %s" % (log_file, e))
