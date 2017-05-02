@@ -153,7 +153,7 @@ class AppDialog(QtGui.QWidget):
         self._plugin_manager = PluginManager(self._progress_handler.logger)
         self.ui.items_tree.set_plugin_manager(self._plugin_manager)
 
-        # start it up
+        # run collections
         self._full_rebuild()
 
     def keyPressEvent(self, event):
@@ -356,11 +356,14 @@ class AppDialog(QtGui.QWidget):
         self._progress_handler.set_phase(self._progress_handler.PHASE_LOAD)
         self._progress_handler.push("Collecting information")
 
-        self._plugin_manager.run_collectors()
+        num_items_created = self._plugin_manager.run_collectors()
 
         num_errors = self._progress_handler.pop()
-        if num_errors == 0:
-            self._progress_handler.logger.info("Successfully initialized publisher.")
+
+        if num_errors == 0 and num_items_created == 1:
+            self._progress_handler.logger.info("One item discovered by publisher.")
+        elif num_errors == 0 and num_items_created > 1:
+            self._progress_handler.logger.info("%d items discovered by publisher." % num_items_created)
         else:
             self._progress_handler.logger.error("Errors reported. See log for details.")
 

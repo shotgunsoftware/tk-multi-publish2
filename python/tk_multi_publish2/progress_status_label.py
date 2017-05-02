@@ -36,6 +36,8 @@ class ProgressStatusLabel(QtGui.QLabel):
         # for the hover behavior
         self.setMouseTracking(True)
 
+        self._full_text = ""
+
         self._bundle = sgtk.platform.current_bundle()
         self.setCursor(QtCore.Qt.PointingHandCursor)
 
@@ -62,13 +64,20 @@ class ProgressStatusLabel(QtGui.QLabel):
         font.setUnderline(False)
         self.setFont(font)
 
-    def setText(self, message):
+    def resizeEvent(self, event):
         """
-        Sets the text to display in the label. Elides it.
+        When item is resized
+        """
+        self.__update_text_elide()
+        super(ProgressStatusLabel, self).resizeEvent(event)
+
+    def __update_text_elide(self):
+        """
+        Update the text in the widget based on its width
         """
         # set main status message but limit it by the current width of the
         # label and only the first line
-        chopped_message = message.split("\n")[0]
+        chopped_message = self._full_text.split("\n")[0]
 
         metrics = QtGui.QFontMetrics(self.font())
 
@@ -83,4 +92,16 @@ class ProgressStatusLabel(QtGui.QLabel):
             QtCore.Qt.ElideRight,
             text_width
         )
-        super(ProgressStatusLabel, self).setText(elided_message)
+        self.setText(elided_message, compute_elide=False)
+
+    def setText(self, message, compute_elide=True):
+        """
+        Sets the text to display in the label.
+        """
+        if compute_elide:
+            # kick the UI recomputation
+            self._full_text = message
+            self.__update_text_elide()
+        else:
+            # called from __update_text_elide()
+            super(ProgressStatusLabel, self).setText(message)
