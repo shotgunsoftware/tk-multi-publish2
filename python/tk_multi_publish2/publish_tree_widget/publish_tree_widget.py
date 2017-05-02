@@ -177,7 +177,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         tasks = defaultdict(int)
         for child_index in xrange(node.childCount()):
             child = node.child(child_index)
-            if isinstance(child, TreeNodeTask):
+            if isinstance(child, TreeNodeTask) and child.enabled:
                 task_obj = child.task
                 tasks[task_obj.plugin.name] += 1
             else:
@@ -192,11 +192,14 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         Selects the summary if it exists,
         otherwise selects he first item in the tree.
         """
+        logger.debug("Selecting first item in the tree..")
         if self.topLevelItemCount() == 0:
+            logger.debug("Nothing to select!")
             return
 
         first_top_level_item = self.topLevelItem(0)
         if isinstance(first_top_level_item, TreeNodeSummary):
+            logger.debug("Selecting the summary node")
             self.setCurrentItem(first_top_level_item)
 
         else:
@@ -209,6 +212,9 @@ class PublishTreeWidget(QtGui.QTreeWidget):
                     break
             if first_item:
                 self.setCurrentItem(first_item)
+                logger.debug("No summary node present. Selecting %s" % first_item)
+            else:
+                logger.debug("Nothing to select!")
 
     def set_state_for_all_plugins(self, plugin, state):
         """

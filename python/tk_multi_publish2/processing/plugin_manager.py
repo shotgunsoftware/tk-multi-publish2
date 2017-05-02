@@ -60,9 +60,6 @@ class PluginManager(object):
         # initalize tasks
         self._tasks = []
 
-        # process the current scene
-        self._collect(collect_current_scene=True)
-
     @property
     def top_level_items(self):
         """
@@ -88,6 +85,30 @@ class PluginManager(object):
         """
         return self._plugins
 
+    def run_collectors(self):
+        """
+        Reestablishes the state. Recomputes everything.
+
+        :returns: List of items created
+        """
+        logger.debug("Refresh: Removing existing objects")
+        self._root_item = Item.create_invisible_root_item()
+
+        logger.debug("Refresh: Running collection on current scene")
+        # process the current scene
+        current_scene_items_created = self._collect(
+            collect_current_scene=True
+        )
+
+        logger.debug("Refresh: Running collection on all dropped files")
+        # process all dropped paths
+        dropped_files_items_created = self._collect(
+            collect_current_scene=False,
+            paths=self._dropped_paths
+        )
+
+        return len(current_scene_items_created) + len(dropped_files_items_created)
+
     def add_external_files(self, paths):
         """
         Runs the collector for the given set of paths
@@ -103,13 +124,15 @@ class PluginManager(object):
                 paths_to_process.append(path)
             else:
                 logger.warning("Skipping duplicate path '%s'" % path)
-
         self._dropped_paths.extend(paths_to_process)
-        num_items_created = self._collect(
+
+        # now run the collection for all the new items
+        logger.debug("Running scene collection for new paths")
+        items_created = self._collect(
             collect_current_scene=False,
             paths=paths_to_process
         )
-        return num_items_created
+        return len(items_created)
 
     def _collect(self, collect_current_scene, paths=None):
         """
@@ -120,7 +143,7 @@ class PluginManager(object):
             process_current_session() method should be executed.
         :param paths: List of paths for which the collector hook's method
             process_file() should be executed for
-        :returns: Number of items created by collectors
+        :returns: Items created by collectors
         """
         # get existing items
         all_items_before = self._get_item_tree_as_list()
@@ -162,7 +185,7 @@ class PluginManager(object):
                     # this item was accepted by the plugin!
                     # look for bools accepted/visible/enabled/checked
 
-                    # TODO ---- Implement support for this!
+                    # TODO: Implement support for this!
                     # all things are visible by default unless stated otherwise
                     is_visible = accept_data.get("visible", True)
 
@@ -175,8 +198,7 @@ class PluginManager(object):
                     task = Task.create_task(plugin, item, is_visible, is_enabled, is_checked)
                     self._tasks.append(task)
 
-        return len(all_new_items)
-
+        return all_new_items
 
     def _get_matching_items(self, item_filters, all_items):
         """

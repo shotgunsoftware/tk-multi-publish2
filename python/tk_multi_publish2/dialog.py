@@ -83,7 +83,7 @@ class AppDialog(QtGui.QWidget):
         # drag and drop
         self.ui.frame.something_dropped.connect(self._on_drop)
         self.ui.large_drop_area.something_dropped.connect(self._on_drop)
-        self.ui.items_tree.tree_reordered.connect(self._refresh_ui)
+        self.ui.items_tree.tree_reordered.connect(self._synchronize_tree)
 
         # buttons
         self.ui.validate.clicked.connect(self.do_validate)
@@ -113,7 +113,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.delete_items.clicked.connect(self._delete_selected)
         self.ui.expand_all.clicked.connect(self.ui.items_tree.expandAll)
         self.ui.collapse_all.clicked.connect(self._collapse_tree)
-        self.ui.refresh.clicked.connect(self._refresh_ui)
+        self.ui.refresh.clicked.connect(self._full_rebuild)
 
         # stop processing logic
         # hide the stop processing button by default
@@ -149,6 +149,10 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_settings.hide()
         self.ui.task_settings.hide()
 
+        # create a plugin manager
+        self._plugin_manager = PluginManager(self._progress_handler.logger)
+        self.ui.items_tree.set_plugin_manager(self._plugin_manager)
+
         # start it up
         self._full_rebuild()
 
@@ -165,7 +169,6 @@ class AppDialog(QtGui.QWidget):
 
         else:
             super(AppDialog, self).keyPressEvent(event)
-
 
     def closeEvent(self, event):
         """
@@ -210,7 +213,6 @@ class AppDialog(QtGui.QWidget):
             elif publish_object is None:
                 # top node summary
                 self._create_master_summary_details()
-
 
     def _on_publish_status_clicked(self, task_or_item):
         """
@@ -317,7 +319,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_thumbnail_label.hide()
         self.ui.item_thumbnail.hide()
 
-        self.ui.item_description_label.setText("Description to assign to all items")
+        self.ui.item_description_label.setText("Description to apply to all items")
         self.ui.item_comments.setPlainText("")
 
         # set context
@@ -349,10 +351,23 @@ class AppDialog(QtGui.QWidget):
 
     def _full_rebuild(self):
         """
-        Full refresh. All existing configuration is dropped
+        Full rebuild of the plugin state. Everything is recollected.
         """
-        self._reload_plugin_scan()
-        self._refresh_ui()
+        self._progress_handler.set_phase(self._progress_handler.PHASE_LOAD)
+        self._progress_handler.push("Collecting information")
+
+        self._plugin_manager.run_collectors()
+
+        num_errors = self._progress_handler.pop()
+        if num_errors == 0:
+            self._progress_handler.logger.info("Successfully initialized publisher.")
+        else:
+            self._progress_handler.logger.error("Errors reported. See log for details.")
+
+        # make sure the ui is up to date
+        self._synchronize_tree()
+
+        # select summary
         self.ui.items_tree.select_first_item()
 
     def _on_drop(self, files):
@@ -383,12 +398,12 @@ class AppDialog(QtGui.QWidget):
             self._progress_handler.logger.error("%d errors reported. Please see the log for details." % num_errors)
 
         # rebuild the tree
-        self._refresh_ui()
+        self._synchronize_tree()
 
         # lastly, select the summary
         self.ui.items_tree.select_first_item()
 
-    def _refresh_ui(self):
+    def _synchronize_tree(self):
         """
         Redraws the ui and rebuilds data based on
         the low level plugin representation
@@ -399,9 +414,6 @@ class AppDialog(QtGui.QWidget):
         else:
             self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
             self.ui.items_tree.build_tree()
-            # select the first item if nothing is already selected
-            if len(self.ui.items_tree.selectedItems()) == 0:
-                self.ui.items_tree.select_first_item()
 
     def _collapse_tree(self):
         """
@@ -415,7 +427,7 @@ class AppDialog(QtGui.QWidget):
 
     def _delete_selected(self):
         """
-        Delete all selected items
+        Delete all selected items. Prompt the user.
         """
         # check with the user
 
@@ -447,8 +459,7 @@ class AppDialog(QtGui.QWidget):
         for item in processing_items:
             self._plugin_manager.remove_top_level_item(item)
 
-        self._refresh_ui()
-
+        self._synchronize_tree()
 
     def _check_all(self, checked):
         """
@@ -464,23 +475,6 @@ class AppDialog(QtGui.QWidget):
 
         _check_r(parent)
 
-    def _reload_plugin_scan(self):
-        """
-
-        """
-        # run the hooks
-        self._progress_handler.set_phase(self._progress_handler.PHASE_LOAD)
-        self._progress_handler.push("Collecting information")
-
-        self._plugin_manager = PluginManager(self._progress_handler.logger)
-        self.ui.items_tree.set_plugin_manager(self._plugin_manager)
-
-        num_errors = self._progress_handler.pop()
-        if num_errors == 0:
-            self._progress_handler.logger.info("Successfully initialized publisher.")
-        else:
-            self._progress_handler.logger.error("Errors reported. See log for details.")
-
     # set all nodes to "ready to go"
     def _reset_tree_icon_r(self, parent):
         """
@@ -492,9 +486,18 @@ class AppDialog(QtGui.QWidget):
             child.reset_progress()
             self._reset_tree_icon_r(child)
 
-
     def _prepare_tree(self, number_phases):
+        """
+        Prepares the tree for processing.
 
+        Will reset the progress bar and set it's max
+        value based on the number of nodes plus the
+        specified number of phases.
+
+        Will clear status icons in the tree.
+
+        :param int number_phases: Number of passes to run
+        """
         self.ui.items_tree.expandAll()
 
         parent = self.ui.items_tree.invisibleRootItem()
@@ -552,7 +555,6 @@ class AppDialog(QtGui.QWidget):
                 self.ui.stop_processing.hide()
                 # reset the progress
                 self._progress_handler.reset_progress()
-
 
         return num_issues
 
@@ -642,9 +644,6 @@ class AppDialog(QtGui.QWidget):
             self._progress_handler.logger.info("Publish Complete! For details, click here.")
             self._overlay.show_success()
 
-
-
-
     def _visit_tree_r(self, parent, action, action_name):
         """
         Recursive visitor helper function that descends the tree.
@@ -686,7 +685,6 @@ class AppDialog(QtGui.QWidget):
                         self._progress_handler.pop()
         return number_true_return_values
 
-
     def _on_item_context_change(self, context):
         """
         Fires when a new context is selected for the current item
@@ -699,7 +697,7 @@ class AppDialog(QtGui.QWidget):
         else:
             self._current_item.context = context
 
-        self._refresh_ui()
+        self._synchronize_tree()
 
     def _open_url(self, url):
         """Opens the supplied url in the appropriate browser."""
