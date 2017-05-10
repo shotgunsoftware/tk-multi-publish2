@@ -202,7 +202,7 @@ class Plugin(object):
             return self._plugin.accept(self.settings, item)
         except Exception, e:
             error_msg = traceback.format_exc()
-            self._logger.exception(
+            self._logger.error(
                 "Error running accept for %s" % self,
                 extra=self._get_error_extra_info(error_msg)
             )
@@ -224,7 +224,7 @@ class Plugin(object):
             status = self._plugin.validate(settings, item)
         except Exception, e:
             error_msg = traceback.format_exc()
-            self._logger.exception(
+            self._logger.error(
                 "Error Validating: %s" % (e,),
                 extra=self._get_error_extra_info(error_msg)
             )
@@ -256,7 +256,7 @@ class Plugin(object):
             self._plugin.publish(settings, item)
         except Exception, e:
             error_msg = traceback.format_exc()
-            self._logger.exception(
+            self._logger.error(
                 "Error publishing: %s" % (e,),
                 extra=self._get_error_extra_info(error_msg)
             )
@@ -277,7 +277,7 @@ class Plugin(object):
             self._plugin.finalize(settings, item)
         except Exception, e:
             error_msg = traceback.format_exc()
-            self._logger.exception(
+            self._logger.error(
                 "Error finalizing: %s" % (e,),
                 extra=self._get_error_extra_info(error_msg)
             )

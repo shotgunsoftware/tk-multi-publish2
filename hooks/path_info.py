@@ -35,7 +35,7 @@ class BasicPathInfo(HookBaseClass):
     Methods for basic file path parsing.
     """
 
-    def get_publish_name(self, path):
+    def get_publish_name(self, path, sequence=False):
         """
         Given a file path, return the display name to use for publishing.
 
@@ -54,6 +54,8 @@ class BasicPathInfo(HookBaseClass):
             out: my_file.###.jpg
 
         :param path: The path to a file, likely one to be published.
+        :param sequence: If True, treat the path as a sequence name and replace
+            the frame number with placeholder
 
         :return: A publish display name for the provided path.
         """
@@ -77,8 +79,8 @@ class BasicPathInfo(HookBaseClass):
                 publish_name = "%s.%s" % (prefix, extension)
             else:
                 publish_name = prefix
-        elif frame_pattern_match:
-            # found a frame number, replace it with #s
+        elif frame_pattern_match and sequence:
+            # found a frame number, meplace it with #s
             prefix = frame_pattern_match.group(1)
             frame_sep = frame_pattern_match.group(2)
             frame = frame_pattern_match.group(3)
@@ -125,46 +127,160 @@ class BasicPathInfo(HookBaseClass):
         logger.debug("Returning version number: %s" % (version_number,))
         return version_number
 
-    def get_image_sequence_path(self, path):
+    def get_frame_sequence_path(self, path, frame_spec=None):
         """
-        Given a path to an image on disk, see if a frame number can be
-        identified. If the frame number can be identified, return the original
-        path with the frame number replaced by a format string with appropriate
-        padding.
+        Given a path with a frame number, return the sequence path where the
+        frame number is replaced with a given frame specification such as
+        ``{FRAME}`` or ``%04d`` or ``$F``.
 
-        Example::
+        :param path: The input path with a frame number
+        :param frame_spec: The frame specification to replace the frame number
+            with.
 
-             in: "/path/to/the/supplied/folder/key_light1.0001.exr"
-            out: "/path/to/the/supplied/folder/key_light1.%04d.exr",
-
-        :param path: The path to identify a frame number and return format path
-
-        :return: A path with the frame number replaced by format specification.
-            If no frame number exsists in the path, returns ``None``.
+        :return: The full frame sequence path
         """
 
-        (folder, filename) = os.path.split(path)
+        publisher = self.parent
+        path_info = publisher.util.get_file_path_components(path)
 
-        # see if the path has a frame number
-        frame_pattern_match = re.search(FRAME_REGEX, filename)
+        # see if there is a frame number
+        frame_pattern_match = re.search(FRAME_REGEX, path_info["filename"])
 
         if not frame_pattern_match:
-            # no frame number detected. nothing to do
+            # no frame number detected. carry on.
             return None
 
         prefix = frame_pattern_match.group(1)
         frame_sep = frame_pattern_match.group(2)
         frame_str = frame_pattern_match.group(3)
-        extension = frame_pattern_match.group(4)
+        extension = frame_pattern_match.group(4) or ""
 
         # make sure we maintain the same padding
-        padding = len(frame_str)
-        frame_format = "%%0%dd" % (padding,)
-        seq_filename = "%s%s%s.%s" % (
-            prefix, frame_sep, frame_format, extension)
+        if not frame_spec:
+            padding = len(frame_str)
+            frame_spec = "%%0%dd" % (padding,)
 
-        # build the path in the same folder
-        return os.path.join(folder, seq_filename)
+        seq_filename = "%s%s%s" % (prefix, frame_sep, frame_spec)
+
+        if extension:
+            seq_filename = "%s.%s" % (seq_filename, extension)
+
+        # build the full sequence path
+        return os.path.join(path_info["folder"], seq_filename)
+
+    def get_frame_sequences(self, folder, extensions=None, frame_spec=None):
+        """
+        Given a folder, inspect the contained files to find what appear to be
+        files with frame numbers.
+
+        :param folder: The path to a folder potentially containing a sequence of
+            files.
+
+        :param extensions: A list of file extensions to retrieve paths for.
+            If not supplied, the extension will be ignored.
+
+        :param frame_spec: A string to use to represent the frame number in the
+            return sequence path.
+
+        :return: A list of tuples for each identified frame sequence. The first
+            item in the tuple is a sequence path with the frame number replaced
+            with the supplied frame specification. If no frame spec is supplied,
+            a python string format spec will be returned with the padding found
+            in the file.
+
+
+            Example::
+
+            get_frame_sequences(
+                "/path/to/the/folder",
+                ["exr", "jpg"],
+                frame_spec="{FRAME}"
+            )
+
+            [
+                (
+                    "/path/to/the/supplied/folder/key_light1.{FRAME}.exr",
+                    [<frame_1_path>, <frame_2_path>, ...]
+                ),
+                (
+                    "/path/to/the/supplied/folder/fill_light1.{FRAME}.jpg",
+                    [<frame_1_path>, <frame_2_path>, ...]
+                )
+            ]
+        """
+
+        publisher = self.parent
+        logger = publisher.logger
+
+        logger.debug(
+            "Looking for sequences in folder: '%s'..." % (folder,))
+
+        # list of already processed file names
+        processed_names = {}
+
+        # examine the files in the folder
+        for filename in os.listdir(folder):
+            file_path = os.path.join(folder, filename)
+
+            if os.path.isdir(file_path):
+                # ignore subfolders
+                continue
+
+            # see if there is a frame number
+            frame_pattern_match = re.search(FRAME_REGEX, filename)
+
+            if not frame_pattern_match:
+                # no frame number detected. carry on.
+                continue
+
+            prefix = frame_pattern_match.group(1)
+            frame_sep = frame_pattern_match.group(2)
+            frame_str = frame_pattern_match.group(3)
+            extension = frame_pattern_match.group(4) or ""
+
+            # filename without a frame number.
+            file_no_frame = "%s.%s" % (prefix, extension)
+
+            if file_no_frame in processed_names:
+                # already processed this sequence. add the file to the list
+                processed_names[file_no_frame]["file_list"].append(file_path)
+                continue
+
+            if extensions and extension not in extensions:
+                # not one of the extensions supplied
+                continue
+
+            # make sure we maintain the same padding
+            if not frame_spec:
+                padding = len(frame_str)
+                frame_spec = "%%0%dd" % (padding,)
+
+            seq_filename = "%s%s%s" % (prefix, frame_sep, frame_spec)
+
+            if extension:
+                seq_filename = "%s.%s" % (seq_filename, extension)
+
+            # build the path in the same folder
+            seq_path = os.path.join(folder, seq_filename)
+
+            # remember each seq path identified and a list of files matching the
+            # seq pattern
+            processed_names[file_no_frame] = {
+                "sequence_path": seq_path,
+                "file_list": [file_path]
+            }
+
+        # build the final list of sequence paths to return
+        frame_sequences = []
+        for file_no_frame in processed_names:
+
+            seq_info = processed_names[file_no_frame]
+            seq_path = seq_info["sequence_path"]
+
+            logger.debug("Found sequence: %s" % (seq_path,))
+            frame_sequences.append((seq_path, seq_info["file_list"]))
+
+        return frame_sequences
 
     def get_version_path(self, path, version):
         """

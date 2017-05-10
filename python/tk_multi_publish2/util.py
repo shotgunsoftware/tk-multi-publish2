@@ -139,21 +139,16 @@ def get_file_path_components(path):
     return file_info
 
 
-def get_image_sequence_path(path):
+def get_frame_sequence_path(path, frame_spec=None):
     """
-    Given a path to an image on disk, see if a frame number can be identified.
-    If the frame number can be identified, return the original path with the
-    frame number replaced by a format string with appropriate padding.
+    Given a path with a frame number, return the sequence path where the frame
+    number is replaced with a given frame specification such as ``{FRAME}`` or
+    ``%04d`` or ``$F``.
 
-    Example::
+    :param path: The input path with a frame number
+    :param frame_spec: The frame specification to replace the frame number with.
 
-         in: "/path/to/the/supplied/folder/key_light1.0001.exr"
-        out: "/path/to/the/supplied/folder/key_light1.%04d.exr",
-
-    :param path: The path to identify a frame number and return format path
-
-    :return: A path with the frame number replaced by format specification. If
-        no frame number exsists in the path, returns ``None``.
+    :return: The full frame sequence path
     """
 
     # the logic for this method lives in a hook that can be overridden by
@@ -163,12 +158,68 @@ def get_image_sequence_path(path):
     publisher = sgtk.platform.current_bundle()
     return publisher.execute_hook_method(
         "path_info",
-        "get_image_sequence_path",
-        path=path
+        "get_frame_sequence_path",
+        path=path,
+        frame_spec=frame_spec
     )
 
 
-def get_publish_name(path):
+def get_frame_sequences(folder, extensions=None, frame_spec=None):
+    """
+    Given a folder, inspect the contained files to find what appear to be
+    files with frame numbers.
+
+    :param folder: The path to a folder potentially containing a sequence of
+        files.
+
+    :param extensions: A list of file extensions to retrieve paths for.
+        If not supplied, the extension will be ignored.
+
+    :param frame_spec: A string to use to represent the frame number in the
+        return sequence path.
+
+    :return: A list of tuples for each identified frame sequence. The first
+        item in the tuple is a sequence path with the frame number replaced
+        with the supplied frame specification. If no frame spec is supplied,
+        a python string format spec will be returned with the padding found
+        in the file.
+
+
+        Example::
+
+            get_frame_sequences(
+                "/path/to/the/folder",
+                ["exr", "jpg"],
+                frame_spec="{FRAME}"
+            )
+
+            [
+                (
+                    "/path/to/the/supplied/folder/key_light1.{FRAME}.exr",
+                    [<frame_1_path>, <frame_2_path>, ...]
+                ),
+                (
+                    "/path/to/the/supplied/folder/fill_light1.{FRAME}.jpg",
+                    [<frame_1_path>, <frame_2_path>, ...]
+                )
+            ]
+    """
+
+    # the logic for this method lives in a hook that can be overridden by
+    # clients. exposing the method here in the publish utils api prevents
+    # clients from having to call other hooks directly in their
+    # collector/publisher hook implementations.
+    publisher = sgtk.platform.current_bundle()
+    return publisher.execute_hook_method(
+        "path_info",
+        "get_frame_sequences",
+        folder=folder,
+        extensions=extensions,
+        frame_spec=frame_spec
+    )
+
+
+def get_publish_name(path, sequence=False):
     """
     Given a file path, return the display name to use for publishing.
 
@@ -182,6 +233,8 @@ def get_publish_name(path):
         out: my_file.jpg
 
     :param path: The path to a file, likely one to be published.
+    :param sequence: If True, treat the path as a sequence name and replace
+        the frame number with placeholder
 
     :return: A publish display name for the provided path.
     """
@@ -194,7 +247,8 @@ def get_publish_name(path):
     return publisher.execute_hook_method(
         "path_info",
         "get_publish_name",
-        path=path
+        path=path,
+        sequence=sequence
     )
 
 

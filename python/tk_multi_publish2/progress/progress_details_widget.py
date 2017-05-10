@@ -52,6 +52,8 @@ class ProgressDetailsWidget(QtGui.QWidget):
         else:
             self.ui.log_tree.header().setResizeMode(0, QtGui.QHeaderView.Stretch)
 
+        self.ui.log_tree.setIndentation(8)
+
         self.hide()
 
 
