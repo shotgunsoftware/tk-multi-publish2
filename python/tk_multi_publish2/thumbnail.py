@@ -27,6 +27,10 @@ class Thumbnail(QtGui.QLabel):
     # passes the QPixmap as a parameter
     screen_grabbed = QtCore.Signal(object)
 
+    # internal signal to initiate screengrab
+    _do_screengrab = QtCore.Signal()
+
+
     def __init__(self, parent=None):
         """
         :param parent: The parent QWidget for this control
@@ -35,8 +39,10 @@ class Thumbnail(QtGui.QLabel):
         self._thumbnail = None
         self._enabled = True
         self._bundle = sgtk.platform.current_bundle()
+        self.setAutoFillBackground(True)
         self.setCursor(QtCore.Qt.PointingHandCursor)
         self._no_thumb_pixmap = QtGui.QPixmap(":/tk_multi_publish2/camera.png")
+        self._do_screengrab.connect(self._on_screengrab)
 
         self.set_thumbnail(self._no_thumb_pixmap)
 
@@ -65,14 +71,26 @@ class Thumbnail(QtGui.QLabel):
             self._set_screenshot_pixmap(pixmap)
 
     def mousePressEvent(self, event):
-        """
-        Fires when the mouse is pressed
-        """
-        QtGui.QLabel.mousePressEvent(self, event)
 
-        if not self._enabled:
-            # no mouse click response if widget is disabled.
-            return
+        self.setStyleSheet("QLabel {border: 1px solid white;}")
+
+    def mouseReleaseEvent(self, event):
+        """
+        Fires when the mouse is released
+        """
+        QtGui.QLabel.mouseReleaseEvent(self, event)
+
+        self.setStyleSheet(None)
+
+
+        if self._enabled:
+            # if the mouse is released over the widget,
+            # kick off the screengrab
+            pos_mouse = event.pos()
+            if self.rect().contains(pos_mouse):
+                self._do_screengrab.emit()
+
+    def _on_screengrab(self):
 
         self._bundle.log_debug("Prompting for screenshot...")
 
