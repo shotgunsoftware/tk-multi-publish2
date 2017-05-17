@@ -76,7 +76,7 @@ class Thumbnail(QtGui.QLabel):
         QtGui.QLabel.mousePressEvent(self, event)
 
         if self._enabled:
-            self.setStyleSheet("{border: 1px solid #eee;}")
+            self.setStyleSheet("QLabel {border: 1px solid #eee;}")
 
     def mouseReleaseEvent(self, event):
         """
