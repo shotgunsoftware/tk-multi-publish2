@@ -30,7 +30,6 @@ class Thumbnail(QtGui.QLabel):
     # internal signal to initiate screengrab
     _do_screengrab = QtCore.Signal()
 
-
     def __init__(self, parent=None):
         """
         :param parent: The parent QWidget for this control
@@ -43,7 +42,6 @@ class Thumbnail(QtGui.QLabel):
         self.setCursor(QtCore.Qt.PointingHandCursor)
         self._no_thumb_pixmap = QtGui.QPixmap(":/tk_multi_publish2/camera.png")
         self._do_screengrab.connect(self._on_screengrab)
-
         self.set_thumbnail(self._no_thumb_pixmap)
 
     def setEnabled(self, enabled):
@@ -58,7 +56,6 @@ class Thumbnail(QtGui.QLabel):
         else:
             self.unsetCursor()
 
-
     def set_thumbnail(self, pixmap):
         """
         Set pixmap to be displayed
@@ -71,19 +68,27 @@ class Thumbnail(QtGui.QLabel):
             self._set_screenshot_pixmap(pixmap)
 
     def mousePressEvent(self, event):
+        """
+        Fires when the mouse is pressed.
+        In order to emulate the aesthetics of a button,
+        a white frame is rendered around the label at mouse press.
+        """
+        QtGui.QLabel.mousePressEvent(self, event)
 
-        self.setStyleSheet("QLabel {border: 1px solid white;}")
+        if self._enabled:
+            self.setStyleSheet("{border: 1px solid #eee;}")
 
     def mouseReleaseEvent(self, event):
         """
         Fires when the mouse is released
+        Stop drawing the border and emit screen grab signal.
         """
         QtGui.QLabel.mouseReleaseEvent(self, event)
 
-        self.setStyleSheet(None)
-
-
         if self._enabled:
+            # disable style
+            self.setStyleSheet(None)
+
             # if the mouse is released over the widget,
             # kick off the screengrab
             pos_mouse = event.pos()
@@ -91,7 +96,9 @@ class Thumbnail(QtGui.QLabel):
                 self._do_screengrab.emit()
 
     def _on_screengrab(self):
-
+        """
+        Perform a screengrab and update the label pixmap.
+        """
         self._bundle.log_debug("Prompting for screenshot...")
 
         self.window().hide()
