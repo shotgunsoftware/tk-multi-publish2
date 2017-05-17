@@ -196,9 +196,29 @@ class AppDialog(QtGui.QWidget):
         details section reflects the selected item
         in the left hand side tree.
         """
+
+        # look at how many items are checked
+        checked_top_items = 0
+        for context_index in xrange(self.ui.items_tree.topLevelItemCount()):
+            context_item = self.ui.items_tree.topLevelItem(context_index)
+            for child_index in xrange(context_item.childCount()):
+                child_item = context_item.child(child_index)
+                if child_item.enabled:
+                    checked_top_items += 1
+
+        if checked_top_items == 0:
+            # disable buttons
+            self.ui.publish.setEnabled(False)
+            self.ui.validate.setEnabled(False)
+        else:
+            self.ui.publish.setEnabled(True)
+            self.ui.validate.setEnabled(True)
+
+        # now look at selection
         items = self.ui.items_tree.selectedItems()
 
         if len(items) != 1:
+            # show overlay with 'please select single item'
             self.ui.details_stack.setCurrentIndex(self.PLEASE_SELECT_DETAILS)
 
         else:
