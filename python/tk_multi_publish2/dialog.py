@@ -576,7 +576,7 @@ class AppDialog(QtGui.QWidget):
             issues = self.do_validate(standalone=False)
 
             if issues > 0:
-                self._progress_handler.logger.error("Validation errors detected. No proceeding with publish.")
+                self._progress_handler.logger.error("Validation errors detected. Not proceeding with publish.")
                 return
 
             if self._stop_processing_flagged:
