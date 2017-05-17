@@ -340,6 +340,9 @@ def get_conflicting_publishes(context, path, publish_name, filters=None):
         ["path"]
     )
 
+    # ensure the path is normalized for comparison
+    normalized_path = sgtk.util.ShotgunPath.normalize(path)
+
     # next, extract the publish path from each of the returned publishes and
     # compare it against the supplied path. if the paths match, we add the
     # publish to the list of publishes to return.
@@ -347,8 +350,12 @@ def get_conflicting_publishes(context, path, publish_name, filters=None):
     matching_publishes = []
     for publish in publishes:
         publish_path = sgtk.util.resolve_publish_path(publisher.sgtk, publish)
-        if publish_path and publish_path == path:
-            matching_publishes.append(publish)
+        if publish_path:
+            # ensure the published path is normalized for comparison
+            normalized_publish_path = sgtk.util.ShotgunPath.normalize(
+                publish_path)
+            if normalized_path == normalized_publish_path:
+                matching_publishes.append(publish)
 
     return matching_publishes
 
