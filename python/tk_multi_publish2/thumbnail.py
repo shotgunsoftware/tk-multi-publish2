@@ -81,7 +81,8 @@ class Thumbnail(QtGui.QLabel):
     def mouseReleaseEvent(self, event):
         """
         Fires when the mouse is released
-        Stop drawing the border and emit screen grab signal.
+        Stops drawing the border and emits an internal
+        screen grab signal.
         """
         QtGui.QLabel.mouseReleaseEvent(self, event)
 
@@ -98,6 +99,7 @@ class Thumbnail(QtGui.QLabel):
     def _on_screengrab(self):
         """
         Perform a screengrab and update the label pixmap.
+        Emit screen_grabbed signal.
         """
         self._bundle.log_debug("Prompting for screenshot...")
 
