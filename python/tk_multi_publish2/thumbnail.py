@@ -27,6 +27,9 @@ class Thumbnail(QtGui.QLabel):
     # passes the QPixmap as a parameter
     screen_grabbed = QtCore.Signal(object)
 
+    # internal signal to initiate screengrab
+    _do_screengrab = QtCore.Signal()
+
     def __init__(self, parent=None):
         """
         :param parent: The parent QWidget for this control
@@ -35,9 +38,10 @@ class Thumbnail(QtGui.QLabel):
         self._thumbnail = None
         self._enabled = True
         self._bundle = sgtk.platform.current_bundle()
+        self.setAutoFillBackground(True)
         self.setCursor(QtCore.Qt.PointingHandCursor)
         self._no_thumb_pixmap = QtGui.QPixmap(":/tk_multi_publish2/camera.png")
-
+        self._do_screengrab.connect(self._on_screengrab)
         self.set_thumbnail(self._no_thumb_pixmap)
 
     def setEnabled(self, enabled):
@@ -52,7 +56,6 @@ class Thumbnail(QtGui.QLabel):
         else:
             self.unsetCursor()
 
-
     def set_thumbnail(self, pixmap):
         """
         Set pixmap to be displayed
@@ -66,14 +69,38 @@ class Thumbnail(QtGui.QLabel):
 
     def mousePressEvent(self, event):
         """
-        Fires when the mouse is pressed
+        Fires when the mouse is pressed.
+        In order to emulate the aesthetics of a button,
+        a white frame is rendered around the label at mouse press.
         """
         QtGui.QLabel.mousePressEvent(self, event)
 
-        if not self._enabled:
-            # no mouse click response if widget is disabled.
-            return
+        if self._enabled:
+            self.setStyleSheet("QLabel {border: 1px solid #eee;}")
 
+    def mouseReleaseEvent(self, event):
+        """
+        Fires when the mouse is released
+        Stops drawing the border and emits an internal
+        screen grab signal.
+        """
+        QtGui.QLabel.mouseReleaseEvent(self, event)
+
+        if self._enabled:
+            # disable style
+            self.setStyleSheet(None)
+
+            # if the mouse is released over the widget,
+            # kick off the screengrab
+            pos_mouse = event.pos()
+            if self.rect().contains(pos_mouse):
+                self._do_screengrab.emit()
+
+    def _on_screengrab(self):
+        """
+        Perform a screengrab and update the label pixmap.
+        Emit screen_grabbed signal.
+        """
         self._bundle.log_debug("Prompting for screenshot...")
 
         self.window().hide()
