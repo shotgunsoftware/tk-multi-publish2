@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>798</width>
-    <height>566</height>
+    <height>648</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -284,39 +284,32 @@ files you want to publish.</string>
                    </widget>
                   </item>
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_5">
-                    <property name="spacing">
-                     <number>30</number>
-                    </property>
-                    <item>
-                     <widget class="QLabel" name="link_label">
-                      <property name="text">
-                       <string>Link</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="ContextWidget" name="context_widget" native="true">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
+                   <widget class="ContextWidget" name="context_widget" native="true"/>
                   </item>
                   <item>
-                   <layout class="QGridLayout" name="gridLayout">
-                    <item row="1" column="0">
+                   <widget class="QLabel" name="label">
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QGridLayout" name="gridLayout_3">
+                    <item row="0" column="1">
+                     <widget class="QLabel" name="item_description_label">
+                      <property name="text">
+                       <string>Description</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="0">
                      <widget class="QLabel" name="item_thumbnail_label">
                       <property name="text">
                        <string>Thumbnail</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="2" column="1" colspan="2">
+                    <item row="1" column="1">
                      <widget class="QPlainTextEdit" name="item_comments">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -338,14 +331,7 @@ files you want to publish.</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="1" column="1" colspan="2">
-                     <widget class="QLabel" name="item_description_label">
-                      <property name="text">
-                       <string>Description</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="0">
+                    <item row="1" column="0">
                      <widget class="Thumbnail" name="item_thumbnail">
                       <property name="minimumSize">
                        <size>
@@ -392,8 +378,8 @@ files you want to publish.</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>445</width>
-                       <height>76</height>
+                       <width>444</width>
+                       <height>107</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_10" stretch="0,1">
@@ -494,8 +480,8 @@ files you want to publish.</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>445</width>
-                       <height>166</height>
+                       <width>98</width>
+                       <height>28</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_13" stretch="0,1">
@@ -899,17 +885,32 @@ files you want to publish.</string>
    <header>..publish_tree_widget</header>
   </customwidget>
   <customwidget>
+   <class>ProgressStatusLabel</class>
+   <extends>QLabel</extends>
+   <header>..progress_status_label</header>
+  </customwidget>
+  <customwidget>
    <class>ContextWidget</class>
    <extends>QWidget</extends>
    <header>..context_widget</header>
    <container>1</container>
   </customwidget>
-  <customwidget>
-   <class>ProgressStatusLabel</class>
-   <extends>QLabel</extends>
-   <header>..progress_status_label</header>
-  </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>item_comments</tabstop>
+  <tabstop>validate</tabstop>
+  <tabstop>publish</tabstop>
+  <tabstop>items_tree</tabstop>
+  <tabstop>refresh</tabstop>
+  <tabstop>delete_items</tabstop>
+  <tabstop>expand_all</tabstop>
+  <tabstop>collapse_all</tabstop>
+  <tabstop>help</tabstop>
+  <tabstop>close</tabstop>
+  <tabstop>stop_processing</tabstop>
+  <tabstop>scrollArea</tabstop>
+  <tabstop>scrollArea_2</tabstop>
+ </tabstops>
  <resources>
   <include location="resources.qrc"/>
  </resources>
