@@ -130,6 +130,12 @@ class AppDialog(QtGui.QWidget):
             # no url. hide the button!
             self.ui.help.hide()
 
+        # browse tool button
+        self.ui.browse.clicked.connect(self._on_browse)
+
+        # drop area browse button
+        self.ui.drop_area_browse.clicked.connect(self._on_browse)
+
         # currently displayed item
         self._current_item = None
 
@@ -721,6 +727,26 @@ class AppDialog(QtGui.QWidget):
             self._current_item.context = context
 
         self._synchronize_tree()
+
+    def _on_browse(self):
+        """Opens a file dialog to browse to files for publishing."""
+
+        file_dialog = QtGui.QFileDialog(
+            parent=self,
+            caption="Browse files to publish"
+        )
+        file_dialog.setLabelText(QtGui.QFileDialog.Accept, "Select")
+        file_dialog.setLabelText(QtGui.QFileDialog.Reject, "Cancel")
+        file_dialog.setOption(QtGui.QFileDialog.DontResolveSymlinks)
+        file_dialog.setOption(QtGui.QFileDialog.DontUseNativeDialog)
+        file_dialog.setFileMode(QtGui.QFileDialog.ExistingFiles)
+        if not file_dialog.exec_():
+            return
+
+        files = file_dialog.selectedFiles()
+        if files:
+            # simulate dropping the files into the dialog
+            self._on_drop(files)
 
     def _open_url(self, url):
         """Opens the supplied url in the appropriate browser."""

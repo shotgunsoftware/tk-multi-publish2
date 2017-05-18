@@ -130,6 +130,13 @@ FieldValueLabel {
 /* Left hand side tree view */
 /* --------------------------------------------------------------------- */
 
+DropAreaFrame#large_drop_area {
+    border: 2px dashed rgba(200, 200, 200, 75%);
+}
+DropAreaFrame#large_drop_area[dragging="true"] {
+    border: 2px solid {{SG_HIGHLIGHT_COLOR}};
+}
+
 /* left hand side frame when someone drag something in */
 DropAreaFrame[dragging="true"] {
     border: 2px solid {{SG_HIGHLIGHT_COLOR}};
@@ -365,6 +372,13 @@ ProgressDetailsWidget #log_tree::item {
     background-color: rgba(20, 20, 20, 50%);
 }
 
+#drop_area_browse {
+    border: none;
+    border-radius: 2px;
+    background-color: {{SG_HIGHLIGHT_COLOR}};
+    color: #FFFFFF;
+    padding: 8px;
+}
 
 
 /* --------------------------------------------------------------------- */
@@ -386,5 +400,4 @@ ProgressDetailsWidget #log_tree::item {
 #summary_frame {
     background-color: rgba(20, 20, 20, 95%);
 }
-
 
