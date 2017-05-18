@@ -21,7 +21,7 @@ class Ui_ContextWidget(object):
         self.link_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.link_label.setObjectName("link_label")
         self.gridLayout.addWidget(self.link_label, 0, 0, 1, 1)
-        self.context_link = QtGui.QLineEdit(ContextWidget)
+        self.context_link = GlobalSearchWidget(ContextWidget)
         self.context_link.setObjectName("context_link")
         self.gridLayout.addWidget(self.context_link, 0, 1, 1, 1)
         self.link_label_2 = QtGui.QLabel(ContextWidget)
@@ -40,4 +40,5 @@ class Ui_ContextWidget(object):
         self.link_label.setText(QtGui.QApplication.translate("ContextWidget", "Shotgun Link", None, QtGui.QApplication.UnicodeUTF8))
         self.link_label_2.setText(QtGui.QApplication.translate("ContextWidget", "Associated Task", None, QtGui.QApplication.UnicodeUTF8))
 
+from ..qtwidgets import GlobalSearchWidget
 from . import resources_rc

@@ -49,8 +49,7 @@ class ContextWidget(QtGui.QWidget):
         """
         Does the post-init setup of the widget
         """
-        #self._entity_combo_box.set_up(task_manager)
-        #self._task_combo_box.set_up(task_manager)
+        self.ui.context_link.set_bg_task_manager(task_manager)
 
     def set_context(self, context):
         """
@@ -60,6 +59,7 @@ class ContextWidget(QtGui.QWidget):
         entity = context.entity or context.project or None
         #self._entity_combo_box.set_entity(entity)
         #self._task_combo_box.set_task(entity, context.task)
+        self.ui.context_link.setText(entity.get("name", "Unnamed"))
 
     # def _on_entity_update(self):
     #     """
