@@ -305,11 +305,9 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_thumbnail.set_thumbnail(item.thumbnail)
 
         if item.parent.is_root():
-            self.ui.link_label.show()
             self.ui.context_widget.show()
             self.ui.context_widget.set_context(item.context)
         else:
-            self.ui.link_label.hide()
             self.ui.context_widget.hide()
 
         # create summary
@@ -349,7 +347,6 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_comments.setPlainText("")
 
         # set context
-        self.ui.link_label.hide()
         self.ui.context_widget.hide()
 
         # create summary for all items
