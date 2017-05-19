@@ -69,9 +69,13 @@ class ProgressHandler(object):
 
         # parent our progress widget overlay
         self._progress_details = ProgressDetailsWidget(self._progress_bar, self._progress_bar.parent())
+        self._progress_details.copy_to_clipboard_clicked.connect(self._copy_log_to_clipboard)
 
         # clicking on the log toggles the logging window
         self._status_label.clicked.connect(self._progress_details.toggle)
+
+        # store all log messages in a list
+        self._log_messages = []
 
         # set up our log dispatch
         self._log_wrapper = PublishLogWrapper(self)
@@ -131,17 +135,18 @@ class ProgressHandler(object):
             # make it current
             self._progress_details.log_tree.setCurrentItem(tree_node)
 
+    def _copy_log_to_clipboard(self):
+        """
+        Copy the log to the clipboard
+        """
+        logger.debug("Copying %d log messages to clipboard..." % len(self._log_messages))
+        app = QtCore.QCoreApplication.instance()
+        app.clipboard().setText("\n".join(self._log_messages))
 
     def process_log_message(self, message, status, action):
         """
-        Called from the internal logger
-
-        @param message:
-        @param status:
-        @param action:
-        @return:
+        Handles log messages
         """
-
         if status != self.DEBUG:
             self._status_label.setText(message)
 
@@ -198,20 +203,27 @@ class ProgressHandler(object):
             self._process_action(item, action)
 
         self._progress_details.log_tree.setCurrentItem(item)
+        self._log_messages.append(message)
 
         QtCore.QCoreApplication.processEvents()
 
     @property
     def logger(self):
+        """
+        The logger root for all publish related info
+        """
         return self._log_wrapper.logger
 
     def set_phase(self, phase):
         """
-        set the phase that we are currently in
+        Sets the phase that we are currently in
         """
         self._current_phase = phase
 
     def reset_progress(self, max_items=1):
+        """
+        Resets the progress bar
+        """
         logger.debug("Resetting progress bar. Number of items: %s" % max_items)
         self._progress_bar.setMaximum(max_items)
         self._progress_bar.reset()
@@ -255,6 +267,7 @@ class ProgressHandler(object):
 
         self._progress_details.log_tree.setCurrentItem(item)
         self._logging_parent_item = item
+        self._log_messages.append(text)
 
     def pop(self):
         """

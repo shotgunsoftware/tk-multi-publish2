@@ -39,12 +39,12 @@
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="open_log_button">
+         <widget class="QToolButton" name="copy_log_button">
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open the publisher's log file. The log file is useful for deeper debugging of publish issues. For issues involving Shotgun Support, please include a copy of this file when submitting a support request. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>Open log file...</string>
+           <string>Copy to Clipboard</string>
           </property>
           <property name="toolButtonStyle">
            <enum>Qt::ToolButtonTextOnly</enum>

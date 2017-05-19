@@ -21,6 +21,8 @@ class ProgressDetailsWidget(QtGui.QWidget):
     Progress reporting and logging
     """
 
+    copy_to_clipboard_clicked = QtCore.Signal()
+
     def __init__(self, progress_widget, parent):
         """
         :param parent: The model parent.
@@ -42,7 +44,9 @@ class ProgressDetailsWidget(QtGui.QWidget):
         filter.resized.connect(self._on_parent_resized)
         parent.installEventFilter(filter)
 
-        self.ui.open_log_button.clicked.connect(self._open_log_file)
+        # dispatch clipboard signal
+        self.ui.copy_log_button.clicked.connect(self.copy_to_clipboard_clicked.emit)
+
         self.ui.close.clicked.connect(self.toggle)
 
         # make sure the first column takes up as much space as poss.
@@ -56,12 +60,10 @@ class ProgressDetailsWidget(QtGui.QWidget):
 
         self.hide()
 
-
     def toggle(self):
         """
         Toggles visibility on and off
         """
-
         if self.isVisible():
             self.hide()
         else:
@@ -74,11 +76,15 @@ class ProgressDetailsWidget(QtGui.QWidget):
 
     @property
     def log_tree(self):
+        """
+        The tree widget which holds the log items
+        """
         return self.ui.log_tree
 
-
     def __recompute_position(self):
-
+        """
+        Adjust geometry of the widget based on progress widget
+        """
         pos = self._progress_widget.pos()
 
         self.setGeometry(QtCore.QRect(
@@ -88,7 +94,6 @@ class ProgressDetailsWidget(QtGui.QWidget):
             pos.y()
         ))
 
-
     def _on_parent_resized(self):
         """
         Special slot hooked up to the event filter.
@@ -96,26 +101,6 @@ class ProgressDetailsWidget(QtGui.QWidget):
         """
         self.__recompute_position()
 
-    def _open_log_file(self):
-        """
-        Opens the log file for the current engine.
-        """
-
-        # TODO:
-        # We should be able to get the log file path directly from the log
-        # manager. See internal ticket #42283
-        log_file = os.path.join(
-            sgtk.LogManager().log_folder,
-            "%s.log" % (self._bundle.engine.name,)
-        )
-
-        try:
-            logger.debug("Opening log file: '%s'." % (log_file,))
-            url = QtCore.QUrl.fromLocalFile(log_file)
-            QtGui.QDesktopServices.openUrl(url)
-        except Exception, e:
-            logger.error(
-                "Failed to open log file: '%s'. Reason: %s" % (log_file, e))
 
 
 class ResizeEventFilter(QtCore.QObject):
