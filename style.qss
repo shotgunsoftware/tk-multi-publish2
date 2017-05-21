@@ -334,16 +334,59 @@ ProgressDetailsWidget #log_tree::item {
 /* context selection */
 /* --------------------------------------------------------------------- */
 
-#context_widget_tree {
-    font-size: 12px;
-    font-weight: 100;
+#context_search_btn {
+    border: none;
+    padding: 4px;
+    border-radius: 2px;
+    background-color: rgba(20, 20, 20, 18%);
 }
 
-#context_widget_tree::item {
-    margin: 4px;
+#context_search_btn:hover {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(20, 20, 20, 30%);
 }
 
+#context_search_btn:checked {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(20, 20, 20, 50%);
+}
 
+#context_menu_btn {
+    border: none;
+    padding: 4px;
+    border-radius: 2px;
+    background-color: rgba(20, 20, 20, 18%);
+}
+
+#context_menu_btn::menu-indicator {
+    image: none;
+}
+
+#context_menu_btn:hover {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(20, 20, 20, 30%);
+}
+
+#context_menu_btn:checked {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(20, 20, 20, 50%);
+}
+
+#context_label {
+    padding-left: 4px;
+    border: 1px solid rgba(20, 20, 20, 18%);
+    border-radius: 2px;
+}
+
+#context_search {
+    padding-left: 4px;
+    border: 1px solid rgba(20, 20, 20, 18%);
+    border-radius: 2px;
+}
 
 /* --------------------------------------------------------------------- */
 /* Bottom toolbar */
