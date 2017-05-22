@@ -8,9 +8,11 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-from sgtk.platform.qt import QtCore, QtGui
 import sgtk
+from sgtk.platform.qt import QtCore, QtGui
+from .ui.context_editor_widget import Ui_ContextWidget
 
+# framework imports
 shotgun_fields = sgtk.platform.import_framework(
     "tk-framework-qtwidgets", "shotgun_fields")
 
@@ -22,8 +24,6 @@ shotgun_globals = sgtk.platform.import_framework(
 
 settings = sgtk.platform.import_framework(
     "tk-framework-shotgunutils", "settings")
-
-from .ui.context_editor_widget import Ui_ContextWidget
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -51,11 +51,12 @@ class ContextWidget(QtGui.QWidget):
 
         self._bundle = sgtk.platform.current_bundle()
 
-        # get an instance of user settings to save/restore values across
-        # sessions
+        # get instance of user settings to save/restore values across sessions
         self._settings = settings.UserSettings(self._bundle)
+
+        # the key we'll use to store/retrieve recent contexts via user settings
         self._settings_recent_contexts_key = "%s_recent_contexts" % (
-            self._bundle,)
+            self._bundle.name,)
 
         # we will do a bg query that requires an id to catch results
         self._schema_query_id = None
@@ -71,7 +72,10 @@ class ContextWidget(QtGui.QWidget):
         self._context_menu.setObjectName("context_menu")
         self._context_menu.addAction("Loading...")
 
-        # keep a handle on all actions created
+        # keep a handle on all actions created. the my tasks menu will be
+        # constant, but the recents menu will be dynamic. so we build the menu
+        # just before it is shown. these lists hold the QActions for each
+        # group of contexts to show in the menu
         self._menu_actions = {
             "My Tasks": [],
             "Recent": []
@@ -81,24 +85,37 @@ class ContextWidget(QtGui.QWidget):
         self.ui = Ui_ContextWidget()
         self.ui.setupUi(self)
 
-    def closeEvent(self, event):
+    def save_recent_contexts(self):
         """
-        Prior to close, save the recents list of contexts to disk via user
-        settings.
+        Should be called by the parent widget, typically when the dialog closes,
+        to ensure the recent contexts are saved to disk when closing.
         """
 
-        # build a list of serialized recent contexts
+        # build a list of serialized recent contexts. we grab all the QActions
+        #
         serialized_contexts = []
         for recent_action in self._menu_actions["Recent"]:
             recent_context = recent_action.data()
             serialized_contexts.append(recent_context.serialize())
 
         # store the recent contexts on disk. the scope is per-project
-        settings.store(
+        self._settings.store(
             self._settings_recent_contexts_key,
             serialized_contexts,
             scope=settings.UserSettings.SCOPE_PROJECT
         )
+
+    def set_context(self, context):
+        """
+        Set the context to display in the widget.
+        """
+        logger.debug("Setting up %s for context %s" % (self, context))
+
+        self._context = context
+        self._show_context(context)
+
+        # ensure the new context is added to the list of recents
+        self._add_to_recents(context)
 
     def set_up(self, task_manager):
         """
@@ -119,7 +136,7 @@ class ContextWidget(QtGui.QWidget):
         self.ui.context_search.hide()
 
         # first, set up the task manager to the search widget
-        self.ui.context_search.set_placeholder_text("Search...")
+        self.ui.context_search.set_placeholder_text("Search for Tasks...")
         self.ui.context_search.set_bg_task_manager(task_manager)
         self.ui.context_search.entity_activated.connect(
             self._on_entity_activated)
@@ -143,48 +160,96 @@ class ContextWidget(QtGui.QWidget):
 
         # Query Shotgun for valid entity types for PublishedFile.entity field
         self._schema_query_id = task_manager.add_task(
-            self._query_publishedfile_entity_schema)
+            _query_publishedfile_entity_schema)
 
         # query all my assigned tasks in a bg task
-        self._my_tasks_query_id = task_manager.add_task(self._query_my_tasks)
+        self._my_tasks_query_id = task_manager.add_task(_query_my_tasks)
 
         # get recent contexts from user settings
         self._get_recent_contexts()
 
-    def _query_publishedfile_entity_schema(self):
+    def _add_to_recents(self, context):
+
+        recent_actions = self._menu_actions["Recent"]
+
+        matching_indexes = []
+        for i, recent_action in enumerate(recent_actions):
+            recent_context = recent_action.data()
+            if recent_context == context:
+                # contexts support __eq__ so this should be enough for comparing
+                matching_indexes.append(i)
+
+        if matching_indexes:
+            # context exists in recent list in one or more places. remove the
+            # QAction(s) and put one of them at the front of the list
+            recent_action = None
+            for match_index in matching_indexes:
+                recent_action = recent_actions.pop(match_index)
+        else:
+            # the context does not exist in the recents. add it
+            recent_action = self._get_qaction_for_context(context)
+
+        if recent_action:
+            recent_actions.insert(0, recent_action)
+
+        # only keep the 5 most recent
+        self._menu_actions["Recent"] = recent_actions[:5]
+
+    def _build_my_tasks_actions(self, my_tasks):
 
         publisher = sgtk.platform.current_bundle()
-        project = publisher.context.project
 
-        return publisher.shotgun.schema_field_read(
-            "PublishedFile",
-            field_name="entity",
-            project_entity=project
-        )
+        # ---- build my tasks section
 
-    def _query_my_tasks(self):
+        if my_tasks:
 
-        publisher = sgtk.platform.current_bundle()
-        project = publisher.context.project
-        current_user = publisher.context.user
+            task_actions = []
 
-        filters = [
-            ["project", "is", project],
-            ["task_assignees", "is", current_user],
-            ["project.Project.sg_status", "is", "Active"]
-        ]
+            for task in my_tasks:
+                task_context = publisher.sgtk.context_from_entity(
+                    task["type"], task["id"])
+                task_action = self._get_qaction_for_context(task_context)
 
-        order = [
-            {"field_name": "entity", "direction": "asc"},
-            {"field_name": "content", "direction": "asc"}
-        ]
+                task_actions.append(task_action)
+                self._menu_actions["My Tasks"].append(task_action)
+        else:
+            logger.info("No tasks found for current user: %s" % (
+                publisher.context.user,))
 
-        return publisher.shotgun.find(
-            "Task",
-            filters,
-            fields=["id", "content", "entity"],
-            order=order
-        )
+    def _get_context_url(self, context):
+
+        entity = context.entity or context.project or None
+
+        if self._bundle.sgtk.shotgun_url.endswith("/"):
+            url_base = self._bundle.sgtk.shotgun_url
+        else:
+            url_base = "%s/" % self._bundle.sgtk.shotgun_url
+
+        if not entity:
+            return url_base
+
+        url_entity_id = entity["id"]
+        url_entity_type = entity["type"]
+
+        if context.task:
+            url_entity_type = context.task["type"]
+            url_entity_id = context.task["id"]
+
+        return "%sdetail/%s/%d" % (url_base, url_entity_type, url_entity_id)
+
+    def _get_qaction_for_context(self, context):
+
+        context_display = _get_context_display(context, plain_text=True)
+        icon_path = _get_context_icon_path(context)
+
+        action = QtGui.QAction(self)
+        action.setText(context_display)
+        action.setIcon(QtGui.QIcon(icon_path))
+        action.setData(context)
+        action.triggered.connect(
+            lambda c=context: self._on_context_activated(c))
+
+        return action
 
     def _get_recent_contexts(self):
 
@@ -196,14 +261,45 @@ class ContextWidget(QtGui.QWidget):
 
         # turn these into QActions to add to the list of recents in the menu
         for serialized_context in serialized_recent_contexts:
-            context = serialized_context.deserialize()
+            context = sgtk.Context.deserialize(serialized_context)
             recent_action = self._get_qaction_for_context(context)
             self._menu_actions["Recent"].append(recent_action)
+
+    def _on_about_to_show_contexts_menu(self):
+
+        # clear and rebuild the menu since the recents section is dynamic
+        self._context_menu.clear()
+
+        # ---- build the "Recent" menu
+
+        recent_actions = self._menu_actions["Recent"]
+
+        if recent_actions:
+            self._context_menu.add_group(recent_actions, "Recent")
+
+        # ---- build the "My Tasks" menu
+
+        my_tasks_actions = self._menu_actions["My Tasks"]
+
+        if my_tasks_actions:
+            self._context_menu.add_group(my_tasks_actions, "My Tasks")
+
+    def _on_context_activated(self, context):
+
+        self._show_context(context)
+        self.context_changed.emit(context)
+
+    def _on_entity_activated(self, entity_type, entity_id, entity_name):
+
+        publisher = sgtk.platform.current_bundle()
+        context = publisher.sgtk.context_from_entity(entity_type, entity_id)
+        self._on_context_activated(context)
 
     def _on_search_toggled(self, checked):
 
         if checked:
             self.ui.context_label.hide()
+            self.ui.context_menu_btn.hide()
             self.ui.context_search.show()
             self.ui.context_search.setFocus()
 
@@ -218,6 +314,7 @@ class ContextWidget(QtGui.QWidget):
                 self.ui.context_search.completer().complete()
         else:
             self.ui.context_label.show()
+            self.ui.context_menu_btn.show()
             self.ui.context_search.hide()
 
     def _on_task_completed(self, task_id, group, result):
@@ -230,6 +327,21 @@ class ContextWidget(QtGui.QWidget):
 
         elif task_id == self._my_tasks_query_id:
             self._build_my_tasks_actions(result)
+
+    def _on_task_failed(self, task_id, group, message, traceback_str):
+        """
+        If the schema query fails, add a log warning. It's not catastrophic, but
+        it shouldn't fail, so we need to make a record of it.
+        """
+
+        if task_id != self._schema_query_id:
+            # not interested in this task
+            return
+
+        logger.warn(
+            "Unable to query valid entity types for PublishedFile.entity."
+            "Error Message: %s.\n%s" % (message, traceback_str)
+        )
 
     def _restrict_searchable_entity_types(self, published_file_entity_schema):
 
@@ -262,125 +374,6 @@ class ContextWidget(QtGui.QWidget):
         self.ui.context_search.set_searchable_entity_types(
             entity_types_dict)
 
-    def _build_my_tasks_actions(self, my_tasks):
-
-        publisher = sgtk.platform.current_bundle()
-
-        # ---- build my tasks section
-
-        if my_tasks:
-
-            task_actions = []
-
-            for task in my_tasks:
-                task_context = publisher.sgtk.context_from_entity(
-                    task["type"], task["id"])
-                task_action = self._get_qaction_for_context(task_context)
-
-                task_actions.append(task_action)
-                self._menu_actions["My Tasks"].append(task_action)
-        else:
-            logger.info("No tasks found for current user: %s" % (
-                publisher.context.user,))
-
-    def _on_about_to_show_contexts_menu(self):
-
-        # clear and rebuild the menu since the recents section is dynamic
-        self._context_menu.clear()
-
-        # ---- build the "Recent" menu
-
-        recent_actions = self._menu_actions["Recent"]
-
-        if recent_actions:
-            self._context_menu.add_group(recent_actions, "Recent")
-
-        # ---- build the "My Tasks" menu
-
-        my_tasks_actions = self._menu_actions["My Tasks"]
-
-        if my_tasks_actions:
-
-            more_my_tasks_menu = None
-            if len(my_tasks_actions) > 5:
-                more_my_tasks_menu = shotgun_menus.ShotgunMenu(self)
-                more_my_tasks_menu.setTitle("More")
-                more_my_tasks_menu.add_group(my_tasks_actions[5:], "My Tasks")
-
-            top_my_tasks_actions = my_tasks_actions[:5]
-            if more_my_tasks_menu:
-                top_my_tasks_actions.append(more_my_tasks_menu)
-
-            self._context_menu.add_group(top_my_tasks_actions, "My Tasks")
-
-    def _on_task_failed(self, task_id, group, message, traceback_str):
-        """
-        If the schema query fails, add a log warning. It's not catastrophic, but
-        it shouldn't fail, so we need to make a record of it.
-        """
-
-        if task_id != self._schema_query_id:
-            # not interested in this task
-            return
-
-        logger.warn(
-            "Unable to query valid entity types for PublishedFile.entity."
-            "Error Message: %s.\n%s" % (message, traceback_str)
-        )
-
-    def _add_to_recents(self, context):
-
-        recent_actions = self._menu_actions["Recent"]
-
-        matching_indexes = []
-        for i, recent_action in enumerate(recent_actions):
-            recent_context = recent_action.data()
-            if recent_context == context:
-                # contexts support __eq__ so this should be enough for comparing
-                matching_indexes.append(i)
-
-        if matching_indexes:
-            # context exists in recent list in one or more places. remove the
-            # QAction(s) and put one of them at the front of the list
-            recent_action = None
-            for match_index in matching_indexes:
-                recent_action = recent_actions.pop(match_index)
-        else:
-            # the context does not exist in the recents. add it
-            recent_action = self._get_qaction_for_context(context)
-
-        if recent_action:
-            recent_actions.insert(0, recent_action)
-
-        # only keep the 5 most recent
-        self._menu_actions["Recent"] = recent_actions[:5]
-
-    def _get_qaction_for_context(self, context):
-
-        context_display = _get_context_display(context, plain_text=True)
-        icon_path = _get_context_icon_path(context)
-
-        action = QtGui.QAction(self)
-        action.setText(context_display)
-        action.setIcon(QtGui.QIcon(icon_path))
-        action.setData(context)
-        action.triggered.connect(
-            lambda c=context: self._on_context_activated(c))
-
-        return action
-
-    def set_context(self, context):
-        """
-        Register a context with the widget
-        """
-        logger.debug("Setting up %s for context %s" % (self, context))
-
-        self._context = context
-        self._show_context(context)
-
-        # ensure the new context is added to the list of recents
-        self._add_to_recents(context)
-
     def _show_context(self, context):
 
         context_display = _get_context_display(context)
@@ -401,38 +394,6 @@ class ContextWidget(QtGui.QWidget):
         self.ui.context_label.setText(hyperlink)
         self.ui.context_search_btn.setChecked(False)
         self.ui.context_search_btn.setDown(False)
-
-    def _on_entity_activated(self, entity_type, entity_id, entity_name):
-
-        publisher = sgtk.platform.current_bundle()
-        context = publisher.sgtk.context_from_entity(entity_type, entity_id)
-        self._on_context_activated(context)
-
-    def _on_context_activated(self, context):
-
-        self._show_context(context)
-        self.context_changed.emit(context)
-
-    def _get_context_url(self, context):
-
-        entity = context.entity or context.project or None
-
-        if self._bundle.sgtk.shotgun_url.endswith("/"):
-            url_base = self._bundle.sgtk.shotgun_url
-        else:
-            url_base = "%s/" % self._bundle.sgtk.shotgun_url
-
-        if not entity:
-            return url_base
-
-        url_entity_id = entity["id"]
-        url_entity_type = entity["type"]
-
-        if context.task:
-            url_entity_type = context.task["type"]
-            url_entity_id = context.task["id"]
-
-        return "%sdetail/%s/%d" % (url_base, url_entity_type, url_entity_id)
 
 
 def _get_context_display(context, plain_text=False):
@@ -483,6 +444,39 @@ def _get_context_icon_path(context):
     else:
         return ""
 
-    return icon
+
+def _query_my_tasks():
+
+    publisher = sgtk.platform.current_bundle()
+    project = publisher.context.project
+    current_user = publisher.context.user
+
+    filters = [
+        ["project", "is", project],
+        ["task_assignees", "is", current_user],
+        ["project.Project.sg_status", "is", "Active"]
+    ]
+
+    order = [
+        {"field_name": "entity", "direction": "asc"},
+        {"field_name": "content", "direction": "asc"}
+    ]
+
+    return publisher.shotgun.find(
+        "Task",
+        filters,
+        fields=["id", "content", "entity"],
+        order=order
+    )
 
 
+def _query_publishedfile_entity_schema():
+
+    publisher = sgtk.platform.current_bundle()
+    project = publisher.context.project
+
+    return publisher.shotgun.schema_field_read(
+        "PublishedFile",
+        field_name="entity",
+        project_entity=project
+    )

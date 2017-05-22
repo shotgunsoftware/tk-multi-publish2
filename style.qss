@@ -388,6 +388,10 @@ ProgressDetailsWidget #log_tree::item {
     border-radius: 2px;
 }
 
+QMenu::item::indicator {
+    margin-left: 10px;
+}
+
 /* --------------------------------------------------------------------- */
 /* Bottom toolbar */
 /* --------------------------------------------------------------------- */

@@ -196,6 +196,9 @@ class AppDialog(QtGui.QWidget):
         except Exception, e:
             logger.exception("Error running Shotgun Panel App closeEvent()")
 
+        # ensure the context widget's recent contexts are saved
+        self.ui.context_widget.save_recent_contexts()
+
     def _update_details_from_selection(self):
         """
         Makes sure that the right hand side
