@@ -390,7 +390,7 @@ class AppDialog(QtGui.QWidget):
             self._progress_handler.logger.info("One item discovered by publisher.")
         elif num_errors == 0 and num_items_created > 1:
             self._progress_handler.logger.info("%d items discovered by publisher." % num_items_created)
-        else:
+        elif num_errors > 0:
             self._progress_handler.logger.error("Errors reported. See log for details.")
 
         # make sure the ui is up to date
