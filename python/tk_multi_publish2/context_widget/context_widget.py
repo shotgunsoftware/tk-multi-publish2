@@ -8,6 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import copy
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
 from .ui.context_editor_widget import Ui_ContextWidget
@@ -27,7 +28,12 @@ settings = sgtk.platform.import_framework(
 
 logger = sgtk.platform.get_logger(__name__)
 
-
+# TODO:
+# related tasks for entity context
+# tooltips updated
+# code cleanup
+# manual toggle search methods
+# only add recent after publishing
 class ContextWidget(QtGui.QWidget):
     """
     Widget which represents the current context and allows the user to search
@@ -68,9 +74,9 @@ class ContextWidget(QtGui.QWidget):
         self._context = None
 
         # menu for recent and user contexts
-        self._context_menu = shotgun_menus.ShotgunMenu(self)
-        self._context_menu.setObjectName("context_menu")
-        self._context_menu.addAction("Loading...")
+        self._task_menu = shotgun_menus.ShotgunMenu(self)
+        self._task_menu.setObjectName("context_menu")
+        self._task_menu.addAction("Loading...")
 
         # keep a handle on all actions created. the my tasks menu will be
         # constant, but the recents menu will be dynamic. so we build the menu
@@ -84,6 +90,73 @@ class ContextWidget(QtGui.QWidget):
         # set up the UI
         self.ui = Ui_ContextWidget()
         self.ui.setupUi(self)
+
+    def eventFilter(self, widget, event):
+
+        key_event = QtCore.QEvent.KeyPress
+        click_event = QtCore.QEvent.MouseButtonRelease
+
+        if widget == self.ui.task_display:
+
+            if event.type() == click_event:
+                self._on_task_search_toggled(True)
+                self.ui.task_search_btn.setChecked(True)
+                self.ui.task_search_btn.setDown(True)
+                return True
+
+        if widget == self.ui.task_search:
+
+            if event.type() == key_event:
+
+                if event.key() == QtCore.Qt.Key_Escape:
+                    self._on_task_search_toggled(False)
+                    self.ui.task_search_btn.setChecked(False)
+                    self.ui.task_search_btn.setDown(False)
+                    return True
+                elif event.key() in [
+                    QtCore.Qt.Key_Tab,
+                    QtCore.Qt.Key_Return,
+                    QtCore.Qt.Key_Enter,
+                ]:
+                    result = self.ui.task_search.completer().get_first_result()
+                    if result:
+                        self._on_entity_activated(
+                            result["type"],
+                            result["id"],
+                            result["name"]
+                        )
+
+        if widget == self.ui.link_display:
+
+            if event.type() == click_event:
+                self._on_link_search_toggled(True)
+                self.ui.link_search_btn.setChecked(True)
+                self.ui.link_search_btn.setDown(True)
+                return True
+
+        if widget == self.ui.link_search:
+
+            if event.type() == key_event:
+
+                if event.key() == QtCore.Qt.Key_Escape:
+                    self._on_link_search_toggled(False)
+                    self.ui.link_search_btn.setChecked(False)
+                    self.ui.link_search_btn.setDown(False)
+                    return True
+                elif event.key() in [
+                    QtCore.Qt.Key_Tab,
+                    QtCore.Qt.Key_Return,
+                    QtCore.Qt.Key_Enter,
+                ]:
+                    result = self.ui.link_search.completer().get_first_result()
+                    if result:
+                        self._on_entity_activated(
+                            result["type"],
+                            result["id"],
+                            result["name"]
+                        )
+
+        return False
 
     def save_recent_contexts(self):
         """
@@ -115,7 +188,8 @@ class ContextWidget(QtGui.QWidget):
         self._show_context(context)
 
         # ensure the new context is added to the list of recents
-        self._add_to_recents(context)
+        # TODO: only do this when publishing
+        #self._add_to_recents(context)
 
     def set_up(self, task_manager):
         """
@@ -127,19 +201,40 @@ class ContextWidget(QtGui.QWidget):
         """
 
         # attach the context menu
-        self.ui.context_menu_btn.setMenu(self._context_menu)
-        self._context_menu.aboutToShow.connect(
+        self.ui.task_menu_btn.setMenu(self._task_menu)
+        self._task_menu.aboutToShow.connect(
             self._on_about_to_show_contexts_menu)
 
         # setup the search toggle
-        self.ui.context_search_btn.toggled.connect(self._on_search_toggled)
-        self.ui.context_search.hide()
+        self.ui.task_search_btn.toggled.connect(self._on_task_search_toggled)
+        self.ui.task_search.hide()
 
-        # first, set up the task manager to the search widget
-        self.ui.context_search.set_placeholder_text("Search for Tasks...")
-        self.ui.context_search.set_bg_task_manager(task_manager)
-        self.ui.context_search.entity_activated.connect(
+        # setup the search toggle
+        self.ui.link_search_btn.toggled.connect(self._on_link_search_toggled)
+        self.ui.link_search.hide()
+
+        # set up the task manager to the task search widget
+        self.ui.task_search.set_placeholder_text("Search for Tasks...")
+        self.ui.task_search.set_bg_task_manager(task_manager)
+        self.ui.task_search.entity_activated.connect(
             self._on_entity_activated)
+
+        # save as above but for the link search widget
+        self.ui.link_search.set_placeholder_text("Search for entity link...")
+        self.ui.link_search.set_bg_task_manager(task_manager)
+        self.ui.link_search.entity_activated.connect(
+            self._on_entity_activated
+        )
+
+        # set up event filters for the task/link display labels so that when
+        # clicked, they go directly to an edit state
+        self.ui.task_display.installEventFilter(self)
+        self.ui.link_display.installEventFilter(self)
+
+        # setup event filters for the task/link search inputs so that when
+        # certain keys are pressed, the widget can react to it properly
+        self.ui.task_search.installEventFilter(self)
+        self.ui.link_search.installEventFilter(self)
 
         # we need to limit the search completer to entity types that are valid
         # for ``PublishedFile.entity`` field links. To do this, query the
@@ -216,27 +311,6 @@ class ContextWidget(QtGui.QWidget):
             logger.info("No tasks found for current user: %s" % (
                 publisher.context.user,))
 
-    def _get_context_url(self, context):
-
-        entity = context.entity or context.project or None
-
-        if self._bundle.sgtk.shotgun_url.endswith("/"):
-            url_base = self._bundle.sgtk.shotgun_url
-        else:
-            url_base = "%s/" % self._bundle.sgtk.shotgun_url
-
-        if not entity:
-            return url_base
-
-        url_entity_id = entity["id"]
-        url_entity_type = entity["type"]
-
-        if context.task:
-            url_entity_type = context.task["type"]
-            url_entity_id = context.task["id"]
-
-        return "%sdetail/%s/%d" % (url_base, url_entity_type, url_entity_id)
-
     def _get_qaction_for_context(self, context):
 
         context_display = _get_context_display(context, plain_text=True)
@@ -268,21 +342,21 @@ class ContextWidget(QtGui.QWidget):
     def _on_about_to_show_contexts_menu(self):
 
         # clear and rebuild the menu since the recents section is dynamic
-        self._context_menu.clear()
+        self._task_menu.clear()
 
         # ---- build the "Recent" menu
 
         recent_actions = self._menu_actions["Recent"]
 
         if recent_actions:
-            self._context_menu.add_group(recent_actions, "Recent")
+            self._task_menu.add_group(recent_actions, "Recent")
 
         # ---- build the "My Tasks" menu
 
         my_tasks_actions = self._menu_actions["My Tasks"]
 
         if my_tasks_actions:
-            self._context_menu.add_group(my_tasks_actions, "My Tasks")
+            self._task_menu.add_group(my_tasks_actions, "My Tasks")
 
     def _on_context_activated(self, context):
 
@@ -295,13 +369,13 @@ class ContextWidget(QtGui.QWidget):
         context = publisher.sgtk.context_from_entity(entity_type, entity_id)
         self._on_context_activated(context)
 
-    def _on_search_toggled(self, checked):
+    def _on_task_search_toggled(self, checked):
 
         if checked:
-            self.ui.context_label.hide()
-            self.ui.context_menu_btn.hide()
-            self.ui.context_search.show()
-            self.ui.context_search.setFocus()
+            self.ui.task_display.hide()
+            self.ui.task_menu_btn.hide()
+            self.ui.task_search.show()
+            self.ui.task_search.setFocus()
 
             if self._context:
                 entity = self._context.entity or self._context.project or None
@@ -309,13 +383,30 @@ class ContextWidget(QtGui.QWidget):
                 if self._context.task:
                     search_str = "%s %s " % (
                         search_str, self._context.task["name"])
-                self.ui.context_search.setText(search_str)
-                self.ui.context_search.completer().search(search_str)
-                self.ui.context_search.completer().complete()
+                self.ui.task_search.setText(search_str)
+                self.ui.task_search.completer().search(search_str)
+                self.ui.task_search.completer().complete()
         else:
-            self.ui.context_label.show()
-            self.ui.context_menu_btn.show()
-            self.ui.context_search.hide()
+            self.ui.task_display.show()
+            self.ui.task_menu_btn.show()
+            self.ui.task_search.hide()
+
+    def _on_link_search_toggled(self, checked):
+
+        if checked:
+            self.ui.link_display.hide()
+            self.ui.link_search.show()
+            self.ui.link_search.setFocus()
+
+            if self._context:
+                entity = self._context.entity or self._context.project or None
+                search_str = entity["name"]
+                self.ui.link_search.setText(search_str)
+                self.ui.link_search.completer().search(search_str)
+                self.ui.link_search.completer().complete()
+        else:
+            self.ui.link_display.show()
+            self.ui.link_search.hide()
 
     def _on_task_completed(self, task_id, group, result):
         """
@@ -354,7 +445,7 @@ class ContextWidget(QtGui.QWidget):
             get("value", [])
 
         # always include Project and Tasks
-        entity_types.extend(["Project", "Task"])
+        entity_types.append("Project")
 
         logger.debug(
             "Limiting context link completer to these entities: %s" %
@@ -370,33 +461,51 @@ class ContextWidget(QtGui.QWidget):
         logger.debug(
             "Setting searchable entity types to: %s" % (entity_types_dict,))
 
-        # now update the types for the completer
-        self.ui.context_search.set_searchable_entity_types(
+        # update the types for the link completer
+        self.ui.link_search.set_searchable_entity_types(
             entity_types_dict)
+
+        task_types_dict = copy.deepcopy(entity_types_dict)
+
+        # the task search can complete anything, entities or tasks
+        task_types_dict["Task"] = []
+
+        # now update the types for the task completer
+        self.ui.task_search.set_searchable_entity_types(task_types_dict)
 
     def _show_context(self, context):
 
-        context_display = _get_context_display(context)
-        context_url = self._get_context_url(context)
+        task_display = _get_task_display(context)
+        link_display = _get_link_display(context)
 
-        color = sgtk.platform.constants.SG_STYLESHEET_CONSTANTS.get(
-            "SG_LINK_COLOR",
-            sgtk.platform.constants.SG_STYLESHEET_CONSTANTS[
-                "SG_FOREGROUND_COLOR"]
-        )
+        self.ui.task_display.setText(task_display)
+        self.ui.task_search_btn.setChecked(False)
+        self.ui.task_search_btn.setDown(False)
 
-        hyperlink = """
-            <span>
-              <a href='%s' style='text-decoration: none; color: %s'>%s</a>
-            </span>
-        """ % (context_url, color, context_display)
-
-        self.ui.context_label.setText(hyperlink)
-        self.ui.context_search_btn.setChecked(False)
-        self.ui.context_search_btn.setDown(False)
+        self.ui.link_display.setText(link_display)
+        self.ui.link_search_btn.setChecked(False)
+        self.ui.link_search_btn.setDown(False)
 
 
-def _get_context_display(context, plain_text=False):
+def _get_task_display(context, plain_text=False):
+
+    if not context.task:
+        return ""
+
+    task_name = context.task["name"]
+
+    if plain_text:
+        display_name = task_name
+    else:
+        task_type = context.task["type"]
+        task_icon = "<img src='%s'>" % (
+            shotgun_globals.get_entity_type_icon_url(task_type),)
+        display_name = "%s&nbsp;%s" % (task_icon, task_name)
+
+    return display_name
+
+
+def _get_link_display(context, plain_text=False):
 
     entity = context.entity or context.project or None
 
@@ -413,21 +522,24 @@ def _get_context_display(context, plain_text=False):
             shotgun_globals.get_entity_type_icon_url(entity_type),)
         display_name = "%s&nbsp;%s" % (entity_icon, entity_name)
 
-    if context.task:
+    return display_name
 
-        task_name = context.task["name"]
+
+def _get_context_display(context, plain_text=False):
+
+    task_display = _get_task_display(context, plain_text=plain_text)
+    link_display = _get_link_display(context, plain_text=plain_text)
+
+    display_name = link_display
+
+    if task_display:
 
         if plain_text:
-            display_name = "%s > %s" % (display_name, task_name)
-
+            display_name = "%s > %s" % (display_name, task_display)
         else:
-            task_type = context.task["type"]
-            task_icon = "<img src='%s'>" % (
-                shotgun_globals.get_entity_type_icon_url(task_type),)
-
             display_name = """
-                %s&nbsp;&nbsp;<b><code>&gt;</code></b>&nbsp;&nbsp;%s&nbsp;%s
-            """ % (display_name, task_icon, task_name)
+                %s&nbsp;&nbsp;<b><code>&gt;</code></b>&nbsp;&nbsp;%s
+            """ % (link_display, task_display)
 
     return display_name
 
