@@ -8,7 +8,6 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-import copy
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
 from .ui.context_editor_widget import Ui_ContextWidget
@@ -711,13 +710,9 @@ class ContextWidget(QtGui.QWidget):
         self.ui.link_search.set_searchable_entity_types(
             entity_types_dict)
 
-        # make a deep copy of the types dict to prevent the link search from
-        # inheriting the Taks addition below. This is required since the
-        # completer simply stores a reference to the supplied dictionary.
-        task_types_dict = copy.deepcopy(entity_types_dict)
-
-        # the task search can complete anything, entities or tasks
-        task_types_dict["Task"] = []
+        # limit the task search to tasks only.
+        # TODO: limit to tasks linked to entities of the types queried above
+        task_types_dict = {"Task": []}
 
         # now update the types for the task completer
         self.ui.task_search.set_searchable_entity_types(task_types_dict)
