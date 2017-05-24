@@ -334,6 +334,8 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         Selects the summary if it exists,
         otherwise selects he first item in the tree.
         """
+        self.clearSelection()
+
         logger.debug("Selecting first item in the tree..")
         if self.topLevelItemCount() == 0:
             logger.debug("Nothing to select!")
