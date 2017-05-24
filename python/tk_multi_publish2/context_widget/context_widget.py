@@ -193,9 +193,13 @@ class ContextWidget(QtGui.QWidget):
             scope=settings.UserSettings.SCOPE_PROJECT
         )
 
-    def set_context(self, context):
+    def set_context(self, context, task_display_override=None,
+        link_display_override=None):
         """
         Set the context to display in the widget.
+
+        The initial display values can be overridden via the task and link
+        override args.
         """
         logger.debug("Setting context to: %s" % (context,))
 
@@ -203,14 +207,19 @@ class ContextWidget(QtGui.QWidget):
         self._menu_actions["Related"] = []
 
         self._context = context
-        self._show_context(context)
+        self._show_context(
+            context,
+            task_display_override=task_display_override,
+            link_display_override=link_display_override
+        )
 
         # ensure the new context is added to the list of recents.
         # TODO: we should only update recents after publishing. but until we
         # have the ability to easily assign a context to multiple publish items
         # simultaneously, this provides a nice mechanism for quick assignment
         # in the UI.
-        self._add_to_recents(context)
+        if context:
+            self._add_to_recents(context)
 
     def set_up(self, task_manager):
         """
@@ -266,7 +275,6 @@ class ContextWidget(QtGui.QWidget):
         # project schema if we're in a project. We do this as a background query
         # via the supplied task manager.
         publisher = sgtk.platform.current_bundle()
-        project = publisher.context.project
 
         # connect to the task manager signals so that we can get the results
         task_manager.task_completed.connect(self._on_task_completed)
@@ -281,6 +289,13 @@ class ContextWidget(QtGui.QWidget):
 
         # get recent contexts from user settings
         self._get_recent_contexts()
+
+    @property
+    def context_label(self):
+        """
+        The label for the context widget.
+        """
+        return self.ui.label
 
     def _add_to_recents(self, context):
         """
@@ -717,14 +732,21 @@ class ContextWidget(QtGui.QWidget):
         # now update the types for the task completer
         self.ui.task_search.set_searchable_entity_types(task_types_dict)
 
-    def _show_context(self, context):
+    def _show_context(self, context, task_display_override=None,
+        link_display_override=None):
         """
         Show the supplied context in the UI.
         """
 
-        # get the rich text displays for the task and link
-        task_display = _get_task_display(context)
-        link_display = _get_link_display(context)
+        if task_display_override:
+            task_display = task_display_override
+        else:
+            task_display = _get_task_display(context)
+
+        if link_display_override:
+            link_display = link_display_override
+        else:
+            link_display = _get_link_display(context)
 
         # update the task display/state
         self.ui.task_display.setText(task_display)
@@ -736,11 +758,12 @@ class ContextWidget(QtGui.QWidget):
         self.ui.link_search_btn.setChecked(False)
         self.ui.link_search_btn.setDown(False)
 
-        # given the context, populate any related tasks for display in the menu
-        self._related_tasks_query_id = self._task_manager.add_task(
-            self._query_related_tasks,
-            task_args=[context]
-        )
+        if context:
+            # given the context, populate any related tasks for the menu
+            self._related_tasks_query_id = self._task_manager.add_task(
+                self._query_related_tasks,
+                task_args=[context]
+            )
 
 
 def _get_task_display(context, plain_text=False):
@@ -751,7 +774,7 @@ def _get_task_display(context, plain_text=False):
     simply return the name of the task.
     """
 
-    if not context.task:
+    if not context or not context.task:
         return ""
 
     task_name = context.task["name"]
@@ -776,6 +799,9 @@ def _get_link_display(context, plain_text=False):
     By default, return rich text with an entity icon. If ``plain_text`` is True,
     simply return the name of the link.
     """
+
+    if not context:
+        return ""
 
     entity = context.entity or context.project or None
 
