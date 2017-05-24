@@ -17,7 +17,7 @@ class Ui_ContextWidget(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(ContextWidget.sizePolicy().hasHeightForWidth())
         ContextWidget.setSizePolicy(sizePolicy)
-        ContextWidget.setMinimumSize(QtCore.QSize(0, 105))
+        ContextWidget.setMinimumSize(QtCore.QSize(0, 0))
         self.gridLayout = QtGui.QGridLayout(ContextWidget)
         self.gridLayout.setContentsMargins(0, 0, 0, 6)
         self.gridLayout.setHorizontalSpacing(0)

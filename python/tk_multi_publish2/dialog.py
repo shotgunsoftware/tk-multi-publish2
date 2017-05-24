@@ -308,10 +308,13 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_thumbnail.set_thumbnail(item.thumbnail)
 
         if item.parent.is_root():
+            self.ui.context_widget.show()
             self.ui.context_widget.context_label.setText(
                 "Task and Entity Link to apply to the selected item:"
             )
             self.ui.context_widget.set_context(item.context)
+        else:
+            self.ui.context_widget.hide()
 
         # create summary
         self.ui.item_summary_label.show()
@@ -381,6 +384,7 @@ class AppDialog(QtGui.QWidget):
                 "Override all items here:" % (len(current_contexts),)
             )
 
+        self.ui.context_widget.show()
         self.ui.context_widget.context_label.setText(context_label_text)
 
         # create summary for all items
@@ -389,7 +393,7 @@ class AppDialog(QtGui.QWidget):
 
         (num_items, summary) = self.ui.items_tree.get_full_summary()
         self.ui.item_summary.setText(summary)
-        self.ui.item_type.setText("Publishing %d items" % num_items)
+        self.ui.item_type.setText("%d tasks to execute" % num_items)
 
     def _create_task_details(self, task):
         """

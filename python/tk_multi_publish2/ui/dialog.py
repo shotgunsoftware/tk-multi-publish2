@@ -144,7 +144,7 @@ class Ui_Dialog(object):
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.item_icon = QtGui.QLabel(self.details_item)
-        self.item_icon.setMinimumSize(QtCore.QSize(48, 48))
+        self.item_icon.setMinimumSize(QtCore.QSize(60, 60))
         self.item_icon.setMaximumSize(QtCore.QSize(60, 60))
         self.item_icon.setText("")
         self.item_icon.setScaledContents(True)
@@ -152,8 +152,9 @@ class Ui_Dialog(object):
         self.item_icon.setObjectName("item_icon")
         self.horizontalLayout_2.addWidget(self.item_icon)
         self.verticalLayout_12 = QtGui.QVBoxLayout()
+        self.verticalLayout_12.setSpacing(0)
         self.verticalLayout_12.setObjectName("verticalLayout_12")
-        self.item_name = QtGui.QLabel(self.details_item)
+        self.item_name = ElidedLabel(self.details_item)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -219,7 +220,7 @@ class Ui_Dialog(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 429, 104))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 420, 100))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.verticalLayout_10 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_10.setSpacing(0)
@@ -284,7 +285,7 @@ class Ui_Dialog(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName("scrollArea_2")
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 438, 195))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 420, 202))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
         self.verticalLayout_13 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents_2)
         self.verticalLayout_13.setSpacing(0)
@@ -503,4 +504,5 @@ from ..progress_status_label import ProgressStatusLabel
 from ..publish_tree_widget import PublishTreeWidget
 from ..settings_widget import SettingsWidget
 from ..drop_area import DropAreaFrame
+from ..qtwidgets import ElidedLabel
 from . import resources_rc
