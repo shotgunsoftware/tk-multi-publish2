@@ -22,7 +22,7 @@ logger = sgtk.platform.get_logger(__name__)
 
 class PublishTreeWidget(QtGui.QTreeWidget):
     """
-    Main widget
+    Publish tree widget which contains context, summary, tasks and items.
     """
 
     # emitted when a status icon is clicked
@@ -53,12 +53,31 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         # dotted lines around the widget which is selected.
         self.setFocusPolicy(QtCore.Qt.NoFocus)
 
+        # create the summary node and add to the tree
+        self._summary_node = TreeNodeSummary(self)
+        self.addTopLevelItem(self._summary_node)
+        self._summary_node.setHidden(True)
+
     def set_plugin_manager(self, plugin_manager):
+        """
+        Associate a plugin manager.
+
+        This should be done once and immediately after
+        construction. The reason it is not part of the constructor
+        is to allow the widget to be used in QT Designer.
+
+        :param plugin_manager: Plugin manager instance
+        """
         self._plugin_manager = plugin_manager
 
     def _build_item_tree_r(self, item, enabled, level, tree_parent):
         """
-        Build the tree of items
+        Build a subtree of items, recursively, for the given item
+
+        :param item: Low level processing item instance
+        :param bool enabled: flag to indicate that the item is enabled
+        :param int level: recursion depth
+        :param QTreeWidgetItem tree_parent: parent node in tree
         """
         if len(item.tasks) == 0 and len(item.children) == 0:
             # orphan. Don't create it
@@ -92,48 +111,152 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
     def build_tree(self):
         """
-        Rebuilds the tree
+        Rebuilds the tree, ensuring that it is in sync with
+        the low level plugin manager state.
+
+        Does this in a lazy way in order to preserve as much
+        state is possible.
         """
         logger.debug("Building tree.")
-        self.clear()
 
-        # add summary if > 1 item
-        if len(self._plugin_manager.top_level_items) > 1:
-            summary = TreeNodeSummary(self)
-            self.addTopLevelItem(summary)
+        # pass 1 - check if there is any top level item in the tree which shouldn't be there.
+        #          also build a list of all top level items in the tree
+        #          also check for items where the context has changed (e.g. so they need to move)
+        #
+        top_level_items_in_tree = []
+        items_to_move = []
+        for top_level_index in xrange(self.topLevelItemCount()):
+            top_level_item = self.topLevelItem(top_level_index)
 
-        # group items by context
-        # create a dictionary keyed by context
-        # string representation
-        items_by_context = {}
+            if not isinstance(top_level_item, TreeNodeContext):
+                # skip summary
+                continue
+
+            # go backwards so that when we take stuff out we don't
+            # destroy the indices
+            for item_index in xrange(top_level_item.childCount()-1, -1, -1):
+                item = top_level_item.child(item_index)
+                if item.item not in self._plugin_manager.top_level_items:
+                    # no longer in the plugin mgr. remove from tree
+                    top_level_item.takeChild(item_index)
+                else:
+                    # an active item
+                    top_level_items_in_tree.append(item.item)
+                    # check that items are parented under the right context
+                    if str(item.item.context) != str(top_level_item.context):
+                        # this object needs moving!
+                        (item, state) = self.__take_item(top_level_item, item_index)
+                        items_to_move.append((item, state))
+
+        # now put all the moved items in
+        for item, state in items_to_move:
+            self.__insert_item(item, state)
+
+        # pass 2 - check that there aren't any dangling contexts
+        # process backwards so that when we take things out we don't
+        # destroy the list
+        for top_level_index in xrange(self.topLevelItemCount()-1, -1, -1):
+            top_level_item = self.topLevelItem(top_level_index)
+
+            if not isinstance(top_level_item, TreeNodeContext):
+                # skip summary
+                continue
+
+            if top_level_item.childCount() == 0:
+                self.takeTopLevelItem(top_level_index)
+
+        # pass 3 - see if anything needs adding
         for item in self._plugin_manager.top_level_items:
+            if item not in top_level_items_in_tree:
+                self.__add_item(item)
 
-            ctx_key = str(item.context)
-            if ctx_key not in items_by_context:
-                items_by_context[ctx_key] = {
-                    "context": item.context,
-                    "items": []
-                }
+        # finally, see if we should show the summary widget or not
+        hide_summary = len(self._plugin_manager.top_level_items) < 2
+        self._summary_node.setHidden(hide_summary)
 
-            items_by_context[ctx_key]["items"].append(item)
+    def __ensure_context_node_exists(self, context):
+        """
+        Make sure a node representing the context exists in the tree
 
-        # now build the tree
-        for context_str in sorted(items_by_context.keys()):
+        :param context: Toolkit context
+        :returns: context item object
+        """
+        # first find the right context
+        context_tree_node = None
+        for context_index in xrange(self.topLevelItemCount()):
+            context_item = self.topLevelItem(context_index)
+            if isinstance(context_item, TreeNodeContext) and str(context_item.context) == str(context):
+                context_tree_node = context_item
 
-            # extract the objects for this context
-            context = items_by_context[context_str]["context"]
-            items = items_by_context[context_str]["items"]
+        if context_tree_node is None:
+            # context not found! Create it!
+            context_tree_node = TreeNodeContext(context, self)
+            context_tree_node.setExpanded(True)
+            self.addTopLevelItem(context_tree_node)
 
-            context_item = TreeNodeContext(context, self)
-            context_item.setExpanded(True)
-            self.addTopLevelItem(context_item)
-            for item in items:
-                self._build_item_tree_r(
-                    item,
-                    enabled=True,
-                    level=0,
-                    tree_parent=context_item
-                )
+        return context_tree_node
+
+    def __take_item(self, parent, index):
+        """
+        Takes out the given widget out of the tree
+        and captures its state. This is meant to be used
+        in conjunction with :meth:`__insert_item`.
+
+        :param parent: parent item
+        :param index: index of the item to take out
+        :returns: (item, state)
+        :rtype: (QTreeWidgetItem, dict)
+        """
+        item = parent.child(index)
+        state = {
+            "selected": item.isSelected(),
+            "expanded": item.isExpanded()
+        }
+        item = parent.takeChild(index)
+        return item, state
+
+    def __insert_item(self, widget_item, state):
+        """
+        Inserts the given item into the tree
+
+        :param widget_item: item to put in
+        :param dict state: state dictionary as created by :meth:`__take_item`.
+        """
+        context_tree_node = self.__ensure_context_node_exists(widget_item.item.context)
+        context_tree_node.addChild(widget_item)
+        # finally, resurrect the associated widget
+        widget_item.build_internal_widget()
+        # restore its state
+        widget_item.setExpanded(state["expanded"])
+        widget_item.setSelected(state["selected"])
+        # and do it for all children
+        def _check_r(parent):
+            for child_index in xrange(parent.childCount()):
+                child = parent.child(child_index)
+                child.build_internal_widget()
+                child.setExpanded(True)
+                _check_r(child)
+        _check_r(widget_item)
+
+        # if the item is selected, scroll to it after the move
+        if widget_item.isSelected():
+            widget_item.treeWidget().scrollToItem(widget_item)
+
+    def __add_item(self, processing_item):
+        """
+        Create a node in the tree to represent the given top level item
+
+        :param processing_item: processing module item instance.
+        """
+        context_tree_node = self.__ensure_context_node_exists(processing_item.context)
+
+        # now add the new node
+        self._build_item_tree_r(
+            processing_item,
+            enabled=True,
+            level=0,
+            tree_parent=context_tree_node
+        )
 
     def get_full_summary(self):
         """
@@ -197,15 +320,16 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             logger.debug("Nothing to select!")
             return
 
-        first_top_level_item = self.topLevelItem(0)
-        if isinstance(first_top_level_item, TreeNodeSummary):
+        # summary item is always the first one
+        summary_item = self.topLevelItem(0)
+        if not summary_item.isHidden():
             logger.debug("Selecting the summary node")
-            self.setCurrentItem(first_top_level_item)
+            self.setCurrentItem(summary_item)
 
         else:
-            # no summary. find first item node
+            # summary hidden. select first item instead.
             first_item = None
-            for context_index in xrange(self.topLevelItemCount()):
+            for context_index in xrange(1, self.topLevelItemCount()):
                 context_item = self.topLevelItem(context_index)
                 for child_index in xrange(context_item.childCount()):
                     first_item = context_item.child(child_index)
