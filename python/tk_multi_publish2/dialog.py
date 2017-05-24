@@ -408,10 +408,18 @@ class AppDialog(QtGui.QWidget):
         self._progress_handler.set_phase(self._progress_handler.PHASE_LOAD)
         self._progress_handler.push("Processing dropped files")
 
+        # pyside gives us back unicode. Make sure we convert it to strings
+        str_files = []
+        for f in files:
+            if isinstance(f, unicode):
+                str_files.append(f.encode("utf-8"))
+            else:
+                str_files.append(f)
+
         try:
             self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
             self._overlay.show_loading()
-            num_items_created = self._plugin_manager.add_external_files(files)
+            num_items_created = self._plugin_manager.add_external_files(str_files)
             num_errors = self._progress_handler.pop()
 
             if num_errors == 0 and num_items_created == 0:
