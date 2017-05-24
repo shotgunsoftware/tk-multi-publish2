@@ -491,6 +491,8 @@ class AppDialog(QtGui.QWidget):
 
         self._synchronize_tree()
 
+        self.ui.items_tree.select_first_item()
+
     def _check_all(self, checked):
         """
         Check all boxes in the currently active tree
