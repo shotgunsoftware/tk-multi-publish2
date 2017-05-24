@@ -196,6 +196,30 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
         return context_tree_node
 
+    def __get_item_state(self, item):
+        """
+        Extract the state for the given tree item.
+        Use :meth:`__set_item_state` to apply the returned data.
+
+        :param item: Item to operate on
+        :returns: dict with state
+        """
+        state = {
+            "selected": item.isSelected(),
+            "expanded": item.isExpanded()
+        }
+        return state
+
+    def __set_item_state(self, item, state):
+        """
+        Applies state previously extracted with :meth:`__get_item_state` to an item.
+
+        :param item: Item to operate on
+        :param state: State dictionary to apply, as returned by :meth:`__get_item_state`
+        """
+        item.setSelected(state["selected"])
+        item.setExpanded(state["expanded"])
+
     def __take_item(self, parent, index):
         """
         Takes out the given widget out of the tree
@@ -207,11 +231,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         :returns: (item, state)
         :rtype: (QTreeWidgetItem, dict)
         """
-        item = parent.child(index)
-        state = {
-            "selected": item.isSelected(),
-            "expanded": item.isExpanded()
-        }
+        state = self.__get_item_state(parent.child(index))
         item = parent.takeChild(index)
         return item, state
 
@@ -227,8 +247,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         # finally, resurrect the associated widget
         widget_item.build_internal_widget()
         # restore its state
-        widget_item.setExpanded(state["expanded"])
-        widget_item.setSelected(state["selected"])
+        self.__set_item_state(widget_item, state)
         # and do it for all children
         def _check_r(parent):
             for child_index in xrange(parent.childCount()):
@@ -340,11 +359,13 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             else:
                 logger.debug("Nothing to select!")
 
-    def set_state_for_all_plugins(self, plugin, state):
+    def set_check_state_for_all_plugins(self, plugin, state):
         """
-        set the state for all plugins
-        """
+        Set the check state for all items associated with the given plugin
 
+        :param plugin: Plugin for which tasks should be manipulated
+        :param state: checkstate to set.
+        """
         logger.debug(
             "Setting state %d for all plugin %s" % (state, plugin)
         )
@@ -368,12 +389,11 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         # run default implementation
         super(PublishTreeWidget, self).dropEvent(event)
 
-        #
-        for item in self._dragged_items:
+        for item, state in self._dragged_items:
             item.build_internal_widget()
-            item.setExpanded(True)
-            item.setSelected(True)
             item.synchronize_context()
+            # restore state after drop
+            self.__set_item_state(item, state)
 
             # and do it for all children
             def _check_r(parent):
@@ -392,13 +412,19 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         Event triggering when a drag operation starts
         """
         # record selection for use later.
-        self._dragged_items = self.selectedItems()
+        self._dragged_items = []
+        dragged_items = self.selectedItems()
 
         # ignore any selections which aren't purely made from TopLevelTreeNodeItems
-        for item in self._dragged_items:
+        for item in dragged_items:
             if not isinstance(item, TopLevelTreeNodeItem):
                 logger.debug("Selection contains non-top level nodes. Ignoring")
                 return
+
+        # extract state
+        for item in dragged_items:
+            state = self.__get_item_state(item)
+            self._dragged_items.append((item, state))
 
         super(PublishTreeWidget, self).dragEnterEvent(event)
 

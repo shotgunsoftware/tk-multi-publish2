@@ -66,7 +66,7 @@ class TreeNodeTask(TreeNodeBase):
         """
         if apply_to_all_plugins:
             # do it for all of the items
-            self.treeWidget().set_state_for_all_plugins(self._task.plugin, state)
+            self.treeWidget().set_check_state_for_all_plugins(self._task.plugin, state)
         else:
             # set just this one
             super(TreeNodeTask, self).set_check_state(state)
