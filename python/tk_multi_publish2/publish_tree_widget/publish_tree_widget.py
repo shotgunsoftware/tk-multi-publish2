@@ -134,7 +134,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
             # go backwards so that when we take stuff out we don't
             # destroy the indices
-            for item_index in xrange(top_level_item.childCount()-1, -1, -1):
+            for item_index in reversed(range(top_level_item.childCount())):
                 item = top_level_item.child(item_index)
                 if item.item not in self._plugin_manager.top_level_items:
                     # no longer in the plugin mgr. remove from tree
@@ -155,7 +155,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         # pass 2 - check that there aren't any dangling contexts
         # process backwards so that when we take things out we don't
         # destroy the list
-        for top_level_index in xrange(self.topLevelItemCount()-1, -1, -1):
+        for top_level_index in reversed(range(self.topLevelItemCount())):
             top_level_item = self.topLevelItem(top_level_index)
 
             if not isinstance(top_level_item, TreeNodeContext):
@@ -171,8 +171,10 @@ class PublishTreeWidget(QtGui.QTreeWidget):
                 self.__add_item(item)
 
         # finally, see if we should show the summary widget or not
-        hide_summary = len(self._plugin_manager.top_level_items) < 2
-        self._summary_node.setHidden(hide_summary)
+        if len(self._plugin_manager.top_level_items) < 2:
+            self._summary_node.setHidden(True)
+        else:
+            self._summary_node.setHidden(False)
 
     def __ensure_context_node_exists(self, context):
         """
@@ -244,18 +246,25 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         """
         context_tree_node = self.__ensure_context_node_exists(widget_item.item.context)
         context_tree_node.addChild(widget_item)
-        # finally, resurrect the associated widget
+
+        # qt seems to drop the associated widget
+        # (http://doc.qt.io/qt-4.8/qtreewidget.html#setItemWidget)
+        # when a tree node is taken out of the tree, either via drag n drop
+        # or via explicit manipulation. So make sure that we recreate
+        # the internal widget as part of re-inserting the node into the tree
         widget_item.build_internal_widget()
+
         # restore its state
         self.__set_item_state(widget_item, state)
-        # and do it for all children
-        def _check_r(parent):
+
+        # and do a similar init for all child nodes
+        def _init_children_r(parent):
             for child_index in xrange(parent.childCount()):
                 child = parent.child(child_index)
                 child.build_internal_widget()
                 child.setExpanded(True)
-                _check_r(child)
-        _check_r(widget_item)
+                _init_children_r(child)
+        _init_children_r(widget_item)
 
         # if the item is selected, scroll to it after the move
         if widget_item.isSelected():
@@ -375,12 +384,9 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         def _check_r(parent):
             for child_index in xrange(parent.childCount()):
                 child = parent.child(child_index)
-
                 if isinstance(child, TreeNodeTask) and child.task.plugin == plugin:
                     child.set_check_state(state)
-
                 _check_r(child)
-
         root = self.invisibleRootItem()
         _check_r(root)
 
@@ -392,20 +398,29 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         super(PublishTreeWidget, self).dropEvent(event)
 
         for item, state in self._dragged_items:
+
+            # qt seems to drop the associated widget
+            # (http://doc.qt.io/qt-4.8/qtreewidget.html#setItemWidget)
+            # when a tree node is taken out of the tree, either via drag n drop
+            # or via explicit manipulation. So make sure that we recreate
+            # the internal widget as part of re-inserting the node into the tree
             item.build_internal_widget()
+
+            # make sure that the item picks up the new context
             item.synchronize_context()
+
             # restore state after drop
             self.__set_item_state(item, state)
 
-            # and do it for all children
-            def _check_r(parent):
+            # and recurse down to all children and
+            # init their states too
+            def _init_children_r(parent):
                 for child_index in xrange(parent.childCount()):
                     child = parent.child(child_index)
                     child.build_internal_widget()
                     child.setExpanded(True)
-                    _check_r(child)
-
-            _check_r(item)
+                    _init_children_r(child)
+            _init_children_r(item)
 
         self.tree_reordered.emit()
 
