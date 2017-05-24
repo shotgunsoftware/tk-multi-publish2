@@ -9,3 +9,4 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 from .publish_tree_widget import PublishTreeWidget
+from .tree_node_item import TreeNodeItem

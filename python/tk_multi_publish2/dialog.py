@@ -18,6 +18,7 @@ from .ui.dialog import Ui_Dialog
 from .processing import PluginManager, Task, Item
 from .progress import ProgressHandler
 from .summary_overlay import SummaryOverlay
+from .publish_tree_widget import TreeNodeItem
 
 
 # import frameworks
@@ -484,7 +485,8 @@ class AppDialog(QtGui.QWidget):
 
         # delete from the tree
         for tree_item in self.ui.items_tree.selectedItems():
-            processing_items.append(tree_item.item)
+            if isinstance(tree_item, TreeNodeItem):
+                processing_items.append(tree_item.item)
 
         for item in processing_items:
             self._plugin_manager.remove_top_level_item(item)
