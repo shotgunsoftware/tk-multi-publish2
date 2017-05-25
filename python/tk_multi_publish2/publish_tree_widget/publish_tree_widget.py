@@ -118,11 +118,6 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         state is possible.
         """
 
-        # get selected publish instances so that we can restore selection
-        selected_publish_instances = []
-        for item in self.selectedItems():
-            selected_publish_instances.append(item.get_publish_instance())
-
         logger.debug("Building tree.")
 
         # pass 1 - check if there is any top level item in the tree which shouldn't be there.
@@ -291,13 +286,6 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             level=0,
             tree_parent=context_tree_node
         )
-
-        # iterate over all the new tree items to restore selection
-        for it in QtGui.QTreeWidgetItemIterator(self):
-            item = it.value()
-            if item.get_publish_instance() in selected_publish_instances:
-                item.setSelected(True)
-                self.scrollToItem(item, QtGui.QAbstractItemView.EnsureVisible)
 
     def get_full_summary(self):
         """
