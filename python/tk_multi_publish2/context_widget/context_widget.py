@@ -416,9 +416,13 @@ class ContextWidget(QtGui.QWidget):
 
         # turn these into QActions to add to the list of recents in the menu
         for serialized_context in serialized_recent_contexts:
-            context = sgtk.Context.deserialize(serialized_context)
-            recent_action = self._get_qaction_for_context(context)
-            self._menu_actions["Recent"].append(recent_action)
+            try:
+                context = sgtk.Context.deserialize(serialized_context)
+            except Exception, e:
+                logger.debug("Unable to deserialize stored context.")
+            else:
+                recent_action = self._get_qaction_for_context(context)
+                self._menu_actions["Recent"].append(recent_action)
 
     def _manual_task_search_toggle(self, checked):
         """
