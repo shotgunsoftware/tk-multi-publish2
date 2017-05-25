@@ -83,9 +83,9 @@ class ProgressDetailsWidget(QtGui.QWidget):
 
         self.setGeometry(QtCore.QRect(
             pos.x(),
-            0,
+            5,
             self._progress_widget.width(),
-            pos.y()
+            pos.y() - 5
         ))
 
 

@@ -18,6 +18,7 @@ from .ui.dialog import Ui_Dialog
 from .processing import PluginManager, Task, Item
 from .progress import ProgressHandler
 from .summary_overlay import SummaryOverlay
+from .publish_tree_widget import TreeNodeItem
 
 
 # import frameworks
@@ -425,7 +426,7 @@ class AppDialog(QtGui.QWidget):
             self._progress_handler.logger.info("One item discovered by publisher.")
         elif num_errors == 0 and num_items_created > 1:
             self._progress_handler.logger.info("%d items discovered by publisher." % num_items_created)
-        else:
+        elif num_errors > 0:
             self._progress_handler.logger.error("Errors reported. See log for details.")
 
         # make sure the ui is up to date
@@ -442,27 +443,36 @@ class AppDialog(QtGui.QWidget):
         self._progress_handler.set_phase(self._progress_handler.PHASE_LOAD)
         self._progress_handler.push("Processing dropped files")
 
+        # pyside gives us back unicode. Make sure we convert it to strings
+        str_files = []
+        for f in files:
+            if isinstance(f, unicode):
+                str_files.append(f.encode("utf-8"))
+            else:
+                str_files.append(f)
+
         try:
             self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
             self._overlay.show_loading()
-            num_items_created = self._plugin_manager.add_external_files(files)
-        finally:
-            self._overlay.hide()
+            num_items_created = self._plugin_manager.add_external_files(str_files)
             num_errors = self._progress_handler.pop()
 
-        if num_errors == 0 and num_items_created == 0:
-            self._progress_handler.logger.info("Nothing was added.")
-        elif num_errors == 0 and num_items_created == 1:
-            self._progress_handler.logger.info("One item was added.")
-        elif num_errors == 0 and num_items_created > 1:
-            self._progress_handler.logger.info("%d items were added." % num_items_created)
-        elif num_errors == 1:
-            self._progress_handler.logger.error("An error was reported. Please see the log for details.")
-        else:
-            self._progress_handler.logger.error("%d errors reported. Please see the log for details." % num_errors)
+            if num_errors == 0 and num_items_created == 0:
+                self._progress_handler.logger.info("Nothing was added.")
+            elif num_errors == 0 and num_items_created == 1:
+                self._progress_handler.logger.info("One item was added.")
+            elif num_errors == 0 and num_items_created > 1:
+                self._progress_handler.logger.info("%d items were added." % num_items_created)
+            elif num_errors == 1:
+                self._progress_handler.logger.error("An error was reported. Please see the log for details.")
+            else:
+                self._progress_handler.logger.error("%d errors reported. Please see the log for details." % num_errors)
 
-        # rebuild the tree
-        self._synchronize_tree()
+            # rebuild the tree
+            self._synchronize_tree()
+
+        finally:
+            self._overlay.hide()
 
         # lastly, select the summary
         self.ui.items_tree.select_first_item()
@@ -518,12 +528,15 @@ class AppDialog(QtGui.QWidget):
 
         # delete from the tree
         for tree_item in self.ui.items_tree.selectedItems():
-            processing_items.append(tree_item.item)
+            if isinstance(tree_item, TreeNodeItem):
+                processing_items.append(tree_item.item)
 
         for item in processing_items:
             self._plugin_manager.remove_top_level_item(item)
 
         self._synchronize_tree()
+
+        self.ui.items_tree.select_first_item()
 
     def _check_all(self, checked):
         """
