@@ -97,6 +97,15 @@ class PublishLogWrapper(object):
 
         self._logger = logging.getLogger(full_log_path)
 
+        # seal the logger - this will prevent any log messages
+        # emitted by the publish hooks to propagate up
+        # in the hierarchy and be picked up by engine loggers.
+        # The reason we are doing this is because it may seem odd
+        # to get plugin info in for example the maya console.
+        # more importantly, it will appear in the shotgun engine
+        # in a dialog window after app exit which is non-ideal.
+        self._logger.propagate = False
+
         self._handler = PublishLogHandler(progress_widget)
 
         # and handle it in the UI
