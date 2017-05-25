@@ -88,8 +88,13 @@ QToolButton:pressed {
 
 /* subheading under the item name in the details */
 #item_type, #please_select_an_item {
-    font-size: 16px;
-    font-weight: 100;
+    font-size: 12px;
+    font-weight: 75;
+}
+
+/* the item name is somehow offset right. not sure why. account for that here.*/
+#item_type {
+    padding-left: 4px;
 }
 
 /* divider lines in the details UI */
@@ -334,16 +339,95 @@ ProgressDetailsWidget #log_tree::item {
 /* context selection */
 /* --------------------------------------------------------------------- */
 
-#context_widget_tree {
-    font-size: 12px;
-    font-weight: 100;
+#task_search_btn {
+    border: none;
+    padding: 4px;
+    border-radius: 2px;
+    background-color: rgba(20, 20, 20, 18%);
 }
 
-#context_widget_tree::item {
-    margin: 4px;
+#task_search_btn:hover {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(20, 20, 20, 30%);
+}
+
+#task_search_btn:checked {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(20, 20, 20, 50%);
+}
+
+#link_search_btn {
+    border: none;
+    padding: 4px;
+    border-radius: 2px;
+    background-color: rgba(20, 20, 20, 18%);
+}
+
+#link_search_btn:hover {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(20, 20, 20, 30%);
+}
+
+#link_search_btn:checked {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(20, 20, 20, 50%);
+}
+
+#task_menu_btn {
+    border: none;
+    padding: 4px;
+    border-radius: 2px;
+    background-color: rgba(20, 20, 20, 18%);
+}
+
+#task_menu_btn::menu-indicator {
+    image: none;
+}
+
+#task_menu_btn:hover {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(20, 20, 20, 30%);
+}
+
+#task_menu_btn:checked {
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(20, 20, 20, 50%);
+}
+
+#task_display {
+    padding-left: 4px;
+    border: 1px solid rgba(20, 20, 20, 18%);
+    border-radius: 2px;
+}
+
+#link_display {
+    padding-left: 4px;
+    border: 1px solid rgba(20, 20, 20, 18%);
+    border-radius: 2px;
+}
+
+#task_search {
+    padding-left: 4px;
+    border: 1px solid rgba(20, 20, 20, 18%);
+    border-radius: 2px;
+}
+
+#link_search {
+    padding-left: 4px;
+    border: 1px solid rgba(20, 20, 20, 18%);
+    border-radius: 2px;
 }
 
 
+QMenu::item::indicator {
+    margin-left: 10px;
+}
 
 /* --------------------------------------------------------------------- */
 /* Bottom toolbar */

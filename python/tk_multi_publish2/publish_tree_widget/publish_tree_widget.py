@@ -117,6 +117,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         Does this in a lazy way in order to preserve as much
         state is possible.
         """
+
         logger.debug("Building tree.")
 
         # pass 1 - check if there is any top level item in the tree which shouldn't be there.

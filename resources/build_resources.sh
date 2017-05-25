@@ -10,6 +10,9 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+# The path to where the PySide binaries are installed
+PYTHON_BASE="/Applications/Shotgun.app/Contents/Resources/Python/bin"
+
 # Remove any problematic profiles from pngs.
 for f in *.png; do mogrify $f; done
 
@@ -25,11 +28,11 @@ function build_qt {
 }
 
 function build_ui {
-    build_qt "pyside-uic --from-imports" "$1.ui" "$1"
+    build_qt "${PYTHON_BASE}/python ${PYTHON_BASE}/pyside-uic --from-imports" "$1.ui" "$1"
 }  
 
 function build_res {
-    build_qt "pyside-rcc" "$1.qrc" "$1_rc"
+    build_qt "${PYTHON_BASE}/pyside-rcc" "$1.qrc" "$1_rc"
 }
 
 
@@ -52,10 +55,14 @@ build_ui task_widget
 build_ui context_widget
 build_ui summary_widget
 
-
 # build progress UIs:
 echo "building progress interfaces..."
 UI_PYTHON_PATH=../python/tk_multi_publish2/progress/ui
 build_ui progress_details_widget
 build_ui more_info_widget
+
+# build tree UIs:
+echo "building context interfaces..."
+UI_PYTHON_PATH=../python/tk_multi_publish2/context_widget/ui
+build_ui context_editor_widget
 

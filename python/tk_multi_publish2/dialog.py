@@ -197,6 +197,9 @@ class AppDialog(QtGui.QWidget):
         except Exception, e:
             logger.exception("Error running Shotgun Panel App closeEvent()")
 
+        # ensure the context widget's recent contexts are saved
+        self.ui.context_widget.save_recent_contexts()
+
     def _update_details_from_selection(self):
         """
         Makes sure that the right hand side
@@ -306,11 +309,12 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_thumbnail.set_thumbnail(item.thumbnail)
 
         if item.parent.is_root():
-            self.ui.link_label.show()
             self.ui.context_widget.show()
+            self.ui.context_widget.context_label.setText(
+                "Task and Entity Link to apply to the selected item:"
+            )
             self.ui.context_widget.set_context(item.context)
         else:
-            self.ui.link_label.hide()
             self.ui.context_widget.hide()
 
         # create summary
@@ -349,9 +353,40 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_description_label.setText("Description to apply to all items")
         self.ui.item_comments.setPlainText("")
 
-        # set context
-        self.ui.link_label.hide()
-        self.ui.context_widget.hide()
+        # for the summary, attempt to display the appropriate context in the
+        # context widget. if all publish items have the same context, display
+        # that one. if there are multiple, show none and update the label to
+        # reflect it.
+
+        # iterate over all the tree items to find currently used contexts
+        current_contexts = {}
+        for it in QtGui.QTreeWidgetItemIterator(self.ui.items_tree):
+            item = it.value()
+            publish_instance = item.get_publish_instance()
+            if isinstance(publish_instance, Item):
+                context = publish_instance.context
+                context_key = str(context)
+                current_contexts[context_key] = context
+
+        if len(current_contexts) == 1:
+            # only one context being used by current items. prepopulate it in
+            # the summary view's context widget
+            context_key = current_contexts.keys()[0]
+            self.ui.context_widget.set_context(current_contexts[context_key])
+            context_label_text = "Task and Entity Link to apply to all items:"
+        else:
+            self.ui.context_widget.set_context(
+                None,
+                task_display_override=" -- Multiple values -- ",
+                link_display_override=" -- Multiple values -- ",
+            )
+            context_label_text = (
+                "Currently publishing items to %s contexts. "
+                "Override all items here:" % (len(current_contexts),)
+            )
+
+        self.ui.context_widget.show()
+        self.ui.context_widget.context_label.setText(context_label_text)
 
         # create summary for all items
         # no need to have a summary since the main label says summary
@@ -359,7 +394,7 @@ class AppDialog(QtGui.QWidget):
 
         (num_items, summary) = self.ui.items_tree.get_full_summary()
         self.ui.item_summary.setText(summary)
-        self.ui.item_type.setText("Publishing %d items" % num_items)
+        self.ui.item_type.setText("%d tasks to execute" % num_items)
 
     def _create_task_details(self, task):
         """

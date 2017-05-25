@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>870</width>
-    <height>652</height>
+    <width>737</width>
+    <height>615</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,7 +23,7 @@
    <item>
     <widget class="QStackedWidget" name="main_stack">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="large_drop_area_frame">
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -319,15 +319,21 @@
             </widget>
             <widget class="QFrame" name="details_frame">
              <layout class="QVBoxLayout" name="verticalLayout_5">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <property name="margin">
+               <number>0</number>
+              </property>
               <item>
                <widget class="QStackedWidget" name="details_stack">
                 <property name="currentIndex">
                  <number>0</number>
                 </property>
                 <widget class="QWidget" name="details_item">
-                 <layout class="QVBoxLayout" name="verticalLayout_6">
+                 <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,1,1,1,1,5,1,5">
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_2">
+                   <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,10">
                     <item>
                      <widget class="QLabel" name="item_icon">
                       <property name="minimumSize">
@@ -348,14 +354,20 @@
                       <property name="scaledContents">
                        <bool>true</bool>
                       </property>
+                      <property name="alignment">
+                       <set>Qt::AlignHCenter|Qt::AlignTop</set>
+                      </property>
                      </widget>
                     </item>
                     <item>
-                     <layout class="QVBoxLayout" name="verticalLayout_12">
+                     <layout class="QVBoxLayout" name="verticalLayout_12" stretch="1,2">
+                      <property name="spacing">
+                       <number>0</number>
+                      </property>
                       <item>
-                       <widget class="QLabel" name="item_name">
+                       <widget class="ElidedLabel" name="item_name">
                         <property name="sizePolicy">
-                         <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                           <horstretch>0</horstretch>
                           <verstretch>0</verstretch>
                          </sizepolicy>
@@ -363,18 +375,24 @@
                         <property name="text">
                          <string>Item name</string>
                         </property>
+                        <property name="alignment">
+                         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                        </property>
                        </widget>
                       </item>
                       <item>
                        <widget class="QLabel" name="item_type">
                         <property name="sizePolicy">
-                         <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                           <horstretch>0</horstretch>
                           <verstretch>0</verstretch>
                          </sizepolicy>
                         </property>
                         <property name="text">
                          <string>Item type</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
                         </property>
                        </widget>
                       </item>
@@ -390,39 +408,25 @@
                    </widget>
                   </item>
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_5">
-                    <property name="spacing">
-                     <number>30</number>
-                    </property>
-                    <item>
-                     <widget class="QLabel" name="link_label">
-                      <property name="text">
-                       <string>Link</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="ContextWidget" name="context_widget" native="true">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
+                   <widget class="ContextWidget" name="context_widget" native="true"/>
                   </item>
                   <item>
-                   <layout class="QGridLayout" name="gridLayout">
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="item_thumbnail_label">
+                   <layout class="QGridLayout" name="gridLayout_3">
+                    <item row="0" column="1">
+                     <widget class="QLabel" name="item_description_label">
                       <property name="text">
-                       <string>Thumbnail</string>
+                       <string>Description:</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="2" column="1" colspan="2">
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="item_thumbnail_label">
+                      <property name="text">
+                       <string>Thumbnail:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
                      <widget class="QPlainTextEdit" name="item_comments">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -444,14 +448,7 @@
                       </property>
                      </widget>
                     </item>
-                    <item row="1" column="1" colspan="2">
-                     <widget class="QLabel" name="item_description_label">
-                      <property name="text">
-                       <string>Description</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="0">
+                    <item row="1" column="0">
                      <widget class="Thumbnail" name="item_thumbnail">
                       <property name="minimumSize">
                        <size>
@@ -484,7 +481,10 @@
                   <item>
                    <widget class="QLabel" name="item_summary_label">
                     <property name="text">
-                     <string>Publish Summary</string>
+                     <string>Publish Summary:</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
                     </property>
                    </widget>
                   </item>
@@ -498,8 +498,8 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>491</width>
-                       <height>117</height>
+                       <width>420</width>
+                       <height>100</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_10" stretch="0,1">
@@ -533,7 +533,10 @@
                   <item>
                    <widget class="QLabel" name="item_settings_label">
                     <property name="text">
-                     <string>Settings</string>
+                     <string>Settings:</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
                     </property>
                    </widget>
                   </item>
@@ -600,8 +603,8 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>59</width>
-                       <height>26</height>
+                       <width>420</width>
+                       <height>202</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_13" stretch="0,1">
@@ -1031,17 +1034,37 @@
    <header>..publish_tree_widget</header>
   </customwidget>
   <customwidget>
+   <class>ProgressStatusLabel</class>
+   <extends>QLabel</extends>
+   <header>..progress_status_label</header>
+  </customwidget>
+  <customwidget>
    <class>ContextWidget</class>
    <extends>QWidget</extends>
    <header>..context_widget</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ProgressStatusLabel</class>
+   <class>ElidedLabel</class>
    <extends>QLabel</extends>
-   <header>..progress_status_label</header>
+   <header>..qtwidgets</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>item_comments</tabstop>
+  <tabstop>validate</tabstop>
+  <tabstop>publish</tabstop>
+  <tabstop>items_tree</tabstop>
+  <tabstop>refresh</tabstop>
+  <tabstop>delete_items</tabstop>
+  <tabstop>expand_all</tabstop>
+  <tabstop>collapse_all</tabstop>
+  <tabstop>help</tabstop>
+  <tabstop>close</tabstop>
+  <tabstop>stop_processing</tabstop>
+  <tabstop>scrollArea</tabstop>
+  <tabstop>scrollArea_2</tabstop>
+ </tabstops>
  <resources>
   <include location="resources.qrc"/>
  </resources>
