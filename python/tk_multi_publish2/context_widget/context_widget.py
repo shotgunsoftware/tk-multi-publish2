@@ -50,13 +50,14 @@ class ContextWidget(QtGui.QWidget):
         super(ContextWidget, self).__init__(parent)
 
         self._bundle = sgtk.platform.current_bundle()
+        project = self._bundle.context.project
 
         # get instance of user settings to save/restore values across sessions
         self._settings = settings.UserSettings(self._bundle)
 
         # the key we'll use to store/retrieve recent contexts via user settings
-        self._settings_recent_contexts_key = "%s_recent_contexts" % (
-            self._bundle.name,)
+        self._settings_recent_contexts_key = "%s_recent_contexts_%s" % (
+            self._bundle.name, project["id"])
 
         # we will do a bg query that requires an id to catch results
         self._schema_query_id = None
@@ -182,7 +183,13 @@ class ContextWidget(QtGui.QWidget):
         serialized_contexts = []
         for recent_action in self._menu_actions["Recent"]:
             recent_context = recent_action.data()
-            serialized_contexts.append(recent_context.serialize())
+
+            # don't include the user credentials in the serialized context as
+            # it may cause issues with authentication when deserializing
+            serialized_context = recent_context.serialize(
+                with_user_credentials=False)
+
+            serialized_contexts.append(serialized_context)
 
         logger.debug("Storing serialized 'Recent' contexts.")
 
@@ -218,11 +225,8 @@ class ContextWidget(QtGui.QWidget):
         # have the ability to easily assign a context to multiple publish items
         # simultaneously, this provides a nice mechanism for quick assignment
         # in the UI.
-
-        # TODO: turning this off as it is causing weird auth issues when
-        # launching the publisher
-        #if context:
-        #    self._add_to_recents(context)
+        if context:
+            self._add_to_recents(context)
 
     def set_up(self, task_manager):
         """
@@ -277,7 +281,6 @@ class ContextWidget(QtGui.QWidget):
         # shotgun schema to get a list of these entity types. We use the current
         # project schema if we're in a project. We do this as a background query
         # via the supplied task manager.
-        publisher = sgtk.platform.current_bundle()
 
         # connect to the task manager signals so that we can get the results
         task_manager.task_completed.connect(self._on_task_completed)
@@ -291,7 +294,7 @@ class ContextWidget(QtGui.QWidget):
         self._my_tasks_query_id = task_manager.add_task(_query_my_tasks)
 
         # get recent contexts from user settings
-        #self._get_recent_contexts()
+        self._get_recent_contexts()
 
     @property
     def context_label(self):
@@ -518,6 +521,10 @@ class ContextWidget(QtGui.QWidget):
 
         if recent_actions:
             self._task_menu.add_group(recent_actions, "Recent")
+
+        # if there are no menu items, show a message
+        if not self._task_menu.actions():
+            self._task_menu.addAction("No Tasks to show")
 
     def _on_context_activated(self, context):
         """
@@ -891,6 +898,7 @@ def _query_my_tasks():
     filters = [
         ["project", "is", project],
         ["task_assignees", "is", current_user],
+        ["project.Project.sg_status", "is", "Active"]
     ]
 
     order = [
