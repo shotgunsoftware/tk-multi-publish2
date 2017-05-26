@@ -888,7 +888,6 @@ def _query_my_tasks():
     filters = [
         ["project", "is", project],
         ["task_assignees", "is", current_user],
-        ["project.Project.sg_status", "is", "Active"]
     ]
 
     order = [
