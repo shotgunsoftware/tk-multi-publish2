@@ -218,8 +218,11 @@ class ContextWidget(QtGui.QWidget):
         # have the ability to easily assign a context to multiple publish items
         # simultaneously, this provides a nice mechanism for quick assignment
         # in the UI.
-        if context:
-            self._add_to_recents(context)
+
+        # TODO: turning this off as it is causing weird auth issues when
+        # launching the publisher
+        #if context:
+        #    self._add_to_recents(context)
 
     def set_up(self, task_manager):
         """
@@ -288,7 +291,7 @@ class ContextWidget(QtGui.QWidget):
         self._my_tasks_query_id = task_manager.add_task(_query_my_tasks)
 
         # get recent contexts from user settings
-        self._get_recent_contexts()
+        #self._get_recent_contexts()
 
     @property
     def context_label(self):
