@@ -27,6 +27,17 @@ settings = sgtk.platform.import_framework(
 
 logger = sgtk.platform.get_logger(__name__)
 
+# fields required to create a context from a task entity without falling back to
+# a SG query
+TASK_QUERY_FIELDS =[
+    "type",
+    "id",
+    "content",
+    "project",
+    "entity",
+    "step"
+]
+
 
 class ContextWidget(QtGui.QWidget):
     """
@@ -695,7 +706,7 @@ class ContextWidget(QtGui.QWidget):
             [["entity", "is", context.entity]],
             # query all fields required to create a context from a task entity
             # dictionary. see sgtk api `context_from_entity_dictionary`
-            fields=["type", "id", "name", "content", "project", "entity", "step"]
+            fields=TASK_QUERY_FIELDS
         )
 
         # cache the tasks
@@ -905,22 +916,15 @@ def _query_my_tasks():
         {"field_name": "content", "direction": "asc"}
     ]
 
+    # query all fields required to create a context from a task entity
+    # dictionary. see sgtk api `context_from_entity_dictionary`
+    task_fields = TASK_QUERY_FIELDS
+    task_fields.extend(["sg_status_list"])
+
     return publisher.shotgun.find(
         "Task",
         filters,
-        # query all fields required to create a context from a task entity
-        # dictionary. see sgtk api `context_from_entity_dictionary`
-        fields=[
-            "type",
-            "id",
-            "name",
-            "content",
-            "project",
-            "entity",
-            "step",
-            "content",
-            "sg_status_list"
-        ],
+        fields=task_fields,
         order=order
     )
 
