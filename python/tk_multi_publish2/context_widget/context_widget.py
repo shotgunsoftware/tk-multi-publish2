@@ -362,8 +362,8 @@ class ContextWidget(QtGui.QWidget):
         task_actions = []
 
         for task in tasks:
-            task_context = publisher.sgtk.context_from_entity_dictionary(
-                task)
+            task_context = publisher.sgtk.context_from_entity_dictionary(task)
+
             # the context from dict method clears all unnecessary fields
             # from the task upon creation. now that we have the context,
             # update the fields with the queried task fields
@@ -695,7 +695,7 @@ class ContextWidget(QtGui.QWidget):
             [["entity", "is", context.entity]],
             # query all fields required to create a context from a task entity
             # dictionary. see sgtk api `context_from_entity_dictionary`
-            fields=["type", "id", "name", "project", "entity", "step"]
+            fields=["type", "id", "name", "content", "project", "entity", "step"]
         )
 
         # cache the tasks
@@ -911,7 +911,10 @@ def _query_my_tasks():
         # query all fields required to create a context from a task entity
         # dictionary. see sgtk api `context_from_entity_dictionary`
         fields=[
+            "type",
+            "id",
             "name",
+            "content",
             "project",
             "entity",
             "step",
