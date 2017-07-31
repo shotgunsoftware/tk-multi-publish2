@@ -354,9 +354,23 @@ class Item(object):
             prefix="sgtk_thumb",
             delete=False
         ).name
-        self.thumbnail.save(temp_path)
-        self._created_temp_files.append(temp_path)
-        return temp_path
+        success = self.thumbnail.save(temp_path)
+
+        if success:
+            if os.path.getsize(temp_path) > 0:
+                self._created_temp_files.append(temp_path)
+            else:
+                logger.debug(
+                    "A zero-size thumbnail was written for %s, "
+                    "no thumbnail will be uploaded." % self.name
+                )
+                return None
+            return temp_path
+        else:
+            logger.warning(
+                "Thumbnail save to disk failed. No thumbnail will be uploaded for %s." % self.name
+            )
+            return None
 
     @property
     def icon(self):
