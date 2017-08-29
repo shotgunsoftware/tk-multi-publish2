@@ -436,10 +436,11 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         # retain only TopLevelTreeNodeItems items from selected elements
         for item in self.selectedItems():
             if isinstance(item, TopLevelTreeNodeItem):
-                dragged_items.append(item)
+                dragged_items.append(item) 
 
         # ignore any selection that does not contain at least one TopLevelTreeNodeItems
-        if(len(dragged_items)==0):
+        if not dragged_items:
+            logger.debug("No top-level nodes included in selection.")        
             return
 
         # extract state
