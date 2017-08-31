@@ -62,15 +62,15 @@ class CustomTreeWidgetContext(CustomTreeWidgetBase):
         Callback that fires when the user clicks the checkbox
         """
 
-        #the stateChanged signal is emitted before clicked() signal, which means
-        #that the value of checkState() below is the one after the user clicks the checkbox
+        # the stateChanged signal is emitted before clicked() signal, which means
+        # that the value of checkState() below is the one after the user clicks the checkbox
         state = self.ui.checkbox.checkState()
 
-        #When user clicks a context checkbox, we want it to choose between selecting all children 
-        #and unselecting all children, so 2 states.
-        #when user clicks on the checkbox of a child of the context, we have the possibility that some children are 
-        #selected, and others are not. In this case we need the QtCore.Qt.PartiallyChecked state. So 3 states... but this case is
-        #covered by underlying classes
+        # When user clicks a context checkbox, we want it to choose between selecting all children 
+        # and unselecting all children, so 2 states.
+        # when user clicks on the checkbox of a child of the context, we have the possibility that some children are 
+        # selected, and others are not. In this case we need the QtCore.Qt.PartiallyChecked state. So 3 states... but this case is
+        # covered by underlying classes
         if state != QtCore.Qt.PartiallyChecked:
            self._tree_node.set_check_state(state)
         else:
