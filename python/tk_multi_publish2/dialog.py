@@ -143,6 +143,9 @@ class AppDialog(QtGui.QWidget):
         # start up our plugin manager
         self._plugin_manager = None
 
+        self._summary_comment = ""
+        self._summary_comment_multiple_values = False
+
         # set up progress reporting
         self._progress_handler = ProgressHandler(
             self.ui.progress_status_icon,
@@ -258,11 +261,22 @@ class AppDialog(QtGui.QWidget):
         """
         comments = self.ui.item_comments.toPlainText()
         if self._current_item is None:
-            # this is the summary item - so update all items!
-            for top_level_item in self._plugin_manager.top_level_items:
-                top_level_item.description = comments
+            if self._summary_comment != comments:
+                self._summary_comment = comments
+
+                # this is the summary item - so update all items!
+                for top_level_item in self._plugin_manager.top_level_items:
+                    top_level_item.description = self._summary_comment
+
+                # all tasks have same description now, so set <multiple values> indicator to false
+                self._summary_comment_multiple_values = False
         else:
             self._current_item.description = comments
+
+            # if at least one task has a comment that is different than the summary description, set 
+            # <multiple values> indicator to true 
+            if self._summary_comment != comments:
+                self._summary_comment_multiple_values = True
 
     def _update_item_thumbnail(self, pixmap):
         """
@@ -351,7 +365,13 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_thumbnail.hide()
 
         self.ui.item_description_label.setText("Description to apply to all items")
-        self.ui.item_comments.setPlainText("")
+        self.ui.item_comments.setPlainText(self._summary_comment)
+        self._summary_comment_multiple_values = True
+        if self._summary_comment_multiple_values == True:
+            self.ui.item_comments.setPlaceholderText("<multiple values>")
+            self.setFocus()
+        else:
+            self.ui.item_comments.setPlaceholderText("")
 
         # for the summary, attempt to display the appropriate context in the
         # context widget. if all publish items have the same context, display
