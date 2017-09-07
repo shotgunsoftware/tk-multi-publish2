@@ -19,6 +19,7 @@ from .processing import PluginManager, Task, Item
 from .progress import ProgressHandler
 from .summary_overlay import SummaryOverlay
 from .publish_tree_widget import TreeNodeItem
+from .publish_description_edit import PublishDescriptionEdit
 
 
 # import frameworks
@@ -270,6 +271,7 @@ class AppDialog(QtGui.QWidget):
 
                 # all tasks have same description now, so set <multiple values> indicator to false
                 self._summary_comment_multiple_values = False
+                self.ui.item_comments._show_placeholder = self._summary_comment_multiple_values
         else:
             self._current_item.description = comments
 
@@ -366,12 +368,12 @@ class AppDialog(QtGui.QWidget):
 
         self.ui.item_description_label.setText("Description to apply to all items")
         self.ui.item_comments.setPlainText(self._summary_comment)
-        self._summary_comment_multiple_values = True
-        if self._summary_comment_multiple_values == True:
-            self.ui.item_comments.setPlaceholderText("<multiple values>")
-            self.setFocus()
-        else:
-            self.ui.item_comments.setPlaceholderText("")
+
+        # the item_comments PublishDescriptionFocus won't display placeholder text if it is in focus
+        # so clearing the focus from that widget in order to see the <multiple values> warning once 
+        # the master summary details page is opened
+        self.ui.item_comments.clearFocus()
+        self.ui.item_comments._show_placeholder = self._summary_comment_multiple_values
 
         # for the summary, attempt to display the appropriate context in the
         # context widget. if all publish items have the same context, display

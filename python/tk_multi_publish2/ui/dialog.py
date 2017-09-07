@@ -193,7 +193,7 @@ class Ui_Dialog(object):
         self.item_thumbnail_label = QtGui.QLabel(self.details_item)
         self.item_thumbnail_label.setObjectName("item_thumbnail_label")
         self.gridLayout_3.addWidget(self.item_thumbnail_label, 0, 0, 1, 1)
-        self.item_comments = QtGui.QPlainTextEdit(self.details_item)
+        self.item_comments = PublishDescriptionEdit(self.details_item)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -501,6 +501,7 @@ class Ui_Dialog(object):
 from ..thumbnail import Thumbnail
 from ..context_widget import ContextWidget
 from ..progress_status_label import ProgressStatusLabel
+from ..publish_description_edit import PublishDescriptionEdit
 from ..publish_tree_widget import PublishTreeWidget
 from ..settings_widget import SettingsWidget
 from ..drop_area import DropAreaFrame
