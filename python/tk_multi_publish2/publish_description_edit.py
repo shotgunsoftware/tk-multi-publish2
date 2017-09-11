@@ -28,7 +28,7 @@ class PublishDescriptionEdit(QtGui.QPlainTextEdit):
 
         self._show_placeholder = False
 
-        #this is theplaceholder text to be displayed in the bottom right corner of the widget. The spaces afterwards were added so that the 
+        # this is the placeholder text to be displayed in the bottom right corner of the widget. The spaces afterwards were added so that the 
         # placeholder text won't be hidden behind the scroll bar that is automatically added when the text is too long 
         self._placeholder_text = "<multiple values>"
 
