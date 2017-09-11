@@ -143,6 +143,7 @@ class AppDialog(QtGui.QWidget):
         self._plugin_manager = None
 
         self._summary_comment = ""
+        # this boolean indicates that at least one child has a description that is different than the summary.
         self._summary_comment_multiple_values = False
 
         # set up progress reporting

@@ -30,7 +30,7 @@ class PublishDescriptionEdit(QtGui.QPlainTextEdit):
 
         #this is theplaceholder text to be displayed in the bottom right corner of the widget. The spaces afterwards were added so that the 
         # placeholder text won't be hidden behind the scroll bar that is automatically added when the text is too long 
-        self._placeholder_text = "<multiple values>      "
+        self._placeholder_text = "<multiple values>"
 
     def paintEvent(self, paint_event):
        """
@@ -50,11 +50,14 @@ class PublishDescriptionEdit(QtGui.QPlainTextEdit):
            background_color.setAlpha(128)
            p.fillRect(self.rect(), QtGui.QBrush(background_color));
 
-           # right placeholder warning in red
-           col = QtGui.QColor("#FF2D5B") #red
+           # right placeholder note in blue
+           col = QtGui.QColor(24,167,227) # blue
            p.setPen(QtGui.QPen(col))
            p.setBrush(QtGui.QBrush(col))
-           p.drawText(self.rect(),QtCore.Qt.AlignBottom | QtCore.Qt.AlignRight, self._placeholder_text)
+
+           placeholder_text = self._placeholder_text
+
+           p.drawText(self.rect(),QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter, placeholder_text)
  
        else:
            QtGui.QPlainTextEdit.paintEvent(self, paint_event)
