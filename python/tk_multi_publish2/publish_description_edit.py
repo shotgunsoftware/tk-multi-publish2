@@ -39,25 +39,14 @@ class PublishDescriptionEdit(QtGui.QPlainTextEdit):
  
        # If the box does not have focus, draw <multiple values> placeholder when self._show_placeholder is true, even if the widget has text
        if not self.hasFocus() and self._show_placeholder == True:
- 
-           # draw the original text (summary description)
-           QtGui.QPlainTextEdit.paintEvent(self, paint_event)
-
            p = QtGui.QPainter(self.viewport())
-
-           # draw transparent rectangle to slightly hide the text
-           background_color = p.background().color()
-           background_color.setAlpha(128)
-           p.fillRect(self.rect(), QtGui.QBrush(background_color));
 
            # right placeholder note in blue
            col = QtGui.QColor(24,167,227) # blue
            p.setPen(QtGui.QPen(col))
            p.setBrush(QtGui.QBrush(col))
 
-           placeholder_text = self._placeholder_text
-
-           p.drawText(self.rect(),QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter, placeholder_text)
+           p.drawText(self.rect(),QtCore.Qt.AlignTop | QtCore.Qt.AlignLeft, self._placeholder_text)
  
        else:
            QtGui.QPlainTextEdit.paintEvent(self, paint_event)

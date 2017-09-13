@@ -365,7 +365,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_thumbnail_label.hide()
         self.ui.item_thumbnail.hide()
 
-        self.ui.item_description_label.setText("Description to apply to all items")
+        self.ui.item_description_label.setText("Description for all items")
         self.ui.item_comments.setPlainText(self._summary_comment)
 
         # the item_comments PublishDescriptionFocus won't display placeholder text if it is in focus
