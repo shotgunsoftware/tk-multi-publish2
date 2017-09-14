@@ -20,7 +20,6 @@ from .progress import ProgressHandler
 from .summary_overlay import SummaryOverlay
 from .publish_tree_widget import TreeNodeItem
 
-
 # import frameworks
 settings = sgtk.platform.import_framework("tk-framework-shotgunutils", "settings")
 help_screen = sgtk.platform.import_framework("tk-framework-qtwidgets", "help_screen")
@@ -143,6 +142,10 @@ class AppDialog(QtGui.QWidget):
         # start up our plugin manager
         self._plugin_manager = None
 
+        self._summary_comment = ""
+        # this boolean indicates that at least one child has a description that is different than the summary.
+        self._summary_comment_multiple_values = False
+
         # set up progress reporting
         self._progress_handler = ProgressHandler(
             self.ui.progress_status_icon,
@@ -258,11 +261,23 @@ class AppDialog(QtGui.QWidget):
         """
         comments = self.ui.item_comments.toPlainText()
         if self._current_item is None:
-            # this is the summary item - so update all items!
-            for top_level_item in self._plugin_manager.top_level_items:
-                top_level_item.description = comments
+            if self._summary_comment != comments:
+                self._summary_comment = comments
+
+                # this is the summary item - so update all items!
+                for top_level_item in self._plugin_manager.top_level_items:
+                    top_level_item.description = self._summary_comment
+
+                # all tasks have same description now, so set <multiple values> indicator to false
+                self._summary_comment_multiple_values = False
+                self.ui.item_comments._show_placeholder = self._summary_comment_multiple_values
         else:
             self._current_item.description = comments
+
+            # if at least one task has a comment that is different than the summary description, set 
+            # <multiple values> indicator to true 
+            if self._summary_comment != comments:
+                self._summary_comment_multiple_values = True
 
     def _update_item_thumbnail(self, pixmap):
         """
@@ -350,8 +365,14 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_thumbnail_label.hide()
         self.ui.item_thumbnail.hide()
 
-        self.ui.item_description_label.setText("Description to apply to all items")
-        self.ui.item_comments.setPlainText("")
+        self.ui.item_description_label.setText("Description for all items")
+        self.ui.item_comments.setPlainText(self._summary_comment)
+
+        # the item_comments PublishDescriptionFocus won't display placeholder text if it is in focus
+        # so clearing the focus from that widget in order to see the <multiple values> warning once 
+        # the master summary details page is opened
+        self.ui.item_comments.clearFocus()
+        self.ui.item_comments._show_placeholder = self._summary_comment_multiple_values
 
         # for the summary, attempt to display the appropriate context in the
         # context widget. if all publish items have the same context, display
