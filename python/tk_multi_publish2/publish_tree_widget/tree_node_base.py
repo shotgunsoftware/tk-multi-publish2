@@ -138,13 +138,13 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         """
         self._embedded_widget.set_status(self._embedded_widget.NEUTRAL)
 
-    def _set_status_upwards(self, status):
+    def _set_status_upwards(self, status, message):
         """
         Traverse all parents and set them to be a certain status
         """
-        self._embedded_widget.set_status(status)
+        self._embedded_widget.set_status(status, message)
         if self.parent():
-            self.parent()._set_status_upwards(status)
+            self.parent()._set_status_upwards(status, "")
 
     def validate(self, standalone):
         """

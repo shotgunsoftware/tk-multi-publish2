@@ -109,7 +109,7 @@ class TreeNodeTask(TreeNodeBase):
         try:
             status = self._task.validate()
         except Exception, e:
-            self._set_status_upwards(self._embedded_widget.VALIDATION_ERROR)
+            self._set_status_upwards(self._embedded_widget.VALIDATION_ERROR,str(e))
             status = False
         else:
             if status:
@@ -118,7 +118,7 @@ class TreeNodeTask(TreeNodeBase):
                 else:
                     self._embedded_widget.set_status(self._embedded_widget.VALIDATION)
             else:
-                self._set_status_upwards(self._embedded_widget.VALIDATION_ERROR)
+                self._set_status_upwards(self._embedded_widget.VALIDATION_ERROR,"unknown validation error")
         return status
 
     def publish(self):
@@ -132,7 +132,7 @@ class TreeNodeTask(TreeNodeBase):
         try:
             self._task.publish()
         except Exception, e:
-            self._set_status_upwards(self._embedded_widget.PUBLISH_ERROR)
+            self._set_status_upwards(self._embedded_widget.PUBLISH_ERROR,str(e))
             raise
         else:
             self._embedded_widget.set_status(self._embedded_widget.PUBLISH)
@@ -149,7 +149,7 @@ class TreeNodeTask(TreeNodeBase):
         try:
             self._task.finalize()
         except Exception, e:
-            self._set_status_upwards(self._embedded_widget.FINALIZE_ERROR)
+            self._set_status_upwards(self._embedded_widget.FINALIZE_ERROR,str(e))
             raise
         else:
             self._embedded_widget.set_status(self._embedded_widget.FINALIZE)
