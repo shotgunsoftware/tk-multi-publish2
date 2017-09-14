@@ -98,6 +98,7 @@ class CustomTreeWidgetBase(QtGui.QFrame):
         else:
             self.ui.checkbox.setCheckState(QtCore.Qt.Unchecked)
 
+    # message is for the text to be displayed on the status icon as tooltip
     def set_status(self, status, message=""):
         """
         Set the status for the plugin

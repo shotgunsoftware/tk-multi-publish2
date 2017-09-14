@@ -138,6 +138,7 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         """
         self._embedded_widget.set_status(self._embedded_widget.NEUTRAL)
 
+    # message is for the status icon tooltip. The status is propagated to parents, but the message is not. 
     def _set_status_upwards(self, status, message):
         """
         Traverse all parents and set them to be a certain status
