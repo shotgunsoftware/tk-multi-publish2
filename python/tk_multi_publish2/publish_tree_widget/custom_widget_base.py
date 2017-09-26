@@ -99,7 +99,7 @@ class CustomTreeWidgetBase(QtGui.QFrame):
             self.ui.checkbox.setCheckState(QtCore.Qt.Unchecked)
 
     # message is for the text to be displayed on the status icon as tooltip
-    def set_status(self, status, message=""):
+    def set_status(self, status, message="", info_below=True):
         """
         Set the status for the plugin
         :param status: An integer representing on of the
@@ -112,10 +112,13 @@ class CustomTreeWidgetBase(QtGui.QFrame):
         if status == self.NEUTRAL:
             self.ui.status.hide()
         else:
-            if len(message) > 0 :
-               message += "\n"
+            if len(message) > 0 :               
+               if info_below:
+                  message += "\n See below or click for details."
+               else:
+                  message += "\n Click for details." 
 
-            self.ui.status.setToolTip(QtGui.QApplication.translate("ItemWidget", message + "Click for details", None, QtGui.QApplication.UnicodeUTF8))
+            self.ui.status.setToolTip(QtGui.QApplication.translate("ItemWidget", message, None, QtGui.QApplication.UnicodeUTF8))
             self.ui.status.show()
             self._status_icon = QtGui.QIcon()
             self._status_icon.addPixmap(
