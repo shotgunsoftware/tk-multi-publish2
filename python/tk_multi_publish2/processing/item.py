@@ -384,7 +384,7 @@ class Item(object):
         if self._icon_pixmap:
             return self._icon_pixmap
         elif self.parent:
-            return self.parent.icon_pixmap
+            return self.parent.icon
         else:
             # return default
             return QtGui.QPixmap(":/tk_multi_publish2/item.png")
