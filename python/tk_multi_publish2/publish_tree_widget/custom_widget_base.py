@@ -114,9 +114,9 @@ class CustomTreeWidgetBase(QtGui.QFrame):
         else:
             if len(message) > 0 :               
                if info_below:
-                  message += "\n See below or click for details."
+                  message += "\nSee below or click for details."
                else:
-                  message += "\n Click for details." 
+                  message += "\nClick for details." 
 
             self.ui.status.setToolTip(QtGui.QApplication.translate("ItemWidget", message, None, QtGui.QApplication.UnicodeUTF8))
             self.ui.status.show()
