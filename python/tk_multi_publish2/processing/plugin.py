@@ -11,8 +11,6 @@
 import traceback
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
-from sgtk.platform.validation import validate_single_setting
-from sgtk.platform.bundle import resolve_setting_value
 from .setting import Setting
 
 logger = sgtk.platform.get_logger(__name__)
@@ -34,7 +32,7 @@ class PluginBase(object):
 
         # all plugins need a hook and a name
         self._path = path
-        self._raw_config_settings = settings
+        self._configured_settings = settings
 
         self._bundle = sgtk.platform.current_bundle()
 
@@ -68,66 +66,25 @@ class PluginBase(object):
             logger.debug("no settings property defined by hook")
             hook_settings_schema = {}
 
-        # "setting_a": {"type": "int", "default": 5, "description": "foo bar baz"},
+        # Settings schema will be in the form:
+        # "setting_a": {
+        #     "type": "int",
+        #     "default": 5,
+        #     "description": "foo bar baz"
+        # },
 
         for setting_name, setting_schema in hook_settings_schema.iteritems():
 
-            # account for "default" instead of "default_value" which tk expects
-            # in retrospect, we should have kept it consistent to allow for
-            # easier validation, but we allowed for "default" in initial release
-            # of publish2
-            if "default" in setting_schema:
-                setting_schema["default_value"] = setting_schema.pop("default")
-
             # if the setting exists in the configured environment, grab that
             # value, validate it, and update the setting's value
-            if setting_name in self._raw_config_settings:
-
+            if setting_name in self._configured_settings:
                 # this setting was provided by the config
-                value = self._raw_config_settings[setting_name]
+                value = self._configured_settings[setting_name]
             else:
                 # no value specified in the actual configuration
                 value = setting_schema.get("default_value")
 
-            logger.debug(
-                "Processing setting '%s' with schema: %s" %
-                (setting_name, setting_schema)
-            )
-
-            # validate the value specified in the configuration
-            try:
-                validate_single_setting(
-                    self._bundle.name,
-                    self._bundle.sgtk,
-                    {setting_name: setting_schema},
-                    setting_name,
-                    value
-                )
-            except sgtk.TankError, e:
-                logger.error(
-                    "Could not validate setting %s for plugin %s: %s" %
-                    (setting_name, self, e)
-                )
-                raise
-
-            engine = sgtk.platform.current_engine()
-
-            # try to resolve the value
-            try:
-                resolved_value = resolve_setting_value(
-                    engine.sgtk,
-                    engine.name,
-                    setting_schema,
-                    {setting_name: value},
-                    setting_name,
-                    setting_schema.get("default_value")
-                )
-            except Exception, e:
-                logger.error(
-                    "Could not resolve setting %s for plugin %s: %s" %
-                    (setting_name, self, e)
-                )
-                raise
+            # TODO: validate and resolve the configured setting
 
             setting = Setting(
                 setting_name,
@@ -135,11 +92,7 @@ class PluginBase(object):
                 default_value=setting_schema.get("default_value"),
                 description=setting_schema.get("description")
             )
-
-            if setting_schema.get("type") == "template":
-                setting.value = engine.get_template_by_name(resolved_value)
-            else:
-                setting.value = resolved_value
+            setting.value = value
 
             self._settings[setting_name] = setting
 
@@ -336,7 +289,7 @@ class PublishPlugin(PluginBase):
             error_msg = traceback.format_exc()
             self._logger.error(
                 "Error publishing: %s" % (e,),
-                extra=self._get_error_extra_info(error_msg)
+                extra=_get_error_extra_info(error_msg)
             )
             raise
         finally:
@@ -357,7 +310,7 @@ class PublishPlugin(PluginBase):
             error_msg = traceback.format_exc()
             self._logger.error(
                 "Error finalizing: %s" % (e,),
-                extra=self._get_error_extra_info(error_msg)
+                extra=_get_error_extra_info(error_msg)
             )
             raise
         finally:

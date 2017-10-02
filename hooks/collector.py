@@ -90,10 +90,6 @@ class BasicSceneCollector(HookBaseClass):
         The type string should be one of the data types that toolkit accepts as
         part of its environment configuration.
         """
-
-        # TODO: add a setting whereby clients can just add a list of templates to
-        # match against for publish
-
         return {}
 
     def process_current_session(self, settings, parent_item):

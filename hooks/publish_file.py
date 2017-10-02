@@ -75,7 +75,6 @@ class BasicFilePublishPlugin(HookBaseClass):
         publish will be available to other users. Warnings will be provided
         during validation if there are previous publishes.
         """ % (loader_url,)
-        # TODO: add link to workflow docs
 
     @property
     def settings(self):
@@ -99,12 +98,6 @@ class BasicFilePublishPlugin(HookBaseClass):
         return {
             "File Types": {
                 "type": "list",
-                "values": {
-                    "type": "list",
-                    "values": {
-                        "type": "str"
-                    }
-                },
                 "default": [
                     ["Alembic Cache", "abc"],
                     ["3dsmax Scene", "max"],
