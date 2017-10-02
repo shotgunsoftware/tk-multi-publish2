@@ -13,6 +13,12 @@ configuration:
     collector:
         type: hook
         description: "Logic for extracting items from the scene and from dropped files."
+        default_value: "{self}/collector.py"
+
+    collector_settings:
+        type: dict
+        description: "Collector-specific configuration settings."
+        default_value: {}
 
     path_info:
         type: hook
@@ -35,7 +41,15 @@ configuration:
                 settings:
                     type: dict
         allows_empty: True
-        default_value: []
+        default_value:
+            # Default hook 1: publish any file to SG
+            - name: Publish to Shotgun
+              hook: "{self}/publish_file.py"
+              settings: {}
+            # Default hook 2: upload known, reviewable types to SG
+            - name: Upload for review
+              hook: "{self}/upload_version.py"
+              settings: {}
 
     help_url:
         type: str

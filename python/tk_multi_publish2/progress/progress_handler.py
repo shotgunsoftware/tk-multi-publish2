@@ -180,7 +180,9 @@ class ProgressHandler(object):
 
         item.setText(0, message)
         item.setToolTip(0, message)
-        item.setIcon(0, icon)
+
+        if icon:
+            item.setIcon(0, icon)
 
         if self._logging_parent_item:
             self._logging_parent_item.addChild(item)

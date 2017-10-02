@@ -46,8 +46,6 @@ class Item(object):
         self._tasks = []
         self._context = None
         self._properties = {}
-        self._parent = None
-        self._icon_path = None
         self._description = None
         self._created_temp_files = []
         self._bundle = sgtk.platform.current_bundle()
