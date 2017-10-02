@@ -270,9 +270,11 @@ class AppDialog(QtGui.QWidget):
 
                 # all tasks have same description now, so set <multiple values> indicator to false
                 self._summary_comment_multiple_values = False
-                self.ui.item_comments._show_placeholder = self._summary_comment_multiple_values
+
+            self.ui.item_comments._show_placeholder = self._summary_comment_multiple_values
         else:
             self._current_item.description = comments
+            self.ui.item_comments._show_placeholder = False
 
             # if at least one task has a comment that is different than the summary description, set 
             # <multiple values> indicator to true 
