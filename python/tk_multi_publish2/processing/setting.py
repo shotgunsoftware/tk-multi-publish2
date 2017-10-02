@@ -9,6 +9,8 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import sgtk
+from sgtk.platform import current_engine
+from sgtk.platform.bundle import resolve_setting_value
 
 logger = sgtk.platform.get_logger(__name__)
 
