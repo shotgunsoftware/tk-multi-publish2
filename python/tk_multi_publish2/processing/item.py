@@ -46,8 +46,6 @@ class Item(object):
         self._tasks = []
         self._context = None
         self._properties = {}
-        self._parent = None
-        self._icon_path = None
         self._description = None
         self._created_temp_files = []
         self._bundle = sgtk.platform.current_bundle()
@@ -384,7 +382,7 @@ class Item(object):
         if self._icon_pixmap:
             return self._icon_pixmap
         elif self.parent:
-            return self.parent.icon_pixmap
+            return self.parent.icon
         else:
             # return default
             return QtGui.QPixmap(":/tk_multi_publish2/item.png")
