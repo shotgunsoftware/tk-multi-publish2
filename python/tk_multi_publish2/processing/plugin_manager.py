@@ -164,7 +164,7 @@ class PluginManager(object):
                     "collector",
                     "process_file",
                     parent_item=self._root_item,
-                    path=path
+                    path=path.decode("utf-8")
                 )
 
         # get all items after scan
