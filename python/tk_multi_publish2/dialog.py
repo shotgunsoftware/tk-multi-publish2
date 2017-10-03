@@ -468,7 +468,7 @@ class AppDialog(QtGui.QWidget):
         str_files = []
         for f in files:
             if isinstance(f, unicode):
-                str_files.append(f.encode("utf-8"))
+                str_files.append(f.encode("utf-8").decode("utf-8"))
             else:
                 str_files.append(f)
 
