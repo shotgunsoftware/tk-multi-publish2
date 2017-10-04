@@ -18,7 +18,7 @@ class Setting(object):
     A setting for a plugin or item
     """
 
-    def __init__(self, setting_name, data_type, default_value, description=None, schema=None):
+    def __init__(self, setting_name, data_type, default_value, description=None):
         """
         :param setting_name: The name of the setting
         :param data_type: The data type of the setting
@@ -30,7 +30,6 @@ class Setting(object):
         self._default_value = default_value
         self._value = default_value
         self._description = description or ""
-        self._schema = schema
 
     @property
     def name(self):

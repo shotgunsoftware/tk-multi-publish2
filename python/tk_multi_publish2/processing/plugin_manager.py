@@ -11,7 +11,7 @@
 
 import sgtk
 import fnmatch
-from .plugin import PublishPlugin, Collector
+from .plugin import PublishPlugin, CollectorPlugin
 from .item import Item
 from .task import Task
 
@@ -63,7 +63,7 @@ class PluginManager(object):
         collector_hook_path = self._bundle.get_setting("collector")
         collector_settings = self._bundle.get_setting("collector_settings")
 
-        self._collector = Collector(
+        self._collector = CollectorPlugin(
             collector_hook_path,
             collector_settings,
             self._logger
