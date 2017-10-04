@@ -260,6 +260,8 @@ class AppDialog(QtGui.QWidget):
         publish comments box in the overview details pane
         """
         comments = self.ui.item_comments.toPlainText()
+        
+        # if this is the summary description...
         if self._current_item is None:
             if self._summary_comment != comments:
                 self._summary_comment = comments
@@ -270,9 +272,15 @@ class AppDialog(QtGui.QWidget):
 
                 # all tasks have same description now, so set <multiple values> indicator to false
                 self._summary_comment_multiple_values = False
-                self.ui.item_comments._show_placeholder = self._summary_comment_multiple_values
+
+            self.ui.item_comments._show_placeholder = self._summary_comment_multiple_values
+
+        # the "else" below means if this is a publish item
         else:
             self._current_item.description = comments
+            
+            # <multiple values> placeholder text should not appear for individual items
+            self.ui.item_comments._show_placeholder = False
 
             # if at least one task has a comment that is different than the summary description, set 
             # <multiple values> indicator to true 
