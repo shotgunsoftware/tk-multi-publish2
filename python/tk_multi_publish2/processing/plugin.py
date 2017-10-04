@@ -371,7 +371,7 @@ class PublishPlugin(PluginBase):
             QtCore.QCoreApplication.processEvents()
 
 
-class Collector(PluginBase):
+class CollectorPlugin(PluginBase):
     """
     Class that wraps around a collector hook
 

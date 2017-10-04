@@ -340,16 +340,16 @@ class BasicSceneCollector(HookBaseClass):
         icon.
         """
         icon_path = os.path.join(
-            self.parent.disk_location,
-            "resources",
+            self.disk_location,
+            "icons",
             icon_name
         )
 
         # supplied file name doesn't exist. return the default file.png image
         if not os.path.exists(icon_path):
             icon_path = os.path.join(
-                self.parent.disk_location,
-                "resources",
+                self.disk_location,
+                "icons",
                 "file.png"
             )
 
