@@ -115,9 +115,10 @@ class BasicFilePublishPlugin(HookBaseClass):
                     "List of file types to include. Each entry in the list "
                     "is a list in which the first entry is the Shotgun "
                     "published file type and subsequent entries are file "
-                    "extensions that should be associated.")
-                },
-            }
+                    "extensions that should be associated."
+                )
+            },
+        }
 
     @property
     def item_filters(self):

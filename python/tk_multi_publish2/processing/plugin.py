@@ -82,14 +82,14 @@ class PluginBase(object):
                 value = self._configured_settings[setting_name]
             else:
                 # no value specified in the actual configuration
-                value = setting_schema.get("default_value")
+                value = setting_schema.get("default")
 
             # TODO: validate and resolve the configured setting
 
             setting = Setting(
                 setting_name,
                 data_type=setting_schema.get("type"),
-                default_value=setting_schema.get("default_value"),
+                default_value=setting_schema.get("default"),
                 description=setting_schema.get("description")
             )
             setting.value = value
