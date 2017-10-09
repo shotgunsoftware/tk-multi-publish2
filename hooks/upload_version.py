@@ -204,8 +204,20 @@ class UploadVersionPlugin(HookBaseClass):
         publisher = self.parent
         path = item.properties["path"]
 
-        # get the publish name for this file path.
-        publish_name = publisher.util.get_publish_name(path)
+        # allow the publish name to be supplied via the item properties. this is
+        # useful for collectors that have access to templates and can determine
+        # publish information about the item that doesn't require further, fuzzy
+        # logic to be used here (the zero config way)
+        publish_name = item.properties.get("publish_name")
+        if not publish_name:
+
+            self.logger.debug("Using path info hook to determine publish name.")
+
+            # get the publish name for this file path. this will ensure we get a
+            # consistent name across version publishes of this file.
+            publish_name = publisher.util.get_publish_name(path)
+
+        self.logger.debug("Publish name: %s" % (publish_name,))
 
         self.logger.info("Creating Version...")
         version_data = {
