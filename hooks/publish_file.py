@@ -188,18 +188,31 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         publisher = self.parent
         path = item.properties.get("path")
-        is_sequence = item.properties.get("is_sequence", False)
 
-        if is_sequence:
-            # generate the name from one of the actual files in the sequence
-            name_path = item.properties["sequence_files"][0]
-        else:
-            name_path = path
+        # allow the publish name to be supplied via the item properties. this is
+        # useful for collectors that have access to templates and can determine
+        # publish information about the item that doesn't require further, fuzzy
+        # logic to be used here (the zero config way)
+        publish_name = item.properties.get("publish_name")
+        if not publish_name:
 
-        # get the publish name for this file path. this will ensure we get a
-        # consistent publish name when looking up existing publishes.
-        publish_name = publisher.util.get_publish_name(
-            name_path, sequence=is_sequence)
+            self.logger.debug("Using path info hook to determine publish name.")
+
+            # get the publish name for this file path. this will ensure we get a
+            # consistent publish name when looking up existing publishes.
+            is_sequence = item.properties.get("is_sequence", False)
+            if is_sequence:
+                # generate the name from one of the actual files in the sequence
+                name_path = item.properties["sequence_files"][0]
+            else:
+                name_path = path
+
+            publish_name = publisher.util.get_publish_name(
+                name_path,
+                sequence=is_sequence
+            )
+
+        self.logger.debug("Publish name: %s" % (publish_name,))
 
         # see if there are any other publishes of this path with a status.
         # Note the name, context, and path *must* match the values supplied to
@@ -253,29 +266,60 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         # determine the publish type
         extension = path_info["extension"]
-        publish_type = self._get_publish_type(extension, settings)
 
-        is_sequence = item.properties.get("is_sequence", False)
+        # allow the publish type to be supplied via the item properties. this is
+        # useful for collectors that have access to templates and can determine
+        # publish information about the item that doesn't require further, fuzzy
+        # logic to be used here (the zero config way)
+        publish_type = item.properties.get("publish_type")
+        if not publish_type:
+            publish_type = self._get_publish_type(extension, settings)
 
-        if is_sequence:
-            # generate the name from one of the actual files in the sequence
-            name_path = item.properties["sequence_files"][0]
-        else:
-            name_path = path
+        self.logger.debug("Publish type: %s" % (publish_type,))
 
-        # get the publish name for this file path. this will ensure we get a
-        # consistent name across version publishes of this file.
-        publish_name = publisher.util.get_publish_name(
-            name_path, sequence=is_sequence)
+        # similar to publish type, allow the publish name to be supplied via the
+        # item properties.
+        publish_name = item.properties.get("publish_name")
+        if not publish_name:
 
-        # extract the version number for publishing. use 1 if no version in path
-        version_number = publisher.util.get_version_number(path) or 1
+            self.logger.debug("Using path info hook to determine publish name.")
+
+            # get the publish name for this file path. this will ensure we get a
+            # consistent name across version publishes of this file.
+            is_sequence = item.properties.get("is_sequence", False)
+            if is_sequence:
+                # generate the name from one of the actual files in the sequence
+                name_path = item.properties["sequence_files"][0]
+            else:
+                name_path = path
+
+            publish_name = publisher.util.get_publish_name(
+                name_path, sequence=is_sequence)
+
+        self.logger.debug("Publish name: %s" % (publish_name,))
+
+        # similar to the publish type and lname, the collector may have had
+        # access to a publish template or some other way of determining the
+        # version number. # if so, no need to use the zero config logic here.
+        version_number = item.properties.get("publish_version")
+        if version_number is None:
+
+            self.logger.debug("Using path info hook to extract version number.")
+
+            # extract version number for publishing. use 1 if no version in path
+            version_number = publisher.util.get_version_number(path) or 1
+
+        self.logger.debug("Publish version: %s" % (version_number,))
 
         # if the parent item has a publish path, include it in the list of
         # dependencies
-        dependency_paths = []
+        dependency_paths = item.properties.get("dependency_paths", [])
         if "sg_publish_path" in item.parent.properties:
             dependency_paths.append(item.parent.properties["sg_publish_path"])
+
+        self.logger.debug("Dependency paths: %s" % (dependency_paths,))
+
+        # TODO: if work/publish templates available on the item, handle copying
 
         # arguments for publish registration
         self.logger.info("Registering publish...")
