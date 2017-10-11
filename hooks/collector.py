@@ -179,8 +179,7 @@ class BasicSceneCollector(HookBaseClass):
         if is_sequence:
             # include an indicator that this is an image sequence and the known
             # file that belongs to this sequence
-            file_item.properties["is_sequence"] = True
-            file_item.properties["sequence_files"] = [path]
+            file_item.properties["sequence_paths"] = [path]
 
         self.logger.info("Collected file: %s" % (evaluated_path,))
 
@@ -243,8 +242,7 @@ class BasicSceneCollector(HookBaseClass):
             # all we know about the file is its path. set the path in its
             # properties for the plugins to use for processing.
             file_item.properties["path"] = image_seq_path
-            file_item.properties["is_sequence"] = True
-            file_item.properties["sequence_files"] = img_seq_files
+            file_item.properties["sequence_paths"] = img_seq_files
 
             self.logger.info("Collected file: %s" % (image_seq_path,))
 
