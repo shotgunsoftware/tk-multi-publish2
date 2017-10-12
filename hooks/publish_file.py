@@ -35,10 +35,20 @@ class BasicFilePublishPlugin(HookBaseClass):
     property. All of the properties understood by the plugin are documented
     below::
 
-        Path/Template properties
-        ------------------------
+        Path properties
+        -------------
 
         path - The path to the file to be published.
+
+        sequence_paths - If set, implies the "path" property represents a
+            sequence of files (typically using a frame identifier such as %04d).
+            This property should be a list of files on disk matching the "path".
+            If a work template is provided, and corresponds to the listed
+            frames, fields will be extracted and applied to the publish template
+            (if set) and copied to that publish location.
+
+        Template properties
+        -------------------
 
         work_template - If set in the item properties dictionary, is used
             to validate "path" and extract fields for further processing and
@@ -46,7 +56,7 @@ class BasicFilePublishPlugin(HookBaseClass):
             can be extracted, it will be used as the publish version to be
             registered in Shotgun.
 
-        published_file - If set in the item properties dictionary, used to
+        published_template - If set in the item properties dictionary, used to
             determine where "path" should be copied prior to publishing. If
             not specified, "path" will be published in place.
 
@@ -78,6 +88,12 @@ class BasicFilePublishPlugin(HookBaseClass):
         publish_dependencies - A list of files to include as dependencies when
             registering the publish. If the item's parent has been published,
             it's path will be appended to this list.
+
+    This plugin will also set the properties on the item which may be useful for
+    child items.
+
+        sg_publish_data - The dictionary of publish information returned from
+            the tk-core register_publish method.
 
     """
 

@@ -69,6 +69,26 @@ COMMON_FILE_INFO = {
 class BasicSceneCollector(HookBaseClass):
     """
     A basic collector that handles files and general objects.
+
+    This collector hook is used to collect individual files that are browsed or
+    dragged and dropped into the Publish2 UI. It can also be subclassed by other
+    collectors responsible for creating items for a file to be published such as
+    the current Maya session file.
+
+    This plugin centralizes the logic for collecting a file, including
+    determining how to display the file for publishing (based on the file
+    extension).
+
+    In addition to creating an item to publish, this hook will set the following
+    properties on the item::
+
+        path - The path to the file to publish. This could be a path
+            representing a sequence of files (including a frame specifier).
+
+        sequence_paths - If the item represents a collection of files, the
+            plugin will populate this property with a list of files matching
+            "path".
+
     """
 
     @property
