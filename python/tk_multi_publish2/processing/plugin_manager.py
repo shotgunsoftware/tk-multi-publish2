@@ -76,6 +76,11 @@ class PluginManager(object):
         """
         self._root_item.remove_item(item)
 
+        path = item.properties["path"]
+        if path in self._dropped_paths:
+            logger.debug("Deleting external file '%s'" % path)
+            self._dropped_paths.remove(path)
+
     @property
     def plugins(self):
         """
