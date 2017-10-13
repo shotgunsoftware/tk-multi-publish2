@@ -266,9 +266,10 @@ class AppDialog(QtGui.QWidget):
             if self._summary_comment != comments:
                 self._summary_comment = comments
 
-                # this is the summary item - so update all items!
+                # this is the summary item - so update all top level items and their children!
                 for top_level_item in self._plugin_manager.top_level_items:
                     top_level_item.description = self._summary_comment
+                    top_level_item._propagate_description_to_children()
 
                 # all tasks have same description now, so set <multiple values> indicator to false
                 self._summary_comment_multiple_values = False

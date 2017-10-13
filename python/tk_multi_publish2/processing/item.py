@@ -252,6 +252,13 @@ class Item(object):
         # setter for description property
         self._description = description
 
+    def _propagate_description_to_children(self):
+        """
+        propagate description to children
+        """
+        for child in self._children:
+           child.description = self._description
+
     description = property(_get_description, _set_description)
 
     def _get_thumbnail(self):
