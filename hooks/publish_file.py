@@ -446,7 +446,6 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
 
         # ---- ensure templates are available
-
         work_template = item.properties.get("work_template")
         if not work_template:
             self.logger.debug(
@@ -580,7 +579,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         work_template = item.properties.get("work_template")
         publish_template = item.properties.get("publish_template")
 
-        work_fields = None
+        work_fields = []
         publish_path = None
 
         if work_template:
