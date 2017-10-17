@@ -10,14 +10,56 @@
 
 import sgtk
 
+from sgtk.platform.qt import QtGui
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
-class BasicFilePublishPlugin(HookBaseClass):
+class CustomWidgetController(QtGui.QWidget):
+
+    def __init__(self, parent):
+        QtGui.QWidget.__init__(self, parent)
+
+        layout = QtGui.QVBoxLayout(self)
+        self.setLayout(layout)
+
+        self.text_edit = QtGui.QLineEdit(self)
+        layout.addWidget(self.text_edit)
+
+        self.text_edit_2 = QtGui.QLineEdit(self)
+        layout.addWidget(self.text_edit_2)
+
+        parent.layout().addWidget(self)
+
+        self.text_edit.setFocus()
+
+
+class PluginWithUi(HookBaseClass):
     """
     Plugin for creating generic publishes in Shotgun
     """
+
+    def create_settings_widget(self, parent):
+        """
+        Creates a QT widget, parented below the given parent object, to
+        provide viewing and editing capabilities for the given settings.
+
+        :param parent: QWidget to parent the widget under
+        :return: QWidget with an editor for the given setting or None if no custom widget is desired.
+        """
+        return CustomWidgetController(parent)
+
+    def get_ui_settings(self, controller):
+        return {
+            "edit": controller.text_edit.text(),
+            "edit2": controller.text_edit2.text()
+        }
+
+    def set_ui_settings(self, controller, settings):
+        print(settings["edit"].string_value)
+        print(settings["edit2"].string_value)
+        controller.text_edit.setText(settings["edit"].string_value)
+        controller.text_edit_2.setText(settings["edit2"].string_value)
 
     @property
     def name(self):
@@ -54,7 +96,18 @@ class BasicFilePublishPlugin(HookBaseClass):
         The type string should be one of the data types that toolkit accepts
         as part of its environment configuration.
         """
-        return {}
+        return {
+            "edit": {
+                "type": "str",
+                "default": "",
+                "description": "First setting."
+            },
+            "edit2": {
+                "type": "str",
+                "default": "",
+                "description": "Second setting."
+            }
+        }
 
     @property
     def item_filters(self):

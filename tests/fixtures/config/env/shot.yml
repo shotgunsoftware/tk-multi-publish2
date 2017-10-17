@@ -32,7 +32,10 @@ engines:
             settings: {}
           - name: PluginWithUi
             hook: "{config}/plugin_with_ui.py"
-            settings: {}
+            settings:
+              edit: "This is the default edit value."
+              edit2: "This is the default edit2 value."              
+            
 
 frameworks:
   tk-framework-qtwidgets_v2.x.x:

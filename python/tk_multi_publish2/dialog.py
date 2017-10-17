@@ -40,7 +40,7 @@ class AppDialog(QtGui.QWidget):
     (DRAG_SCREEN, PUBLISH_SCREEN) = range(2)
 
     # details ui panes
-    (ITEM_DETAILS, TASK_DETAILS, PLEASE_SELECT_DETAILS) = range(3)
+    (ITEM_DETAILS, BUILTIN_TASK_DETAILS, CUSTOM_TASK_DETAILS, PLEASE_SELECT_DETAILS) = range(4)
 
     def __init__(self, parent=None):
         """
@@ -431,15 +431,30 @@ class AppDialog(QtGui.QWidget):
         Render details pane for a given task
         """
         self._current_item = None
-        self.ui.details_stack.setCurrentIndex(self.TASK_DETAILS)
 
-        self.ui.task_icon.setPixmap(task.plugin.icon)
-        self.ui.task_name.setText(task.plugin.name)
+        if task.plugin.has_ui:
+            self.ui.details_stack.setCurrentIndex(self.CUSTOM_TASK_DETAILS)
+            # FIXME: on item selection change in the treeview, we should save the previous item's
+            # settings.
+            self._clear_custom_plugin_ui()
+            controller = task.plugin.run_create_settings_widget(self.ui.custom_plugin_ui)
+            task.plugin.run_set_settings(controller, task.settings)
+        else:
+            self.ui.details_stack.setCurrentIndex(self.BUILTIN_TASK_DETAILS)
+            self.ui.task_icon.setPixmap(task.plugin.icon)
+            self.ui.task_name.setText(task.plugin.name)
 
-        self.ui.task_description.setText(task.plugin.description)
+            self.ui.task_description.setText(task.plugin.description)
+            # skip settings for now
+            #self.ui.task_settings.set_data(task.settings.values())
 
-        # skip settings for now
-        #self.ui.task_settings.set_data(task.settings.values())
+
+    def _clear_custom_plugin_ui(self):
+        layout = self.ui.custom_plugin_ui.layout()
+        while layout.count():
+            child = layout.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
 
     def _full_rebuild(self):
         """

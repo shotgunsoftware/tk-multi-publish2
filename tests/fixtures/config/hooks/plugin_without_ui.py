@@ -14,7 +14,7 @@ import sgtk
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
-class BasicFilePublishPlugin(HookBaseClass):
+class PluginWithUi(HookBaseClass):
     """
     Plugin for creating generic publishes in Shotgun
     """

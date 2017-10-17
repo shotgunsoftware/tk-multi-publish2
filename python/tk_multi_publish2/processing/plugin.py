@@ -10,6 +10,7 @@
 
 import traceback
 import sgtk
+from contextlib import contextmanager
 from sgtk.platform.qt import QtCore, QtGui
 from .setting import Setting
 
@@ -178,6 +179,16 @@ class Plugin(object):
             return []
 
     @property
+    def has_ui(self):
+
+        try:
+            self._plugin.create_settings_widget
+        except AttributeError:
+            return False
+        else:
+            return True
+
+    @property
     def icon(self):
         """
         The associated icon, as a pixmap, or None if no pixmap exists.
@@ -190,6 +201,28 @@ class Plugin(object):
         returns a dict of resolved raw settings given the current state
         """
         return self._settings
+
+    def run_create_settings_widget(self, parent):
+        with self._call_plugin_method(
+            None,
+            "Error laying out widgets: %s"
+        ):
+            return self._plugin.create_settings_widget(parent)
+
+    def run_get_settings(self, controller):
+        with self._call_plugin_method(
+            None,
+            "Error retrieving settings: %s"
+        ):
+            return self._plugin.get_ui_settings(controller)
+
+    def run_set_settings(self, controller, settings):
+        with self._call_plugin_method(
+            None,
+            "Error retrieving settings: %s"
+        ):
+            print settings["edit"]
+            self._plugin.set_ui_settings(controller, settings)
 
     def run_accept(self, item):
         """
@@ -285,6 +318,22 @@ class Plugin(object):
         finally:
             self._logger.info("Finalize complete!")
             # give qt a chance to do stuff
+            QtCore.QCoreApplication.processEvents()
+
+    @contextmanager
+    def _call_plugin_method(self, success_msg, error_msg):
+        try:
+            yield
+        except Exception as e:
+            exception_msg = traceback.format_exc()
+            self._logger.error(
+                error_msg % (e,),
+                extra=self._get_error_extra_info(exception_msg)
+            )
+            raise
+        finally:
+            if success_msg:
+                self._logger.info(success_msg)
             QtCore.QCoreApplication.processEvents()
 
     def _get_error_extra_info(self, error_msg):
