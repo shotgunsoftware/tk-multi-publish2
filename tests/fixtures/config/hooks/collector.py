@@ -37,3 +37,9 @@ class BasicSceneCollector(HookBaseClass):
             "With UI Plugin",
             "With UI Plugin"
         )
+
+        parent_item.create_item(
+            "plugin.withui",
+            "With UI Plugin",
+            "With UI Plugin"
+        )

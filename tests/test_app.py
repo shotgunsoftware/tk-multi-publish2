@@ -7,8 +7,6 @@
 import sys
 import os
 
-from PySide import QtGui
-
 sys.path.insert(0, "../../tk-core/python")
 
 import sgtk
@@ -18,7 +16,7 @@ def progress_callback(value, message):
     print "[%s] %s" % (value, message)
 
 
-def run_engine():
+def launch_engine():
     # Installs a StreamHandler so we see the server output in the console.
     sgtk.LogManager().initialize_base_file_handler("tk-multi-publish2.test")
 
@@ -40,7 +38,7 @@ def run_engine():
     manager.base_configuration = "sgtk:descriptor:path?path=$REPO_ROOT/tests/fixtures/config"
     manager.do_shotgun_config_lookup = False
     manager.progress_callback = progress_callback
-    engine = manager.bootstrap_engine(
+    return manager.bootstrap_engine(
         "tk-shell",
         sg.find_one(
             "Task",
@@ -50,15 +48,12 @@ def run_engine():
             ]
         )
     )
-    engine.commands["Publish..."]["callback"]()
 
 
 def main():
-    # Initialize Qt.
-    app = QtGui.QApplication([])
     # Launch the engine.
-    run_engine()
-    app.exec_()
+    engine = launch_engine()
+    engine.execute_command("Publish...", [])
 
 
 if __name__ == "__main__":

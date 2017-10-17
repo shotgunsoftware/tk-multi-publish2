@@ -20,14 +20,14 @@ class CustomWidgetController(QtGui.QWidget):
     def __init__(self, parent):
         QtGui.QWidget.__init__(self, parent)
 
-        layout = QtGui.QVBoxLayout(self)
+        layout = QtGui.QFormLayout(self)
         self.setLayout(layout)
 
         self.text_edit = QtGui.QLineEdit(self)
-        layout.addWidget(self.text_edit)
+        layout.addRow("Edit", self.text_edit)
 
         self.text_edit_2 = QtGui.QLineEdit(self)
-        layout.addWidget(self.text_edit_2)
+        layout.addRow("Edit 2", self.text_edit_2)
 
         parent.layout().addWidget(self)
 
