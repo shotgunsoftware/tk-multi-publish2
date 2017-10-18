@@ -112,7 +112,6 @@ class Task(object):
         """
         Dictionary of settings associated with this Task
         """
-        # TODO - make settings configurable per task
         return self._settings
 
     def validate(self):

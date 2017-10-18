@@ -40,7 +40,9 @@ class AppDialog(QtGui.QWidget):
     (DRAG_SCREEN, PUBLISH_SCREEN) = range(2)
 
     # details ui panes
-    (ITEM_DETAILS, BUILTIN_TASK_DETAILS, CUSTOM_TASK_DETAILS, PLEASE_SELECT_DETAILS) = range(4)
+    (ITEM_DETAILS, TASK_DETAILS, PLEASE_SELECT_DETAILS) = range(3)
+
+    (BUILTIN_TASK_DETAILS, CUSTOM_TASK_DETAILS) = range(2)
 
     def __init__(self, parent=None):
         """
@@ -244,27 +246,22 @@ class AppDialog(QtGui.QWidget):
             publish_object = tree_item.get_publish_instance()
             if isinstance(publish_object, Task):
 
-                self._update_plugin_ui(self._current_task, publish_object)
+                self._update_task_details_ui(self._current_task, publish_object)
 
                 # Update the currently selected items.
                 self._current_item = None
                 self._current_task = publish_object
 
-                self._create_task_details(publish_object)
             elif isinstance(publish_object, Item):
 
                 # If we're changing plugin
-                if self._current_task:
-                    self._update_plugin_ui(self._current_task, None)
+                self._update_task_details_ui(self._current_task, None)
 
                 self._current_item = publish_object
                 self._current_task = None
-
-                self._create_item_details(tree_item)
             elif publish_object is None:
 
-                if self._current_task:
-                    self._update_plugin_ui(self._current_task, None)
+                self._update_task_details_ui(self._current_task, None)
 
                 # top node summary
                 self._current_item = None
@@ -272,7 +269,7 @@ class AppDialog(QtGui.QWidget):
 
                 self._create_master_summary_details()
 
-    def _update_plugin_ui(self, current_task, new_task):
+    def _update_task_details_ui(self, current_task, new_task):
         """
         Updates the plugin UI widget.
         """
@@ -281,22 +278,36 @@ class AppDialog(QtGui.QWidget):
         if current_task == new_task:
             return
 
+        # User selected a task item to move to that page.
+        if new_task is not None:
+            self.ui.details_stack.setCurrentIndex(self.TASK_DETAILS)
+
         # We're changing task and the current one had a custom UI, so we need to backup the current
-        # settings!
+        # settings.
         if current_task and current_task.plugin.has_custom_ui:
             logger.debug("Saving settings...")
-            custom_widget = self.ui.custom_plugin_ui.layout().itemAt(0).widget()
+            custom_widget = self.ui.custom_settings_page.layout().itemAt(0).widget()
             self._pull_settings_from_ui(current_task, custom_widget)
 
         # If we're not picking a task, or the new task has no custom UI, a simply tear down of the UI
         # will suffice.
         if new_task is None or not new_task.plugin.has_custom_ui:
-            logger.debug("Clearing custom UI...")
-            self._clear_custom_plugin_ui()
+            logger.debug("Clearing custom UI and using default task details...")
+
+            self.ui.settings_stack.setCurrentIndex(self.BUILTIN_TASK_DETAILS)
+            self.ui.task_icon.setPixmap(new_task.plugin.icon)
+            self.ui.task_name.setText(new_task.plugin.name)
+            self.ui.task_description.setText(new_task.plugin.description)
+
+            # skip settings for now
+            # self.ui.task_settings.set_data(task.settings.values())
+
+            self._clear_custom_settings_page()
             return
 
-        # At this point we can assume we're going to have to show a UI, because new task is not
+        # At this point we can assume we're going to have to show a UI, because new task exists
         # and it has a custom UI.
+        self.ui.settings_stack.setCurrentIndex(self.CUSTOM_TASK_DETAILS)
 
         # If we don't have a current task or if we do but the plugin types are different, we need
         # to build the UI.
@@ -304,15 +315,14 @@ class AppDialog(QtGui.QWidget):
             # Note: At this point we don't really care if current task actually had a UI, we can
             # certainly tear down an empty widget.
             logger.debug("Custom UIs are going to be different, tearing down the current one.")
-            self._clear_custom_plugin_ui()
-            # TODO: Once we have a generic settings editor, the task should be the one to return the
-            # plugin.
-            widget = new_task.plugin.run_create_settings_widget(self.ui.custom_plugin_ui)
-            self.ui.custom_plugin_ui.layout().addWidget(widget)
+            self._clear_custom_settings_page()
+
+            widget = new_task.plugin.run_create_settings_widget(self.ui.custom_settings_page)
+            self.ui.custom_settings_page.layout().addWidget(widget)
         else:
             logger.debug("Custom UIs are going to be the same, reusing it!")
             # Same plugin type, we can simply fetch back the widget
-            widget = self.ui.custom_plugin_ui.layout().itemAt(0).widget()
+            widget = self.ui.custom_settings_page.layout().itemAt(0).widget()
 
         # Update the UI with the settings from the current plugin.
         self._push_settings_into_ui(new_task, widget)
@@ -522,23 +532,8 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_summary.setText(summary)
         self.ui.item_type.setText("%d tasks to execute" % num_items)
 
-    def _create_task_details(self, task):
-        """
-        Render details pane for a given task
-        """
-        if task.plugin.has_custom_ui:
-            self.ui.details_stack.setCurrentIndex(self.CUSTOM_TASK_DETAILS)
-        else:
-            self.ui.details_stack.setCurrentIndex(self.BUILTIN_TASK_DETAILS)
-            self.ui.task_icon.setPixmap(task.plugin.icon)
-            self.ui.task_name.setText(task.plugin.name)
-
-            self.ui.task_description.setText(task.plugin.description)
-            # skip settings for now
-            # self.ui.task_settings.set_data(task.settings.values())
-
-    def _clear_custom_plugin_ui(self):
-        layout = self.ui.custom_plugin_ui.layout()
+    def _clear_custom_settings_page(self):
+        layout = self.ui.custom_settings_page.layout()
         while layout.count():
             child = layout.takeAt(0)
             if child.widget():

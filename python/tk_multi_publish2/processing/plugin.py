@@ -180,7 +180,6 @@ class Plugin(object):
 
     @property
     def has_custom_ui(self):
-
         try:
             self._plugin.create_settings_widget
         except AttributeError:
