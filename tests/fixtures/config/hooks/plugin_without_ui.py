@@ -14,7 +14,7 @@ import sgtk
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
-class PluginWithUi(HookBaseClass):
+class PluginWithoutUi(HookBaseClass):
     """
     Plugin for creating generic publishes in Shotgun
     """
@@ -24,7 +24,7 @@ class PluginWithUi(HookBaseClass):
         """
         One line display name describing the plugin
         """
-        return "Plugin without UI"
+        return "This here doesn't have a UI."
 
     @property
     def description(self):
@@ -33,7 +33,6 @@ class PluginWithUi(HookBaseClass):
         contain simple html for formatting.
         """
         return "This plugin doesn't have a UI"
-        # TODO: add link to workflow docs
 
     @property
     def settings(self):

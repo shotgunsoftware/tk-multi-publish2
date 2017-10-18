@@ -28,18 +28,18 @@ class BasicSceneCollector(HookBaseClass):
         """
         parent_item.create_item(
             "plugin.noui",
-            "No UI Plugin",
-            "No UI Plugin"
+            "This is an item without a UI.",
+            "This is a display name"
         )
 
         parent_item.create_item(
             "plugin.withui",
-            "With UI Plugin",
-            "With UI Plugin"
+            "This is an item that has a UI",
+            "This is a the display name of an item with a UI"
         )
 
         parent_item.create_item(
             "plugin.withui",
-            "With UI Plugin",
-            "With UI Plugin"
+            "This is another item that has a UI",
+            "This is a the display name of another item with a UI"
         )

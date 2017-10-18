@@ -29,8 +29,6 @@ class CustomWidgetController(QtGui.QWidget):
         self.text_edit_2 = QtGui.QLineEdit(self)
         layout.addRow("Edit 2", self.text_edit_2)
 
-        parent.layout().addWidget(self)
-
         self.text_edit.setFocus()
 
 
@@ -52,21 +50,19 @@ class PluginWithUi(HookBaseClass):
     def get_ui_settings(self, controller):
         return {
             "edit": controller.text_edit.text(),
-            "edit2": controller.text_edit2.text()
+            "edit2": controller.text_edit_2.text()
         }
 
     def set_ui_settings(self, controller, settings):
-        print(settings["edit"].string_value)
-        print(settings["edit2"].string_value)
-        controller.text_edit.setText(settings["edit"].string_value)
-        controller.text_edit_2.setText(settings["edit2"].string_value)
+        controller.text_edit.setText(settings["edit"].value)
+        controller.text_edit_2.setText(settings["edit2"].value)
 
     @property
     def name(self):
         """
         One line display name describing the plugin
         """
-        return "Plugin with UI"
+        return "This here has a UI."
 
     @property
     def description(self):

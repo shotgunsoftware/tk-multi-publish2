@@ -139,6 +139,9 @@ class AppDialog(QtGui.QWidget):
         # currently displayed item
         self._current_item = None
 
+        # Currently selected tasks
+        self._current_task = None
+
         # start up our plugin manager
         self._plugin_manager = None
 
@@ -240,12 +243,81 @@ class AppDialog(QtGui.QWidget):
 
             publish_object = tree_item.get_publish_instance()
             if isinstance(publish_object, Task):
+
+                self._update_plugin_ui(self._current_task, publish_object)
+
+                # Update the currently selected items.
+                self._current_item = None
+                self._current_task = publish_object
+
                 self._create_task_details(publish_object)
             elif isinstance(publish_object, Item):
+
+                # If we're changing plugin
+                if self._current_task:
+                    self._update_plugin_ui(self._current_task, None)
+
+                self._current_item = publish_object
+                self._current_task = None
+
                 self._create_item_details(tree_item)
             elif publish_object is None:
+
+                if self._current_task:
+                    self._update_plugin_ui(self._current_task, None)
+
                 # top node summary
+                self._current_item = None
+                self._current_task = None
+
                 self._create_master_summary_details()
+
+    def _update_plugin_ui(self, current_task, new_task):
+        """
+        Updates the plugin UI widget.
+        """
+
+        # Nothing changed, so do nothing.
+        if current_task == new_task:
+            return
+
+        # We're changing task and the current one had a custom UI, so we need to backup the current
+        # settings!
+        if current_task and current_task.plugin.has_custom_ui:
+
+            logger.debug("Saving settings...")
+            settings = current_task.plugin.run_get_settings(
+                self.ui.custom_plugin_ui.layout().itemAt(0).widget()
+            )
+            for k, v in settings.iteritems():
+                current_task.plugin.settings[k].value = v
+
+        # If we're not picking a task, or the new task has no custom UI, a simply tear down of the UI
+        # will suffice.
+        if new_task is None or not new_task.plugin.has_custom_ui:
+            logger.debug("Clearing custom UI...")
+            self._clear_custom_plugin_ui()
+            return
+
+        # At this point we can assume we're going to have to show a UI, because new task is not
+        # and it has a custom UI.
+
+        # If we don't have a current task or if we do but the plugin types are different, we need
+        # to build the UI.
+        if not current_task or not current_task.plugin.is_same_plugin_type_as(new_task.plugin):
+            # Note: At this point we don't really care if current task actually had a UI, we can
+            # certainly tear down an empty widget.
+            logger.debug("Custom UIs are going to be different, tearing down the current one.")
+            self._clear_custom_plugin_ui()
+            controller = new_task.plugin.run_create_settings_widget(self.ui.custom_plugin_ui)
+            self.ui.custom_plugin_ui.layout().addWidget(controller)
+        else:
+            logger.debug("Custom UIs are going to be the same, reusing it!")
+            # Same plugin type, we can simply fetch back the widget
+            controller = self.ui.custom_plugin_ui.layout().itemAt(0).widget()
+
+        # Update the UI with the settings from the current plugin.
+        new_task.plugin.run_set_settings(controller, new_task.plugin.settings)
 
     def _on_publish_status_clicked(self, task_or_item):
         """
@@ -303,7 +375,6 @@ class AppDialog(QtGui.QWidget):
         """
         item = tree_item.get_publish_instance()
 
-        self._current_item = item
         self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
         self.ui.item_icon.setPixmap(item.icon)
 
@@ -365,7 +436,6 @@ class AppDialog(QtGui.QWidget):
         """
         Render the master summary representation
         """
-        self._current_item = None
         self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
 
         self.ui.item_name.setText("Publish Summary")
@@ -430,15 +500,8 @@ class AppDialog(QtGui.QWidget):
         """
         Render details pane for a given task
         """
-        self._current_item = None
-
-        if task.plugin.has_ui:
+        if task.plugin.has_custom_ui:
             self.ui.details_stack.setCurrentIndex(self.CUSTOM_TASK_DETAILS)
-            # FIXME: on item selection change in the treeview, we should save the previous item's
-            # settings.
-            self._clear_custom_plugin_ui()
-            controller = task.plugin.run_create_settings_widget(self.ui.custom_plugin_ui)
-            task.plugin.run_set_settings(controller, task.settings)
         else:
             self.ui.details_stack.setCurrentIndex(self.BUILTIN_TASK_DETAILS)
             self.ui.task_icon.setPixmap(task.plugin.icon)
@@ -446,8 +509,7 @@ class AppDialog(QtGui.QWidget):
 
             self.ui.task_description.setText(task.plugin.description)
             # skip settings for now
-            #self.ui.task_settings.set_data(task.settings.values())
-
+            # self.ui.task_settings.set_data(task.settings.values())
 
     def _clear_custom_plugin_ui(self):
         layout = self.ui.custom_plugin_ui.layout()

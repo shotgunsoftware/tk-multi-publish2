@@ -58,6 +58,16 @@ class Plugin(object):
         """
         return "<Publish Plugin %s>" % self._path
 
+    def is_same_plugin_type_as(self, other_plugin):
+        """
+        Indicates if this plugin instance wraps the same plugin type as another
+        plugin instance.
+
+        :param other_plugin: The other plugin to test against.
+        :type other_plugin: :class:`Plugin`
+        """
+        return self._plugin.__class__ == other_plugin._plugin.__class__
+
     def _load_plugin_icon(self):
         """
         Loads the icon defined by the hook.
@@ -179,7 +189,7 @@ class Plugin(object):
             return []
 
     @property
-    def has_ui(self):
+    def has_custom_ui(self):
 
         try:
             self._plugin.create_settings_widget
@@ -221,7 +231,6 @@ class Plugin(object):
             None,
             "Error retrieving settings: %s"
         ):
-            print settings["edit"]
             self._plugin.set_ui_settings(controller, settings)
 
     def run_accept(self, item):
@@ -233,7 +242,7 @@ class Plugin(object):
         """
         try:
             return self._plugin.accept(self.settings, item)
-        except Exception, e:
+        except Exception:
             error_msg = traceback.format_exc()
             self._logger.error(
                 "Error running accept for %s" % self,
