@@ -47,7 +47,7 @@ class CustomTreeWidgetSummary(CustomTreeWidgetBase):
         """
         pass
 
-    def set_status(self, status):
+    def set_status(self, status, message="", info_below=True):
         """
         Set the status for the plugin
         :param status: An integer representing on of the
