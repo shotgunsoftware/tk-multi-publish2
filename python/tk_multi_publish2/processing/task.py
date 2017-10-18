@@ -8,6 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import copy
 import sgtk
 
 logger = sgtk.platform.get_logger(__name__)
@@ -31,7 +32,7 @@ class Task(object):
         """
         self._plugin = plugin
         self._item = item
-        self._settings = []
+        self._settings = copy.deepcopy(plugin.settings)
         self._visible = visible
         self._enabled = enabled
         self._checked = checked
@@ -59,6 +60,16 @@ class Task(object):
         item.add_task(task)
         logger.debug("Created %s" % task)
         return task
+
+    def is_same_task_type(self, other_task):
+        """
+        Indicates if this plugin instance wraps the same plugin type as another
+        plugin instance.
+
+        :param other_task: The other plugin to test against.
+        :type other_task: :class:`Task`
+        """
+        return self._plugin.name == other_task._plugin.name
 
     @property
     def item(self):
@@ -102,7 +113,7 @@ class Task(object):
         Dictionary of settings associated with this Task
         """
         # TODO - make settings configurable per task
-        return self.plugin.settings
+        return self._settings
 
     def validate(self):
         """

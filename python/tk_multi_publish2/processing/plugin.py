@@ -58,16 +58,6 @@ class Plugin(object):
         """
         return "<Publish Plugin %s>" % self._path
 
-    def is_same_plugin_type_as(self, other_plugin):
-        """
-        Indicates if this plugin instance wraps the same plugin type as another
-        plugin instance.
-
-        :param other_plugin: The other plugin to test against.
-        :type other_plugin: :class:`Plugin`
-        """
-        return self._plugin.__class__ == other_plugin._plugin.__class__
-
     def _load_plugin_icon(self):
         """
         Loads the icon defined by the hook.

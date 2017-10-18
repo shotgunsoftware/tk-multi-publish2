@@ -284,13 +284,9 @@ class AppDialog(QtGui.QWidget):
         # We're changing task and the current one had a custom UI, so we need to backup the current
         # settings!
         if current_task and current_task.plugin.has_custom_ui:
-
             logger.debug("Saving settings...")
-            settings = current_task.plugin.run_get_settings(
-                self.ui.custom_plugin_ui.layout().itemAt(0).widget()
-            )
-            for k, v in settings.iteritems():
-                current_task.plugin.settings[k].value = v
+            custom_widget = self.ui.custom_plugin_ui.layout().itemAt(0).widget()
+            self._pull_settings_from_ui(current_task, custom_widget)
 
         # If we're not picking a task, or the new task has no custom UI, a simply tear down of the UI
         # will suffice.
@@ -304,20 +300,50 @@ class AppDialog(QtGui.QWidget):
 
         # If we don't have a current task or if we do but the plugin types are different, we need
         # to build the UI.
-        if not current_task or not current_task.plugin.is_same_plugin_type_as(new_task.plugin):
+        if not current_task or not current_task.is_same_task_type(new_task):
             # Note: At this point we don't really care if current task actually had a UI, we can
             # certainly tear down an empty widget.
             logger.debug("Custom UIs are going to be different, tearing down the current one.")
             self._clear_custom_plugin_ui()
-            controller = new_task.plugin.run_create_settings_widget(self.ui.custom_plugin_ui)
-            self.ui.custom_plugin_ui.layout().addWidget(controller)
+            # TODO: Once we have a generic settings editor, the task should be the one to return the
+            # plugin.
+            widget = new_task.plugin.run_create_settings_widget(self.ui.custom_plugin_ui)
+            self.ui.custom_plugin_ui.layout().addWidget(widget)
         else:
             logger.debug("Custom UIs are going to be the same, reusing it!")
             # Same plugin type, we can simply fetch back the widget
-            controller = self.ui.custom_plugin_ui.layout().itemAt(0).widget()
+            widget = self.ui.custom_plugin_ui.layout().itemAt(0).widget()
 
         # Update the UI with the settings from the current plugin.
-        new_task.plugin.run_set_settings(controller, new_task.plugin.settings)
+        self._push_settings_into_ui(new_task, widget)
+
+    def _pull_settings_from_ui(self, task, widget):
+        """
+        Retrieves settings from the UI and updates the task's settings.
+        """
+        if task.plugin.has_custom_ui:
+            settings = task.plugin.run_get_settings(widget)
+        else:
+            # TODO: Implement getting the settings from the generic UI.
+            pass
+
+        # The settings returned by the UI are actual value, not Settings objects, so apply each
+        # value return on the appropriate settings object.
+        for k, v in settings.iteritems():
+            task.settings[k].value = v
+
+    def _push_settings_into_ui(self, task, widget):
+        """
+        Takes the settings from this task and pushes its values into the UI.
+        """
+        # The run_get_settings expects a dictionary of the actual values, not Setting objects, so
+        # translate the dictionary.
+        translated_settings = {k: v.value for k, v in task.settings.iteritems()}
+        if task.plugin.has_custom_ui:
+            task.plugin.run_set_settings(widget, translated_settings)
+        else:
+            # TODO: Implement setting the settins into the generic UI.
+            pass
 
     def _on_publish_status_clicked(self, task_or_item):
         """
