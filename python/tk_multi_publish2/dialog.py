@@ -355,7 +355,7 @@ class AppDialog(QtGui.QWidget):
                 # top node summary
                 self._create_master_summary_details()
 
-     def _update_task_details_ui(self, new_task_selection=None):
+    def _update_task_details_ui(self, new_task_selection=None):
         """
         Updates the plugin UI widget.
 
@@ -385,8 +385,6 @@ class AppDialog(QtGui.QWidget):
             self._clear_custom_settings_page()
             self._current_tasks = new_task_selection
             return
-
-        print new_task_selection._items, bool(new_task_selection), bool(new_task_selection._items)
 
         # A task was picked, so make sure our page is in foreground.
         self.ui.details_stack.setCurrentIndex(self.TASK_DETAILS)

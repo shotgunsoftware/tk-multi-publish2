@@ -34,7 +34,12 @@ engines:
             hook: "{config}/plugin_with_ui.py"
             settings:
               edit: "This is the default edit value."
-              edit2: "This is the default edit2 value."              
+              edit2: "This is the default edit2 value."
+          - name: PluginWithUIAsAnotherName
+            hook: "{config}/plugin_with_ui.py"
+            settings:
+              edit: "This is another UI plugin's default edit value."
+              edit2: "This is another UI plugin's default edit2 value."
             
 
 frameworks:
