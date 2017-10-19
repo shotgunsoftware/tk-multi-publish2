@@ -50,6 +50,9 @@ class PluginWithUi(HookBaseClass):
         return CustomWidgetController(parent)
 
     def get_ui_settings(self, controller):
+        """
+        Returns the modified settings.
+        """
         settings = {}
         if controller.text_edit.text() != self._MULTIPLE_VALUES:
             settings["edit"] = str(controller.text_edit.text())
@@ -69,6 +72,9 @@ class PluginWithUi(HookBaseClass):
         )
 
     def set_ui_settings(self, controller, tasks_settings):
+        """
+        Updates the UI with the list of settings.
+        """
         if self._all_equal(tasks_settings, "edit"):
             controller.text_edit.setText(tasks_settings[0]["edit"])
         else:
@@ -93,7 +99,6 @@ class PluginWithUi(HookBaseClass):
         contain simple html for formatting.
         """
         return "This plugin has a UI"
-        # TODO: add link to workflow docs
 
     @property
     def settings(self):
@@ -101,18 +106,6 @@ class PluginWithUi(HookBaseClass):
         Dictionary defining the settings that this plugin expects to recieve
         through the settings parameter in the accept, validate, publish and
         finalize methods.
-
-        A dictionary on the following form::
-
-            {
-                "Settings Name": {
-                    "type": "settings_type",
-                    "default": "default_value",
-                    "description": "One line description of the setting"
-            }
-
-        The type string should be one of the data types that toolkit accepts
-        as part of its environment configuration.
         """
         return {
             "edit": {

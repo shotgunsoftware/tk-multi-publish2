@@ -42,6 +42,7 @@ class AppDialog(QtGui.QWidget):
     # details ui panes
     (ITEM_DETAILS, TASK_DETAILS, PLEASE_SELECT_DETAILS) = range(3)
 
+    # settings ui panes, those are both present on the TASK_DETAILS pane.
     (BUILTIN_TASK_DETAILS, CUSTOM_TASK_DETAILS) = range(2)
 
     class TaskSelection(object):
@@ -298,9 +299,8 @@ class AppDialog(QtGui.QWidget):
 
     def _update_details_from_selection(self):
         """
-        Makes sure that the right hand side
-        details section reflects the selected item
-        in the left hand side tree.
+        Makes sure that the right hand side details section reflects the selected item in the left
+        hand side tree.
         """
 
         # look at how many items are checked
@@ -361,8 +361,9 @@ class AppDialog(QtGui.QWidget):
 
         This method should be called if everything is of the same type OR if the selection is
         empty.
-        """
 
+        :param new_task_selection: A :class:`TaskSelection` containing the current UI selection.
+        """
         new_task_selection = new_task_selection or self.TaskSelection()
 
         # Nothing changed, so do nothing.
@@ -437,6 +438,9 @@ class AppDialog(QtGui.QWidget):
     def _pull_settings_from_ui(self, selected_tasks):
         """
         Retrieves settings from the UI and updates the task's settings.
+
+        :param selected_tasks: A :class:`TaskSelection` of tasks to update based
+            on the values edited in the UI.
         """
         if selected_tasks.has_custom_ui:
             widget = self.ui.custom_settings_page.layout().itemAt(0).widget()
@@ -452,17 +456,21 @@ class AppDialog(QtGui.QWidget):
             for k, v in settings.iteritems():
                 task.settings[k].value = v
 
-    def _push_settings_into_ui(self, task_selection, widget):
+    def _push_settings_into_ui(self, selected_tasks, widget):
         """
         Takes the settings from this task and pushes its values into the UI.
+
+        :param selected_tasks: A :class:`TaskSelection` of tasks to update based
+            on the values edited in the UI.
+        :param widget: Custom UI widget created by the plugin.
         """
         # The run_get_settings expects a dictionary of the actual values, not Setting objects, so
         # translate the dictionary.
         tasks_settings = [
-            {k: v.value for k, v in task.settings.iteritems()} for task in task_selection
+            {k: v.value for k, v in task.settings.iteritems()} for task in selected_tasks
         ]
-        if task_selection.has_custom_ui:
-            task_selection.set_settings(widget, tasks_settings)
+        if selected_tasks.has_custom_ui:
+            selected_tasks.set_settings(widget, tasks_settings)
         else:
             # TODO: Implement setting the settings into the generic UI.
             pass
@@ -480,7 +488,6 @@ class AppDialog(QtGui.QWidget):
         publish comments box in the overview details pane
         """
         comments = self.ui.item_comments.toPlainText()
-
         # if this is the summary description...
         if self._current_item is None:
             if self._summary_comment != comments:
@@ -647,6 +654,9 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_type.setText("%d tasks to execute" % num_items)
 
     def _clear_custom_settings_page(self):
+        """
+        Takes out all widgets from the custom settings page.
+        """
         layout = self.ui.custom_settings_page.layout()
         while layout.count():
             child = layout.takeAt(0)
