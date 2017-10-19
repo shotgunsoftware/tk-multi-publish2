@@ -44,6 +44,94 @@ class AppDialog(QtGui.QWidget):
 
     (BUILTIN_TASK_DETAILS, CUSTOM_TASK_DETAILS) = range(2)
 
+    class TaskSelection(object):
+        """
+        Allows to manipulate a task selection as if it was a single object.
+
+        This class assumes that every task is of the same plugin type.
+
+        :param items: List of task for in the selection. Defaults to an empty list.
+        """
+        def __init__(self, items=None):
+            self._items = items or []
+
+        def is_same_task_type(self, task_selection):
+            """
+            Checks if this task selection is of the same type as another task selection.
+
+            :param task_selection: List of :class:`Task`.
+
+            :returns: ``True`` is the plugins are the same, ``False`` otherwise. Note that
+                two empty lists are considered to be of the same type.
+            """
+            if self._items and task_selection._items:
+                return self._items[0].is_same_task_type(task_selection._items[0])
+            elif not self._items and not task_selection._items:
+                return True
+            else:
+                return False
+
+        @property
+        def has_custom_ui(self):
+            """
+            Checks if this selection has a custom UI.
+
+            :returns: ``True`` if the selection uses a custom UI, ``False`` otherwise.
+            """
+            if self._items:
+                return all(item.plugin.has_custom_ui for item in self._items)
+            else:
+                return False
+
+        @property
+        def plugin(self):
+            """
+            Returns the plugin associated with this selection.
+
+            :returns: The :class:`Plugin` instance or ``None``.
+            """
+            if self._items:
+                return self._items[0].plugin
+            else:
+                return None
+
+        def get_settings(self, widget):
+            """
+            Retrieves the settings from the selection's custom UI.
+
+            :param widget: Custom UI's widget.
+
+            :returns: Dictionary of settings as regular Python literals.
+            """
+            return self._items[0].plugin.run_get_settings(widget)
+
+        def set_settings(self, widget, settings):
+            """
+            Sets the settings from the selection into the custom UI.
+
+            :param widget: Custom UI's widget.
+            :param settings: List of settings for all tasks.
+            """
+            self._items[0].plugin.run_set_settings(widget, settings)
+
+        def __iter__(self):
+            """
+            Allows to iterate over items in the selection.
+            """
+            return iter(self._items)
+
+        def __eq__(self, other):
+            """
+            Tests two selections for equality.
+            """
+            return self._items == other._items
+
+        def __nonzero__(self):
+            """
+            :returns: ``True`` is the selection is not empty, ``False`` otherwise.
+            """
+            return bool(self._items)
+
     def __init__(self, parent=None):
         """
         :param parent: The parent QWidget for this control
@@ -267,50 +355,7 @@ class AppDialog(QtGui.QWidget):
                 # top node summary
                 self._create_master_summary_details()
 
-    class TaskSelection(object):
-
-        def __init__(self, items=None):
-            self._items = items or []
-
-        def is_same_task_type(self, task_selection):
-            if self._items and task_selection._items:
-                return self._items[0].is_same_task_type(task_selection._items[0])
-            elif not self._items and not task_selection._items:
-                return True
-            else:
-                return False
-
-        @property
-        def has_custom_ui(self):
-            if self._items:
-                return all(item.plugin.has_custom_ui for item in self._items)
-            else:
-                return False
-
-        @property
-        def plugin(self):
-            if self._items:
-                return self._items[0].plugin
-            else:
-                return None
-
-        def __iter__(self):
-            return iter(self._items)
-
-        def get_settings(self, widget):
-            return self._items[0].plugin.run_get_settings(widget)
-
-        def set_settings(self, widget, settings):
-            self._items[0].plugin.run_set_settings(widget, settings)
-
-        def __eq__(self, other):
-            return self._items == other._items
-
-        def __nonzero__(self):
-
-            return bool(self._items)
-
-    def _update_task_details_ui(self, new_task_selection=None):
+     def _update_task_details_ui(self, new_task_selection=None):
         """
         Updates the plugin UI widget.
 
@@ -416,8 +461,8 @@ class AppDialog(QtGui.QWidget):
         tasks_settings = [
             {k: v.value for k, v in task.settings.iteritems()} for task in task_selection
         ]
-        if task_selection.plugin.has_custom_ui:
-            task.plugin.run_set_settings(widget, tasks_settings)
+        if task_selection.has_custom_ui:
+            task_selection.set_settings(widget, tasks_settings)
         else:
             # TODO: Implement setting the settings into the generic UI.
             pass
