@@ -54,8 +54,8 @@ class PluginWithUi(HookBaseClass):
         }
 
     def set_ui_settings(self, controller, settings):
-        controller.text_edit.setText(settings["edit"])
-        controller.text_edit_2.setText(settings["edit2"])
+        controller.text_edit.setText(settings[0]["edit"])
+        controller.text_edit_2.setText(settings[0]["edit2"])
 
     @property
     def name(self):

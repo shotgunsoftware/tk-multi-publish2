@@ -142,7 +142,7 @@ class AppDialog(QtGui.QWidget):
         self._current_item = None
 
         # Currently selected tasks
-        self._current_task = None
+        self._current_tasks = self.TaskSelection()
 
         # start up our plugin manager
         self._plugin_manager = None
@@ -235,123 +235,188 @@ class AppDialog(QtGui.QWidget):
         # now look at selection
         items = self.ui.items_tree.selectedItems()
 
-        if len(items) != 1:
+        if (
+            # If we have least one item
+            len(items) >= 1 and
+            # ... and they are all
+            all(
+                # ... tasks ...
+                isinstance(item.get_publish_instance(), Task) and
+                # ...  of the same type.
+                items[0].get_publish_instance().is_same_task_type(item.get_publish_instance()) for item in items
+            )
+        ):
+            # We should update the tasks details ui.
+            self._current_item = None
+            self._update_task_details_ui(self.TaskSelection([item.get_publish_instance() for item in items]))
+        elif len(items) != 1:
+            # Otherwise we can't show items from a multi-selection, so inform the user.
+            self._current_item = None
+            self._update_task_details_ui()
             # show overlay with 'please select single item'
             self.ui.details_stack.setCurrentIndex(self.PLEASE_SELECT_DETAILS)
-
         else:
             # 1 item selected
             tree_item = items[0]
-
             publish_object = tree_item.get_publish_instance()
-            if isinstance(publish_object, Task):
-                self._current_item = None
-                self._update_task_details_ui(publish_object)
-            elif isinstance(publish_object, Item):
-                self._update_task_details_ui(None)
+            if isinstance(publish_object, Item):
+                self._update_task_details_ui()
                 self._create_item_details(tree_item)
             elif publish_object is None:
-                self._update_task_details_ui(None)
+                self._update_task_details_ui()
                 # top node summary
                 self._create_master_summary_details()
 
-    def _update_task_details_ui(self, new_task):
+    class TaskSelection(object):
+
+        def __init__(self, items=None):
+            self._items = items or []
+
+        def is_same_task_type(self, task_selection):
+            if self._items and task_selection._items:
+                return self._items[0].is_same_task_type(task_selection._items[0])
+            elif not self._items and not task_selection._items:
+                return True
+            else:
+                return False
+
+        @property
+        def has_custom_ui(self):
+            if self._items:
+                return all(item.plugin.has_custom_ui for item in self._items)
+            else:
+                return False
+
+        @property
+        def plugin(self):
+            if self._items:
+                return self._items[0].plugin
+            else:
+                return None
+
+        def __iter__(self):
+            return iter(self._items)
+
+        def get_settings(self, widget):
+            return self._items[0].plugin.run_get_settings(widget)
+
+        def set_settings(self, widget, settings):
+            self._items[0].plugin.run_set_settings(widget, settings)
+
+        def __eq__(self, other):
+            return self._items == other._items
+
+        def __bool__(self):
+            return bool(self._items)
+
+    def _update_task_details_ui(self, new_task_selection=None):
         """
         Updates the plugin UI widget.
+
+        This method should be called if everything is of the same type OR if the selection is
+        empty.
         """
 
+        new_task_selection = new_task_selection or self.TaskSelection()
+
         # Nothing changed, so do nothing.
-        if self._current_task == new_task:
+        if self._current_tasks == new_task_selection:
             return
 
         # We're changing task and the current one had a custom UI, so we need to backup the current
         # settings.
-        if self._current_task and self._current_task.plugin.has_custom_ui:
+        if self._current_tasks:
             logger.debug("Saving settings...")
-            custom_widget = self.ui.custom_settings_page.layout().itemAt(0).widget()
-            self._pull_settings_from_ui(self._current_task, custom_widget)
+            self._pull_settings_from_ui(self._current_tasks)
 
         # If we're moving to a task that doesn't have a custom UI, clear everything.
         # User selected a task item so move to that page.
-        if new_task is None:
+        if not new_task_selection:
             # Note: At this point we don't really care if current task actually had a UI, we can
             # certainly tear down an empty widget.
             logger.debug("The ui is going to change, so clear the current one.")
             self._clear_custom_settings_page()
-            self._current_task = None
+            self._current_tasks = new_task_selection
             return
 
         # A task was picked, so make sure our page is in foreground.
         self.ui.details_stack.setCurrentIndex(self.TASK_DETAILS)
 
-        # If the new task has no custom UI, a simple tear down of the custom UI
+        # If the new task selection does not have a custom UI, a simple tear down of the custom UI
         # and setting the built-in fields will suffice.
-        if not new_task.plugin.has_custom_ui:
+        if not new_task_selection.has_custom_ui:
             logger.debug("Clearing custom UI and using default task details...")
+            self._clear_custom_settings_page()
 
+            # All the items are of the same type,
             self.ui.settings_stack.setCurrentIndex(self.BUILTIN_TASK_DETAILS)
-            self.ui.task_icon.setPixmap(new_task.plugin.icon)
-            self.ui.task_name.setText(new_task.plugin.name)
-            self.ui.task_description.setText(new_task.plugin.description)
+            self.ui.task_icon.setPixmap(new_task_selection.plugin.icon)
+            self.ui.task_name.setText(new_task_selection.plugin.name)
+            self.ui.task_description.setText(new_task_selection.plugin.description)
+
             # skip settings for now
             # self.ui.task_settings.set_data(task.settings.values())
-            self._clear_custom_settings_page()
-            self._current_task = new_task
+
+            self._current_tasks = new_task_selection
             return
 
         # At this point we can assume we're going to have to show a UI, because new task exists
         # and it has a custom UI.
         self.ui.settings_stack.setCurrentIndex(self.CUSTOM_TASK_DETAILS)
 
-        print self._current_task._plugin, new_task._plugin
         # Now figure out if we need to create/replace the widgets.
         if (
             # If we didn't have a current task before or...
-            not self._current_task or
+            not self._current_tasks or
             # We did have one, but it wasn't the same task type as the current one
-            not self._current_task.is_same_task_type(new_task)
+            not self._current_tasks.is_same_task_type(new_task_selection)
         ):
-            logger.debug("Building a custom ui for %s.", new_task.plugin)
+            logger.debug("Building a custom ui for %s.", new_task_selection.plugin)
             self._clear_custom_settings_page()
-            widget = new_task.plugin.run_create_settings_widget(self.ui.custom_settings_page)
+            widget = new_task_selection.plugin.run_create_settings_widget(self.ui.custom_settings_page)
             self.ui.custom_settings_page.layout().addWidget(widget)
         else:
-            logger.debug("Reusing custom ui from %s.", new_task.plugin)
+            logger.debug("Reusing custom ui from %s.", new_task_selection.plugin)
             # Same plugin type, we can simply fetch back the widget
             widget = self.ui.custom_settings_page.layout().itemAt(0).widget()
 
         # Update the UI with the settings from the current plugin.
-        self._push_settings_into_ui(new_task, widget)
+        self._push_settings_into_ui(new_task_selection, widget)
 
         # Alright, we're ready to deal with the new task.
-        self._current_task = new_task
+        self._current_tasks = new_task_selection
 
-    def _pull_settings_from_ui(self, task, widget):
+    def _pull_settings_from_ui(self, selected_tasks):
         """
         Retrieves settings from the UI and updates the task's settings.
         """
-        if task.plugin.has_custom_ui:
-            settings = task.plugin.run_get_settings(widget)
+        if selected_tasks.has_custom_ui:
+            widget = self.ui.custom_settings_page.layout().itemAt(0).widget()
+            settings = self._current_tasks.get_settings(widget)
         else:
             # TODO: Implement getting the settings from the generic UI.
-            pass
+            settings = {}
 
-        # The settings returned by the UI are actual value, not Settings objects, so apply each
-        # value return on the appropriate settings object.
-        for k, v in settings.iteritems():
-            task.settings[k].value = v
+        # Update the values in all the tasks.
+        for task in selected_tasks:
+            # The settings returned by the UI are actual value, not Settings objects, so apply each
+            # value returned on the appropriate settings object.
+            for k, v in settings.iteritems():
+                task.settings[k].value = v
 
-    def _push_settings_into_ui(self, task, widget):
+    def _push_settings_into_ui(self, task_selection, widget):
         """
         Takes the settings from this task and pushes its values into the UI.
         """
         # The run_get_settings expects a dictionary of the actual values, not Setting objects, so
         # translate the dictionary.
-        translated_settings = {k: v.value for k, v in task.settings.iteritems()}
-        if task.plugin.has_custom_ui:
-            task.plugin.run_set_settings(widget, translated_settings)
+        tasks_settings = [
+            {k: v.value for k, v in task.settings.iteritems()} for task in task_selection
+        ]
+        if task_selection.plugin.has_custom_ui:
+            task.plugin.run_set_settings(widget, tasks_settings)
         else:
-            # TODO: Implement setting the settins into the generic UI.
+            # TODO: Implement setting the settings into the generic UI.
             pass
 
     def _on_publish_status_clicked(self, task_or_item):
@@ -367,7 +432,7 @@ class AppDialog(QtGui.QWidget):
         publish comments box in the overview details pane
         """
         comments = self.ui.item_comments.toPlainText()
-        
+
         # if this is the summary description...
         if self._current_item is None:
             if self._summary_comment != comments:
