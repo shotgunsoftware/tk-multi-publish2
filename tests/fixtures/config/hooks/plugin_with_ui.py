@@ -37,6 +37,8 @@ class PluginWithUi(HookBaseClass):
     Plugin for creating generic publishes in Shotgun
     """
 
+    _MULTIPLE_VALUES = "<multiple values>"
+
     def create_settings_widget(self, parent):
         """
         Creates a QT widget, parented below the given parent object, to
@@ -48,14 +50,34 @@ class PluginWithUi(HookBaseClass):
         return CustomWidgetController(parent)
 
     def get_ui_settings(self, controller):
-        return {
-            "edit": controller.text_edit.text(),
-            "edit2": controller.text_edit_2.text()
-        }
+        settings = {}
+        if controller.text_edit.text() != self._MULTIPLE_VALUES:
+            settings["edit"] = str(controller.text_edit.text())
 
-    def set_ui_settings(self, controller, settings):
-        controller.text_edit.setText(settings[0]["edit"])
-        controller.text_edit_2.setText(settings[0]["edit2"])
+        if controller.text_edit_2.text() != self._MULTIPLE_VALUES:
+            settings["edit2"] = str(controller.text_edit_2.text())
+
+        return settings
+
+    def _all_equal(self, tasks_settings, setting_name):
+        """
+        :returns: True if the setting is the same for every task, False otherwise.
+        """
+        return all(
+            tasks_settings[0][setting_name] == task_setting[setting_name]
+            for task_setting in tasks_settings
+        )
+
+    def set_ui_settings(self, controller, tasks_settings):
+        if self._all_equal(tasks_settings, "edit"):
+            controller.text_edit.setText(tasks_settings[0]["edit"])
+        else:
+            controller.text_edit.setText(self._MULTIPLE_VALUES)
+
+        if self._all_equal(tasks_settings, "edit2"):
+            controller.text_edit_2.setText(tasks_settings[0]["edit2"])
+        else:
+            controller.text_edit_2.setText(self._MULTIPLE_VALUES)
 
     @property
     def name(self):

@@ -306,7 +306,8 @@ class AppDialog(QtGui.QWidget):
         def __eq__(self, other):
             return self._items == other._items
 
-        def __bool__(self):
+        def __nonzero__(self):
+
             return bool(self._items)
 
     def _update_task_details_ui(self, new_task_selection=None):
@@ -338,6 +339,8 @@ class AppDialog(QtGui.QWidget):
             self._clear_custom_settings_page()
             self._current_tasks = new_task_selection
             return
+
+        print new_task_selection._items, bool(new_task_selection), bool(new_task_selection._items)
 
         # A task was picked, so make sure our page is in foreground.
         self.ui.details_stack.setCurrentIndex(self.TASK_DETAILS)
