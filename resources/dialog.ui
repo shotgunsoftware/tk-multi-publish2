@@ -328,7 +328,7 @@
               <item>
                <widget class="QStackedWidget" name="details_stack">
                 <property name="currentIndex">
-                 <number>1</number>
+                 <number>2</number>
                 </property>
                 <widget class="QWidget" name="details_item">
                  <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,1,1,1,1,5,1,5">
@@ -498,8 +498,8 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>420</width>
-                       <height>100</height>
+                       <width>98</width>
+                       <height>28</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_10" stretch="0,1">
@@ -613,8 +613,8 @@
                           <rect>
                            <x>0</x>
                            <y>0</y>
-                           <width>420</width>
-                           <height>202</height>
+                           <width>98</width>
+                           <height>28</height>
                           </rect>
                          </property>
                          <layout class="QVBoxLayout" name="verticalLayout_13" stretch="0,1">
@@ -679,10 +679,21 @@
                   <item>
                    <widget class="QLabel" name="please_select_an_item">
                     <property name="text">
-                     <string>Please select a single item in the list.</string>
+                     <string>Please select tasks of the same type or a single item.</string>
                     </property>
                     <property name="alignment">
                      <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="details_please_select_tasks_of_same_type">
+                 <layout class="QVBoxLayout" name="verticalLayout_15">
+                  <item>
+                   <widget class="QLabel" name="label_2">
+                    <property name="text">
+                     <string>Please only select tasks of the same type.</string>
                     </property>
                    </widget>
                   </item>
