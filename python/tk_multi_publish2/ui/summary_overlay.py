@@ -2,6 +2,7 @@
 
 # Form implementation generated from reading ui file 'summary_overlay.ui'
 #
+# Created: Thu Oct 19 18:23:33 2017
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -45,7 +46,7 @@ class Ui_SummaryOverlay(object):
         self.gridLayout.addItem(spacerItem2, 3, 1, 1, 1)
         spacerItem3 = QtGui.QSpacerItem(20, 46, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.gridLayout.addItem(spacerItem3, 0, 1, 1, 1)
-        self.details = QtGui.QLabel(self.summary_frame)
+        self.details = ProgressStatusLabel(self.summary_frame)
         self.details.setObjectName("details")
         self.gridLayout.addWidget(self.details, 2, 1, 1, 1)
         self.verticalLayout.addWidget(self.summary_frame)
@@ -58,4 +59,5 @@ class Ui_SummaryOverlay(object):
         self.label.setText(QtGui.QApplication.translate("SummaryOverlay", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
         self.details.setText(QtGui.QApplication.translate("SummaryOverlay", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
 
+from ..progress_status_label import ProgressStatusLabel
 from . import resources_rc

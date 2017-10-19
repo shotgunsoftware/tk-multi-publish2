@@ -118,7 +118,7 @@
        </spacer>
       </item>
       <item row="2" column="1">
-       <widget class="QLabel" name="details">
+       <widget class="ProgressStatusLabel" name="details">
         <property name="text">
          <string>TextLabel</string>
         </property>
@@ -129,6 +129,13 @@
    </item>
   </layout>
  </widget>
+  <customwidgets>
+  <customwidget>
+   <class>ProgressStatusLabel</class>
+   <extends>QLabel</extends>
+   <header>..progress_status_label</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="resources.qrc"/>
  </resources>
