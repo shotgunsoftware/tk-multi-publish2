@@ -502,7 +502,8 @@ class Ui_Dialog(object):
         self.task_name.setText(QtGui.QApplication.translate("Dialog", "Task Name", None, QtGui.QApplication.UnicodeUTF8))
         self.task_settings_label.setText(QtGui.QApplication.translate("Dialog", "Settings", None, QtGui.QApplication.UnicodeUTF8))
         self.please_select_an_item.setText(QtGui.QApplication.translate("Dialog", "Please select tasks of the same type or a single item.", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setText(QtGui.QApplication.translate("Dialog", "You can only edit one of these task at a time.", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_2.setText(QtGui.QApplication.translate("Dialog", "Multiple selection not supported on tasks of this type.\n"
+"Please select a single task.", None, QtGui.QApplication.UnicodeUTF8))
         self.browse.setToolTip(QtGui.QApplication.translate("Dialog", "Browse files to publish", None, QtGui.QApplication.UnicodeUTF8))
         self.browse.setText(QtGui.QApplication.translate("Dialog", "...", None, QtGui.QApplication.UnicodeUTF8))
         self.refresh.setToolTip(QtGui.QApplication.translate("Dialog", "Refresh", None, QtGui.QApplication.UnicodeUTF8))

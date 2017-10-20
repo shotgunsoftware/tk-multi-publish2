@@ -693,7 +693,8 @@
                   <item>
                    <widget class="QLabel" name="label_2">
                     <property name="text">
-                     <string>You can only edit one of these task at a time.</string>
+                     <string>Multiple selection not supported on tasks of this type.
+Please select a single task.</string>
                     </property>
                     <property name="alignment">
                      <set>Qt::AlignCenter</set>
