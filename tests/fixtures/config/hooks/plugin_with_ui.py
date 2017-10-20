@@ -22,6 +22,7 @@ class CheckboxHandler(object):
         layout.addWidget(self._check_box)
 
         self._is_multi_edit_mode = None
+        self._check_box.setTristate(False)
 
     @property
     def editor(self):
@@ -33,7 +34,8 @@ class CheckboxHandler(object):
 
         self._is_multi_edit_mode = is_multi_edit_mode
         self._check_box.setTristate(self._is_multi_edit_mode)
-        self._check_box.setCheckState(QtCore.Qt.PartiallyChecked)
+        if self._is_multi_edit_mode:
+            self._check_box.setCheckState(QtCore.Qt.PartiallyChecked)
 
     def is_value_available(self):
         return self._check_box.checkState() != QtCore.Qt.PartiallyChecked
