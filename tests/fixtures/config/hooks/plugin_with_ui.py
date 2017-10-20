@@ -15,19 +15,55 @@ from sgtk.platform.qt import QtCore, QtGui
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
+class CheckboxHandler(object):
+
+    def __init__(self, layout, text):
+        self._check_box = QtGui.QCheckBox(text)
+        layout.addWidget(self._check_box)
+
+        self._is_multi_edit_mode = None
+
+    @property
+    def editor(self):
+        return self._check_box
+
+    def set_multi_edit_mode(self, is_multi_edit_mode):
+        if self._is_multi_edit_mode == is_multi_edit_mode:
+            return
+
+        self._is_multi_edit_mode = is_multi_edit_mode
+        self._check_box.setTristate(self._is_multi_edit_mode)
+        self._check_box.setCheckState(QtCore.Qt.PartiallyChecked)
+
+    def is_value_available(self):
+        return self._check_box.checkState() != QtCore.Qt.PartiallyChecked
+
+    @property
+    def is_multi_edit_mode(self):
+        return self._is_multi_edit_mode
+
+
 class RowHandler(object):
 
     def __init__(self, layout, text, editor):
-        self._is_multi_edit_mode = False
-        self._layout = layout
-        self._text = text
+        self._layout = QtGui.QHBoxLayout()
+        self._check_box = QtGui.QCheckBox(text)
+        self._label = QtGui.QLabel(text)
         self._editor = editor
-        self._check_box = None
-        self._index = layout.rowCount()
 
-        self._field_layout = QtGui.QHBoxLayout()
-        self._field_layout.addWidget(QtGui.QLabel(self._text))
-        self._layout.addRow(self._field_layout, editor)
+        # FIXME: Should take the size of the text + icon as the minimum width.
+        self._check_box.setMinimumWidth(50)
+        self._label.setMinimumWidth(50)
+
+        self._check_box.stateChanged.connect(self._on_state_changed)
+
+        self._layout.addWidget(self._check_box)
+        self._layout.addWidget(self._label)
+        self._layout.addWidget(self._editor)
+
+        self._is_multi_edit_mode = None
+
+        layout.addRow(self._layout)
 
     @property
     def editor(self):
@@ -36,29 +72,18 @@ class RowHandler(object):
     def set_multi_edit_mode(self, is_multi_edit_mode):
         if self._is_multi_edit_mode == is_multi_edit_mode:
             return
+
         self._is_multi_edit_mode = is_multi_edit_mode
-
-        # Remove label and item.
-        widget_item = self._layout.takeAt(self._index * 2)
-        widget_item.widget().deleteLater()
-        self._layout.takeAt(self._index * 2 + 1)
-
-        if self._is_multi_edit_mode:
-            self._check_box = QtGui.QCheckBox(self._text)
-            self._check_box.setTristate(False)
-            self._check_box.setChecked(QtCore.Qt.Unchecked)
-            self._check_box.stateChanged.connect(self._on_state_changed)
-            self._editor.setEnabled(False)
-            self._layout.insertRow(self._index, self._check_box, self._editor)
-        else:
-            self._check_box = None
-            self._layout.insertRow(self._index, self._text, self._editor)
+        self._check_box.setCheckState(QtCore.Qt.Unchecked)
+        self._check_box.setVisible(is_multi_edit_mode is True)
+        self._label.setVisible(is_multi_edit_mode is False)
+        self._editor.setEnabled(is_multi_edit_mode is False)
 
     def _on_state_changed(self, state):
         self._editor.setEnabled(state == QtCore.Qt.Checked)
 
-    def is_set(self):
-        if not self._check_box:
+    def is_value_available(self):
+        if not self._is_multi_edit_mode:
             return True
         else:
             return self._check_box.checkState() == QtCore.Qt.Checked
@@ -73,9 +98,12 @@ class CustomWidgetController(QtGui.QWidget):
         self.setLayout(layout)
 
         self.edit = RowHandler(layout, "Edit", QtGui.QLineEdit(self))
-        self.edit_2 = RowHandler(layout, "Edit2", QtGui.QLineEdit(self))
+        self.number = RowHandler(layout, "Number", QtGui.QSpinBox(self))
+        self.check_box = CheckboxHandler(layout, "Boolean")
 
         self.edit.editor.setFocus()
+        self.number.editor.setMinimum(0)
+        self.number.editor.setMaximum(100)
 
 
 class PluginWithUi(HookBaseClass):
@@ -98,38 +126,43 @@ class PluginWithUi(HookBaseClass):
         Returns the modified settings.
         """
         settings = {}
-        if controller.edit.is_set():
+        if controller.edit.is_value_available():
             settings["edit"] = str(controller.edit.editor.text())
 
-        if controller.edit_2.is_set():
-            settings["edit2"] = str(controller.edit_2.editor.text())
+        if controller.number.is_value_available():
+            settings["number"] = controller.number.editor.value()
+
+        if controller.check_box.is_value_available():
+            settings["boolean"] = (controller.check_box.editor.checkState() == QtCore.Qt.Checked)
 
         return settings
 
-    def _all_equal(self, tasks_settings, setting_name):
+    def _requires_multi_edit_mode(self, tasks_settings, setting_name):
         """
         :returns: True if the setting is the same for every task, False otherwise.
         """
         return all(
             tasks_settings[0][setting_name] == task_setting[setting_name]
             for task_setting in tasks_settings
-        )
+        ) is False
 
     def set_ui_settings(self, controller, tasks_settings):
         """
         Updates the UI with the list of settings.
         """
-        if self._all_equal(tasks_settings, "edit"):
-            controller.edit.set_multi_edit_mode(False)
-            controller.edit.editor.setText(tasks_settings[0]["edit"])
-        else:
-            controller.edit.set_multi_edit_mode(True)
+        controller.edit.set_multi_edit_mode(self._requires_multi_edit_mode(tasks_settings, "edit"))
+        controller.edit.editor.setText(tasks_settings[0]["edit"])
 
-        if self._all_equal(tasks_settings, "edit2"):
-            controller.edit_2.set_multi_edit_mode(False)
-            controller.edit_2.editor.setText(tasks_settings[0]["edit2"])
-        else:
-            controller.edit_2.set_multi_edit_mode(True)
+        controller.number.set_multi_edit_mode(self._requires_multi_edit_mode(tasks_settings, "number"))
+        controller.number.editor.setValue(tasks_settings[0]["number"])
+
+        print tasks_settings[0]
+
+        controller.check_box.set_multi_edit_mode(self._requires_multi_edit_mode(tasks_settings, "boolean"))
+        if controller.check_box.is_multi_edit_mode is False:
+            controller.check_box.editor.setCheckState(
+                QtCore.Qt.Checked if tasks_settings[0]["boolean"] else QtCore.Qt.Unchecked
+            )
 
     @property
     def name(self):
@@ -159,8 +192,13 @@ class PluginWithUi(HookBaseClass):
                 "default": "",
                 "description": "First setting."
             },
-            "edit2": {
-                "type": "str",
+            "number": {
+                "type": "int",
+                "default": "",
+                "description": "Second setting."
+            },
+            "boolean": {
+                "type": "bool",
                 "default": "",
                 "description": "Second setting."
             }
