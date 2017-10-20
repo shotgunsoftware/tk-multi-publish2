@@ -52,7 +52,7 @@ class SummaryOverlay(QtGui.QWidget):
             QtGui.QPixmap(":/tk_multi_publish2/publish_complete.png")
         )
         self.ui.label.setText("Publish\nComplete")
-        self.ui.details.setText("For more details, see the publish log")
+        self.ui.details.setText("For more details, <b>click here</b>.")
         self.show()
 
     def show_fail(self):
@@ -63,7 +63,7 @@ class SummaryOverlay(QtGui.QWidget):
             QtGui.QPixmap(":/tk_multi_publish2/publish_failed.png")
         )
         self.ui.label.setText("Publish\nFailed!")
-        self.ui.details.setText("Please see error log for more details")
+        self.ui.details.setText("For more details, <b>click here</b>.")
         self.show()
 
     def show_loading(self):

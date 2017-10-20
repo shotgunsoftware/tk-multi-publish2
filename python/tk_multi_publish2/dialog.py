@@ -153,6 +153,9 @@ class AppDialog(QtGui.QWidget):
             self.ui.progress_bar
         )
 
+        # link the summary overlay status button with the log window
+        self._overlay.ui.details.clicked.connect(self._progress_handler._progress_details.toggle)
+
         # hide settings for now
         self.ui.item_settings_label.hide()
         self.ui.task_settings_label.hide()
