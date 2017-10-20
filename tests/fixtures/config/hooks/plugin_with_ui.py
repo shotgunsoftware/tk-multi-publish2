@@ -10,9 +10,58 @@
 
 import sgtk
 
-from sgtk.platform.qt import QtGui
+from sgtk.platform.qt import QtCore, QtGui
 
 HookBaseClass = sgtk.get_hook_baseclass()
+
+
+class RowHandler(object):
+
+    def __init__(self, layout, text, editor):
+        self._is_multi_edit_mode = False
+        self._layout = layout
+        self._text = text
+        self._editor = editor
+        self._check_box = None
+        self._index = layout.rowCount()
+
+        self._field_layout = QtGui.QHBoxLayout()
+        self._field_layout.addWidget(QtGui.QLabel(self._text))
+        self._layout.addRow(self._field_layout, editor)
+
+    @property
+    def editor(self):
+        return self._editor
+
+    def set_multi_edit_mode(self, is_multi_edit_mode):
+        if self._is_multi_edit_mode == is_multi_edit_mode:
+            return
+        self._is_multi_edit_mode = is_multi_edit_mode
+
+        # Remove label and item.
+        widget_item = self._layout.takeAt(self._index * 2)
+        widget_item.widget().deleteLater()
+        self._layout.takeAt(self._index * 2 + 1)
+
+        if self._is_multi_edit_mode:
+            self._check_box = QtGui.QCheckBox(self._text)
+            self._check_box.setTristate(False)
+            self._check_box.setChecked(QtCore.Qt.Unchecked)
+            self._check_box.stateChanged.connect(self._on_state_changed)
+            self._editor.setEnabled(False)
+            self._layout.insertRow(self._index, self._check_box, self._editor)
+        else:
+            self._check_box = None
+            self._layout.insertRow(self._index, self._text, self._editor)
+
+    def _on_state_changed(self, state):
+        self._editor.setEnabled(state == QtCore.Qt.Checked)
+
+    def is_set(self):
+        if not self._check_box:
+            return True
+        else:
+            return self._check_box.checkState() == QtCore.Qt.Checked
 
 
 class CustomWidgetController(QtGui.QWidget):
@@ -23,21 +72,16 @@ class CustomWidgetController(QtGui.QWidget):
         layout = QtGui.QFormLayout(self)
         self.setLayout(layout)
 
-        self.text_edit = QtGui.QLineEdit(self)
-        layout.addRow("Edit", self.text_edit)
+        self.edit = RowHandler(layout, "Edit", QtGui.QLineEdit(self))
+        self.edit_2 = RowHandler(layout, "Edit2", QtGui.QLineEdit(self))
 
-        self.text_edit_2 = QtGui.QLineEdit(self)
-        layout.addRow("Edit 2", self.text_edit_2)
-
-        self.text_edit.setFocus()
+        self.edit.editor.setFocus()
 
 
 class PluginWithUi(HookBaseClass):
     """
     Plugin for creating generic publishes in Shotgun
     """
-
-    _MULTIPLE_VALUES = "<multiple values>"
 
     def create_settings_widget(self, parent):
         """
@@ -54,11 +98,11 @@ class PluginWithUi(HookBaseClass):
         Returns the modified settings.
         """
         settings = {}
-        if controller.text_edit.text() != self._MULTIPLE_VALUES:
-            settings["edit"] = str(controller.text_edit.text())
+        if controller.edit.is_set():
+            settings["edit"] = str(controller.edit.editor.text())
 
-        if controller.text_edit_2.text() != self._MULTIPLE_VALUES:
-            settings["edit2"] = str(controller.text_edit_2.text())
+        if controller.edit_2.is_set():
+            settings["edit2"] = str(controller.edit_2.editor.text())
 
         return settings
 
@@ -76,14 +120,16 @@ class PluginWithUi(HookBaseClass):
         Updates the UI with the list of settings.
         """
         if self._all_equal(tasks_settings, "edit"):
-            controller.text_edit.setText(tasks_settings[0]["edit"])
+            controller.edit.set_multi_edit_mode(False)
+            controller.edit.editor.setText(tasks_settings[0]["edit"])
         else:
-            controller.text_edit.setText(self._MULTIPLE_VALUES)
+            controller.edit.set_multi_edit_mode(True)
 
         if self._all_equal(tasks_settings, "edit2"):
-            controller.text_edit_2.setText(tasks_settings[0]["edit2"])
+            controller.edit_2.set_multi_edit_mode(False)
+            controller.edit_2.editor.setText(tasks_settings[0]["edit2"])
         else:
-            controller.text_edit_2.setText(self._MULTIPLE_VALUES)
+            controller.edit_2.set_multi_edit_mode(True)
 
     @property
     def name(self):
