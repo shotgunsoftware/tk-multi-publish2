@@ -40,13 +40,7 @@ def launch_engine():
     manager.progress_callback = progress_callback
     return manager.bootstrap_engine(
         "tk-shell",
-        sg.find_one(
-            "Task",
-            [
-                ["entity.Shot.code", "is", "bunny_010_0010"],
-                ["content", "is", "Light"]
-            ]
-        )
+        sg.find_one("Project", [])
     )
 
 

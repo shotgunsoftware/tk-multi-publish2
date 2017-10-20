@@ -18,4 +18,4 @@ class PickEnvironment(Hook):
         The default implementation assumes there are two environments, called shot
         and asset, and switches to these based on entity type.
         """
-        return "shot"
+        return "test"
