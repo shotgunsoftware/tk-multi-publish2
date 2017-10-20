@@ -328,7 +328,7 @@
               <item>
                <widget class="QStackedWidget" name="details_stack">
                 <property name="currentIndex">
-                 <number>2</number>
+                 <number>3</number>
                 </property>
                 <widget class="QWidget" name="details_item">
                  <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,1,1,1,1,5,1,5">
@@ -498,8 +498,8 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>98</width>
-                       <height>28</height>
+                       <width>420</width>
+                       <height>100</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_10" stretch="0,1">
@@ -688,12 +688,15 @@
                   </item>
                  </layout>
                 </widget>
-                <widget class="QWidget" name="details_please_select_tasks_of_same_type">
+                <widget class="QWidget" name="details_multi_edit_not_supported">
                  <layout class="QVBoxLayout" name="verticalLayout_15">
                   <item>
                    <widget class="QLabel" name="label_2">
                     <property name="text">
-                     <string>Please only select tasks of the same type.</string>
+                     <string>You can only edit one of these task at a time.</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
                     </property>
                    </widget>
                   </item>

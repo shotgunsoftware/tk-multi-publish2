@@ -246,6 +246,10 @@ class PluginWithUi(HookBaseClass):
         """
         Updates the UI with the list of settings.
         """
+
+        if len(tasks_settings) > 1 and not tasks_settings[0]["supports_multi_edit"]:
+            raise NotImplementedError
+
         controller.edit.multi_edit_mode = self._requires_multi_edit_mode(tasks_settings, "edit")
         controller.edit.editor.setText(tasks_settings[0]["edit"])
 
@@ -284,17 +288,25 @@ class PluginWithUi(HookBaseClass):
             "edit": {
                 "type": "str",
                 "default": "",
-                "description": "First setting."
+                "description": "Text setting."
             },
             "number": {
                 "type": "int",
                 "default": "",
-                "description": "Second setting."
+                "description": "Integer setting."
             },
             "boolean": {
                 "type": "bool",
                 "default": "",
-                "description": "Second setting."
+                "description": "Boolean setting."
+            },
+            "supports_multi_edit": {
+                "type": "bool",
+                "default": True,
+                "description": (
+                    "When set to False, the UI will advertise that it can't "
+                    "handle multi-selection by raising a NotImplementedError."
+                )
             }
         }
 

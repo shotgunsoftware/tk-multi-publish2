@@ -42,6 +42,14 @@ engines:
               edit: "This is another UI plugin's default edit value."
               number: 42
               boolean: true
+          - name: PluginWithNoMultiUi
+            hook: "{config}/plugin_with_ui.py"
+            settings:
+              edit: "You will never be able to edit this multiple tasks at a time."
+              number: 0
+              boolean: false
+              supports_multi_edit: false
+
             
 
 frameworks:

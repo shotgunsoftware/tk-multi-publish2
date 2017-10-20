@@ -40,7 +40,7 @@ class AppDialog(QtGui.QWidget):
     (DRAG_SCREEN, PUBLISH_SCREEN) = range(2)
 
     # details ui panes
-    (ITEM_DETAILS, TASK_DETAILS, PLEASE_SELECT_DETAILS) = range(3)
+    (ITEM_DETAILS, TASK_DETAILS, PLEASE_SELECT_DETAILS, MULTI_EDIT_NOT_SUPPORTED) = range(4)
 
     # settings ui panes, those are both present on the TASK_DETAILS pane.
     (BUILTIN_TASK_DETAILS, CUSTOM_TASK_DETAILS) = range(2)
@@ -426,10 +426,11 @@ class AppDialog(QtGui.QWidget):
             widget = self.ui.custom_settings_page.layout().itemAt(0).widget()
 
         # Update the UI with the settings from the current plugin.
-        self._push_settings_into_ui(new_task_selection, widget)
-
-        # Alright, we're ready to deal with the new task.
-        self._current_tasks = new_task_selection
+        if self._push_settings_into_ui(new_task_selection, widget):
+            # Alright, we're ready to deal with the new task.
+            self._current_tasks = new_task_selection
+        else:
+            self._current_tasks = self.TaskSelection()
 
     def _pull_settings_from_ui(self, selected_tasks):
         """
@@ -466,10 +467,15 @@ class AppDialog(QtGui.QWidget):
             {k: v.value for k, v in task.settings.iteritems()} for task in selected_tasks
         ]
         if selected_tasks.has_custom_ui:
-            selected_tasks.set_settings(widget, tasks_settings)
+            try:
+                selected_tasks.set_settings(widget, tasks_settings)
+            except NotImplementedError:
+                self.ui.details_stack.setCurrentIndex(self.MULTI_EDIT_NOT_SUPPORTED)
+                return False
         else:
             # TODO: Implement setting the settings into the generic UI.
             pass
+        return True
 
     def _on_publish_status_clicked(self, task_or_item):
         """
