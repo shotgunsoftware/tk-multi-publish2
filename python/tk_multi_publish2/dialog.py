@@ -80,7 +80,7 @@ class AppDialog(QtGui.QWidget):
             :returns: ``True`` if the selection uses a custom UI, ``False`` otherwise.
             """
             if self._items:
-                return all(item.plugin.has_custom_ui for item in self._items)
+                return self._items[0].plugin.has_custom_ui
             else:
                 return False
 
@@ -104,7 +104,7 @@ class AppDialog(QtGui.QWidget):
 
             :returns: Dictionary of settings as regular Python literals.
             """
-            return self._items[0].plugin.run_get_settings(widget)
+            return self._items[0].plugin.run_get_ui_settings(widget)
 
         def set_settings(self, widget, settings):
             """
@@ -113,7 +113,7 @@ class AppDialog(QtGui.QWidget):
             :param widget: Custom UI's widget.
             :param settings: List of settings for all tasks.
             """
-            self._items[0].plugin.run_set_settings(widget, settings)
+            self._items[0].plugin.run_set_ui_settings(widget, settings)
 
         def __iter__(self):
             """
@@ -370,14 +370,12 @@ class AppDialog(QtGui.QWidget):
         if self._current_tasks == new_task_selection:
             return
 
-        # We're changing task and the current one had a custom UI, so we need to backup the current
-        # settings.
+        # We're changing task, so we need to backup the current settings.
         if self._current_tasks:
             logger.debug("Saving settings...")
             self._pull_settings_from_ui(self._current_tasks)
 
         # If we're moving to a task that doesn't have a custom UI, clear everything.
-        # User selected a task item so move to that page.
         if not new_task_selection:
             # Note: At this point we don't really care if current task actually had a UI, we can
             # certainly tear down an empty widget.
@@ -444,7 +442,7 @@ class AppDialog(QtGui.QWidget):
             widget = self.ui.custom_settings_page.layout().itemAt(0).widget()
             settings = self._current_tasks.get_settings(widget)
         else:
-            # TODO: Implement getting the settings from the generic UI.
+            # TODO: Implement getting the settings from the generic UI, if we ever implement one.
             settings = {}
 
         # Update the values in all the tasks.
@@ -462,7 +460,7 @@ class AppDialog(QtGui.QWidget):
             on the values edited in the UI.
         :param widget: Custom UI widget created by the plugin.
         """
-        # The run_get_settings expects a dictionary of the actual values, not Setting objects, so
+        # The run_get_ui_settings expects a dictionary of the actual values, not Setting objects, so
         # translate the dictionary.
         tasks_settings = [
             {k: v.value for k, v in task.settings.iteritems()} for task in selected_tasks

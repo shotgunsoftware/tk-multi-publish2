@@ -18,8 +18,8 @@ HookBaseClass = sgtk.get_hook_baseclass()
 
 
 ################################################################################
-# The following two classes are a poor man's framework to have multi value
-# editing widgets.
+# The following classes are a poor man's framework to have multi value editing
+# widgets.
 
 
 class WidgetHandlerBase(object):
@@ -165,6 +165,10 @@ class WidgetHandler(WidgetHandlerBase):
         """
         # Only allow the user to edit the value when the checkbox is checked.
         self.editor.setEnabled(state == QtCore.Qt.Checked)
+        # If the widget is editable now, set focus to it so the user can edit
+        # it right away.
+        if self.editor.isEnabled():
+            self.editor.setFocus()
 
     def is_value_available(self):
         """

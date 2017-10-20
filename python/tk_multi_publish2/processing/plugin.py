@@ -218,7 +218,7 @@ class Plugin(object):
         ):
             return self._plugin.create_settings_widget(parent)
 
-    def run_get_settings(self, parent):
+    def run_get_ui_settings(self, parent):
         """
         Retrieves the settings from the custom UI.
 
@@ -231,7 +231,7 @@ class Plugin(object):
         ):
             return self._plugin.get_ui_settings(parent)
 
-    def run_set_settings(self, parent, settings):
+    def run_set_ui_settings(self, parent, settings):
         """
         Provides a list of settings from the custom UI. It is the responsibility of the UI
         handle different values for the same setting.
