@@ -8,6 +8,8 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import abc
+
 import sgtk
 
 from sgtk.platform.qt import QtCore, QtGui
@@ -15,43 +17,122 @@ from sgtk.platform.qt import QtCore, QtGui
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
-class CheckboxHandler(object):
+################################################################################
+# The following two classes are a poor man's framework to have multi value
+# editing widgets.
 
-    def __init__(self, layout, text):
-        self._check_box = QtGui.QCheckBox(text)
-        layout.addWidget(self._check_box)
 
+class WidgetHandlerBase(object):
+    """
+    Base class for widgets that can handle multiple values for a single setting.
+
+    The multi edit mode is a mode where the widget will advertise that updating
+    it will affect different tasks that have different values for a given
+    setting. It is up to the derived class to decide how it wants to advertise
+    that state.
+    """
+
+    __metaclass__ = abc.ABCMeta
+
+    def __init__(self, editor):
+        """
+        :param editor: Editing widget.
+        """
+        self._editor = editor
         self._is_multi_edit_mode = None
-        self._check_box.setTristate(False)
 
     @property
     def editor(self):
-        return self._check_box
-
-    def set_multi_edit_mode(self, is_multi_edit_mode):
-        if self._is_multi_edit_mode == is_multi_edit_mode:
-            return
-
-        self._is_multi_edit_mode = is_multi_edit_mode
-        self._check_box.setTristate(self._is_multi_edit_mode)
-        if self._is_multi_edit_mode:
-            self._check_box.setCheckState(QtCore.Qt.PartiallyChecked)
-
-    def is_value_available(self):
-        return self._check_box.checkState() != QtCore.Qt.PartiallyChecked
+        """
+        Returns the editing widget.
+        """
+        return self._editor
 
     @property
-    def is_multi_edit_mode(self):
+    def multi_edit_mode(self):
+        """
+        Flag indicating if the widget is in multi edit mode. Setting this to
+        ``True`` will flip the widget into multi-edit mode.
+        """
         return self._is_multi_edit_mode
 
+    @multi_edit_mode.setter
+    def multi_edit_mode(self, is_multi):
+        if is_multi == self._is_multi_edit_mode:
+            return
 
-class RowHandler(object):
+        self._is_multi_edit_mode = is_multi
+        self._apply_edit_mode()
+
+    @abc.abstractmethod
+    def is_value_available(self):
+        """
+        Indicates if there is a value available to be consumed. This method
+        generally returns True unless the widget is in multi-edit mode. In that
+        """
+        pass
+
+    @abc.abstractmethod
+    def _apply_edit_mode(self):
+        pass
+
+
+class CheckboxHandler(WidgetHandlerBase):
+    """
+    Handles a checkbox in multi-value and single-value scenarios.
+
+    When there's multiple different values available for the checkbox, it will
+    be displayed with a partially checked state.
+    """
+    def __init__(self, layout, text):
+        """
+        :param layout: Layout in witch to add the widget.
+        :param text: Name of the setting.
+        """
+        super(CheckboxHandler, self).__init__(QtGui.QCheckBox(text))
+        layout.addWidget(self.editor)
+        self.editor.setTristate(False)
+
+    def _apply_edit_mode(self):
+        """
+        Updates the UI to indicate the widget has multiple values or not.
+        """
+        self.editor.setTristate(self.multi_edit_mode)
+        # We're into multi-edit mode, so indicate the value is undetermined.
+        if self.multi_edit_mode:
+            self.editor.setCheckState(QtCore.Qt.PartiallyChecked)
+
+    def is_value_available(self):
+        """
+        Indicates if a value is available to be consumed.
+        """
+        # If the checkbox is not partially checked, then the user has settled
+        # on a value.
+        return self.editor.checkState() != QtCore.Qt.PartiallyChecked
+
+
+class WidgetHandler(WidgetHandlerBase):
+    """
+    Shows the editor widget with a label or checkbox depending on whether
+    the widget is in multi-edit mode or not.
+
+    When multiple values are available for this widget, the widget will by
+    default be disabled and a checkbox will appear unchecked. By checking the
+    checkbox, the user indicates they want to override the value with a specific
+    one that will apply to all items.
+    """
 
     def __init__(self, layout, text, editor):
+        """
+        :param layout: Layout to add the widget into.
+        :param text: Text on the left of the editor widget.
+        :param editor: Widget used to edit the value.
+        """
+        super(WidgetHandler, self).__init__(editor)
+
         self._layout = QtGui.QHBoxLayout()
         self._check_box = QtGui.QCheckBox(text)
         self._label = QtGui.QLabel(text)
-        self._editor = editor
 
         # FIXME: Should take the size of the text + icon as the minimum width.
         self._check_box.setMinimumWidth(50)
@@ -61,46 +142,55 @@ class RowHandler(object):
 
         self._layout.addWidget(self._check_box)
         self._layout.addWidget(self._label)
-        self._layout.addWidget(self._editor)
-
-        self._is_multi_edit_mode = None
+        self._layout.addWidget(self.editor)
 
         layout.addRow(self._layout)
 
-    @property
-    def editor(self):
-        return self._editor
-
-    def set_multi_edit_mode(self, is_multi_edit_mode):
-        if self._is_multi_edit_mode == is_multi_edit_mode:
-            return
-
-        self._is_multi_edit_mode = is_multi_edit_mode
+    def _apply_edit_mode(self):
+        """
+        Updates the UI to indicate the widget has multiple values or not.
+        """
         self._check_box.setCheckState(QtCore.Qt.Unchecked)
-        self._check_box.setVisible(is_multi_edit_mode is True)
-        self._label.setVisible(is_multi_edit_mode is False)
-        self._editor.setEnabled(is_multi_edit_mode is False)
+        # When the multi-edit mode is on we want to
+        #  - show the check box
+        #  - hide the label
+        #  - disable the editor
+        self._check_box.setVisible(self.multi_edit_mode is True)
+        self._label.setVisible(self.multi_edit_mode is False)
+        self._editor.setEnabled(self.multi_edit_mode is False)
 
     def _on_state_changed(self, state):
-        self._editor.setEnabled(state == QtCore.Qt.Checked)
+        """
+        Called when the checkbox's state changes.
+        """
+        # Only allow the user to edit the value when the checkbox is checked.
+        self.editor.setEnabled(state == QtCore.Qt.Checked)
 
     def is_value_available(self):
-        if not self._is_multi_edit_mode:
+        """
+        Indicates if a value is available to be consumed.
+        """
+        # If we're not in multi-edit mode, the value is available.
+        if not self.multi_edit_mode:
             return True
         else:
+            # If we are, then there's an updated value only if the
+            # user actually checked the checkbox.
             return self._check_box.checkState() == QtCore.Qt.Checked
 
 
 class CustomWidgetController(QtGui.QWidget):
-
+    """
+    This is the plugin's custom UI.
+    """
     def __init__(self, parent):
         QtGui.QWidget.__init__(self, parent)
 
         layout = QtGui.QFormLayout(self)
         self.setLayout(layout)
 
-        self.edit = RowHandler(layout, "Edit", QtGui.QLineEdit(self))
-        self.number = RowHandler(layout, "Number", QtGui.QSpinBox(self))
+        self.edit = WidgetHandler(layout, "Edit", QtGui.QLineEdit(self))
+        self.number = WidgetHandler(layout, "Number", QtGui.QSpinBox(self))
         self.check_box = CheckboxHandler(layout, "Boolean")
 
         self.edit.editor.setFocus()
@@ -152,16 +242,14 @@ class PluginWithUi(HookBaseClass):
         """
         Updates the UI with the list of settings.
         """
-        controller.edit.set_multi_edit_mode(self._requires_multi_edit_mode(tasks_settings, "edit"))
+        controller.edit.multi_edit_mode = self._requires_multi_edit_mode(tasks_settings, "edit")
         controller.edit.editor.setText(tasks_settings[0]["edit"])
 
-        controller.number.set_multi_edit_mode(self._requires_multi_edit_mode(tasks_settings, "number"))
+        controller.number.multi_edit_mode = self._requires_multi_edit_mode(tasks_settings, "number")
         controller.number.editor.setValue(tasks_settings[0]["number"])
 
-        print tasks_settings[0]
-
-        controller.check_box.set_multi_edit_mode(self._requires_multi_edit_mode(tasks_settings, "boolean"))
-        if controller.check_box.is_multi_edit_mode is False:
+        controller.check_box.multi_edit_mode = self._requires_multi_edit_mode(tasks_settings, "boolean")
+        if controller.check_box.multi_edit_mode is False:
             controller.check_box.editor.setCheckState(
                 QtCore.Qt.Checked if tasks_settings[0]["boolean"] else QtCore.Qt.Unchecked
             )
@@ -179,7 +267,7 @@ class PluginWithUi(HookBaseClass):
         Verbose, multi-line description of what the plugin does. This can
         contain simple html for formatting.
         """
-        return "This plugin has a UI"
+        return "This plugin has a UI."
 
     @property
     def settings(self):
