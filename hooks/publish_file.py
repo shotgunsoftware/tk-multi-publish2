@@ -1,4 +1,4 @@
-# Copyright (c) 2017 Shotgun Software Inc.
+﻿# Copyright (c) 2017 Shotgun Software Inc.
 # 
 # CONFIDENTIAL AND PROPRIETARY
 # 
@@ -186,6 +186,7 @@ class BasicFilePublishPlugin(HookBaseClass):
                     ["Texture", "tiff", "tx", "tga", "dds"],
                     ["Image", "jpeg", "jpg", "png"],
                     ["Movie", "mov", "mp4"],
+                    ["Motion Builder FBX", "fbx"],
                 ],
                 "description": (
                     "List of file types to include. Each entry in the list "
