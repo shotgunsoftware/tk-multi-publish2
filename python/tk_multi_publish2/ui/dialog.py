@@ -292,7 +292,7 @@ class Ui_Dialog(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName("scrollArea_2")
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 98, 28))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 420, 202))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
         self.verticalLayout_13 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents_2)
         self.verticalLayout_13.setSpacing(0)
@@ -323,7 +323,7 @@ class Ui_Dialog(object):
         self.task_settings.setObjectName("task_settings")
         self.verticalLayout_14.addWidget(self.task_settings)
         self.settings_stack.addWidget(self.builtin_settings_page)
-        self.custom_settings_page = QtGui.QWidget()
+        self.custom_settings_page = CustomSettingsWidget()
         self.custom_settings_page.setObjectName("custom_settings_page")
         self.verticalLayout_17 = QtGui.QVBoxLayout(self.custom_settings_page)
         self.verticalLayout_17.setObjectName("verticalLayout_17")
@@ -470,7 +470,7 @@ class Ui_Dialog(object):
 
         self.retranslateUi(Dialog)
         self.main_stack.setCurrentIndex(1)
-        self.details_stack.setCurrentIndex(3)
+        self.details_stack.setCurrentIndex(1)
         self.settings_stack.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
         Dialog.setTabOrder(self.item_comments, self.validate)
@@ -527,6 +527,7 @@ from ..thumbnail import Thumbnail
 from ..context_widget import ContextWidget
 from ..progress_status_label import ProgressStatusLabel
 from ..publish_description_edit import PublishDescriptionEdit
+from ..custom_settings_widget import CustomSettingsWidget
 from ..publish_tree_widget import PublishTreeWidget
 from ..settings_widget import SettingsWidget
 from ..drop_area import DropAreaFrame

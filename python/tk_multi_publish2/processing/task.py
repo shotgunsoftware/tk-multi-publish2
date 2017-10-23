@@ -69,7 +69,7 @@ class Task(object):
         :param other_task: The other plugin to test against.
         :type other_task: :class:`Task`
         """
-        return self._plugin.name == other_task._plugin.name
+        return self._plugin == other_task._plugin
 
     @property
     def item(self):

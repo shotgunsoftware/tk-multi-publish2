@@ -212,10 +212,7 @@ class Plugin(object):
         :param parent: Parent widget
         :type parent: :class:`QtGui.QWidget`
         """
-        with self._handle_plugin_error(
-            None,
-            "Error laying out widgets: %s"
-        ):
+        with self._handle_plugin_error(None, "Error laying out widgets: %s"):
             return self._plugin.create_settings_widget(parent)
 
     def run_get_ui_settings(self, parent):
@@ -225,10 +222,7 @@ class Plugin(object):
         :param parent: Parent widget
         :type parent: :class:`QtGui.QWidget`
         """
-        with self._handle_plugin_error(
-            None,
-            "Error reading settings from UI: %s"
-        ):
+        with self._handle_plugin_error(None, "Error reading settings from UI: %s"):
             return self._plugin.get_ui_settings(parent)
 
     def run_set_ui_settings(self, parent, settings):
@@ -241,10 +235,7 @@ class Plugin(object):
 
         :param settings: List of dictionary of settings as python literals.
         """
-        with self._handle_plugin_error(
-            None,
-            "Error writing settings to UI: %s"
-        ):
+        with self._handle_plugin_error(None, "Error writing settings to UI: %s"):
             self._plugin.set_ui_settings(parent, settings)
 
     def run_accept(self, item):
@@ -276,10 +267,7 @@ class Plugin(object):
         :return: True if validation passed, False otherwise.
         """
         status = False
-        with self._handle_plugin_error(
-            None,
-            "Error Validating: %s"
-        ):
+        with self._handle_plugin_error(None, "Error Validating: %s"):
             status = self._plugin.validate(settings, item)
 
         # check that we are not trying to publish to a site level context
@@ -301,10 +289,7 @@ class Plugin(object):
         :param settings: Dictionary of settings
         :param item: Item to analyze
         """
-        with self._handle_plugin_error(
-            "Publish complete!",
-            "Error publishing: %s"
-        ):
+        with self._handle_plugin_error("Publish complete!", "Error publishing: %s"):
             self._plugin.publish(settings, item)
 
     def run_finalize(self, settings, item):
@@ -314,17 +299,14 @@ class Plugin(object):
         :param settings: Dictionary of settings
         :param item: Item to analyze
         """
-        with self._handle_plugin_error(
-            "Finalize complete!",
-            "Error finalizing: %s"
-        ):
+        with self._handle_plugin_error("Finalize complete!", "Error finalizing: %s"):
             self._plugin.finalize(settings, item)
 
     @contextmanager
     def _handle_plugin_error(self, success_msg, error_msg):
         """
-        Creates a scope that will invoke any error raised by the plugin while
-        the scope is executed.
+        Creates a scope that will properly handle any error raised by the plugin
+        while the scope is executed.
 
         .. note::
             Any exception raised by the plugin is bubbled up to the caller.
@@ -332,7 +314,10 @@ class Plugin(object):
         :param str success_msg: Message to be displayed if there is no error.
         :param str error_msg: Message to be displayed if there is an error.
         """
+
         try:
+            # Execute's the code inside the with statement. Any errors will be
+            # caught and logged and the events will be processed
             yield
         except Exception as e:
             exception_msg = traceback.format_exc()
@@ -341,9 +326,10 @@ class Plugin(object):
                 extra=self._get_error_extra_info(exception_msg)
             )
             raise
-        finally:
+        else:
             if success_msg:
                 self._logger.info(success_msg)
+        finally:
             QtCore.QCoreApplication.processEvents()
 
     def _get_error_extra_info(self, error_msg):
