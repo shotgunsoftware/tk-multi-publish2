@@ -1,0 +1,63 @@
+# Copyright (c) 2017 Shotgun Software Inc.
+#
+# CONFIDENTIAL AND PROPRIETARY
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
+# Source Code License included in this distribution package. See LICENSE.
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
+# not expressly granted therein are reserved by Shotgun Software Inc.
+#
+
+# All the bundles are relative to this repo, except for tk-shell, as there
+# is little chance it will need to be edited. All other repos are common
+# on dev machines.
+
+engines:
+  tk-shell:
+    location:
+      type: app_store
+      name: tk-shell
+      version: v0.5.0
+    apps:
+      tk-multi-publish2:
+        location:
+          type: path
+          path: $REPO_ROOT
+        help_url: https://support.shotgunsoftware.com/hc/en-us/articles/115000068574-Integrations-User-Guide#The%20Publisher
+        collector: "{config}/collector.py"
+        publish_plugins:
+          - name: PluginWithoutUi
+            hook: "{config}/plugin_without_ui.py"
+            settings: {}
+          - name: PluginWithUi
+            hook: "{config}/plugin_with_ui.py"
+            settings:
+              edit: "This is the default edit value."
+              number: 99
+              boolean: false
+          - name: PluginWithUIAsAnotherName
+            hook: "{config}/plugin_with_ui.py"
+            settings:
+              edit: "This is another UI plugin's default edit value."
+              number: 42
+              boolean: true
+          - name: PluginWithNoMultiUi
+            hook: "{config}/plugin_with_ui.py"
+            settings:
+              edit: "You will never be able to edit this multiple tasks at a time."
+              number: 0
+              boolean: false
+              supports_multi_edit: false
+
+            
+
+frameworks:
+  tk-framework-qtwidgets_v2.x.x:
+    location:
+      type: path
+      path: $REPO_ROOT/../tk-framework-qtwidgets
+  tk-framework-shotgunutils_v5.x.x:
+    location:
+      type: path
+      path: $REPO_ROOT/../tk-framework-shotgunutils

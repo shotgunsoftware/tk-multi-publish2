@@ -10,6 +10,7 @@
 
 import traceback
 import sgtk
+from contextlib import contextmanager
 from sgtk.platform.qt import QtCore, QtGui
 from .setting import Setting
 
@@ -178,6 +179,19 @@ class Plugin(object):
             return []
 
     @property
+    def has_custom_ui(self):
+        """
+        Checks if a plugin has a custom widget.
+
+        :returns: ``True`` if the plugin supports ``create_settings_widget``,
+            ``get_ui_settings`` and ``set_ui_settings``,``False`` otherwise.
+        """
+        return all(
+            hasattr(self._plugin, attr)
+            for attr in ["create_settings_widget", "get_ui_settings", "set_ui_settings"]
+        )
+
+    @property
     def icon(self):
         """
         The associated icon, as a pixmap, or None if no pixmap exists.
@@ -191,6 +205,39 @@ class Plugin(object):
         """
         return self._settings
 
+    def run_create_settings_widget(self, parent):
+        """
+        Creates a custom widget to edit a plugin's settings.
+
+        :param parent: Parent widget
+        :type parent: :class:`QtGui.QWidget`
+        """
+        with self._handle_plugin_error(None, "Error laying out widgets: %s"):
+            return self._plugin.create_settings_widget(parent)
+
+    def run_get_ui_settings(self, parent):
+        """
+        Retrieves the settings from the custom UI.
+
+        :param parent: Parent widget
+        :type parent: :class:`QtGui.QWidget`
+        """
+        with self._handle_plugin_error(None, "Error reading settings from UI: %s"):
+            return self._plugin.get_ui_settings(parent)
+
+    def run_set_ui_settings(self, parent, settings):
+        """
+        Provides a list of settings from the custom UI. It is the responsibility of the UI
+        handle different values for the same setting.
+
+        :param parent: Parent widget
+        :type parent: :class:`QtGui.QWidget`
+
+        :param settings: List of dictionary of settings as python literals.
+        """
+        with self._handle_plugin_error(None, "Error writing settings to UI: %s"):
+            self._plugin.set_ui_settings(parent, settings)
+
     def run_accept(self, item):
         """
         Executes the hook accept method for the given item
@@ -200,7 +247,7 @@ class Plugin(object):
         """
         try:
             return self._plugin.accept(self.settings, item)
-        except Exception, e:
+        except Exception:
             error_msg = traceback.format_exc()
             self._logger.error(
                 "Error running accept for %s" % self,
@@ -220,18 +267,8 @@ class Plugin(object):
         :return: True if validation passed, False otherwise.
         """
         status = False
-        try:
+        with self._handle_plugin_error(None, "Error Validating: %s"):
             status = self._plugin.validate(settings, item)
-        except Exception, e:
-            error_msg = traceback.format_exc()
-            self._logger.error(
-                "Error Validating: %s" % (e,),
-                extra=self._get_error_extra_info(error_msg)
-            )
-            raise
-        finally:
-            # give qt a chance to do stuff
-            QtCore.QCoreApplication.processEvents()
 
         # check that we are not trying to publish to a site level context
         if item.context.project is None:
@@ -252,19 +289,8 @@ class Plugin(object):
         :param settings: Dictionary of settings
         :param item: Item to analyze
         """
-        try:
+        with self._handle_plugin_error("Publish complete!", "Error publishing: %s"):
             self._plugin.publish(settings, item)
-        except Exception, e:
-            error_msg = traceback.format_exc()
-            self._logger.error(
-                "Error publishing: %s" % (e,),
-                extra=self._get_error_extra_info(error_msg)
-            )
-            raise
-        finally:
-            self._logger.info("Publish complete!")
-            # give qt a chance to do stuff
-            QtCore.QCoreApplication.processEvents()
 
     def run_finalize(self, settings, item):
         """
@@ -273,18 +299,37 @@ class Plugin(object):
         :param settings: Dictionary of settings
         :param item: Item to analyze
         """
-        try:
+        with self._handle_plugin_error("Finalize complete!", "Error finalizing: %s"):
             self._plugin.finalize(settings, item)
-        except Exception, e:
-            error_msg = traceback.format_exc()
+
+    @contextmanager
+    def _handle_plugin_error(self, success_msg, error_msg):
+        """
+        Creates a scope that will properly handle any error raised by the plugin
+        while the scope is executed.
+
+        .. note::
+            Any exception raised by the plugin is bubbled up to the caller.
+
+        :param str success_msg: Message to be displayed if there is no error.
+        :param str error_msg: Message to be displayed if there is an error.
+        """
+
+        try:
+            # Execute's the code inside the with statement. Any errors will be
+            # caught and logged and the events will be processed
+            yield
+        except Exception as e:
+            exception_msg = traceback.format_exc()
             self._logger.error(
-                "Error finalizing: %s" % (e,),
-                extra=self._get_error_extra_info(error_msg)
+                error_msg % (e,),
+                extra=self._get_error_extra_info(exception_msg)
             )
             raise
+        else:
+            if success_msg:
+                self._logger.info(success_msg)
         finally:
-            self._logger.info("Finalize complete!")
-            # give qt a chance to do stuff
             QtCore.QCoreApplication.processEvents()
 
     def _get_error_extra_info(self, error_msg):
