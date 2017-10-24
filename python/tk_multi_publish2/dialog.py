@@ -40,7 +40,10 @@ class AppDialog(QtGui.QWidget):
     (DRAG_SCREEN, PUBLISH_SCREEN) = range(2)
 
     # details ui panes
-    (ITEM_DETAILS, TASK_DETAILS, PLEASE_SELECT_DETAILS) = range(3)
+    (ITEM_DETAILS, TASK_DETAILS, PLEASE_SELECT_DETAILS, MULTI_EDIT_NOT_SUPPORTED) = range(4)
+
+    # settings ui panes, those are both present on the TASK_DETAILS pane.
+    (BUILTIN_TASK_DETAILS, CUSTOM_TASK_DETAILS) = range(2)
 
     def __init__(self, parent=None):
         """
@@ -139,6 +142,11 @@ class AppDialog(QtGui.QWidget):
         # currently displayed item
         self._current_item = None
 
+        # Currently selected tasks. If a selection is created in the GUI that contains multiple
+        # task types or even other tree item types, then, _current_tasks will be set to an empty
+        # selection, regardless of the number of the items actually selected in the UI.
+        self._current_tasks = _TaskSelection()
+
         # start up our plugin manager
         self._plugin_manager = None
 
@@ -200,7 +208,7 @@ class AppDialog(QtGui.QWidget):
         try:
             # shut down main threadpool
             self._task_manager.shut_down()
-        except Exception, e:
+        except Exception:
             logger.exception("Error running Shotgun Panel App closeEvent()")
 
         # ensure the context widget's recent contexts are saved
@@ -208,9 +216,8 @@ class AppDialog(QtGui.QWidget):
 
     def _update_details_from_selection(self):
         """
-        Makes sure that the right hand side
-        details section reflects the selected item
-        in the left hand side tree.
+        Makes sure that the right hand side details section reflects the selected item in the left
+        hand side tree.
         """
 
         # look at how many items are checked
@@ -233,22 +240,177 @@ class AppDialog(QtGui.QWidget):
         # now look at selection
         items = self.ui.items_tree.selectedItems()
 
-        if len(items) != 1:
+        if self._is_task_selection_homogeneous(items):
+            # We should update the tasks details ui.
+            self._current_item = None
+            publish_tasks = _TaskSelection([item.get_publish_instance() for item in items])
+            self._update_task_details_ui(publish_tasks)
+        elif len(items) != 1:
+            # Otherwise we can't show items from a multi-selection, so inform the user.
+            self._current_item = None
+            self._update_task_details_ui()
             # show overlay with 'please select single item'
             self.ui.details_stack.setCurrentIndex(self.PLEASE_SELECT_DETAILS)
-
         else:
             # 1 item selected
             tree_item = items[0]
-
             publish_object = tree_item.get_publish_instance()
-            if isinstance(publish_object, Task):
-                self._create_task_details(publish_object)
-            elif isinstance(publish_object, Item):
+            if isinstance(publish_object, Item):
+                self._update_task_details_ui()
                 self._create_item_details(tree_item)
             elif publish_object is None:
+                self._update_task_details_ui()
                 # top node summary
                 self._create_master_summary_details()
+
+    def _is_task_selection_homogeneous(self, items):
+        """
+        Indicates if a selection is made up only of tasks and they are all of the same item.
+
+        :param items: List of tree node items.
+
+        :returns: ``True`` is the selection only contains tasks, ``False`` otherwise.
+        """
+        # If the list is empty, we don't have a task selection.
+        if len(items) == 0:
+            return False
+
+        # Grab the first item in the list, which we will use to compare to every other item. If
+        # all items end up being the same type as the first one, then we have a homogeneous list
+        # of tasks.
+        first_task = items[0].get_publish_instance()
+
+        for item in items:
+
+            publish_instance = item.get_publish_instance()
+            # User has mixed different types of publish instances, it's not just a task list.
+            if not isinstance(publish_instance, Task):
+                return False
+
+            # There's a task that's not of the same type as the others, we're done!
+            if not first_task.is_same_task_type(publish_instance):
+                return False
+
+        return True
+
+    def _update_task_details_ui(self, new_task_selection=None):
+        """
+        Updates the plugin UI widget.
+
+        This method should be called if everything is of the same type OR if the selection is
+        empty.
+
+        :param new_task_selection: A :class:`TaskSelection` containing the current UI selection.
+        """
+        new_task_selection = new_task_selection or _TaskSelection()
+
+        # Nothing changed, so do nothing.
+        if self._current_tasks == new_task_selection:
+            return
+
+        # We're changing task, so we need to backup the current settings.
+        if self._current_tasks:
+            logger.debug("Saving settings...")
+            self._pull_settings_from_ui(self._current_tasks)
+
+        # If we're moving to a task that doesn't have a custom UI, clear everything.
+        if not new_task_selection:
+            # Note: At this point we don't really care if current task actually had a UI, we can
+            # certainly tear down an empty widget.
+            logger.debug("The ui is going to change, so clear the current one.")
+            self.ui.custom_settings_page.widget = None
+            self._current_tasks = new_task_selection
+            return
+
+        # A task was picked, so make sure our page is in foreground.
+        self.ui.details_stack.setCurrentIndex(self.TASK_DETAILS)
+
+        self.ui.task_icon.setPixmap(new_task_selection.plugin.icon)
+        self.ui.task_name.setText(new_task_selection.plugin.name)
+
+        # If the new task selection does not have a custom UI, a simple tear down of the custom UI
+        # and setting the built-in fields will suffice.
+        if not new_task_selection.has_custom_ui:
+            logger.debug("Clearing custom UI and using default task details...")
+            self.ui.custom_settings_page.widget = None
+
+            # All the items are of the same type,
+            self.ui.settings_stack.setCurrentIndex(self.BUILTIN_TASK_DETAILS)
+            self.ui.task_description.setText(new_task_selection.plugin.description)
+
+            # skip settings for now
+            # self.ui.task_settings.set_data(task.settings.values())
+
+            self._current_tasks = new_task_selection
+            return
+
+        # At this point we can assume we're going to have to show a UI, because new task exists
+        # and it has a custom UI.
+        self.ui.settings_stack.setCurrentIndex(self.CUSTOM_TASK_DETAILS)
+
+        # Now figure out if we need to create/replace the widgets.
+        if (
+            # If we had a selection before
+            self._current_tasks and
+            # and it was of the same type as the new one.
+            self._current_tasks.is_same_task_type(new_task_selection)
+        ):
+            logger.debug("Reusing custom ui from %s.", new_task_selection.plugin)
+        else:
+            logger.debug("Building a custom ui for %s.", new_task_selection.plugin)
+            widget = new_task_selection.plugin.run_create_settings_widget(self.ui.custom_settings_page)
+            self.ui.custom_settings_page.widget = widget
+
+        # Update the UI with the settings from the current plugin.
+        if self._push_settings_into_ui(new_task_selection):
+            # Alright, we're ready to deal with the new task.
+            self._current_tasks = new_task_selection
+        else:
+            self._current_tasks = _TaskSelection()
+
+    def _pull_settings_from_ui(self, selected_tasks):
+        """
+        Retrieves settings from the UI and updates the task's settings.
+
+        :param selected_tasks: A :class:`TaskSelection` of tasks to update based
+            on the values edited in the UI.
+        """
+        if selected_tasks.has_custom_ui:
+            widget = self.ui.custom_settings_page.widget
+            settings = self._current_tasks.get_settings(widget)
+        else:
+            # TODO: Implement getting the settings from the generic UI, if we ever implement one.
+            settings = {}
+
+        # Update the values in all the tasks.
+        for task in selected_tasks:
+            # The settings returned by the UI are actual value, not Settings objects, so apply each
+            # value returned on the appropriate settings object.
+            for k, v in settings.iteritems():
+                task.settings[k].value = v
+
+    def _push_settings_into_ui(self, selected_tasks):
+        """
+        Takes the settings from this task and pushes its values into the UI.
+
+        :param selected_tasks: A :class:`TaskSelection` of tasks to update based
+            on the values edited in the UI.
+        """
+        # The run_get_ui_settings expects a dictionary of the actual values, not Setting objects, so
+        # translate the dictionary.
+        tasks_settings = [
+            {k: v.value for k, v in task.settings.iteritems()} for task in selected_tasks
+        ]
+        if selected_tasks.has_custom_ui:
+            try:
+                selected_tasks.set_settings(self.ui.custom_settings_page.widget, tasks_settings)
+            except NotImplementedError:
+                self.ui.details_stack.setCurrentIndex(self.MULTI_EDIT_NOT_SUPPORTED)
+                return False
+        else:
+            # TODO: Implement setting the settings into the generic UI.
+            pass
+        return True
 
     def _on_publish_status_clicked(self, task_or_item):
         """
@@ -263,7 +425,6 @@ class AppDialog(QtGui.QWidget):
         publish comments box in the overview details pane
         """
         comments = self.ui.item_comments.toPlainText()
-        
         # if this is the summary description...
         if self._current_item is None:
             if self._summary_comment != comments:
@@ -428,21 +589,6 @@ class AppDialog(QtGui.QWidget):
         (num_items, summary) = self.ui.items_tree.get_full_summary()
         self.ui.item_summary.setText(summary)
         self.ui.item_type.setText("%d tasks to execute" % num_items)
-
-    def _create_task_details(self, task):
-        """
-        Render details pane for a given task
-        """
-        self._current_item = None
-        self.ui.details_stack.setCurrentIndex(self.TASK_DETAILS)
-
-        self.ui.task_icon.setPixmap(task.plugin.icon)
-        self.ui.task_name.setText(task.plugin.name)
-
-        self.ui.task_description.setText(task.plugin.description)
-
-        # skip settings for now
-        #self.ui.task_settings.set_data(task.settings.values())
 
     def _full_rebuild(self):
         """
@@ -844,3 +990,100 @@ class AppDialog(QtGui.QWidget):
         """
         logger.info("Processing aborted.")
         self._stop_processing_flagged = True
+
+
+class _TaskSelection(object):
+    """
+    Allows to manipulate a task selection as if it was a single object. It will hold a list of
+    publish tasks from the tree items. It also removes the tedium of testing for an empty array
+    and indexing [0] when doing comparisons.
+
+    This class assumes that every task is of the same plugin type.
+
+    :param items: List of task for in the selection. Defaults to an empty list.
+    """
+    def __init__(self, items=None):
+        self._items = items or []
+
+    def is_same_task_type(self, task_selection):
+        """
+        Checks if this task selection is of the same type as another task selection.
+
+        :param task_selection: List of :class:`Task`.
+
+        :returns: ``True`` is the plugins are the same, ``False`` otherwise. Note that
+            two empty lists are considered to be of the same type.
+        """
+        if self._items and task_selection._items:
+            # we know all the items in the list are of the same type, so we can
+            # simply compare them using the first item of each list.
+            return self._items[0].is_same_task_type(task_selection._items[0])
+        elif not self._items and not task_selection._items:
+            return True
+        else:
+            return False
+
+    @property
+    def has_custom_ui(self):
+        """
+        Checks if this selection has a custom UI.
+
+        :returns: ``True`` if the selection uses a custom UI, ``False`` otherwise.
+        """
+        if self._items:
+            return self._items[0].plugin.has_custom_ui
+        else:
+            return False
+
+    @property
+    def plugin(self):
+        """
+        Returns the plugin associated with this selection.
+
+        :returns: The :class:`Plugin` instance or ``None``.
+        """
+        if self._items:
+            return self._items[0].plugin
+        else:
+            return None
+
+    def get_settings(self, widget):
+        """
+        Retrieves the settings from the selection's custom UI.
+
+        :param widget: Custom UI's widget.
+
+        :returns: Dictionary of settings as regular Python literals.
+        """
+        if self._items:
+            return self._items[0].plugin.run_get_ui_settings(widget)
+        else:
+            return {}
+
+    def set_settings(self, widget, settings):
+        """
+        Sets the settings from the selection into the custom UI.
+
+        :param widget: Custom UI's widget.
+        :param settings: List of settings for all tasks.
+        """
+        if self._items:
+            self._items[0].plugin.run_set_ui_settings(widget, settings)
+
+    def __iter__(self):
+        """
+        Allows to iterate over items in the selection.
+        """
+        return iter(self._items)
+
+    def __eq__(self, other):
+        """
+        Tests two selections for equality.
+        """
+        return self._items == other._items
+
+    def __nonzero__(self):
+        """
+        :returns: ``True`` is the selection is not empty, ``False`` otherwise.
+        """
+        return bool(self._items)
