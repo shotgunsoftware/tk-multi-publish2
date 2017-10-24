@@ -237,10 +237,11 @@ class AppDialog(QtGui.QWidget):
         # now look at selection
         items = self.ui.items_tree.selectedItems()
 
-        if (self._is_task_selection_homogeneous(items)):
+        if self._is_task_selection_homogeneous(items):
             # We should update the tasks details ui.
             self._current_item = None
-            self._update_task_details_ui(_TaskSelection([item.get_publish_instance() for item in items]))
+            publish_tasks = _TaskSelection([item.get_publish_instance() for item in items])
+            self._update_task_details_ui(publish_tasks)
         elif len(items) != 1:
             # Otherwise we can't show items from a multi-selection, so inform the user.
             self._current_item = None
