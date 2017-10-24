@@ -59,7 +59,7 @@ COMMON_FILE_INFO = {
         "item_type": "file.image",
     },
     "Texture Image": {
-        "extensions": ["tiff", "tx", "tga", "dds", "rat"],
+        "extensions": ["tif", "tiff", "tx", "tga", "dds", "rat"],
         "icon": "texture.png",
         "item_type": "file.texture",
     },
@@ -334,6 +334,14 @@ class BasicSceneCollector(HookBaseClass):
             (category_type, _) = mimetypes.guess_type(filename)
 
             if category_type:
+
+                # mimetypes.guess_type can return unicode strings depending on
+                # the system's default encoding. If a unicode string is
+                # returned, we simply ensure it's utf-8 encoded to avoid issues
+                # with toolkit, which expects utf-8
+                if isinstance(category_type, unicode):
+                    category_type = category_type.encode("utf-8")
+
                 # the category portion of the mimetype
                 category = category_type.split("/")[0]
 

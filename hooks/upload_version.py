@@ -10,6 +10,7 @@
 
 import os
 import pprint
+import sys
 import sgtk
 
 HookBaseClass = sgtk.get_hook_baseclass()
@@ -259,10 +260,18 @@ class UploadVersionPlugin(HookBaseClass):
 
         if settings["Upload"].value:
             self.logger.info("Uploading content...")
+
+            # on windows, ensure the path is utf-8 encoded to avoid issues with
+            # the shotgun api
+            if sys.platform.startswith("win"):
+                upload_path = path.decode("utf-8")
+            else:
+                upload_path = path
+
             self.parent.shotgun.upload(
                 "Version",
                 version["id"],
-                path,
+                upload_path,
                 "sg_uploaded_movie"
             )
         elif thumb:

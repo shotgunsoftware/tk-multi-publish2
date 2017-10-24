@@ -640,7 +640,9 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         else:
             self.logger.debug("Using path info hook to determine publish info.")
-            publish_version = publisher.util.get_version_number(path) or 1
+            publish_version = publisher.util.get_version_number(path)
+            if publish_version is None:
+                publish_version = 1
 
         return publish_version
 
