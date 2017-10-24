@@ -820,6 +820,10 @@ class AppDialog(QtGui.QWidget):
         """
         publish_failed = False
 
+        # Make sure that settings from the current selection are retrieved from the UI and applied
+        # back on the tasks.
+        self._pull_settings_from_ui(self._current_tasks)
+
         self._prepare_tree(number_phases=3)
 
         try:

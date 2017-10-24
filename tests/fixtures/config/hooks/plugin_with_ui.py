@@ -9,6 +9,7 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import abc
+import pprint
 
 import sgtk
 
@@ -372,7 +373,8 @@ class PluginWithUi(HookBaseClass):
             instances.
         :param item: Item to process
         """
-        self.logger.info("Plugin with UI data was published!")
+        print item, "was published! The settings were:"
+        pprint.pprint({k: v.value for k, v in settings.iteritems()})
 
     def finalize(self, settings, item):
         """
