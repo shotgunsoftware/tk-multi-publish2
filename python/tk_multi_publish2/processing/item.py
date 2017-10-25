@@ -55,6 +55,8 @@ class Item(object):
         self._enabled = True
         self._expanded = True
         self._thumbnail_enabled = True
+        # the following var indicats that the current thumbnail overrides the summary one
+        self._thumbnail_overrides_summary = False
 
     def __repr__(self):
         """
