@@ -9,6 +9,7 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import abc
+import pprint
 
 import sgtk
 
@@ -361,6 +362,8 @@ class PluginWithUi(HookBaseClass):
 
         :returns: True if item is valid, False otherwise.
         """
+        print item, "was published! The settings were:"
+        pprint.pprint({k: v.value for k, v in settings.iteritems()})
         return True
 
     def publish(self, settings, item):
@@ -372,7 +375,7 @@ class PluginWithUi(HookBaseClass):
             instances.
         :param item: Item to process
         """
-        self.logger.info("Plugin with UI data was published!")
+        pass
 
     def finalize(self, settings, item):
         """

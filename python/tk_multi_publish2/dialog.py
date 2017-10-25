@@ -784,6 +784,11 @@ class AppDialog(QtGui.QWidget):
             not part of a publish workflow.
         :returns: number of issues reported
         """
+
+        # Make sure that settings from the current selection are retrieved from the UI and applied
+        # back on the tasks.
+        self._pull_settings_from_ui(self._current_tasks)
+
         if standalone:
             self._prepare_tree(number_phases=1)
 
@@ -820,6 +825,8 @@ class AppDialog(QtGui.QWidget):
         """
         publish_failed = False
 
+        # Make sure that settings from the current selection are retrieved from the UI and applied
+        # back on the tasks.
         self._prepare_tree(number_phases=3)
 
         try:
