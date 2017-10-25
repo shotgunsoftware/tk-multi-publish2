@@ -361,7 +361,7 @@ class PublishPlugin(PluginBase):
             exception_msg = traceback.format_exc()
             self._logger.error(
                 error_msg % (e,),
-                extra=self._get_error_extra_info(exception_msg)
+                extra=_get_error_extra_info(exception_msg)
             )
             raise
         else:

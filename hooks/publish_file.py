@@ -450,7 +450,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         if not work_template:
             self.logger.debug(
                 "No work template set on the item. "
-                "Unable to copy work file(s) to a publish location."
+                "Skipping copy file to publish location."
             )
             return
 
@@ -458,7 +458,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         if not publish_template:
             self.logger.debug(
                 "No publish template set on the item. "
-                "Unable to copy work file(s) to a publish location."
+                "Skipping copying file to publish location."
             )
             return
 
@@ -639,7 +639,7 @@ class BasicFilePublishPlugin(HookBaseClass):
                     "Retrieved version number via work file template.")
 
         else:
-            self.logger.debug("Using path info hook to determine publish info.")
+            self.logger.debug("Using path info hook to determine publish version.")
             publish_version = publisher.util.get_version_number(path)
             if publish_version is None:
                 publish_version = 1
