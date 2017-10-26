@@ -717,7 +717,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         else:
             next_version_path = publisher.util.get_next_version_path(path)
             cur_version = publisher.util.get_version_number(path)
-            if cur_version:
+            if cur_version is not None:
                 version = cur_version + 1
             else:
                 version = None
