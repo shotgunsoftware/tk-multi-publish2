@@ -505,6 +505,14 @@ class AppDialog(QtGui.QWidget):
         else:
             self.ui.context_widget.hide()
 
+        # Hide the context widget if context change not allowed for this item.
+        # Disabling doesn't display correctly because of the way the context
+        # widget is implemented.
+        if item.context_change_allowed:
+            self.ui.context_widget.show()
+        else:
+            self.ui.context_widget.hide()
+
         # create summary
         self.ui.item_summary_label.show()
         summary = tree_item.create_summary()
@@ -516,6 +524,10 @@ class AppDialog(QtGui.QWidget):
         else:
             summary_text = "<p>The following items will be published:</p>"
             summary_text += "".join(["<p>%s</p>" % line for line in summary])
+
+        if not item.context_change_allowed:
+            summary_text += "<p><strong>NOTE:</strong>&nbsp;&nbsp;" \
+                            "Context change disabled for this item.</p>"
 
         self.ui.item_summary.setText(summary_text)
 
@@ -956,9 +968,13 @@ class AppDialog(QtGui.QWidget):
         if self._current_item is None:
             # this is the summary item - so update all items!
             for top_level_item in self._plugin_manager.top_level_items:
-                top_level_item.context = context
+                # ensure context only set if allowed
+                if top_level_item.context_change_allowed:
+                    top_level_item.context = context
         else:
-            self._current_item.context = context
+            # ensure context only set if allowed
+            if self._current_item.context_change_allowed:
+                self._current_item.context = context
 
         self._synchronize_tree()
 

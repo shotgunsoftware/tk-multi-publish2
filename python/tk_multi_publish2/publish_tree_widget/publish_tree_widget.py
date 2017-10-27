@@ -41,6 +41,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         super(PublishTreeWidget, self).__init__(parent)
         self._plugin_manager = None
         self._dragged_items = []
+        self._selected_items_state = []
         self._bundle = sgtk.platform.current_bundle()
         # make sure that we cannot drop items on the root item
         self.invisibleRootItem().setFlags(QtCore.Qt.ItemIsEnabled)
@@ -395,10 +396,11 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         """
         Something was dropped on this widget
         """
+
         # run default implementation
         super(PublishTreeWidget, self).dropEvent(event)
 
-        for item, state in self._dragged_items:
+        for item in self._dragged_items:
 
             # qt seems to drop the associated widget
             # (http://doc.qt.io/qt-4.8/qtreewidget.html#setItemWidget)
@@ -410,11 +412,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             # make sure that the item picks up the new context
             item.synchronize_context()
 
-            # restore state after drop
-            self.__set_item_state(item, state)
-
-            # and recurse down to all children and
-            # init their states too
+            # and recurse down to all children and init their states too
             def _init_children_r(parent):
                 for child_index in xrange(parent.childCount()):
                     child = parent.child(child_index)
@@ -422,6 +420,11 @@ class PublishTreeWidget(QtGui.QTreeWidget):
                     child.setExpanded(True)
                     _init_children_r(child)
             _init_children_r(item)
+
+        for item, state in self._selected_items_state:
+
+            # restore state after drop
+            self.__set_item_state(item, state)
 
         self.tree_reordered.emit()
 
@@ -431,22 +434,29 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         """
         # record selection for use later.
         self._dragged_items = []
+        self._selected_items_state = []
+
         dragged_items = []
+        selected_items_state = []
 
         # retain only TopLevelTreeNodeItems items from selected elements
         for item in self.selectedItems():
             if isinstance(item, TopLevelTreeNodeItem):
-                dragged_items.append(item) 
+
+                # ensure context change is allowed before dragging/dropping
+                if item.item.context_change_allowed:
+                    dragged_items.append(item)
+
+            state = self.__get_item_state(item)
+            selected_items_state.append((item, state))
 
         # ignore any selection that does not contain at least one TopLevelTreeNodeItems
         if not dragged_items:
             logger.debug("No top-level nodes included in selection.")        
             return
 
-        # extract state
-        for item in dragged_items:
-            state = self.__get_item_state(item)
-            self._dragged_items.append((item, state))
+        self._dragged_items = dragged_items
+        self._selected_items_state = selected_items_state
 
         super(PublishTreeWidget, self).dragEnterEvent(event)
 

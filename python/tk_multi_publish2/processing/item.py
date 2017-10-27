@@ -53,6 +53,7 @@ class Item(object):
         self._enabled = True
         self._expanded = True
         self._thumbnail_enabled = True
+        self._allows_context_change = True
 
     def __repr__(self):
         """
@@ -409,4 +410,16 @@ class Item(object):
                 "%r: Could not load icon '%s': %s" % (self, path, e)
             )
 
+    @property
+    def context_change_allowed(self):
+        """
+        True if item allows context change, False otherwise. Default is True
+        """
+        return self._allows_context_change
 
+    @context_change_allowed.setter
+    def context_change_allowed(self, allow):
+        """
+        Enable/disable context change for this item.
+        """
+        self._allows_context_change = allow

@@ -37,6 +37,8 @@ class CustomTreeWidgetItem(CustomTreeWidgetBase):
     via the PublishTreeWidget class hierarchy.
     """
 
+    (DRAGGABLE, LOCKED) = range(2)
+
     def __init__(self, tree_node, parent=None):
         """
         :param parent: The parent QWidget for this control
@@ -49,8 +51,8 @@ class CustomTreeWidgetItem(CustomTreeWidgetBase):
 
         self.set_status(self.NEUTRAL)
 
-        # hide the drag handle by default
-        self.ui.drag_handle.hide()
+        # hide the handle by default
+        self.hide_drag_handle()
 
         self.ui.checkbox.stateChanged.connect(self._on_checkbox_click)
         self.ui.checkbox.nextCheckState = self.nextCheckState
@@ -77,3 +79,20 @@ class CustomTreeWidgetItem(CustomTreeWidgetBase):
         """
         current_item = self._tree_node.item
         self._tree_node.treeWidget().status_clicked.emit(current_item)
+
+    def hide_drag_handle(self):
+        """Hides the stack widget for drag/lock handle"""
+        self.ui.handle_stack.hide()
+
+    def show_drag_handle(self, draggable):
+        """
+        Shows the stack widget with the drag icon if ``draggable`` is True.
+
+        If ``draggable`` is ``False``, show the lock.
+        """
+
+        state = self.DRAGGABLE if draggable else self.LOCKED
+
+        self.ui.handle_stack.show()
+        self.ui.handle_stack.setCurrentIndex(state)
+

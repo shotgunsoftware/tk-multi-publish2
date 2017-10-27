@@ -177,6 +177,8 @@ class ProgressHandler(object):
             message = "Debug: %s" % message
         elif status == self.WARNING:
             message = "Warning: %s" % message
+        elif status == self.ERROR:
+            message = "ERROR: %s" % message
 
         item.setText(0, message)
         item.setToolTip(0, message)

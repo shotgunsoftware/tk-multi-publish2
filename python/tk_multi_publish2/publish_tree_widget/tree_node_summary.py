@@ -45,6 +45,9 @@ class TreeNodeSummary(TreeNodeBase):
     def __repr__(self):
         return "<TreeNodeSummary>"
 
+    def __str__(self):
+        return "Item Summary"
+
     def validate(self, standalone):
         """
         Perform validation
