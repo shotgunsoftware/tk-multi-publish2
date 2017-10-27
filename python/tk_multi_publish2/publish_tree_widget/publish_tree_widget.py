@@ -421,6 +421,9 @@ class PublishTreeWidget(QtGui.QTreeWidget):
                     _init_children_r(child)
             _init_children_r(item)
 
+        # we update the state of all selected items. this addresses items that
+        # are selected during drag but aren't draggable due to context change
+        # not being allowed.
         for item, state in self._selected_items_state:
 
             # restore state after drop
@@ -447,6 +450,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
                 if item.item.context_change_allowed:
                     dragged_items.append(item)
 
+            # keep the state of all selected items to restore post-drop
             state = self.__get_item_state(item)
             selected_items_state.append((item, state))
 

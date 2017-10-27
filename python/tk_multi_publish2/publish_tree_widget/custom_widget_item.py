@@ -37,6 +37,7 @@ class CustomTreeWidgetItem(CustomTreeWidgetBase):
     via the PublishTreeWidget class hierarchy.
     """
 
+    # indexes for the widget's stacked drag handle sub widget
     (DRAGGABLE, LOCKED) = range(2)
 
     def __init__(self, tree_node, parent=None):
@@ -81,7 +82,7 @@ class CustomTreeWidgetItem(CustomTreeWidgetBase):
         self._tree_node.treeWidget().status_clicked.emit(current_item)
 
     def hide_drag_handle(self):
-        """Hides the stack widget for drag/lock handle"""
+        """Hides the drag handle stack widget"""
         self.ui.handle_stack.hide()
 
     def show_drag_handle(self, draggable):
@@ -90,6 +91,11 @@ class CustomTreeWidgetItem(CustomTreeWidgetBase):
 
         If ``draggable`` is ``False``, show the lock.
         """
+
+        # the locked state is really a placeholder. it currently only displays
+        # a label of the same size as the drag icon. this allows the rest of
+        # the widget to align with other item widgets that do have a drag
+        # handle displayed
 
         state = self.DRAGGABLE if draggable else self.LOCKED
 

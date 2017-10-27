@@ -119,6 +119,7 @@ class TopLevelTreeNodeItem(TreeNodeItem):
         """
         super(TopLevelTreeNodeItem, self).__init__(item, parent)
 
+        # ensure items that allow context change are draggable
         if self.item.context_change_allowed:
             flags = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled
         else:

@@ -525,6 +525,8 @@ class AppDialog(QtGui.QWidget):
             summary_text = "<p>The following items will be published:</p>"
             summary_text += "".join(["<p>%s</p>" % line for line in summary])
 
+        # If context change isn't allowed for this item, show a note at the
+        # bottom of the summary
         if not item.context_change_allowed:
             summary_text += "<p><strong>NOTE:</strong>&nbsp;&nbsp;" \
                             "Context change disabled for this item.</p>"
@@ -965,18 +967,26 @@ class AppDialog(QtGui.QWidget):
         Fires when a new context is selected for the current item
         """
 
+        # For each of the scenarios below, we ensure that the item being updated
+        # allows context change. The widget should be disabled for the single
+        # item case, but we check to be completely sure. For the summary case,
+        # we show the widget but we don't want to update selected items that
+        # are on context change lockdown.
+        sync_required = False
+
         if self._current_item is None:
             # this is the summary item - so update all items!
             for top_level_item in self._plugin_manager.top_level_items:
-                # ensure context only set if allowed
                 if top_level_item.context_change_allowed:
                     top_level_item.context = context
+                    sync_required = True
         else:
-            # ensure context only set if allowed
             if self._current_item.context_change_allowed:
                 self._current_item.context = context
+                sync_required = True
 
-        self._synchronize_tree()
+        if sync_required:
+            self._synchronize_tree()
 
     def _on_browse(self):
         """Opens a file dialog to browse to files for publishing."""
