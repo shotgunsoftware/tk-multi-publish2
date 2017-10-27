@@ -498,18 +498,24 @@ class AppDialog(QtGui.QWidget):
 
         if item.parent.is_root():
             self.ui.context_widget.show()
-            self.ui.context_widget.context_label.setText(
-                "Task and Entity Link to apply to the selected item:"
-            )
-            self.ui.context_widget.set_context(item.context)
-        else:
-            self.ui.context_widget.hide()
 
-        # Hide the context widget if context change not allowed for this item.
-        # Disabling doesn't display correctly because of the way the context
-        # widget is implemented.
-        if item.context_change_allowed:
-            self.ui.context_widget.show()
+            if item.context_change_allowed:
+                self.ui.context_widget.enable_editing(
+                    True,
+                    "<p>Task and Entity Link to apply to the selected item:</p>"
+                )
+            else:
+                self.ui.context_widget.enable_editing(
+                    False,
+                    "<p>This item does not support publishing to a different "
+                    "task or link. It will be published to "
+                    "<strong><a style='color:#C8C8C8; text-decoration:none' "
+                    "href='%s'>%s</a></strong></p>" %
+                    (item.context.shotgun_url, item.context)
+                )
+
+            # set the context
+            self.ui.context_widget.set_context(item.context)
         else:
             self.ui.context_widget.hide()
 
