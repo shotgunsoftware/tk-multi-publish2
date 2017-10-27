@@ -531,12 +531,6 @@ class AppDialog(QtGui.QWidget):
             summary_text = "<p>The following items will be published:</p>"
             summary_text += "".join(["<p>%s</p>" % line for line in summary])
 
-        # If context change isn't allowed for this item, show a note at the
-        # bottom of the summary
-        if not item.context_change_allowed:
-            summary_text += "<p><strong>NOTE:</strong>&nbsp;&nbsp;" \
-                            "Context change disabled for this item.</p>"
-
         self.ui.item_summary.setText(summary_text)
 
         # skip settings for now

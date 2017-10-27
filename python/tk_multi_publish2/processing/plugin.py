@@ -283,9 +283,18 @@ class PublishPlugin(PluginBase):
         :param item: Item to analyze
         :returns: dictionary with boolean keys accepted/visible/enabled/checked
         """
-
-        with self._handle_plugin_error(None, "Error running accpet: %s"):
+        try:
             return self._hook_instance.accept(self.settings, item)
+        except Exception:
+            error_msg = traceback.format_exc()
+            self._logger.error(
+                "Error running accept for %s" % self,
+                extra = _get_error_extra_info(error_msg)
+            )
+            return {"accepted": False}
+        finally:
+            # give qt a chance to do stuff
+            QtCore.QCoreApplication.processEvents()
 
     def run_validate(self, settings, item):
         """
