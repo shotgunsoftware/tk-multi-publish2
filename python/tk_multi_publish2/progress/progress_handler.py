@@ -181,7 +181,6 @@ class ProgressHandler(object):
             message = "ERROR: %s" % message
 
         item.setText(0, message)
-        item.setToolTip(0, message)
 
         if icon:
             item.setIcon(0, icon)
