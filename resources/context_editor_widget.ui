@@ -55,7 +55,7 @@
        <number>0</number>
       </property>
       <item>
-       <layout class="QGridLayout" name="gridLayout">
+       <layout class="QGridLayout" name="gridLayout" columnstretch="1,100">
         <property name="spacing">
          <number>0</number>
         </property>
@@ -94,7 +94,7 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <layout class="QHBoxLayout" name="task_widgets_layout">
+         <layout class="QHBoxLayout" name="task_widgets_layout" stretch="1,100,1">
           <property name="spacing">
            <number>4</number>
           </property>
@@ -130,7 +130,7 @@
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="task_search_layout">
+           <layout class="QHBoxLayout" name="task_search_layout" stretch="100,1">
             <property name="spacing">
              <number>0</number>
             </property>
@@ -271,7 +271,7 @@
          </widget>
         </item>
         <item row="1" column="1">
-         <layout class="QHBoxLayout" name="link_widgets_layout">
+         <layout class="QHBoxLayout" name="link_widgets_layout" stretch="1,100,1">
           <property name="spacing">
            <number>4</number>
           </property>
