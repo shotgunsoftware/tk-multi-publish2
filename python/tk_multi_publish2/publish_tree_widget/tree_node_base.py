@@ -138,21 +138,27 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         """
         self._embedded_widget.set_status(self._embedded_widget.NEUTRAL)
 
-    # message is for the status icon tooltip. The status is propagated to parents, but the message is not. 
+    # message is for the status icon tooltip. The status is propagated to
+    # parents, but the message is not.
     def _set_status_upwards(self, status, message, info_below = False):
         """
         Traverse all parents and set them to be a certain status
         """
         self._embedded_widget.set_status(status, message, info_below)
         if self.parent():
-            self.parent()._set_status_upwards(status, "There are issues with some of the items in this group.", True)
+            self.parent()._set_status_upwards(
+                status,
+                "There are issues with some of the items in this group.",
+                True
+            )
 
     def validate(self, standalone):
         """
         Perform validation
         """
         if standalone:
-            self._embedded_widget.set_status(self._embedded_widget.VALIDATION_STANDALONE)
+            self._embedded_widget.set_status(
+                self._embedded_widget.VALIDATION_STANDALONE)
         else:
             self._embedded_widget.set_status(self._embedded_widget.VALIDATION)
         return True
