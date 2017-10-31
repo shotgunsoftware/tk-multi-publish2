@@ -33,6 +33,11 @@ class PublishTreeWidget(QtGui.QTreeWidget):
     # passed the TreeNodeBase instance
     checked = QtCore.Signal(object)
 
+    # keep a handle on all items created for the tree. the publisher is
+    # typically a transient interface, so this shouldn't be an issue in terms of
+    # sucking up memory. hopefully this will eliminate some of the
+    # "Internal C++ object already deleted" errors we're seeing.
+    __created_items = []
 
     def __init__(self, parent):
         """
@@ -89,6 +94,8 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         else:
             ui_item = TreeNodeItem(item, tree_parent)
 
+        self.__created_items.append(ui_item)
+
         # set expand state for item
         ui_item.setExpanded(item.expanded)
 
@@ -98,6 +105,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         # create children
         for task in item.tasks:
             task = TreeNodeTask(task, ui_item)
+            self.__created_items.append(task)
 
         for child in item.children:
             self._build_item_tree_r(child, enabled, level+1, ui_item)
@@ -195,6 +203,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         if context_tree_node is None:
             # context not found! Create it!
             context_tree_node = TreeNodeContext(context, self)
+            self.__created_items.append(context_tree_node)
             context_tree_node.setExpanded(True)
             self.addTopLevelItem(context_tree_node)
 
