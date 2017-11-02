@@ -112,20 +112,23 @@ class CustomTreeWidgetBase(QtGui.QFrame):
         if status == self.NEUTRAL:
             self.ui.status.hide()
         else:
-            if len(message) > 0 :               
+            default_message = "Click for more details."
+            if message:
                 if info_below:
-                    message += "\nSee below or click for details."
+                    message += "<br>See below or click for more details."
                 else:
-                    message += "\nClick for details."
+                    message += "<br>%s" % (default_message,)
+            else:
+                message = default_message
 
-                self.ui.status.setToolTip(
-                    QtGui.QApplication.translate(
-                        "ItemWidget",
-                        "<p>%s</p>" % (message,),
-                        None,
-                        QtGui.QApplication.UnicodeUTF8
-                    )
+            self.ui.status.setToolTip(
+                QtGui.QApplication.translate(
+                    "ItemWidget",
+                    "<p>%s</p>" % (message,),
+                    None,
+                    QtGui.QApplication.UnicodeUTF8
                 )
+            )
 
             self.ui.status.show()
             self._status_icon = QtGui.QIcon()
