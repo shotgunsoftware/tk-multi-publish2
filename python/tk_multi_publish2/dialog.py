@@ -594,7 +594,7 @@ class AppDialog(QtGui.QWidget):
             )
 
         self.ui.context_widget.show()
-        self.ui.context_widget.context_label.setText(context_label_text)
+        self.ui.context_widget.enable_editing(True, context_label_text)
 
         # create summary for all items
         # no need to have a summary since the main label says summary
