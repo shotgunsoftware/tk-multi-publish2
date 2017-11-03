@@ -306,12 +306,11 @@ class AppDialog(QtGui.QWidget):
                # update all items with the summary thumbnail
                for top_level_item in self._plugin_manager.top_level_items:
                    top_level_item.thumbnail = self._summary_thumbnail
-                   top_level_item._set_thumbnail_enabled(True)
-                   top_level_item._thumbnail_overrides_summary = False
+                   top_level_item.thumbnail_explicit = False
         else:
             self._current_item.thumbnail = pixmap
             # specify that the new thumbnail overrides the one inherited from summary
-            self._current_item._thumbnail_overrides_summary = True
+            self._current_item.thumbnail_explicit = True
 
     def _create_item_details(self, tree_item):
         """
@@ -349,10 +348,10 @@ class AppDialog(QtGui.QWidget):
         
         # if summary thumbnail is defined, item thumbnail should inherit it
         # unless item thumbnail was set after summary thumbnail
-        if self._summary_thumbnail != None and not item._thumbnail_overrides_summary:
+        if self._summary_thumbnail != None and not item.thumbnail_explicit:
            item.thumbnail = self._summary_thumbnail
            # activate snaphot on inherited thumbnail, that way we can override it for a specific item
-           item._set_thumbnail_enabled(True)
+           self.ui.item_thumbnail.setEnabled(True)
 
         self.ui.item_thumbnail.set_thumbnail(item.thumbnail)
 
