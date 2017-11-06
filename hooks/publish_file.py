@@ -582,7 +582,8 @@ class BasicFilePublishPlugin(HookBaseClass):
         work_fields = []
         publish_path = None
 
-        if work_template:
+        # We need both work and publish template to be defined for template support to be enabled.
+        if work_template and publish_template:
             if work_template.validate(path):
                 work_fields = work_template.get_fields(path)
 
@@ -598,6 +599,11 @@ class BasicFilePublishPlugin(HookBaseClass):
                     "Used publish template to determine the publish path: %s" %
                     (publish_path,)
                 )
+        elif not work_template and publish_template:
+            self.logger.warning(
+                "Publish template (%s) was specified but a work template was not.",
+                publish_template
+            )
 
         if not publish_path:
             publish_path = path
