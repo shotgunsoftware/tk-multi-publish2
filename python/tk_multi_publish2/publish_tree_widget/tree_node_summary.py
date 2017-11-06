@@ -29,10 +29,7 @@ class TreeNodeSummary(TreeNodeBase):
         :param parent: The parent QWidget for this control
         """
         super(TreeNodeSummary, self).__init__(parent)
-        self.setFlags(
-            QtCore.Qt.ItemIsEnabled |
-            QtCore.Qt.ItemIsSelectable
-        )
+        self.setFlags(self.flags() | QtCore.Qt.ItemIsSelectable)
 
     def _create_widget(self, parent):
         """

@@ -34,6 +34,8 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         super(TreeNodeBase, self).__init__(parent)
         self.build_internal_widget()
 
+        self.setFlags(QtCore.Qt.ItemIsEnabled)
+
     def build_internal_widget(self):
         """
         Create the widget and reassign it

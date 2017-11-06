@@ -146,6 +146,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             # destroy the indices
             for item_index in reversed(range(top_level_item.childCount())):
                 item = top_level_item.child(item_index)
+
                 if item.item not in self._plugin_manager.top_level_items:
                     # no longer in the plugin mgr. remove from tree
                     top_level_item.takeChild(item_index)
@@ -258,24 +259,11 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         context_tree_node = self.__ensure_context_node_exists(widget_item.item.context)
         context_tree_node.addChild(widget_item)
 
-        # qt seems to drop the associated widget
-        # (http://doc.qt.io/qt-4.8/qtreewidget.html#setItemWidget)
-        # when a tree node is taken out of the tree, either via drag n drop
-        # or via explicit manipulation. So make sure that we recreate
-        # the internal widget as part of re-inserting the node into the tree
-        widget_item.build_internal_widget()
+        # re-initialize the item recursively
+        _init_item_r(widget_item)
 
         # restore its state
         self.__set_item_state(widget_item, state)
-
-        # and do a similar init for all child nodes
-        def _init_children_r(parent):
-            for child_index in xrange(parent.childCount()):
-                child = parent.child(child_index)
-                child.build_internal_widget()
-                child.setExpanded(True)
-                _init_children_r(child)
-        _init_children_r(widget_item)
 
         # if the item is selected, scroll to it after the move
         if widget_item.isSelected():
@@ -409,31 +397,14 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         # run default implementation
         super(PublishTreeWidget, self).dropEvent(event)
 
-        for item in self._dragged_items:
-
-            # qt seems to drop the associated widget
-            # (http://doc.qt.io/qt-4.8/qtreewidget.html#setItemWidget)
-            # when a tree node is taken out of the tree, either via drag n drop
-            # or via explicit manipulation. So make sure that we recreate
-            # the internal widget as part of re-inserting the node into the tree
-            item.build_internal_widget()
+        for item, state in self._selected_items_state:
 
             # make sure that the item picks up the new context
-            item.synchronize_context()
+            if isinstance(item, TopLevelTreeNodeItem):
+                item.synchronize_context()
 
-            # and recurse down to all children and init their states too
-            def _init_children_r(parent):
-                for child_index in xrange(parent.childCount()):
-                    child = parent.child(child_index)
-                    child.build_internal_widget()
-                    child.setExpanded(True)
-                    _init_children_r(child)
-            _init_children_r(item)
-
-        # we update the state of all selected items. this addresses items that
-        # are selected during drag but aren't draggable due to context change
-        # not being allowed.
-        for item, state in self._selected_items_state:
+            # re-initialize the item recursively
+            _init_item_r(item)
 
             # restore state after drop
             self.__set_item_state(item, state)
@@ -450,18 +421,26 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
         dragged_items = []
         selected_items_state = []
+        disallow_drop = False
 
         # retain only TopLevelTreeNodeItems items from selected elements
         for item in self.selectedItems():
             if isinstance(item, TopLevelTreeNodeItem):
 
                 # ensure context change is allowed before dragging/dropping
-                if item.item.context_change_allowed:
-                    dragged_items.append(item)
+                if not item.item.context_change_allowed:
+                    disallow_drop = True
+                    break
+
+                dragged_items.append(item)
 
             # keep the state of all selected items to restore post-drop
             state = self.__get_item_state(item)
             selected_items_state.append((item, state))
+
+        if disallow_drop:
+            logger.debug("Tried to drag items that don't allow context change.")
+            return
 
         # ignore any selection that does not contain at least one TopLevelTreeNodeItems
         if not dragged_items:
@@ -482,4 +461,19 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         if self.state() != QtGui.QAbstractItemView.DragSelectingState:
             # bubble up all events that aren't drag select related
             super(PublishTreeWidget, self).mouseMoveEvent(event)
+
+def _init_item_r(parent_item):
+
+    # qt seems to drop the associated widget
+    # (http://doc.qt.io/qt-4.8/qtreewidget.html#setItemWidget)
+    # when a tree node is taken out of the tree, either via drag n drop
+    # or via explicit manipulation. So make sure that we recreate
+    # the internal widget as part of re-inserting the node into the tree.
+    parent_item.build_internal_widget()
+
+    # do this for all children of the supplied item recursively
+    for child_index in xrange(parent_item.childCount()):
+        child = parent_item.child(child_index)
+        child.setExpanded(True)
+        _init_item_r(child)
 

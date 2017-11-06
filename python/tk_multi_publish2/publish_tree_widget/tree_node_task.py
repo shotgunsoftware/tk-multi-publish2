@@ -32,10 +32,7 @@ class TreeNodeTask(TreeNodeBase):
         super(TreeNodeTask, self).__init__(parent)
 
         # tasks cannot be dragged or dropped on
-        self.setFlags(
-            QtCore.Qt.ItemIsEnabled |
-            QtCore.Qt.ItemIsSelectable
-        )
+        self.setFlags(self.flags() | QtCore.Qt.ItemIsSelectable)
 
         # set up defaults based on task settings
         state = QtCore.Qt.Checked if self._task.checked else QtCore.Qt.Unchecked

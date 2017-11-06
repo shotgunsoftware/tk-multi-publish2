@@ -31,10 +31,7 @@ class TreeNodeItem(TreeNodeBase):
         """
         self._item = item
         super(TreeNodeItem, self).__init__(parent)
-        self.setFlags(
-            QtCore.Qt.ItemIsEnabled |
-            QtCore.Qt.ItemIsSelectable
-        )
+        self.setFlags(self.flags() | QtCore.Qt.ItemIsSelectable)
 
     def _create_widget(self, parent):
         """
@@ -121,11 +118,11 @@ class TopLevelTreeNodeItem(TreeNodeItem):
 
         # ensure items that allow context change are draggable
         if self.item.context_change_allowed:
-            flags = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled
+            flags = QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled
         else:
-            flags = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+            flags = QtCore.Qt.ItemIsSelectable
 
-        self.setFlags(flags)
+        self.setFlags(self.flags() | flags)
 
     def _create_widget(self, parent):
         """
