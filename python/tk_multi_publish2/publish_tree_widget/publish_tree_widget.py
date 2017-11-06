@@ -45,7 +45,6 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         """
         super(PublishTreeWidget, self).__init__(parent)
         self._plugin_manager = None
-        self._dragged_items = []
         self._selected_items_state = []
         self._bundle = sgtk.platform.current_bundle()
         # make sure that we cannot drop items on the root item
@@ -416,7 +415,6 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         Event triggering when a drag operation starts
         """
         # record selection for use later.
-        self._dragged_items = []
         self._selected_items_state = []
 
         dragged_items = []
@@ -447,7 +445,6 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             logger.debug("No top-level nodes included in selection.")        
             return
 
-        self._dragged_items = dragged_items
         self._selected_items_state = selected_items_state
 
         super(PublishTreeWidget, self).dragEnterEvent(event)
