@@ -19,64 +19,6 @@ class BasicSubmitForReviewPlugin(HookBaseClass):
     """
     Plugin for submitting a review in Shotgun.
 
-    This plugin is typically configured to act as a base class for
-    other DCC specific submit for review plugins as it contains standard operations for
-    validating and registering review submissions with Shotgun.
-
-    Once attached to an item, the plugin will key off of properties that
-    are set on the item. These properties can be set via the collector or
-    by subclasses prior to calling methods on this class.
-
-    The only property that is required for the plugin to operate is the ``path``
-    property. All of the properties understood by the plugin are documented
-    below:
-
-        Path properties
-        -------------
-
-        path - The path to the sequence that will be submitted for review.
-
-        Template properties
-        -------------------
-
-        work_template - Must be set in the item properties dictionary, is used
-            to validate "path" and extract fields for further processing and
-            contextual discovery. Should be set  from the Nuke write node
-            and must be available. If not set submission will fail.
-
-        publish_template - Must be set in the item properties dictionary, used to
-            determine where the review movie should be copied prior to submission.
-            Should be set from the subclassed collector. If not specified the
-            submission will fail.
-
-        Submission properties
-        ---------------------
-
-        publish_name - If set in the item properties dictionary, will be used
-            for output logging.
-
-        sg_publish_data - The dictionary of publish information returned from
-            the tk-core register_publish method. This must be set by the publish_file
-            plugin that runs before this one. If not set, the review submission
-            will fail. 
-
-        color_space - Must be set in the item properties dictionary. It is
-            not set by the basic collector so it must be set by the 
-            subclassed one. If not available the item will not be accepted.
-            It is used for color correcting the output movie.
-
-        first_frame - Must be set in the item properties dictionary, It is
-            not set by the basic collector so it must be set by the
-            subclassed one. If not available, the item will not be accpeted.
-            Used to designate the first frame number of the sequence the
-            movie review will be created from.
-
-        last_frame - Must be set in the item properties dictionary, It is
-            not set by the basic collector so it must be set by the
-            subclassed one. If not available, the item will not be accpeted.
-            Used to designate the last frame number of the sequence the
-            movie review will be created from.
-
     """
 
     @property
@@ -225,11 +167,16 @@ class BasicSubmitForReviewPlugin(HookBaseClass):
                 "Item will be skipped: %s." %
                 (item.properties["publish_name"],)
             )
-
+        path = item.properties.get("path")
+        if path is None:
+            accepted = False
+            self.logger.warning(
+                "'path' property is not defined on the item. "
+                "Item will be skipped: %s." %
+                (item.properties["publish_name"],)
+            )
 
         if accepted:
-            path = item.properties["path"]
-
             # log the accepted file and display a button to reveal it in the fs
             self.logger.info(
                 "Submit for review plugin accepted: %s" % (path,),
@@ -269,14 +216,12 @@ class BasicSubmitForReviewPlugin(HookBaseClass):
         """
 
         render_path = item.properties.get("path")
-        if render_path is None:
-            raise Exception("'path' property cannot be found in item's properties. "
-                            "Review Submission failed.")
 
         sg_publish_data = item.properties.get("sg_publish_data")
         if sg_publish_data is None:
             raise Exception("'sg_publish_data' was not found in the item's properties. "
-                            "Review Submission for '%s' failed." % render_path)
+                            "Review Submission for '%s' failed. This property must "
+                            "be set by a publish plugin that has run before this one." % render_path)
         sg_task = self.parent.context.task
         comment = item.description
         thumbnail_path = item.get_thumbnail_as_path()
@@ -300,7 +245,7 @@ class BasicSubmitForReviewPlugin(HookBaseClass):
         last_frame = item.properties.get("last_frame")
         colorspace = item.properties.get("color_space")
         
-        if review_submission_app.render_and_submit_version(
+        version = review_submission_app.render_and_submit_version(
                 publish_template,
                 render_path_fields,
                 first_frame,
@@ -311,7 +256,19 @@ class BasicSubmitForReviewPlugin(HookBaseClass):
                 thumbnail_path,
                 progress_cb,
                 colorspace
-            ) is None:
+        )
+        if version:
+            self.logger.info(
+                "Version uploaded for file: %s" % (render_path,),
+                extra={
+                    "action_show_in_shotgun": {
+                        "label": "Show Version",
+                        "tooltip": "Reveal the version in Shotgun.",
+                        "entity": version
+                    }
+                }
+            )
+        else:
             raise Exception("Review submission failed. Could not render and "
                             "submit the review associated sequence.")
 
