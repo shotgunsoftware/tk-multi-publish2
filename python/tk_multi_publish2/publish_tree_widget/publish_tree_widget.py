@@ -419,26 +419,28 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
         dragged_items = []
         selected_items_state = []
-        disallow_drop = False
 
-        # retain only TopLevelTreeNodeItems items from selected elements
+        # process all selected items
         for item in self.selectedItems():
+
+            # we only want to drag/drop top level items
             if isinstance(item, TopLevelTreeNodeItem):
 
                 # ensure context change is allowed before dragging/dropping
                 if not item.item.context_change_allowed:
-                    disallow_drop = True
-                    break
+                    # deselect to prevent drag/drop of items whose context
+                    # can't be changed
+                    item.setSelected(False)
 
                 dragged_items.append(item)
+
+            else:
+                # deselect to prevent drag/drop of non top level items
+                item.setSelected(False)
 
             # keep the state of all selected items to restore post-drop
             state = self.__get_item_state(item)
             selected_items_state.append((item, state))
-
-        if disallow_drop:
-            logger.debug("Tried to drag items that don't allow context change.")
-            return
 
         # ignore any selection that does not contain at least one TopLevelTreeNodeItems
         if not dragged_items:
