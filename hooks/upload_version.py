@@ -30,7 +30,6 @@ class UploadVersionPlugin(HookBaseClass):
         # look for icon one level up from this hook's folder in "icons" folder
         return os.path.join(
             self.disk_location,
-            os.pardir,
             "icons",
             "review.png"
         )
