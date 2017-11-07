@@ -32,10 +32,7 @@ class TreeNodeContext(TreeNodeBase):
 
         # this object can have other items dropped on it
         # but cannot be dragged
-        self.setFlags(
-            QtCore.Qt.ItemIsEnabled |
-            QtCore.Qt.ItemIsDropEnabled
-        )
+        self.setFlags(self.flags() | QtCore.Qt.ItemIsDropEnabled)
 
     def __repr__(self):
         return "<TreeNodeContext %s>" % str(self)

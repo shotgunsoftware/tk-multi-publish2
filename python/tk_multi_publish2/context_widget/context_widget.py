@@ -314,6 +314,18 @@ class ContextWidget(QtGui.QWidget):
         """
         return self.ui.label
 
+    def enable_editing(self, enabled, message=None):
+        """
+        Show/hide the input widgets and display a message in the context label.
+        """
+
+        if enabled:
+            self.ui.edit_widget.show()
+        else:
+            self.ui.edit_widget.hide()
+
+        self.context_label.setText(message or "")
+
     def _add_to_recents(self, context):
         """
         Adds the supplied context as an action in the list of recents context

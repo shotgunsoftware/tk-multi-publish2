@@ -174,12 +174,13 @@ class ProgressHandler(object):
 
         # better formatting in case of errors and warnings
         if status == self.DEBUG:
-            message = "Debug: %s" % message
+            message = "DEBUG: %s" % message
         elif status == self.WARNING:
-            message = "Warning: %s" % message
+            message = "WARNING: %s" % message
+        elif status == self.ERROR:
+            message = "ERROR: %s" % message
 
         item.setText(0, message)
-        item.setToolTip(0, message)
 
         if icon:
             item.setIcon(0, icon)
