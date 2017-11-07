@@ -599,11 +599,9 @@ class BasicFilePublishPlugin(HookBaseClass):
                     "Used publish template to determine the publish path: %s" %
                     (publish_path,)
                 )
-        elif not work_template and publish_template:
-            self.logger.warning(
-                "Publish template (%s) was specified but a work template was not.",
-                publish_template
-            )
+        else:
+            self.logger.debug("publish_template: %s" % publish_template)
+            self.logger.debug("work_template: %s" % work_template)
 
         if not publish_path:
             publish_path = path
