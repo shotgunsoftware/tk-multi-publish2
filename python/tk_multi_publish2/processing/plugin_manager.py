@@ -11,7 +11,7 @@
 
 import sgtk
 import fnmatch
-from .plugin import Plugin
+from .plugin import PublishPlugin, CollectorPlugin
 from .item import Item
 from .task import Task
 
@@ -38,21 +38,36 @@ class PluginManager(object):
         self._dropped_paths = []
 
         logger.debug("Loading plugin configuration")
-        self._plugins = []
+        self._publish_plugins = []
 
         plugin_defs = self._bundle.get_setting("publish_plugins")
 
-        # create plugin objects
+        # create publish plugin objects
         for plugin_def in plugin_defs:
             logger.debug("Find config chunk %s" % plugin_def)
 
-            plugin_instance_name = plugin_def["name"]
-            hook_path = plugin_def["hook"]
-            settings = plugin_def["settings"]
+            publish_plugin_instance_name = plugin_def["name"]
+            publish_plugin_hook_path = plugin_def["hook"]
+            publish_plugin_settings = plugin_def["settings"]
 
-            plugin = Plugin(plugin_instance_name, hook_path, settings, self._logger)
-            self._plugins.append(plugin)
+            plugin = PublishPlugin(
+                publish_plugin_instance_name,
+                publish_plugin_hook_path,
+                publish_plugin_settings,
+                self._logger
+            )
+            self._publish_plugins.append(plugin)
             logger.debug("Created %s" % plugin)
+
+        # create collector plugin object
+        collector_hook_path = self._bundle.get_setting("collector")
+        collector_settings = self._bundle.get_setting("collector_settings")
+
+        self._collector = CollectorPlugin(
+            collector_hook_path,
+            collector_settings,
+            self._logger
+        )
 
         # create an item root
         self._root_item = Item.create_invisible_root_item()
@@ -83,7 +98,7 @@ class PluginManager(object):
 
         :returns: List of :class:`Plugin` instances.
         """
-        return self._plugins
+        return self._publish_plugins
 
     def run_collectors(self):
         """
@@ -152,20 +167,11 @@ class PluginManager(object):
         logger.debug("Executing collector")
 
         if collect_current_scene:
-            self._bundle.execute_hook_method(
-                "collector",
-                "process_current_session",
-                parent_item=self._root_item
-            )
+            self._collector.run_process_current_session(self._root_item)
 
         if paths:
             for path in paths:
-                self._bundle.execute_hook_method(
-                    "collector",
-                    "process_file",
-                    parent_item=self._root_item,
-                    path=path
-                )
+                self._collector.run_process_file(self._root_item, path)
 
         # get all items after scan
         all_items_after = self._get_item_tree_as_list()
@@ -176,7 +182,7 @@ class PluginManager(object):
         # now we have a series of items from the scene, visit our plugins
         # to see if there is interest
         logger.debug("Visiting all plugins and offering items")
-        for plugin in self._plugins:
+        for plugin in self._publish_plugins:
 
             for item in self._get_matching_items(plugin.item_filters, all_new_items):
                 logger.debug("seeing if %s is interested in %s" % (plugin, item))

@@ -46,8 +46,6 @@ class Item(object):
         self._tasks = []
         self._context = None
         self._properties = {}
-        self._parent = None
-        self._icon_path = None
         self._description = None
         self._created_temp_files = []
         self._bundle = sgtk.platform.current_bundle()
@@ -57,6 +55,8 @@ class Item(object):
         self._thumbnail_enabled = True
         # the following var indicats that the current thumbnail overrides the summary one
         self._thumbnail_explicit = False
+
+        self._allows_context_change = True
 
     def __repr__(self):
         """
@@ -427,4 +427,16 @@ class Item(object):
                 "%r: Could not load icon '%s': %s" % (self, path, e)
             )
 
+    @property
+    def context_change_allowed(self):
+        """
+        True if item allows context change, False otherwise. Default is True
+        """
+        return self._allows_context_change
 
+    @context_change_allowed.setter
+    def context_change_allowed(self, allow):
+        """
+        Enable/disable context change for this item.
+        """
+        self._allows_context_change = allow

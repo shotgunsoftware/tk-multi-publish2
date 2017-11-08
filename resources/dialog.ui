@@ -328,7 +328,7 @@
               <item>
                <widget class="QStackedWidget" name="details_stack">
                 <property name="currentIndex">
-                 <number>0</number>
+                 <number>1</number>
                 </property>
                 <widget class="QWidget" name="details_item">
                  <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,1,1,1,1,5,1,5">
@@ -594,65 +594,82 @@
                    </layout>
                   </item>
                   <item>
-                   <widget class="QScrollArea" name="scrollArea_2">
-                    <property name="widgetResizable">
-                     <bool>true</bool>
+                   <widget class="QStackedWidget" name="settings_stack">
+                    <property name="currentIndex">
+                     <number>1</number>
                     </property>
-                    <widget class="QWidget" name="scrollAreaWidgetContents_2">
-                     <property name="geometry">
-                      <rect>
-                       <x>0</x>
-                       <y>0</y>
-                       <width>420</width>
-                       <height>202</height>
-                      </rect>
-                     </property>
-                     <layout class="QVBoxLayout" name="verticalLayout_13" stretch="0,1">
-                      <property name="spacing">
-                       <number>0</number>
-                      </property>
+                    <widget class="QWidget" name="builtin_settings_page">
+                     <layout class="QVBoxLayout" name="verticalLayout_14">
                       <property name="margin">
                        <number>0</number>
                       </property>
                       <item>
-                       <widget class="QLabel" name="task_description">
+                       <widget class="QScrollArea" name="scrollArea_2">
+                        <property name="widgetResizable">
+                         <bool>true</bool>
+                        </property>
+                        <widget class="QWidget" name="scrollAreaWidgetContents_2">
+                         <property name="geometry">
+                          <rect>
+                           <x>0</x>
+                           <y>0</y>
+                           <width>420</width>
+                           <height>202</height>
+                          </rect>
+                         </property>
+                         <layout class="QVBoxLayout" name="verticalLayout_13" stretch="0,1">
+                          <property name="spacing">
+                           <number>0</number>
+                          </property>
+                          <property name="margin">
+                           <number>0</number>
+                          </property>
+                          <item>
+                           <widget class="QLabel" name="task_description">
+                            <property name="text">
+                             <string/>
+                            </property>
+                            <property name="wordWrap">
+                             <bool>true</bool>
+                            </property>
+                            <property name="openExternalLinks">
+                             <bool>true</bool>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QLabel" name="expander_label_2">
+                            <property name="text">
+                             <string/>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </widget>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="task_settings_label">
                         <property name="text">
-                         <string/>
-                        </property>
-                        <property name="wordWrap">
-                         <bool>true</bool>
-                        </property>
-                        <property name="openExternalLinks">
-                         <bool>true</bool>
+                         <string>Settings</string>
                         </property>
                        </widget>
                       </item>
                       <item>
-                       <widget class="QLabel" name="expander_label_2">
-                        <property name="text">
-                         <string/>
+                       <widget class="SettingsWidget" name="task_settings" native="true">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
                         </property>
                        </widget>
                       </item>
                      </layout>
                     </widget>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="task_settings_label">
-                    <property name="text">
-                     <string>Settings</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="SettingsWidget" name="task_settings" native="true">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
+                    <widget class="CustomSettingsWidget" name="custom_settings_page">
+                     <layout class="QVBoxLayout" name="verticalLayout_17"/>
+                    </widget>
                    </widget>
                   </item>
                  </layout>
@@ -662,7 +679,22 @@
                   <item>
                    <widget class="QLabel" name="please_select_an_item">
                     <property name="text">
-                     <string>Please select a single item in the list.</string>
+                     <string>Please select tasks of the same type or a single item.</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="details_multi_edit_not_supported">
+                 <layout class="QVBoxLayout" name="verticalLayout_15">
+                  <item>
+                   <widget class="QLabel" name="label_2">
+                    <property name="text">
+                     <string>Multiple selection not supported on tasks of this type.
+Please select a single task.</string>
                     </property>
                     <property name="alignment">
                      <set>Qt::AlignCenter</set>
@@ -1055,6 +1087,12 @@
    <extends>QLabel</extends>
    <header>..qtwidgets</header>
   </customwidget>
+  <customwidget>
+   <class>CustomSettingsWidget</class>
+   <extends>QWidget</extends>
+   <header>..custom_settings_widget</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>item_comments</tabstop>
@@ -1069,7 +1107,6 @@
   <tabstop>close</tabstop>
   <tabstop>stop_processing</tabstop>
   <tabstop>scrollArea</tabstop>
-  <tabstop>scrollArea_2</tabstop>
  </tabstops>
  <resources>
   <include location="resources.qrc"/>
