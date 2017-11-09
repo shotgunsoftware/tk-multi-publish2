@@ -285,11 +285,11 @@ class PublishPlugin(PluginBase):
         """
         try:
             return self._hook_instance.accept(self.settings, item)
-        except Exception, e:
+        except Exception:
             error_msg = traceback.format_exc()
             self._logger.error(
                 "Error running accept for %s" % self,
-                extra=_get_error_extra_info(error_msg)
+                extra = _get_error_extra_info(error_msg)
             )
             return {"accepted": False}
         finally:

@@ -2,7 +2,6 @@
 
 # Form implementation generated from reading ui file 'summary_overlay.ui'
 #
-# Created: Thu Oct 19 18:23:33 2017
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
