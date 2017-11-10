@@ -53,9 +53,6 @@ class Item(object):
         self._enabled = True
         self._expanded = True
         self._thumbnail_enabled = True
-        # the following var indicats that the current thumbnail overrides the summary one
-        self._thumbnail_explicit = False
-
         self._allows_context_change = True
 
     def __repr__(self):
@@ -218,20 +215,6 @@ class Item(object):
         self._thumbnail_enabled = enabled
 
     thumbnail_enabled = property(_get_thumbnail_enabled, _set_thumbnail_enabled)
-
-    def _get_thumbnail_explicit(self):
-        """
-        Flag to indicate that thumbnails has been explicitly set.
-        When this flag is on, the summary thumbnail should be ignored 
-        For this specific item.
-        """
-        return self._thumbnail_explicit
-
-    def _set_thumbnail_explicit(self, enabled):
-        # setter for thumbnail_enabled
-        self._thumbnail_explicit = enabled
-
-    thumbnail_explicit = property(_get_thumbnail_explicit, _set_thumbnail_explicit)
 
     def _get_context(self):
         """
