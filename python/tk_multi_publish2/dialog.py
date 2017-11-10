@@ -174,9 +174,6 @@ class AppDialog(QtGui.QWidget):
         self._plugin_manager = PluginManager(self._progress_handler.logger)
         self.ui.items_tree.set_plugin_manager(self._plugin_manager)
 
-        # this is the pixmap in the summary thumbnail
-        self._summary_thumbnail = None
-
         # run collections
         self._full_rebuild()
 
@@ -461,17 +458,8 @@ class AppDialog(QtGui.QWidget):
         thumbnail pixmap
         """
         if not self._current_item:
-            # this is the summary item
-            self._summary_thumbnail = pixmap
-            if pixmap != None:
-               # update all items with the summary thumbnail
-               for top_level_item in self._plugin_manager.top_level_items:
-                   top_level_item.thumbnail = self._summary_thumbnail
-                   top_level_item.thumbnail_explicit = False
-        else:
-            self._current_item.thumbnail = pixmap
-            # specify that the new thumbnail overrides the one inherited from summary
-            self._current_item.thumbnail_explicit = True
+            raise TankError("No current item set!")
+        self._current_item.thumbnail = pixmap
 
     def _create_item_details(self, tree_item):
         """
@@ -506,14 +494,6 @@ class AppDialog(QtGui.QWidget):
 
         self.ui.item_description_label.setText("Description")
         self.ui.item_comments.setPlainText(item.description)
-        
-        # if summary thumbnail is defined, item thumbnail should inherit it
-        # unless item thumbnail was set after summary thumbnail
-        if self._summary_thumbnail != None and not item.thumbnail_explicit:
-           item.thumbnail = self._summary_thumbnail
-           # activate snaphot on inherited thumbnail, that way we can override it for a specific item
-           self.ui.item_thumbnail.setEnabled(True)
-
         self.ui.item_thumbnail.set_thumbnail(item.thumbnail)
 
         if item.parent.is_root():
@@ -569,12 +549,8 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_name.setText("Publish Summary")
         self.ui.item_icon.setPixmap(QtGui.QPixmap(":/tk_multi_publish2/icon_256.png"))
 
-        self.ui.item_thumbnail_label.show()
-        self.ui.item_thumbnail.show()
-        self.ui.item_thumbnail.set_thumbnail(self._summary_thumbnail)
-
-        # setting enabled to true to be able to take a snapshot to define the thumbnail
-        self.ui.item_thumbnail.setEnabled(True)
+        self.ui.item_thumbnail_label.hide()
+        self.ui.item_thumbnail.hide()
 
         self.ui.item_description_label.setText("Description for all items")
         self.ui.item_comments.setPlainText(self._summary_comment)
