@@ -398,9 +398,13 @@ class AppDialog(QtGui.QWidget):
         """
         # The run_get_ui_settings expects a dictionary of the actual values, not Setting objects, so
         # translate the dictionary.
-        tasks_settings = [
-            {k: v.value for k, v in task.settings.iteritems()} for task in selected_tasks
-        ]
+        tasks_settings = []
+        for task in selected_tasks:
+            settings_dict = {}
+            for k, v in task.settings.iteritems():
+                settings_dict[k] = v.value
+            tasks_settings.append(settings_dict)
+
         if selected_tasks.has_custom_ui:
             try:
                 selected_tasks.set_settings(self.ui.custom_settings_page.widget, tasks_settings)
