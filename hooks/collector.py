@@ -43,6 +43,11 @@ COMMON_FILE_INFO = {
         "icon": "maya.png",
         "item_type": "file.maya",
     },
+    "Motion Builder FBX": {
+        "extensions": ["fbx"],
+        "icon": "motionbuilder.png",
+        "item_type": "file.motionbuilder",
+    },
     "Nuke Script": {
         "extensions": ["nk"],
         "icon": "nuke.png",

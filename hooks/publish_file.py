@@ -180,6 +180,7 @@ class BasicFilePublishPlugin(HookBaseClass):
                     ["NukeStudio Project", "hrox"],
                     ["Houdini Scene", "hip", "hipnc"],
                     ["Maya Scene", "ma", "mb"],
+                    ["Motion Builder FBX", "fbx"],
                     ["Nuke Script", "nk"],
                     ["Photoshop Image", "psd", "psb"],
                     ["Rendered Image", "dpx", "exr"],

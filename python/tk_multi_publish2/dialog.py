@@ -502,9 +502,23 @@ class AppDialog(QtGui.QWidget):
 
         if item.parent.is_root():
             self.ui.context_widget.show()
-            self.ui.context_widget.context_label.setText(
-                "Task and Entity Link to apply to the selected item:"
-            )
+
+            if item.context_change_allowed:
+                self.ui.context_widget.enable_editing(
+                    True,
+                    "<p>Task and Entity Link to apply to the selected item:</p>"
+                )
+            else:
+                self.ui.context_widget.enable_editing(
+                    False,
+                    "<p>This item does not support publishing to a different "
+                    "task or link. It will be published to "
+                    "<strong><a style='color:#C8C8C8; text-decoration:none' "
+                    "href='%s'>%s</a></strong></p>" %
+                    (item.context.shotgun_url, item.context)
+                )
+
+            # set the context
             self.ui.context_widget.set_context(item.context)
         else:
             self.ui.context_widget.hide()
@@ -584,7 +598,7 @@ class AppDialog(QtGui.QWidget):
             )
 
         self.ui.context_widget.show()
-        self.ui.context_widget.context_label.setText(context_label_text)
+        self.ui.context_widget.enable_editing(True, context_label_text)
 
         # create summary for all items
         # no need to have a summary since the main label says summary
@@ -957,14 +971,26 @@ class AppDialog(QtGui.QWidget):
         Fires when a new context is selected for the current item
         """
 
+        # For each of the scenarios below, we ensure that the item being updated
+        # allows context change. The widget should be disabled for the single
+        # item case, but we check to be completely sure. For the summary case,
+        # we show the widget but we don't want to update selected items that
+        # are on context change lockdown.
+        sync_required = False
+
         if self._current_item is None:
             # this is the summary item - so update all items!
             for top_level_item in self._plugin_manager.top_level_items:
-                top_level_item.context = context
+                if top_level_item.context_change_allowed:
+                    top_level_item.context = context
+                    sync_required = True
         else:
-            self._current_item.context = context
+            if self._current_item.context_change_allowed:
+                self._current_item.context = context
+                sync_required = True
 
-        self._synchronize_tree()
+        if sync_required:
+            self._synchronize_tree()
 
     def _on_browse(self):
         """Opens a file dialog to browse to files for publishing."""
