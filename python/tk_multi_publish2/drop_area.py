@@ -140,7 +140,7 @@ class DropAreaFrame(QtGui.QFrame):
 
 def _is_local_file(url):
     """
-    Helper to determine what if a url is of a local file scheme
+    Helper to determine if a url is of a local file scheme
 
     :param url: Url object to verify whether it is a local file or not
     :returns: True if the url is a local file. False otherwise
