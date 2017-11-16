@@ -168,6 +168,9 @@
          <property name="layoutDirection">
           <enum>Qt::LeftToRight</enum>
          </property>
+         <property name="styleSheet">
+          <string notr="true">QToolButton::menu-indicator { image: none; }</string>
+         </property>
          <property name="text">
           <string/>
          </property>
