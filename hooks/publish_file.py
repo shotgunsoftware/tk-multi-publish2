@@ -56,7 +56,7 @@ class BasicFilePublishPlugin(HookBaseClass):
             can be extracted, it will be used as the publish version to be
             registered in Shotgun.
 
-        published_template - If set in the item properties dictionary, used to
+        publish_template - If set in the item properties dictionary, used to
             determine where "path" should be copied prior to publishing. If
             not specified, "path" will be published in place.
 
@@ -291,22 +291,38 @@ class BasicFilePublishPlugin(HookBaseClass):
         )
 
         if publishes:
-            conflict_info = (
-                "If you continue, these conflicting publishes will no longer "
-                "be available to other users via the loader:<br>"
-                "<pre>%s</pre>" % (pprint.pformat(publishes),)
-            )
-            self.logger.warn(
-                "Found %s conflicting publishes in Shotgun" %
-                    (len(publishes),),
-                extra={
-                    "action_show_more_info": {
-                        "label": "Show Conflicts",
-                        "tooltip": "Show the conflicting publishes in Shotgun",
-                        "text": conflict_info
+
+            if ("work_template" in item.properties or
+                "publish_template" in item.properties):
+
+                # templates are in play and there is already a publish in SG
+                # for this file path. We will raise here to prevent this from
+                # happening.
+                error_msg = (
+                    "Can not validate file path. There is already a publish in "
+                    "Shotgun that matches this path. Please uncheck this "
+                    "plugin or save the file to a different path."
+                )
+                self.logger.error(error_msg)
+                raise Exception(error_msg)
+
+            else:
+                conflict_info = (
+                    "If you continue, these conflicting publishes will no "
+                    "longer be available to other users via the loader:<br>"
+                    "<pre>%s</pre>" % (pprint.pformat(publishes),)
+                )
+                self.logger.warn(
+                    "Found %s conflicting publishes in Shotgun" %
+                        (len(publishes),),
+                    extra={
+                        "action_show_more_info": {
+                            "label": "Show Conflicts",
+                            "tooltip": "Show conflicting publishes in Shotgun",
+                            "text": conflict_info
+                        }
                     }
-                }
-            )
+                )
 
         self.logger.info("A Publish will be created in Shotgun and linked to:")
         self.logger.info("  %s" % (path,))
