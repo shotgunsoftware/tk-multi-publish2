@@ -71,6 +71,7 @@ class Ui_ContextWidget(object):
         self.task_menu_btn.setMaximumSize(QtCore.QSize(32, 32))
         self.task_menu_btn.setFocusPolicy(QtCore.Qt.NoFocus)
         self.task_menu_btn.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.task_menu_btn.setStyleSheet("QToolButton::menu-indicator { image: none; }")
         self.task_menu_btn.setText("")
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/tk_multi_publish2/down_arrow.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)

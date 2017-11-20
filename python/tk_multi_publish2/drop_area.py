@@ -59,7 +59,7 @@ def drop_area(cls):
                     # We don't activate the dragging state unless ext is valid.
                     self._set_property("dragging", True)
                     # Accept if there is at least one local file
-                    if url.isLocalFile():
+                    if _is_local_file(url):
                         event.accept()
                         break
                 else:
@@ -107,7 +107,7 @@ def drop_area(cls):
                         urls = fixed_urls
                     except:
                         pass
-                contents = [x.toLocalFile() for x in urls if x.isLocalFile()]
+                contents = [x.toLocalFile() for x in urls if _is_local_file(x)]
             elif event.mimeData().hasFormat("text/plain"):
                 contents = [event.mimeData().text()]
             if contents:
@@ -137,3 +137,12 @@ def drop_area(cls):
 @drop_area
 class DropAreaFrame(QtGui.QFrame):
     pass
+
+def _is_local_file(url):
+    """
+    Helper to determine if a url is of a local file scheme
+
+    :param url: Url object to verify whether it is a local file or not
+    :returns: True if the url is a local file. False otherwise
+    """
+    return (hasattr(url, "isLocalFile") and url.isLocalFile()) or url.scheme() == "file"
