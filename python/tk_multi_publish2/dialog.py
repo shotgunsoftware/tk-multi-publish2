@@ -96,6 +96,7 @@ class AppDialog(QtGui.QWidget):
 
         # overlay
         self._overlay = SummaryOverlay(self.ui.main_frame)
+        self._overlay.ui.close.clicked.connect(self._overlay_close_button_clicked)
 
         # settings
         self.ui.items_tree.status_clicked.connect(self._on_publish_status_clicked)
@@ -924,6 +925,18 @@ class AppDialog(QtGui.QWidget):
         else:
             self._progress_handler.logger.info("Publish Complete! For details, click here.")
             self._overlay.show_success()
+
+    def _overlay_close_button_clicked(self):
+        """
+        Slot that should be called when summary overlay close button is clicked.
+        """
+        # show publish and validate buttons
+        self.ui.validate.show()
+        self.ui.publish.show()
+        self.ui.close.hide()
+
+        # hide summary overlay
+        self._overlay.hide()
 
     def _visit_tree_r(self, parent, action, action_name):
         """
