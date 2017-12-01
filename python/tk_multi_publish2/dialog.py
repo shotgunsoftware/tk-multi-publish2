@@ -906,9 +906,12 @@ class AppDialog(QtGui.QWidget):
         else:
 
             # Publish succeeded
+            # Log the toolkit "Published" metric
             try:
-                # Log the toolkit "Published" metric
-                sgtk.platform.current_engine().log_metric("Published")
+                from sgtk.util.metrics import EventMetric as EventMetric
+                EventMetric.log(EventMetric.GROUP_TOOLKIT,
+                                "Published",
+                                bundle=self._bundle)
             except:
                 # ignore all errors. ex: using a core that doesn't support metrics
                 pass
