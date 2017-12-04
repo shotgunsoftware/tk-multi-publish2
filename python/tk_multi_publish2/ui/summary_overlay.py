@@ -24,6 +24,16 @@ class Ui_SummaryOverlay(object):
         self.summary_frame.setObjectName("summary_frame")
         self.gridLayout = QtGui.QGridLayout(self.summary_frame)
         self.gridLayout.setObjectName("gridLayout")
+        self.close = QtGui.QToolButton(self.summary_frame)
+        self.close.setMinimumSize(QtCore.QSize(30, 30))
+        self.close.setMaximumSize(QtCore.QSize(30, 30))
+        self.close.setText("")
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/tk_multi_publish2/cross.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.close.setIcon(icon)
+        self.close.setIconSize(QtCore.QSize(30, 30))
+        self.close.setObjectName("close")
+        self.gridLayout.addWidget(self.close, 0, 2, 1, 1)
         self.verticalLayout_2 = QtGui.QVBoxLayout()
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         spacerItem = QtGui.QSpacerItem(20, 46, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
@@ -85,7 +95,7 @@ class Ui_SummaryOverlay(object):
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
         spacerItem6 = QtGui.QSpacerItem(20, 46, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout_2.addItem(spacerItem6)
-        self.gridLayout.addLayout(self.verticalLayout_2, 0, 0, 1, 1)
+        self.gridLayout.addLayout(self.verticalLayout_2, 1, 1, 1, 1)
         self.verticalLayout.addWidget(self.summary_frame)
 
         self.retranslateUi(SummaryOverlay)
@@ -93,6 +103,7 @@ class Ui_SummaryOverlay(object):
 
     def retranslateUi(self, SummaryOverlay):
         SummaryOverlay.setWindowTitle(QtGui.QApplication.translate("SummaryOverlay", "Form", None, QtGui.QApplication.UnicodeUTF8))
+        self.close.setToolTip(QtGui.QApplication.translate("SummaryOverlay", "Close", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("SummaryOverlay", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
         self.details.setText(QtGui.QApplication.translate("SummaryOverlay", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
 
