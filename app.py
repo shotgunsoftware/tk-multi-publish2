@@ -10,6 +10,8 @@
 import os
 import sgtk
 
+logger = sgtk.platform.get_logger(__name__)
+
 class MultiPublish2(sgtk.platform.Application):
     """
     Main app class for publisher.
@@ -26,11 +28,18 @@ class MultiPublish2(sgtk.platform.Application):
         # make the util methods available via the app instance
         self.util = tk_multi_publish2.util
 
+        display_name = self.get_setting("display_name")
+        # "Publish Render" ---> publish_render
+        command_name = display_name.lower().replace(" ", "_")
+
+        if command_name.endswith("..."):
+           command_name = command_name[:-3]
+
         # register command
         cb = lambda: tk_multi_publish2.show_dialog(self)
-        menu_caption = "Publish..."
+        menu_caption = "%s..." % display_name
         menu_options = {
-            "short_name": "publish",
+            "short_name": command_name,
             "description": "Publishing of data to Shotgun",
             # dark themed icon for engines that recognize this format
             "icons": {

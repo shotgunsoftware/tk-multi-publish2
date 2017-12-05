@@ -9,6 +9,11 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 configuration:
+    display_name:
+        type: str
+        default_value: Publish
+        description: Specify the name that should be used in menus and the main
+                     publish dialog
 
     collector:
         type: hook

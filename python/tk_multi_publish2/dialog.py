@@ -175,7 +175,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.items_tree.set_plugin_manager(self._plugin_manager)
 
         # run collections
-        self._full_rebuild()
+        self._full_rebuild()        
 
     def keyPressEvent(self, event):
         """
@@ -550,7 +550,8 @@ class AppDialog(QtGui.QWidget):
         self._current_item = None
         self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
 
-        self.ui.item_name.setText("Publish Summary")
+        display_name = self._bundle.get_setting("display_name")
+        self.ui.item_name.setText("%s Summary"%display_name)
         self.ui.item_icon.setPixmap(QtGui.QPixmap(":/tk_multi_publish2/icon_256.png"))
 
         self.ui.item_thumbnail_label.hide()
