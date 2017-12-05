@@ -138,5 +138,3 @@ class CustomTreeWidgetBase(QtGui.QFrame):
                 QtGui.QIcon.Off
             )
             self.ui.status.setIcon(self._status_icon)
-
-

@@ -17,8 +17,6 @@ from .custom_widget_base import CustomTreeWidgetBase
 logger = sgtk.platform.get_logger(__name__)
 
 
-
-
 class CustomTreeWidgetItem(CustomTreeWidgetBase):
     """
     Widget representing a single item in the left hand side tree view.
@@ -37,9 +35,6 @@ class CustomTreeWidgetItem(CustomTreeWidgetBase):
     via the PublishTreeWidget class hierarchy.
     """
 
-    # indexes for the widget's stacked drag handle sub widget
-    (DRAGGABLE, LOCKED) = range(2)
-
     def __init__(self, tree_node, parent=None):
         """
         :param parent: The parent QWidget for this control
@@ -52,8 +47,8 @@ class CustomTreeWidgetItem(CustomTreeWidgetBase):
 
         self.set_status(self.NEUTRAL)
 
-        # hide the handle by default
-        self.hide_drag_handle()
+        # hide the drag handle by default
+        self.ui.handle_stack.hide()
 
         self.ui.checkbox.stateChanged.connect(self._on_checkbox_click)
         self.ui.checkbox.nextCheckState = self.nextCheckState
@@ -81,10 +76,6 @@ class CustomTreeWidgetItem(CustomTreeWidgetBase):
         current_item = self._tree_node.item
         self._tree_node.treeWidget().status_clicked.emit(current_item)
 
-    def hide_drag_handle(self):
-        """Hides the drag handle stack widget"""
-        self.ui.handle_stack.hide()
-
     def show_drag_handle(self, draggable):
         """
         Shows the stack widget with the drag icon if ``draggable`` is True.
@@ -97,8 +88,13 @@ class CustomTreeWidgetItem(CustomTreeWidgetBase):
         # the widget to align with other item widgets that do have a drag
         # handle displayed
 
-        state = self.DRAGGABLE if draggable else self.LOCKED
+        if draggable:
+            self.ui.handle_stack.show()
+            self.ui.handle_stack.setCurrentIndex(0) # draggable
+        else:
+            self.ui.handle_stack.hide()
 
-        self.ui.handle_stack.show()
-        self.ui.handle_stack.setCurrentIndex(state)
-
+    @property
+    def expand_indicator(self):
+        """Exposes the expand_indicator widget."""
+        return self.ui.expand_indicator
