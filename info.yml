@@ -15,6 +15,11 @@ configuration:
         description: Specify the name that should be used in menus and the main
                      publish dialog
 
+    display_action_name:
+        type: str
+        default_value: Publish
+        description: "Verbose description of the display_name settings"
+
     collector:
         type: hook
         description: "Logic for extracting items from the scene and from dropped files."
