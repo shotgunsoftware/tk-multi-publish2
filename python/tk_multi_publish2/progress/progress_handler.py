@@ -31,7 +31,13 @@ class ProgressHandler(object):
 
     (INFO, ERROR, DEBUG, WARNING) = range(4)
 
-    (PHASE_LOAD, PHASE_VALIDATE, PHASE_PUBLISH, PHASE_FINALIZE) = range(4)
+    (PHASE_LOAD,
+     PHASE_VALIDATE,
+     PHASE_PRE_PUBLISH,
+     PHASE_PUBLISH,
+     PHASE_FINALIZE,
+     PHASE_POST_PUBLISH,
+     PHASE_SUCCESS) = range(7)
 
     _PUBLISH_INSTANCE_ROLE = QtCore.Qt.UserRole + 1001
     _NUM_ERRORS_ROLE = QtCore.Qt.UserRole + 1002
@@ -50,15 +56,21 @@ class ProgressHandler(object):
         self._icon_lookup = {
             self.PHASE_LOAD: QtGui.QPixmap(":/tk_multi_publish2/status_load.png"),
             self.PHASE_VALIDATE: QtGui.QPixmap(":/tk_multi_publish2/status_validate.png"),
+            self.PHASE_PRE_PUBLISH: QtGui.QPixmap(":/tk_multi_publish2/status_prepare.png"),
             self.PHASE_PUBLISH: QtGui.QPixmap(":/tk_multi_publish2/status_publish.png"),
-            self.PHASE_FINALIZE: QtGui.QPixmap(":/tk_multi_publish2/status_success.png"),
+            self.PHASE_FINALIZE: QtGui.QPixmap(":/tk_multi_publish2/status_finalize.png"),
+            self.PHASE_POST_PUBLISH: QtGui.QPixmap(":/tk_multi_publish2/status_cleanup.png"),
+            self.PHASE_SUCCESS: QtGui.QPixmap(":/tk_multi_publish2/status_success.png"),
         }
 
         self._icon_error_lookup = {
             self.PHASE_LOAD: QtGui.QPixmap(":/tk_multi_publish2/status_warning.png"),
             self.PHASE_VALIDATE: QtGui.QPixmap(":/tk_multi_publish2/status_warning.png"),
+            self.PHASE_PRE_PUBLISH: QtGui.QPixmap(":/tk_multi_publish2/error.png"),
             self.PHASE_PUBLISH: QtGui.QPixmap(":/tk_multi_publish2/status_error.png"),
             self.PHASE_FINALIZE: QtGui.QPixmap(":/tk_multi_publish2/status_error.png"),
+            self.PHASE_POST_PUBLISH: QtGui.QPixmap(":/tk_multi_publish2/status_error.png"),
+            self.PHASE_SUCCESS: QtGui.QPixmap(":/tk_multi_publish2/status_error.png"),
         }
 
 

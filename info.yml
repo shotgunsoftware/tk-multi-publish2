@@ -28,6 +28,15 @@ configuration:
            identification, publish display name, image sequence paths, etc."
         default_value: "{self}/path_info.py"
 
+    process_items:
+        type: hook
+        description:
+          "This hook contains methods that process top-level publish items
+           before and after the publish occurs. These methods process all
+           top-level items as opposed to the publish plugin methods that operate
+           on a single item."
+        default_value: "{self}/process_items.py"
+
     publish_plugins:
         type: list
         description: "List of publish plugins."
