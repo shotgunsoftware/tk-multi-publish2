@@ -923,6 +923,15 @@ class AppDialog(QtGui.QWidget):
             self._progress_handler.logger.error("Publish Failed! For details, click here.")
             self._overlay.show_fail()
         else:
+
+            # Publish succeeded
+            # Log the toolkit "Published" metric
+            try:
+                self._bundle.log_metric("Published")
+            except:
+                # ignore all errors. ex: using a core that doesn't support metrics
+                pass
+
             self._progress_handler.logger.info("Publish Complete! For details, click here.")
             self._overlay.show_success()
 
