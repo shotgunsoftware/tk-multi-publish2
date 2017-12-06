@@ -908,6 +908,7 @@ class AppDialog(QtGui.QWidget):
             self._progress_handler.push("Running publish pass on each item...")
 
             if not publish_failed:
+
                 try:
                     self._visit_tree_r(parent, lambda child: child.publish(), "Publishing")
                 except Exception, e:
@@ -1003,8 +1004,6 @@ class AppDialog(QtGui.QWidget):
 
             self._progress_handler.logger.info("Publish Complete! For details, click here.")
             self._overlay.show_success()
-
-
 
     def _overlay_close_button_clicked(self):
         """

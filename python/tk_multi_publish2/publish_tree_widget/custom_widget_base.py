@@ -55,12 +55,12 @@ class CustomTreeWidgetBase(QtGui.QFrame):
         self._icon_lookup = {
             self.NEUTRAL: None,
             self.VALIDATION: QtGui.QPixmap(":/tk_multi_publish2/status_validate.png"),
+            self.VALIDATION_STANDALONE: QtGui.QPixmap(":/tk_multi_publish2/status_validate.png"),
             self.VALIDATION_ERROR: QtGui.QPixmap(":/tk_multi_publish2/status_warning.png"),
             self.PUBLISH: QtGui.QPixmap(":/tk_multi_publish2/status_publish.png"),
             self.PUBLISH_ERROR: QtGui.QPixmap(":/tk_multi_publish2/status_error.png"),
-            self.FINALIZE: QtGui.QPixmap(":/tk_multi_publish2/status_success.png"),
+            self.FINALIZE: QtGui.QPixmap(":/tk_multi_publish2/status_finalize.png"),
             self.FINALIZE_ERROR: QtGui.QPixmap(":/tk_multi_publish2/status_error.png"),
-            self.VALIDATION_STANDALONE: QtGui.QPixmap(":/tk_multi_publish2/status_success.png"),
         }
         self._status_icon = None
 
