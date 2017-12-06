@@ -117,6 +117,8 @@ class TreeNodeItem(TreeNodeBase):
 
         Overrides the default implementation to display the custom
         expand/collapse toggle tool button properly.
+
+        :param bool expand: True if item should be expanded, False otherwise
         """
 
         if expand:
@@ -128,7 +130,10 @@ class TreeNodeItem(TreeNodeBase):
         super(TreeNodeItem, self).setExpanded(expand)
 
     def double_clicked(self, column):
-        """Called when the item is double clicked"""
+        """Called when the item is double clicked
+
+        :param int column: The model column that was double clicked on the item.
+        """
 
         # ensure the expand/collapse indicator is properly displayed. this is
         # called just before the expansion state is toggled. so we show the
