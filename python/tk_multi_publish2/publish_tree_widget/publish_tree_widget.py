@@ -63,6 +63,9 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         self.addTopLevelItem(self._summary_node)
         self._summary_node.setHidden(True)
 
+        # forward double clicks on items to the items themselves
+        self.itemDoubleClicked.connect(lambda i, c: i.double_clicked(c))
+
     def set_plugin_manager(self, plugin_manager):
         """
         Associate a plugin manager.

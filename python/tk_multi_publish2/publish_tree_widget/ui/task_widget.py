@@ -23,7 +23,7 @@ class Ui_TaskWidget(object):
         self.frame.setObjectName("frame")
         self.horizontalLayout = QtGui.QHBoxLayout(self.frame)
         self.horizontalLayout.setSpacing(8)
-        self.horizontalLayout.setContentsMargins(2, 2, 2, 2)
+        self.horizontalLayout.setContentsMargins(8, 2, 2, 2)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.icon = QtGui.QLabel(self.frame)
         self.icon.setMinimumSize(QtCore.QSize(18, 18))

@@ -186,5 +186,13 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         """
         return self._embedded_widget.icon
 
+    def double_clicked(self, column):
+        """
+        This method can be overridden by subclasses to handle the case where
+        the item is double clicked.
+
+        :param int column: The column that was double clicked
+        """
+        pass
 
 

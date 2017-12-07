@@ -33,6 +33,10 @@ class TreeNodeItem(TreeNodeBase):
         super(TreeNodeItem, self).__init__(parent)
         self.setFlags(self.flags() | QtCore.Qt.ItemIsSelectable)
 
+        # go ahead and keep a handle on these so they can be reused
+        self._expanded_icon = QtGui.QIcon(":/tk_multi_publish2/down_arrow.png")
+        self._collapsed_icon = QtGui.QIcon(":/tk_multi_publish2/right_arrow.png")
+
     def _create_widget(self, parent):
         """
         Create the widget that is used to visualise the node
@@ -43,6 +47,10 @@ class TreeNodeItem(TreeNodeBase):
         widget.set_header("<b>%s</b><br>%s" % (self._item.name, self._item.display_type))
         widget.set_icon(self._item.icon)
         widget.set_checkbox_value(self.data(0, self.CHECKBOX_ROLE))
+
+        # connect the collapse/expand tool button to the toggle callback
+        widget.expand_indicator.clicked.connect(
+            lambda: self.setExpanded(not self.isExpanded()))
 
         return widget
 
@@ -103,6 +111,40 @@ class TreeNodeItem(TreeNodeBase):
         """
         return self.item
 
+    def setExpanded(self, expand):
+        """
+        Expands the item if expand is true, otherwise collapses the item.
+
+        Overrides the default implementation to display the custom
+        expand/collapse toggle tool button properly.
+
+        :param bool expand: True if item should be expanded, False otherwise
+        """
+
+        if expand:
+            icon = self._expanded_icon
+        else:
+            icon = self._collapsed_icon
+
+        self._embedded_widget.expand_indicator.setIcon(icon)
+        super(TreeNodeItem, self).setExpanded(expand)
+
+    def double_clicked(self, column):
+        """Called when the item is double clicked
+
+        :param int column: The model column that was double clicked on the item.
+        """
+
+        # ensure the expand/collapse indicator is properly displayed. this is
+        # called just before the expansion state is toggled. so we show the
+        # opposite icon
+        if self.isExpanded():
+            icon = self._collapsed_icon
+        else:
+            icon = self._expanded_icon
+
+        self._embedded_widget.expand_indicator.setIcon(icon)
+
 
 class TopLevelTreeNodeItem(TreeNodeItem):
     """
@@ -134,7 +176,6 @@ class TopLevelTreeNodeItem(TreeNodeItem):
         widget.show_drag_handle(self.item.context_change_allowed)
 
         return widget
-
 
     def synchronize_context(self):
         """
