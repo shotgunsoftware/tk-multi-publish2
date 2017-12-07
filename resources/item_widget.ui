@@ -28,6 +28,9 @@
    </property>
    <item>
     <widget class="QFrame" name="frame">
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -103,8 +106,14 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="mouseTracking">
+         <bool>false</bool>
+        </property>
         <property name="text">
          <string>&lt;big&gt;Alembic Caches&lt;/big&gt;&lt;br&gt;foo</string>
+        </property>
+        <property name="textInteractionFlags">
+         <set>Qt::NoTextInteraction</set>
         </property>
        </widget>
       </item>
@@ -123,7 +132,7 @@
          </size>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="drag">
          <layout class="QHBoxLayout" name="horizontalLayout_2">

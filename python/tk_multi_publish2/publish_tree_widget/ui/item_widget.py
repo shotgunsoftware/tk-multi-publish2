@@ -18,6 +18,7 @@ class Ui_ItemWidget(object):
         self.verticalLayout.setContentsMargins(2, 2, 2, 2)
         self.verticalLayout.setObjectName("verticalLayout")
         self.frame = QtGui.QFrame(ItemWidget)
+        self.frame.setAutoFillBackground(False)
         self.frame.setFrameShape(QtGui.QFrame.StyledPanel)
         self.frame.setFrameShadow(QtGui.QFrame.Raised)
         self.frame.setObjectName("frame")
@@ -47,6 +48,8 @@ class Ui_ItemWidget(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.header.sizePolicy().hasHeightForWidth())
         self.header.setSizePolicy(sizePolicy)
+        self.header.setMouseTracking(False)
+        self.header.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.header.setObjectName("header")
         self.horizontalLayout.addWidget(self.header)
         self.handle_stack = QtGui.QStackedWidget(self.frame)
@@ -101,7 +104,7 @@ class Ui_ItemWidget(object):
         self.verticalLayout.addWidget(self.frame)
 
         self.retranslateUi(ItemWidget)
-        self.handle_stack.setCurrentIndex(1)
+        self.handle_stack.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(ItemWidget)
 
     def retranslateUi(self, ItemWidget):
