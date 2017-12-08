@@ -89,6 +89,15 @@ class PluginManager(object):
         """
         Removed the given item from the list of top level items
         """
+
+        # we must also remove the path from the list of dropped paths, so that it can be added again if chosen
+        path = item.properties.get("path")
+        try:
+            self._dropped_paths.remove(path)
+        except ValueError:
+            logger.warning("Item's path: %s could not be removed from dropped paths list: %s" % (path,
+                                                                                                self._dropped_paths))
+
         self._root_item.remove_item(item)
 
     @property
