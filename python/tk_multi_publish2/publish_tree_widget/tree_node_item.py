@@ -120,14 +120,8 @@ class TreeNodeItem(TreeNodeBase):
 
         :param bool expand: True if item should be expanded, False otherwise
         """
-
-        if expand:
-            icon = self._expanded_icon
-        else:
-            icon = self._collapsed_icon
-
-        self._embedded_widget.expand_indicator.setIcon(icon)
         super(TreeNodeItem, self).setExpanded(expand)
+        self._check_expand_state()
 
     def double_clicked(self, column):
         """Called when the item is double clicked
@@ -145,6 +139,18 @@ class TreeNodeItem(TreeNodeBase):
 
         self._embedded_widget.expand_indicator.setIcon(icon)
 
+    def _check_expand_state(self):
+        """
+        Sets the expand indicator based on the expand state of the item
+        :return:
+        """
+
+        if self.isExpanded():
+            icon = self._expanded_icon
+        else:
+            icon = self._collapsed_icon
+
+        self._embedded_widget.expand_indicator.setIcon(icon)
 
 class TopLevelTreeNodeItem(TreeNodeItem):
     """

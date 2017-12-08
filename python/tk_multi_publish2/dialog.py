@@ -18,7 +18,7 @@ from .ui.dialog import Ui_Dialog
 from .processing import PluginManager, Task, Item
 from .progress import ProgressHandler
 from .summary_overlay import SummaryOverlay
-from .publish_tree_widget import TreeNodeItem
+from .publish_tree_widget import TreeNodeItem, TopLevelTreeNodeItem
 
 # import frameworks
 settings = sgtk.platform.import_framework("tk-framework-shotgunutils", "settings")
@@ -115,8 +115,8 @@ class AppDialog(QtGui.QWidget):
 
         # tool buttons
         self.ui.delete_items.clicked.connect(self._delete_selected)
-        self.ui.expand_all.clicked.connect(self.ui.items_tree.expandAll)
-        self.ui.collapse_all.clicked.connect(self._collapse_tree)
+        self.ui.expand_all.clicked.connect(lambda: self._set_tree_items_expanded(True))
+        self.ui.collapse_all.clicked.connect(lambda: self._set_tree_items_expanded(False))
         self.ui.refresh.clicked.connect(self._full_rebuild)
 
         # stop processing logic
@@ -687,15 +687,17 @@ class AppDialog(QtGui.QWidget):
             self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
             self.ui.items_tree.build_tree()
 
-    def _collapse_tree(self):
+    def _set_tree_items_expanded(self, expanded):
         """
-        Contract all the nodes in the currently active left hand side tree
+        Expand/Collapse all top-level publish items in the left side tree
+
+        :param boole expanded: Expand if True, Collapse otherwise
         """
-        for context_index in xrange(self.ui.items_tree.topLevelItemCount()):
-            context_item = self.ui.items_tree.topLevelItem(context_index)
-            for child_index in xrange(context_item.childCount()):
-                child_item = context_item.child(child_index)
-                self.ui.items_tree.collapseItem(child_item)
+
+        for it in QtGui.QTreeWidgetItemIterator(self.ui.items_tree):
+            item = it.value()
+            if isinstance(item, TopLevelTreeNodeItem):
+                item.setExpanded(expanded)
 
     def _delete_selected(self):
         """
@@ -773,7 +775,8 @@ class AppDialog(QtGui.QWidget):
 
         :param int number_phases: Number of passes to run
         """
-        self.ui.items_tree.expandAll()
+
+        self._set_tree_items_expanded(True)
 
         parent = self.ui.items_tree.invisibleRootItem()
 
