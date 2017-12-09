@@ -22,25 +22,29 @@ class ProcessItems(HookBaseClass):
         """
         This method is called after all items have been finalized.
 
-        The method will run
+        The method will run even if the finalize phase fails. The method will
+        not run if the publish is manually stopped via the UI's cancel button.
 
         A list of the top-level items is supplied. Items can be traversed via
         the `children` property.
 
         :param list items: All enabled, top-level publish items.
+
+        This hook might implement logic like this::
+
+            # iterate over all top-level items
+            for item in items:
+
+                # check the state of the items...
+                # setting information in the item properties during the
+                # publish phase method of publish plugins is a common
+                # pattern and can be used to introspect the state of the
+                # items in this method.
+                if item.properties.get("errors"):
+                    # process the items that had trouble during publish
+                    ...
+
+        NOTE: The items passed in are the top-level items only. To access the
+        children of an item, use `item.children`.
         """
-
-        # iterate over all top-level items
-        for item in items:
-
-            if item.properties.get("errors"):
-                # setting information in the item properties during the publish
-                # phase method of publish plugins is a common pattern and can
-                # be used to introspect the state of the items in this method.
-                self.logger.debug("ERRORS: %s" % (item.properties.get("errors",)))
-            else:
-                self.logger.debug("ITEM: " + str(item))
-
-            #if item.children:
-                # process children...
-
+        pass
