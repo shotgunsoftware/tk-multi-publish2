@@ -8,9 +8,11 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-import traceback
-import sgtk
 from contextlib import contextmanager
+import os
+import traceback
+
+import sgtk
 from sgtk.platform.qt import QtCore, QtGui
 from .setting import Setting
 
@@ -37,14 +39,22 @@ class PluginBase(object):
 
         self._bundle = sgtk.platform.current_bundle()
 
-        # create an instance of the hook
-        self._hook_instance = self._bundle.create_hook_instance(self._path)
-
         self._logger = logger
         self._settings = {}
 
+        # create an instance of the hook
+        self._hook_instance = self._create_hook_instance(self._path)
+
         # kick things off
         self._validate_and_resolve_config()
+
+    def _create_hook_instance(self, path):
+        """
+        Create the plugin's hook instance. Subclasses can reimplement for more
+        sophisticated hook instantiation.
+        :return:
+        """
+        return self._bundle.create_hook_instance(path)
 
     def __repr__(self):
         """
@@ -128,6 +138,49 @@ class PublishPlugin(PluginBase):
         super(PublishPlugin, self).__init__(path, settings, logger)
 
         self._icon_pixmap = self._load_plugin_icon()
+
+    def _create_hook_instance(self, path):
+        """
+        Create the plugin's hook instance.
+
+        For publish plugins, we inject the plugin base hook's class in order to
+        provide a default implementation of the task settings UI.
+        """
+
+        # get the path to the base plugin
+        plugin_base_hook_file = os.path.join(
+            self._bundle.disk_location,
+            "hooks",
+            # don't include a .py here. it's a legacy core thing to add it
+            # automatically
+            "plugin_base"
+        )
+
+        # now try to create the hook instance using the
+        try:
+            # retrieve the class for the plugin base hook
+            plugin_base_class = self._bundle.get_hook_class(
+                plugin_base_hook_file)
+
+            # create the plugin hook instance using the base plugin as the base
+            # class. this may fail if core does not support the base_class
+            # argument.
+            cls = self._bundle.create_hook_instance(
+                path,
+                base_class=plugin_base_class
+            )
+
+            return cls
+
+        except Exception as e:
+            # oops! this isn't ideal, but not fatal. log a message and use the
+            # default base class.
+            self._logger.debug(
+                "Failed to create the publish plugin instance using the base "
+                "plugin class from this hook: %s. Proceeding with the default "
+                "plugin base class." % (plugin_base_hook_file,)
+            )
+            return super(PublishPlugin, self)._create_hook_instance(path)
 
     def _load_plugin_icon(self):
         """
