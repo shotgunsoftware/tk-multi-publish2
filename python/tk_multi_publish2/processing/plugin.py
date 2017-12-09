@@ -151,7 +151,7 @@ class PublishPlugin(PluginBase):
 
         # load default pixmap if hook doesn't define one
         if pixmap is None:
-            pixmap = QtGui.QPixmap(":/tk_multi_publish2/item.png")
+            pixmap = QtGui.QPixmap(":/tk_multi_publish2/task.png")
 
         return pixmap
 

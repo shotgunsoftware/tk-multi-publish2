@@ -878,29 +878,6 @@ class AppDialog(QtGui.QWidget):
                 if item.enabled
             ]
 
-            # ---- pre publish (all items)
-
-            # if we're here, we know validation was successful.
-
-            self._progress_handler.set_phase(self._progress_handler.PHASE_PRE_PUBLISH)
-            self._progress_handler.push("Running prepare pass on all items...")
-
-            # inform the progress system of the current mode
-            try:
-                self._bundle.execute_hook_method(
-                    "process_items",
-                    "prepare",
-                    items=top_level_items
-                )
-            except Exception, e:
-                # ensure the full error shows up in the log file
-                logger.error("Items pre publish error stack:\n%s" % (traceback.format_exc(),))
-                # and log to ui
-                self._progress_handler.logger.error("Error during items pre publish. Aborting.")
-                publish_failed = True
-            finally:
-                self._progress_handler.pop()
-
             # ---- publish each item
 
             # inform the progress system of the current mode
@@ -940,30 +917,36 @@ class AppDialog(QtGui.QWidget):
                 finally:
                     self._progress_handler.pop()
 
-            # ---- post publish (all items)
+                # post finalize (all items)
 
-            # we will run this even if the publish failed, but halt if
-            # processing was manually stopped
-            if not self._stop_processing_flagged:
+                # we will run post_finalize, even if the finalize failed, unless
+                # we get a manual stop from the user
+                if not self._stop_processing_flagged:
 
-                self._progress_handler.set_phase(self._progress_handler.PHASE_POST_PUBLISH)
-                self._progress_handler.push("Running cleanup pass on all items...")
+                    self._progress_handler.set_phase(
+                        self._progress_handler.PHASE_POST_FINALIZE)
+                    self._progress_handler.push(
+                        "Running post_finalize pass on all items...")
 
-                # inform the progress system of the current mode
-                try:
-                    self._bundle.execute_hook_method(
-                        "process_items",
-                        "cleanup",
-                        items=top_level_items
-                    )
-                except Exception, e:
-                    # ensure the full error shows up in the log file
-                    logger.error("Items post publish error stack:\n%s" % (traceback.format_exc(),))
-                    # and log to ui
-                    self._progress_handler.logger.error("Error during items post publish. Aborting.")
-                    publish_failed = True
-                finally:
-                    self._progress_handler.pop()
+                    # inform the progress system of the current mode
+                    try:
+                        self._bundle.execute_hook_method(
+                            "process_items",
+                            "post_finalize",
+                            items=top_level_items
+                        )
+                    except Exception, e:
+                        # ensure the full error shows up in the log file
+                        logger.error(
+                            "Items post publish error stack:\n%s" %
+                            (traceback.format_exc(),)
+                        )
+                        # and log to ui
+                        self._progress_handler.logger.error(
+                            "Error during items post publish. Aborting.")
+                        publish_failed = True
+                    finally:
+                        self._progress_handler.pop()
 
             if not publish_failed:
                 self._progress_handler.set_phase(self._progress_handler.PHASE_SUCCESS)

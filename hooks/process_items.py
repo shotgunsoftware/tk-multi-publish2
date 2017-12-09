@@ -18,41 +18,29 @@ class ProcessItems(HookBaseClass):
     the publishing process.
     """
 
-    def prepare(self, items):
+    def post_finalize(self, items):
         """
-        This method is called after all items to be published have been
-        validated, just before the publishing begins. This method will not run
-        if validation fails.
+        This method is called after all items have been finalized.
 
-        This method can be used to do any type of pre-publish preparation
-        required once it is known that all items have been validated. This may
-        include custom data base, filesystem, or cache prep.
+        The method will run
 
         A list of the top-level items is supplied. Items can be traversed via
         the `children` property.
 
-        :param items: All enabled, top-level publish items.
+        :param list items: All enabled, top-level publish items.
         """
-        pass
 
+        # iterate over all top-level items
+        for item in items:
 
-    def cleanup(self, items):
-        """
-        This method is called after all items have been published and finalized.
-        This method will run even if the publish or finalize phases fail.
+            if item.properties.get("errors"):
+                # setting information in the item properties during the publish
+                # phase method of publish plugins is a common pattern and can
+                # be used to introspect the state of the items in this method.
+                self.logger.debug("ERRORS: %s" % (item.properties.get("errors",)))
+            else:
+                self.logger.debug("ITEM: " + str(item))
 
-        This method can be used to do any type of post-publish cleanup
-        required once all items have been through the publish and finalize
-        phases. This may include custom data base, filesystem, or cache cleanup.
+            #if item.children:
+                # process children...
 
-        A list of the top-level items is supplied. Items can be traversed via
-        the `children` property.
-
-        The suggested workflow is to populate the `item.properties` dictionary
-        in the publish plugins' `publish()` and `validate()` methods. In this
-        method you can analyze the state of the supplied items to determine
-        if the expected properties are populated and act accordingly.
-
-        :param items: All enabled, top-level publish items.
-        """
-        pass

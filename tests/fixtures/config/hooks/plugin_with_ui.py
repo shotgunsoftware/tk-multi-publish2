@@ -192,6 +192,8 @@ class CustomWidgetController(QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
 
         layout = QtGui.QFormLayout(self)
+        layout.setContentsMargins(4, 4, 4, 4)
+        layout.setSpacing(4)
         self.setLayout(layout)
 
         self.edit = WidgetHandler(layout, "Edit", QtGui.QLineEdit(self))
