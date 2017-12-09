@@ -31,10 +31,10 @@ configuration:
     process_items:
         type: hook
         description:
-          "This hook contains methods that process top-level publish items
-           before and after the publish occurs. These methods process all
-           top-level items as opposed to the publish plugin methods that operate
-           on a single item."
+          "This hook contains a post_finalize method that runs once the finalize
+          phase of publish completes. It operates on a list of all top-level
+          items rather than the publish plugins which operate on individual
+          items."
         default_value: "{self}/process_items.py"
 
     publish_plugins:

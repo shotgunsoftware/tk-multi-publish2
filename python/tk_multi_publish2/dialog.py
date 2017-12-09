@@ -926,7 +926,7 @@ class AppDialog(QtGui.QWidget):
                     self._progress_handler.set_phase(
                         self._progress_handler.PHASE_POST_FINALIZE)
                     self._progress_handler.push(
-                        "Running post_finalize pass on all items...")
+                        "Running post-finalize pass on all items...")
 
                     # inform the progress system of the current mode
                     try:
