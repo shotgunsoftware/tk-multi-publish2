@@ -22,6 +22,12 @@ class CustomSettingsWidget(QtGui.QWidget):
         """
         QtGui.QWidget.__init__(self, parent)
 
+        self._layout = QtGui.QVBoxLayout()
+
+        self._layout.setContentsMargins(4, 4, 4, 4)
+        self._layout.setSpacing(4)
+        self.setLayout(self._layout)
+
     @property
     def widget(self):
         """
