@@ -147,20 +147,14 @@ class PublishPlugin(PluginBase):
         provide a default implementation of the task settings UI.
         """
 
-        # get the path to the base plugin
-        plugin_base_hook_file = os.path.join(
-            self._bundle.disk_location,
-            "hooks",
-            # don't include a .py here. it's a legacy core thing to add it
-            # automatically
-            "plugin_base"
-        )
+        plugin_base_file = "{self}/plugin_base.py"
 
         # now try to create the hook instance using the
         try:
-            # retrieve the class for the plugin base hook
-            plugin_base_class = self._bundle.get_hook_class(
-                plugin_base_hook_file)
+            # retrieve the class for the plugin base hook. this hook lives in
+            # the app itself, so we can refer to it with the hook expression
+            # that would be used if configured
+            plugin_base_class = self._bundle.get_hook_class(plugin_base_file)
 
             # create the plugin hook instance using the base plugin as the base
             # class. this may fail if core does not support the base_class
@@ -173,12 +167,13 @@ class PublishPlugin(PluginBase):
             return cls
 
         except Exception as e:
+
             # oops! this isn't ideal, but not fatal. log a message and use the
             # default base class.
             self._logger.debug(
                 "Failed to create the publish plugin instance using the base "
                 "plugin class from this hook: %s. Proceeding with the default "
-                "plugin base class." % (plugin_base_hook_file,)
+                "plugin base class." % (plugin_base_file,)
             )
             return super(PublishPlugin, self)._create_hook_instance(path)
 
