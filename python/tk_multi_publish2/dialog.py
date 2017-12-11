@@ -359,7 +359,16 @@ class AppDialog(QtGui.QWidget):
             logger.debug("Reusing custom ui from %s.", new_task_selection.plugin)
         else:
             logger.debug("Building a custom ui for %s.", new_task_selection.plugin)
-            widget = new_task_selection.plugin.run_create_settings_widget(self.ui.custom_settings_page)
+
+            # get a list of items for selected tasks. we'll pass these to the
+            # widget creation method
+            items_for_selected_tasks = set(
+                [task.item for task in new_task_selection])
+
+            widget = new_task_selection.plugin.run_create_settings_widget(
+                self.ui.custom_settings_page,
+                items_for_selected_tasks=items_for_selected_tasks
+            )
             self.ui.custom_settings_page.widget = widget
 
         # Update the UI with the settings from the current plugin.
@@ -1108,13 +1117,6 @@ class _TaskSelection(object):
             return self._tasks[0].plugin
         else:
             return None
-
-    @property
-    def tasks(self):
-        """
-        Returns the list of `processing.task.Task` objects for this selection.
-        """
-        return self._tasks
 
     def get_settings(self, widget):
         """
