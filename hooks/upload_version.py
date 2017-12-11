@@ -214,9 +214,9 @@ class UploadVersionPlugin(HookBaseClass):
 
             self.logger.debug("Using path info hook to determine publish name.")
 
-            # get the publish name for this file path. this will ensure we get a
-            # consistent name across version publishes of this file.
-            publish_name = publisher.util.get_publish_name(path)
+            # use the path's filename as the publish name
+            path_components = publisher.util.get_file_path_components(path)
+            publish_name = path_components["filename"]
 
         self.logger.debug("Publish name: %s" % (publish_name,))
 
