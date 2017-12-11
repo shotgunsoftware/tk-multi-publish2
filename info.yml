@@ -18,7 +18,7 @@ configuration:
     display_action_name:
         type: str
         default_value: Publish
-        description: "Verbose description of the display_name settings"
+        description: "Shorter version of display_name setting, used as button name."
 
     collector:
         type: hook

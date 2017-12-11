@@ -175,7 +175,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.items_tree.set_plugin_manager(self._plugin_manager)
 
         display_action_name = self._bundle.get_setting("display_action_name")
-        self.ui.publish.setText(QtGui.QApplication.translate("Dialog", display_action_name, None, QtGui.QApplication.UnicodeUTF8))
+        self.ui.publish.setText(display_action_name)
 
         # run collections
         self._full_rebuild()        
