@@ -20,6 +20,9 @@ from .progress import ProgressHandler
 from .summary_overlay import SummaryOverlay
 from .publish_tree_widget import TreeNodeItem, TopLevelTreeNodeItem
 
+
+import pprint
+
 # import frameworks
 settings = sgtk.platform.import_framework("tk-framework-shotgunutils", "settings")
 help_screen = sgtk.platform.import_framework("tk-framework-qtwidgets", "help_screen")
@@ -946,6 +949,10 @@ class AppDialog(QtGui.QWidget):
         """
         Slot that should be called when summary overlay close button is clicked.
         """
+        # clear dropped files
+        self._plugin_manager.clear_external_files()
+        self._synchronize_tree()
+
         # show publish and validate buttons
         self.ui.validate.show()
         self.ui.publish.show()

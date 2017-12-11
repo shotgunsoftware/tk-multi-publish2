@@ -164,6 +164,14 @@ class PluginManager(object):
         )
         return len(items_created)
 
+    def clear_external_files(self):
+        """
+        Removes all external files
+        """
+        self._path_to_item_lookup = {}
+
+        self.run_collectors()
+
     def _collect(self, collect_current_scene, paths=None):
         """
         Runs the collector and generates fresh items.
