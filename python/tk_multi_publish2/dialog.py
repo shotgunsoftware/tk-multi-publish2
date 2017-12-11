@@ -20,9 +20,6 @@ from .progress import ProgressHandler
 from .summary_overlay import SummaryOverlay
 from .publish_tree_widget import TreeNodeItem, TopLevelTreeNodeItem
 
-
-import pprint
-
 # import frameworks
 settings = sgtk.platform.import_framework("tk-framework-shotgunutils", "settings")
 help_screen = sgtk.platform.import_framework("tk-framework-qtwidgets", "help_screen")
