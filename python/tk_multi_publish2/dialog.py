@@ -946,6 +946,10 @@ class AppDialog(QtGui.QWidget):
         """
         Slot that should be called when summary overlay close button is clicked.
         """
+        # clear dropped files
+        self._plugin_manager.clear_external_files()
+        self._synchronize_tree()
+
         # show publish and validate buttons
         self.ui.validate.show()
         self.ui.publish.show()
