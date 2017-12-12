@@ -61,9 +61,9 @@ class SummaryOverlay(QtGui.QWidget):
             QtGui.QPixmap(":/tk_multi_publish2/publish_complete.png")
         )
         self.ui.label.setText("Publish\nComplete")
-        self.ui.info.setText("For more details, <b>click here</b>.")
+        self.ui.info.setText("For more details, <b><u>click here</u></b>.")
 
-        self.ui.publish_again.setText("To publish again, <b>click here</b>.")
+        self.ui.publish_again.setText("To publish again, <b><u>click here</u></b>.")
         self.ui.publish_again.show()
 
         self.show()
@@ -76,7 +76,7 @@ class SummaryOverlay(QtGui.QWidget):
             QtGui.QPixmap(":/tk_multi_publish2/publish_failed.png")
         )
         self.ui.label.setText("Publish\nFailed!")
-        self.ui.info.setText("For more details, <b>click here</b>.")
+        self.ui.info.setText("For more details, <b><u>click here</u></b>.")
 
         self.ui.publish_again.hide()
         self.ui.publish_again.setText("")
