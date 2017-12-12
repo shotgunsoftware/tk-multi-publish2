@@ -34,8 +34,9 @@ class PluginManager(object):
 
         self._logger = publish_logger
 
-        # track files dropped onto the manager
-        self._dropped_paths = []
+        # here we maintain a lookup items generated for a given path. this dict
+        # is rebuild whenever a full refresh of the tree is created.
+        self._path_to_item_lookup = {}
 
         logger.debug("Loading plugin configuration")
         self._publish_plugins = []
@@ -85,11 +86,28 @@ class PluginManager(object):
         """
         return self._root_item.children
 
-    def remove_top_level_item(self, item):
+    def remove_top_level_item(self, item_to_remove):
         """
         Removed the given item from the list of top level items
         """
-        self._root_item.remove_item(item)
+
+        # since we keep a look of items created from browsed/dropped external
+        # files, we can check to see if the item to be deleted is one of those.
+        # if it is, we need to remove that item from the lookup and remove the
+        # path from the list of external files we're tracking. first, see if the
+        # item matches any items created for a path. there should only be one,
+        # but we'll check all items in the lookup to be sure.
+        paths_to_delete = []
+        for (path, item_for_path) in self._path_to_item_lookup.iteritems():
+            if item_for_path == item_to_remove:
+                paths_to_delete.append(path)
+
+        # now we iterate over the matched paths and remove them from the list of
+        # external files and the item lookup.
+        for path in paths_to_delete:
+            del self._path_to_item_lookup[path]
+
+        self._root_item.remove_item(item_to_remove)
 
     @property
     def plugins(self):
@@ -109,20 +127,26 @@ class PluginManager(object):
         logger.debug("Refresh: Removing existing objects")
         self._root_item = Item.create_invisible_root_item()
 
+        # this is a full refresh, so we clear out this lookup. it will be
+        # regenerated as items are created for all the external files. before
+        # clearning the lookup, get a list of all external files collected.
+        external_files = self._path_to_item_lookup.keys()
+        self._path_to_item_lookup = {}
+
         logger.debug("Refresh: Running collection on current scene")
         # process the current scene
         current_scene_items_created = self._collect(
             collect_current_scene=True
         )
 
-        logger.debug("Refresh: Running collection on all dropped files")
-        # process all dropped paths
-        dropped_files_items_created = self._collect(
+        logger.debug("Refresh: Running collection on all external files")
+        # process all external paths
+        external_files_items_created = self._collect(
             collect_current_scene=False,
-            paths=self._dropped_paths
+            paths=external_files
         )
 
-        return len(current_scene_items_created) + len(dropped_files_items_created)
+        return len(current_scene_items_created) + len(external_files_items_created)
 
     def add_external_files(self, paths):
         """
@@ -131,23 +155,22 @@ class PluginManager(object):
         :param str paths: List of full file path
         :returns: Number of items created by collectors
         """
-        # make sure we don't drop the same file twice
-        paths_to_process = []
-        for path in paths:
-            if path not in self._dropped_paths:
-                logger.debug("Adding external file '%s'" % path)
-                paths_to_process.append(path)
-            else:
-                logger.warning("Skipping duplicate path '%s'" % path)
-        self._dropped_paths.extend(paths_to_process)
 
         # now run the collection for all the new items
         logger.debug("Running scene collection for new paths")
         items_created = self._collect(
             collect_current_scene=False,
-            paths=paths_to_process
+            paths=paths
         )
         return len(items_created)
+
+    def clear_external_files(self):
+        """
+        Removes all external files
+        """
+        self._path_to_item_lookup = {}
+
+        self.run_collectors()
 
     def _collect(self, collect_current_scene, paths=None):
         """
@@ -171,7 +194,18 @@ class PluginManager(object):
 
         if paths:
             for path in paths:
-                self._collector.run_process_file(self._root_item, path)
+                # we only want to collect file paths for which items have not
+                # already been created. we can check the path to item lookup
+                # to see if the path already exists as a key. this means that
+                # this file path has already been collected and an item
+                # created. if the path doesn't exist, we run the collection
+                # method and populate the lookup with the item created
+                if path in self._path_to_item_lookup:
+                    logger.debug("Skipping duplicate path '%s'" % path)
+                else:
+                    logger.debug("Adding external file '%s'" % path)
+                    item = self._collector.run_process_file(self._root_item, path)
+                    self._path_to_item_lookup[path] = item
 
         # get all items after scan
         all_items_after = self._get_item_tree_as_list()

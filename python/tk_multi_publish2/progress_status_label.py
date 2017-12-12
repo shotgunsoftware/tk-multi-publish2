@@ -18,8 +18,7 @@ logger = sgtk.platform.get_logger(__name__)
 
 class ProgressStatusLabel(QtGui.QLabel):
     """
-    Elided Label which underlines on mouseover
-    and fires onclick events. Specifically designed
+    Elided Label which fires onclick events. Specifically designed
     to be used as part of the logging toolbar.
     """
 
@@ -47,22 +46,6 @@ class ProgressStatusLabel(QtGui.QLabel):
         """
         super(ProgressStatusLabel, self).mousePressEvent(event)
         self.clicked.emit()
-
-    def enterEvent(self, event):
-        """
-        When the mouse enters
-        """
-        font = QtGui.QFont()
-        font.setUnderline(True)
-        self.setFont(font)
-
-    def leaveEvent(self, event):
-        """
-        When the mouse leaves
-        """
-        font = QtGui.QFont()
-        font.setUnderline(False)
-        self.setFont(font)
 
     def resizeEvent(self, event):
         """

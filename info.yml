@@ -9,6 +9,16 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 configuration:
+    display_name:
+        type: str
+        default_value: Publish
+        description: Specify the name that should be used in menus and the main
+                     publish dialog
+
+    display_action_name:
+        type: str
+        default_value: Publish
+        description: "Shorter version of display_name setting, used as button name."
 
     collector:
         type: hook
@@ -79,5 +89,5 @@ supported_engines:
 # the frameworks required to run this app
 frameworks:
     - {"name": "tk-framework-shotgunutils", "version": "v5.x.x"}
-    - {"name": "tk-framework-qtwidgets", "version": "v2.x.x"}
+    - {"name": "tk-framework-qtwidgets", "version": "v2.x.x", "minimum_version": "v2.6.2"}
     

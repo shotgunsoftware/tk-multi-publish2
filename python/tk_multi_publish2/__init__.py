@@ -8,6 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import sgtk
 from sgtk.platform.qt import QtCore, QtGui
 import util
 
@@ -20,8 +21,10 @@ def show_dialog(app):
     # defer imports so that the app works gracefully in batch modes
     from .dialog import AppDialog
 
+    display_name = sgtk.platform.current_bundle().get_setting("display_name")
+
     # start ui
-    app.engine.show_dialog("Shotgun Publish", app, AppDialog)
+    app.engine.show_dialog(display_name, app, AppDialog)
 
 
 

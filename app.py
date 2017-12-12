@@ -9,6 +9,9 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 import os
 import sgtk
+import re
+
+logger = sgtk.platform.get_logger(__name__)
 
 class MultiPublish2(sgtk.platform.Application):
     """
@@ -26,11 +29,17 @@ class MultiPublish2(sgtk.platform.Application):
         # make the util methods available via the app instance
         self.util = tk_multi_publish2.util
 
+        display_name = self.get_setting("display_name")
+        # "Publish Render" ---> publish_render
+        command_name = display_name.lower()
+        # replace all non alphanumeric characters by '_'
+        command_name = re.sub('[^0-9a-zA-Z]+', '_', command_name)
+
         # register command
         cb = lambda: tk_multi_publish2.show_dialog(self)
-        menu_caption = "Publish..."
+        menu_caption = "%s..." % display_name
         menu_options = {
-            "short_name": "publish",
+            "short_name": command_name,
             "description": "Publishing of data to Shotgun",
             # dark themed icon for engines that recognize this format
             "icons": {
