@@ -96,7 +96,7 @@ class AppDialog(QtGui.QWidget):
 
         # overlay
         self._overlay = SummaryOverlay(self.ui.main_frame)
-        self._overlay.ui.close.clicked.connect(self._overlay_close_button_clicked)
+        self._overlay.publish_again_clicked.connect(self._publish_again_clicked)
 
         # settings
         self.ui.items_tree.status_clicked.connect(self._on_publish_status_clicked)
@@ -163,7 +163,8 @@ class AppDialog(QtGui.QWidget):
         )
 
         # link the summary overlay status button with the log window
-        self._overlay.ui.details.clicked.connect(self._progress_handler._progress_details.toggle)
+        self._overlay.info_clicked.connect(
+            self._progress_handler._progress_details.toggle)
 
         # hide settings for now
         self.ui.item_settings_label.hide()
@@ -656,6 +657,7 @@ class AppDialog(QtGui.QWidget):
         try:
             self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
             self._overlay.show_loading()
+            self.ui.button_container.hide()
             num_items_created = self._plugin_manager.add_external_files(str_files)
             num_errors = self._progress_handler.pop()
 
@@ -675,6 +677,7 @@ class AppDialog(QtGui.QWidget):
 
         finally:
             self._overlay.hide()
+            self.ui.button_container.show()
 
         # lastly, select the summary
         self.ui.items_tree.select_first_item()
@@ -851,6 +854,9 @@ class AppDialog(QtGui.QWidget):
         """
         publish_failed = False
 
+        # hide the action buttons during publish
+        self.ui.button_container.hide()
+
         # Make sure that settings from the current selection are retrieved from the UI and applied
         # back on the tasks.
         self._prepare_tree(number_phases=3)
@@ -863,10 +869,12 @@ class AppDialog(QtGui.QWidget):
 
             if issues > 0:
                 self._progress_handler.logger.error("Validation errors detected. Not proceeding with publish.")
+                self.ui.button_container.show()
                 return
 
             if self._stop_processing_flagged:
                 # stop processing
+                self.ui.button_container.show()
                 return
 
             # inform the progress system of the current mode
@@ -910,6 +918,7 @@ class AppDialog(QtGui.QWidget):
             # if stop processing was flagged, don't show summary at end
             if self._stop_processing_flagged:
                 self._progress_handler.logger.info("Processing aborted by user.")
+                self.ui.button_container.show()
                 return
 
         finally:
@@ -942,7 +951,7 @@ class AppDialog(QtGui.QWidget):
             self._progress_handler.logger.info("Publish Complete! For details, click here.")
             self._overlay.show_success()
 
-    def _overlay_close_button_clicked(self):
+    def _publish_again_clicked(self):
         """
         Slot that should be called when summary overlay close button is clicked.
         """
@@ -955,8 +964,13 @@ class AppDialog(QtGui.QWidget):
         self.ui.publish.show()
         self.ui.close.hide()
 
+        self.ui.button_container.show()
+
         # hide summary overlay
         self._overlay.hide()
+
+        # select summary
+        self.ui.items_tree.select_first_item()
 
     def _visit_tree_r(self, parent, action, action_name):
         """
