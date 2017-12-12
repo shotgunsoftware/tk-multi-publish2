@@ -10,6 +10,8 @@
 
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
+
+import base_hooks
 import util
 
 def show_dialog(app):

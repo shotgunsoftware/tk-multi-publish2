@@ -513,13 +513,8 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-<<<<<<< HEAD
                        <width>515</width>
                        <height>170</height>
-=======
-                       <width>59</width>
-                       <height>26</height>
->>>>>>> master
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_10" stretch="0,1">
@@ -644,53 +639,7 @@
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_13">
                       <item>
-<<<<<<< HEAD
                        <widget class="CustomSettingsWidget" name="task_settings" native="true"/>
-=======
-                       <widget class="QScrollArea" name="scrollArea_2">
-                        <property name="widgetResizable">
-                         <bool>true</bool>
-                        </property>
-                        <widget class="QWidget" name="scrollAreaWidgetContents_2">
-                         <property name="geometry">
-                          <rect>
-                           <x>0</x>
-                           <y>0</y>
-                           <width>83</width>
-                           <height>26</height>
-                          </rect>
-                         </property>
-                         <layout class="QVBoxLayout" name="verticalLayout_13" stretch="0,1">
-                          <property name="spacing">
-                           <number>0</number>
-                          </property>
-                          <property name="margin">
-                           <number>0</number>
-                          </property>
-                          <item>
-                           <widget class="QLabel" name="task_description">
-                            <property name="text">
-                             <string/>
-                            </property>
-                            <property name="wordWrap">
-                             <bool>true</bool>
-                            </property>
-                            <property name="openExternalLinks">
-                             <bool>true</bool>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QLabel" name="expander_label_2">
-                            <property name="text">
-                             <string/>
-                            </property>
-                           </widget>
-                          </item>
-                         </layout>
-                        </widget>
-                       </widget>
->>>>>>> master
                       </item>
                       <item>
                        <spacer name="task_settings_spacer">

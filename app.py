@@ -29,6 +29,9 @@ class MultiPublish2(sgtk.platform.Application):
         # make the util methods available via the app instance
         self.util = tk_multi_publish2.util
 
+        # make the base plugins available via the app
+        self.base_hooks = tk_multi_publish2.base_hooks
+
         display_name = self.get_setting("display_name")
         # "Publish Render" ---> publish_render
         command_name = display_name.lower()

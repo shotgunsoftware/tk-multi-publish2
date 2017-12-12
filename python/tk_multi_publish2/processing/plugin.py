@@ -45,6 +45,9 @@ class PluginBase(object):
         # create an instance of the hook
         self._hook_instance = self._create_hook_instance(self._path)
 
+        import pdb
+        pdb.set_trace()
+
         # kick things off
         self._validate_and_resolve_config()
 
@@ -143,39 +146,14 @@ class PublishPlugin(PluginBase):
         """
         Create the plugin's hook instance.
 
-        For publish plugins, we inject the plugin base hook's class in order to
-        provide a default implementation of the task settings UI.
+        Injects the plugin base hook class in order to provide a default
+        implementation.
         """
 
-        plugin_base_file = "{self}/plugin_base.py"
-
-        # now try to create the hook instance using the
-        try:
-            # retrieve the class for the plugin base hook. this hook lives in
-            # the app itself, so we can refer to it with the hook expression
-            # that would be used if configured
-            plugin_base_class = self._bundle.get_hook_class(plugin_base_file)
-
-            # create the plugin hook instance using the base plugin as the base
-            # class. this may fail if core does not support the base_class
-            # argument.
-            cls = self._bundle.create_hook_instance(
-                path,
-                base_class=plugin_base_class
-            )
-
-            return cls
-
-        except Exception as e:
-
-            # oops! this isn't ideal, but not fatal. log a message and use the
-            # default base class.
-            self._logger.debug(
-                "Failed to create the publish plugin instance using the base "
-                "plugin class from this hook: %s. Proceeding with the default "
-                "plugin base class." % (plugin_base_file,)
-            )
-            return super(PublishPlugin, self)._create_hook_instance(path)
+        return self._bundle.create_hook_instance(
+            path,
+            base_class=self._bundle.base_hooks.PublishPlugin
+        )
 
     def _load_plugin_icon(self):
         """
@@ -425,6 +403,19 @@ class CollectorPlugin(PluginBase):
 
     Each collector object reflects an instance in the app configuration.
     """
+
+    def _create_hook_instance(self, path):
+        """
+        Create the plugin's hook instance.
+
+        Injects the collector base hookclass in order to provide default
+        implementation.
+        """
+
+        return self._bundle.create_hook_instance(
+            path,
+            base_class=self._bundle.base_hooks.CollectorPlugin
+        )
 
     def run_process_current_session(self, item):
         """

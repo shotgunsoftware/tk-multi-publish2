@@ -177,13 +177,6 @@ class AppDialog(QtGui.QWidget):
         # run collections
         self._full_rebuild()        
 
-        # create an instance of the base plugin hook. We'll use the method
-        # defined there to create the default task UI. This will prevent us
-        # from having to create it over and over as tasks are selected in
-        # the UI.
-        self._plugin_base_hook = self._bundle.create_hook_instance(
-            "{self}/plugin_base.py")
-
     def keyPressEvent(self, event):
         """
         Qt Keypress event
@@ -335,22 +328,6 @@ class AppDialog(QtGui.QWidget):
         # set the header for the task plugin
         self.ui.task_icon.setPixmap(new_task_selection.plugin.icon)
         self.ui.task_name.setText(new_task_selection.plugin.name)
-
-        if not new_task_selection.has_custom_ui:
-            logger.debug("Clearing custom UI and using default task details...")
-
-            # a bit of a hack here, but the base hook requires a description in
-            # order to function. we'll simply monky patch it here to be able
-            # to generate the UI.
-            self._plugin_base_hook.description = new_task_selection.plugin.description
-
-            # execute the hook method on the supplied base plugin hook to
-            # generate the default widget which simply shows the description
-            default_widget = self._plugin_base_hook.create_settings_widget(
-                self.ui.task_settings_parent)
-
-            self.ui.task_settings.widget = default_widget
-            self._current_tasks = new_task_selection
 
         # Now figure out if we need to create/replace the widgets.
         if (
