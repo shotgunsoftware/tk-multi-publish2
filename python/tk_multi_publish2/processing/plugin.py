@@ -45,9 +45,6 @@ class PluginBase(object):
         # create an instance of the hook
         self._hook_instance = self._create_hook_instance(self._path)
 
-        import pdb
-        pdb.set_trace()
-
         # kick things off
         self._validate_and_resolve_config()
 
