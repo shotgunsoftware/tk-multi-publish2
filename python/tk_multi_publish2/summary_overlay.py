@@ -23,6 +23,12 @@ class SummaryOverlay(QtGui.QWidget):
     e.g. "loading items" or "publish failed!"
     """
 
+    # signal emitted when the info label is clicked by the user
+    info_clicked = QtCore.Signal()
+
+    # signal emitted when the publish again is clicked by the user
+    publish_again_clicked = QtCore.Signal()
+
     def __init__(self, parent):
         """
         :param parent: The model parent.
@@ -44,6 +50,9 @@ class SummaryOverlay(QtGui.QWidget):
 
         self.hide()
 
+        self.ui.info.clicked.connect(self.info_clicked.emit)
+        self.ui.publish_again.clicked.connect(self.publish_again_clicked.emit)
+
     def show_success(self):
         """
         Shows standard "publish completed successfully!" prompt
@@ -52,7 +61,11 @@ class SummaryOverlay(QtGui.QWidget):
             QtGui.QPixmap(":/tk_multi_publish2/publish_complete.png")
         )
         self.ui.label.setText("Publish\nComplete")
-        self.ui.details.setText("For more details, <b>click here</b>.")
+        self.ui.info.setText("For more details, <b><u>click here</u></b>.")
+
+        self.ui.publish_again.setText("To publish again, <b><u>click here</u></b>.")
+        self.ui.publish_again.show()
+
         self.show()
 
     def show_fail(self):
@@ -63,7 +76,11 @@ class SummaryOverlay(QtGui.QWidget):
             QtGui.QPixmap(":/tk_multi_publish2/publish_failed.png")
         )
         self.ui.label.setText("Publish\nFailed!")
-        self.ui.details.setText("For more details, <b>click here</b>.")
+        self.ui.info.setText("For more details, <b><u>click here</u></b>.")
+
+        self.ui.publish_again.hide()
+        self.ui.publish_again.setText("")
+
         self.show()
 
     def show_loading(self):
@@ -74,7 +91,11 @@ class SummaryOverlay(QtGui.QWidget):
             QtGui.QPixmap(":/tk_multi_publish2/overlay_loading.png")
         )
         self.ui.label.setText("Loading and processing")
-        self.ui.details.setText("Hold tight while we analyze your data")
+        self.ui.info.setText("Hold tight while we analyze your data")
+
+        self.ui.publish_again.hide()
+        self.ui.publish_again.setText("")
+
         self.show()
 
     def show(self):
