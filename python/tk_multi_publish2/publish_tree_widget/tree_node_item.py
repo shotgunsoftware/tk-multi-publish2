@@ -128,7 +128,6 @@ class TreeNodeItem(TreeNodeBase):
 
         :param int column: The model column that was double clicked on the item.
         """
-
         # ensure the expand/collapse indicator is properly displayed. this is
         # called just before the expansion state is toggled. so we show the
         # opposite icon

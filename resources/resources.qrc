@@ -16,10 +16,12 @@
     <file>status_success.png</file>
     <file>status_warning.png</file>
     <file>status_publish.png</file>
+    <file>status_finalize.png</file>
     <file>icon_256.png</file>
     <file>cross.png</file>
     <file>shotgun.png</file>
     <file>item.png</file>
+    <file>task.png</file>
     <file>camera.png</file>
     <file>star.png</file>
     <file>publish_complete.png</file>

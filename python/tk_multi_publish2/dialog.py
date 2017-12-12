@@ -820,7 +820,7 @@ class AppDialog(QtGui.QWidget):
 
         # inform the progress system of the current mode
         self._progress_handler.set_phase(self._progress_handler.PHASE_VALIDATE)
-        self._progress_handler.push("Running validation pass")
+        self._progress_handler.push("Running validate pass on each item...")
 
         parent = self.ui.items_tree.invisibleRootItem()
         num_issues = 0
@@ -828,13 +828,13 @@ class AppDialog(QtGui.QWidget):
         try:
             num_issues = self._visit_tree_r(parent, lambda child: child.validate(standalone), "Validating")
         finally:
-            self._progress_handler.pop()
             if self._stop_processing_flagged:
                 self._progress_handler.logger.info("Processing aborted by user.")
             elif num_issues > 0:
                 self._progress_handler.logger.error("Validation Complete. %d issues reported." % num_issues)
             else:
                 self._progress_handler.logger.info("Validation Complete. All checks passed.")
+            self._progress_handler.pop()
 
             if standalone:
                 # reset process aborted flag
@@ -869,33 +869,47 @@ class AppDialog(QtGui.QWidget):
                 # stop processing
                 return
 
-            # inform the progress system of the current mode
-            self._progress_handler.set_phase(self._progress_handler.PHASE_PUBLISH)
-            self._progress_handler.push("Running publishing pass")
-
+            # publish everything under the root item
             parent = self.ui.items_tree.invisibleRootItem()
 
             # clear all icons
             self._reset_tree_icon_r(parent)
 
-            try:
-                self._visit_tree_r(parent, lambda child: child.publish(), "Publishing")
-            except Exception, e:
-                # ensure the full error shows up in the log file
-                logger.error("Publish error stack:\n%s" % (traceback.format_exc(),))
-                # and log to ui
-                self._progress_handler.logger.error("Error while publishing. Aborting.")
-                publish_failed = True
-            finally:
-                self._progress_handler.pop()
+            # get all enabled, top-level items for use by the process_item hook
+            # methods.
+            top_level_items = [
+                item for item in self._plugin_manager.top_level_items
+                if item.enabled
+            ]
+
+            # ---- publish each item
+
+            # inform the progress system of the current mode
+            self._progress_handler.set_phase(self._progress_handler.PHASE_PUBLISH)
+            self._progress_handler.push("Running publish pass on each item...")
+
+            if not publish_failed:
+
+                try:
+                    self._visit_tree_r(parent, lambda child: child.publish(), "Publishing")
+                except Exception, e:
+                    # ensure the full error shows up in the log file
+                    logger.error("Publish error stack:\n%s" % (traceback.format_exc(),))
+                    # and log to ui
+                    self._progress_handler.logger.error("Error while publishing. Aborting.")
+                    publish_failed = True
+                finally:
+                    self._progress_handler.pop()
+
+            # ---- finalize each item
 
             if not publish_failed and not self._stop_processing_flagged:
                 # proceed with finalizing phase
 
                 # inform the progress system of the current mode
                 self._progress_handler.set_phase(self._progress_handler.PHASE_FINALIZE)
+                self._progress_handler.push("Running finalize pass on each item...")
 
-                self._progress_handler.push("Running finalizing pass")
                 try:
                     self._visit_tree_r(parent, lambda child: child.finalize(), "Finalizing")
                 except Exception, e:
@@ -906,6 +920,42 @@ class AppDialog(QtGui.QWidget):
                     publish_failed = True
                 finally:
                     self._progress_handler.pop()
+
+                # post finalize (all items)
+
+                # we will run post_finalize, even if the finalize failed, unless
+                # we get a manual stop from the user
+                if not self._stop_processing_flagged:
+
+                    self._progress_handler.set_phase(
+                        self._progress_handler.PHASE_POST_FINALIZE)
+                    self._progress_handler.push(
+                        "Running post-finalize pass on all items...")
+
+                    # inform the progress system of the current mode
+                    try:
+                        self._bundle.execute_hook_method(
+                            "process_items",
+                            "post_finalize",
+                            items=top_level_items
+                        )
+                    except Exception, e:
+                        # ensure the full error shows up in the log file
+                        logger.error(
+                            "Items post publish error stack:\n%s" %
+                            (traceback.format_exc(),)
+                        )
+                        # and log to ui
+                        self._progress_handler.logger.error(
+                            "Error during items post publish. Aborting.")
+                        publish_failed = True
+                    finally:
+                        self._progress_handler.pop()
+
+            if not publish_failed:
+                self._progress_handler.set_phase(self._progress_handler.PHASE_SUCCESS)
+
+            # ---- check to see if processing was manually halted
 
             # if stop processing was flagged, don't show summary at end
             if self._stop_processing_flagged:
