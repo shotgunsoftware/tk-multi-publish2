@@ -11,7 +11,6 @@
 import os
 import sgtk
 import tempfile
-from sgtk.platform.qt import QtCore, QtGui
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -111,6 +110,8 @@ class Item(object):
         """
         Factory method for generating new items.
 
+        .. image:: ./resources/create_item_args.png
+
         :param str item_type: Item type, typically following a hierarchical dot notation.
             For example, 'file', 'file.image', 'file.quicktime' or 'maya_scene'
         :param str display_type: Equivalent to the type, but for display purposes.
@@ -200,12 +201,13 @@ class Item(object):
     def _get_thumbnail_enabled(self):
         """
         Flag to indicate that thumbnails can be interacted with.
-        - If ``True`, thumbnails will be visible and editable
-          in the publish UI (via screen capture).
-        - If ``False`` and a thumbnail has been set via the :meth:`thumbnail`
-          property, the thumbnail will be visible but screen capture will
-          be disabled.
-        - If ``False`` and no thumbnail has been specified, no thumbnail will
+
+        * If ``True``, thumbnails will be visible and editable in the publish UI
+          (via screen capture).
+        * If ``False`` and a thumbnail has been set via the :meth:`thumbnail`
+          property, the thumbnail will be visible but screen capture will be
+          disabled.
+        * If ``False`` and no thumbnail has been specified, no thumbnail will
           appear in the UI.
         """
         return self._thumbnail_enabled
@@ -337,6 +339,9 @@ class Item(object):
 
         :param str path: Path to a file on disk
         """
+        # TODO: this needs to be refactored. should be no UI stuff here
+        from sgtk.platform.qt import QtGui
+
         try:
             self._thumb_pixmap = QtGui.QPixmap(path)
         except Exception, e:
@@ -384,9 +389,14 @@ class Item(object):
         The associated icon, as a QPixmap.
         The icon is a small square image used to represent the item visually
 
+        .. image:: ./resources/item_icon.png
+
         If no icon has been defined for this node, the parent
         icon is returned, or a default one if not defined
         """
+        # TODO: this needs to be refactored. should be no UI stuff here
+        from sgtk.platform.qt import QtGui
+
         if self._icon_pixmap:
             return self._icon_pixmap
         elif self.parent:
@@ -403,6 +413,9 @@ class Item(object):
 
         :param str path: Path to a file on disk
         """
+        # TODO: this needs to be refactored. should be no UI stuff here
+        from sgtk.platform.qt import QtGui
+
         try:
             self._icon_pixmap = QtGui.QPixmap(path)
         except Exception, e:

@@ -13,12 +13,10 @@ import sgtk
 
 class PublishPlugin(sgtk.Hook):
     """
-    The base class is used for all publish plugins. This class is inserted
-    into any loaded publish plugin's class hierarchy by the publisher itself.
-
-    The class implements the default UI state of publish plugins which shows
-    only the description of the plugin. It also provides the official API and
-    documentation for publish plugins.
+    This class defines the required interface for a publish plugin. Publish
+    plugins are responsible for operating on items collected by the collector
+    plugin. Publish plugins define which items they will operate on as well as
+    the execution logic for each phase of the publish process.
     """
 
     ############################################################################
@@ -27,66 +25,182 @@ class PublishPlugin(sgtk.Hook):
     @property
     def icon(self):
         """
-        The path to an icon on disk that is representative of this plugin.
+        The path to an icon on disk that is representative of this plugin
+        (:class:`str`).
+
+        The icon will be displayed on the left side of the task driven by this
+        plugin, as shown in the image below.
+
+        .. image:: ./resources/task_icon.png
+
+        |
+
+        Icons can be stored within the same bundle as the plugin itself and
+        referenced relative to the disk location of the plugin, accessible via
+        :meth:`sgtk.Hook.disk_location`.
+
+        Example implementation:
+
+        .. code-block:: python
+
+            @property
+            def icon(self):
+
+                return os.path.join(
+                    self.disk_location,
+                    "icons",
+                    "publish.png"
+                )
+
+        .. note:: Publish plugins drive the tasks that operate on publish items.
+            It can be helpful to think of items as "things" and tasks as the
+            "actions" that operate on those "things". A publish icon that
+            represents some type of action can help artists understand the
+            distinction between items and tasks in the interface.
+
         """
         raise NotImplementedError
 
     @property
     def name(self):
         """
-        The name of this plugin.
+        The general name for this plugin (:class:`str`).
+
+        This value is not generally used for display. Instances of the plugin
+        are defined within the app's configuration and those instance names are
+        what is shown in the interface for the tasks.
         """
         raise NotImplementedError
 
     @property
     def description(self):
         """
-        Verbose, multi-line description of what the plugin does. This can
-        contain simple html for formatting for display in the UI.
+        Verbose, multi-line description of what the plugin does (:class:`str`).
+
+        The string can contain html for formatting for display in the UI (any
+        html tags supported by Qt's rich text engine).
+
+        The description is displayed via the plugin's default
+        :meth:`create_settings_widget` implementation, as shown in the image
+        below:
+
+        .. image:: ./resources/plugin_description.png
+
+        |
+
+        A simple implementation example:
+
+        .. code-block:: python
+
+            @property
+            def description(self):
+
+                return '''
+                Creates a publish in Shotgun.
+
+                A <b>Publish</b> entry will be created in Shotgun which will
+                include a reference to the file's path on disk. Other users will
+                be able to access the published file via the
+                <b><a href='%s'>Loader</a></b> so long as they have access to
+                the file's location on disk.
+                ''' % (loader_url,)
+
         """
         raise NotImplementedError
 
     @property
     def settings(self):
         """
-        A dictionary defining the settings that this plugin expects to receive
-        through the settings parameter in the accept, validate, publish and
-        finalize methods.
+        A :class:`dict` defining the configuration interface for this plugin.
 
-        A dictionary on the following form::
+        The dictionary can include any number of settings required by the
+        plugin, and takes the form::
 
             {
-                "Publish Template": {
-                    "type": "template",
-                    "default": None,
-                    "description": "A template required to publish the file."
+                <setting_name>: {
+                    "type": <type>,
+                    "default": <default>,
+                    "description": <description>
+                },
+                <setting_name>: {
+                    "type": <type>,
+                    "default": <default>,
+                    "description": <description>
+                },
+                ...
             }
 
-        The type string should be one of the data types that toolkit accepts
-        as part of its environment configuration.
+        The keys in the dictionary represent the names of the settings. The
+        values are a dictionary comprised of 3 additional key/value pairs.
 
-        The settings are exposed via the `publish_plugins` setting in the
-        app's configuration. Example::
+        * ``type``: The type of the setting. This should correspond to one of
+          the data types that toolkit accepts for app and engine settings such
+          as ``hook``, ``template``, ``string``, etc.
+        * ``default``: The default value for the settings. This can be ``None``.
+        * ``description``: A description of the setting as a string.
 
-            - name: Publish to Shotgun
-              hook: "{config}/my_publish_plugin.py"
-              settings:
-                Publish Template: my_publish_template
+        Example implementation:
+
+        .. code-block:: python
+
+            @property
+            def settings(self):
+                return {
+                    "Publish Template": {
+                        "type": "template",
+                        "default": None,
+                        "description": "The output path template for this plugin."
+                    },
+                    "Resolution": {
+                        "type": "str",
+                        "default": "1920x1080"
+                        "description": "The output resolution to export before publishing."
+                    }
+                }
+
+        The settings are exposed via the ``settings`` key as the plugins are
+        configured via the ``publish_plugins`` setting in the app's
+        configuration. Example::
+
+            publish_plugins:
+                - name: Export and Publish
+                  hook: "{config}/export_and_publish.py"
+                  settings:
+                      Publish Template: export_template
+                      Resolution: 2048x1556
+
+        The values configured for the plugin will be supplied via settings
+        parameter in the :meth:`accept`, :meth:`validate`, :meth:`publish`, and
+        :meth:`finalize` methods.
+
+        The values also drive the custom UI defined by the plugin whick allows
+        artists to manipulate the settings at runtime. See the
+        :meth:`create_settings_widget`, :meth:`set_ui_settings`, and
+        :meth:`get_ui_settings` for additional information.
+
+        .. note:: See the hooks defined in the publisher app's ``hooks/`` folder
+           for additional example implementations.
         """
         return {}
 
     @property
     def item_filters(self):
         """
-        List of item types that this plugin is interested in.
+        A :class:`list` of item type wildcard :class:`str` objects that this
+        plugin is interested in.
 
         As items are collected by the collector hook, they are given an item
-        type string. The strings provided by this property will be matched
-        against each item's item type.
+        type string (see :meth:`~.processing.Item.create_item`). The strings
+        provided by this property will be compared to each collected item's
+        type.
 
-        Only items with item types matching entries in this list will be
-        presented to the accept() method. Strings can contain glob patters such
-        as *, for example ["maya.*", "file.maya"]
+        Only items with types matching entries in this list will be considered
+        by the :meth:`accept` method. As such, this method makes it possible to
+        quickly identify which items the plugin may be interested in. Any
+        sophisticated acceptance logic is deferred to the :meth:`accept` method.
+
+        Strings can contain glob patters such as ``*``, for example ``["maya.*",
+        "file.maya"]``.
         """
         raise NotImplementedError
 
@@ -110,6 +224,10 @@ class PublishPlugin(sgtk.Hook):
                 it will be hidden. Optional, True by default.
             - checked: If True, the plugin will be checked in the UI, otherwise
                 it will be unchecked. Optional, True by default.
+
+        .. image:: ./resources/accept_options.png
+
+        |
 
         :param settings: Dictionary of Settings. The keys are strings, matching
             the keys returned in the settings property. The values are `Setting`

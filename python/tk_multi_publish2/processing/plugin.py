@@ -9,11 +9,9 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 from contextlib import contextmanager
-import os
 import traceback
 
 import sgtk
-from sgtk.platform.qt import QtCore, QtGui
 from .setting import Setting
 
 logger = sgtk.platform.get_logger(__name__)
@@ -158,6 +156,9 @@ class PublishPlugin(PluginBase):
 
         :returns: QPixmap or None if not found
         """
+        # TODO: this needs to be refactored. should be no UI stuff here
+        from sgtk.platform.qt import QtGui
+
         # load plugin icon
         pixmap = None
         try:
@@ -273,6 +274,8 @@ class PublishPlugin(PluginBase):
         :param parent: Parent widget
         :type parent: :class:`QtGui.QWidget`
         """
+        # TODO: this needs to be refactored. should be no UI stuff here
+
         with self._handle_plugin_error(None, "Error laying out widgets: %s"):
             return self._hook_instance.create_settings_widget(parent)
 
@@ -283,6 +286,8 @@ class PublishPlugin(PluginBase):
         :param parent: Parent widget
         :type parent: :class:`QtGui.QWidget`
         """
+        # TODO: this needs to be refactored. should be no UI stuff here
+
         with self._handle_plugin_error(None, "Error reading settings from UI: %s"):
             return self._hook_instance.get_ui_settings(parent)
 
@@ -296,6 +301,8 @@ class PublishPlugin(PluginBase):
 
         :param settings: List of dictionary of settings as python literals.
         """
+        # TODO: this needs to be refactored. should be no UI stuff here
+
         with self._handle_plugin_error(None, "Error writing settings to UI: %s"):
             self._hook_instance.set_ui_settings(parent, settings)
 
@@ -317,6 +324,8 @@ class PublishPlugin(PluginBase):
             return {"accepted": False}
         finally:
             # give qt a chance to do stuff
+            # TODO: this needs to be refactored. should be no UI stuff here
+            from sgtk.platform.qt import QtCore
             QtCore.QCoreApplication.processEvents()
 
     def run_validate(self, settings, item):
@@ -391,6 +400,8 @@ class PublishPlugin(PluginBase):
             if success_msg:
                 self._logger.info(success_msg)
         finally:
+            # TODO: this needs to be refactored. should be no UI stuff here
+            from sgtk.platform.qt import QtCore
             QtCore.QCoreApplication.processEvents()
 
 

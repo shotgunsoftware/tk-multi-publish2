@@ -163,7 +163,7 @@ DropAreaFrame[dragging="true"] {
 #items_tree::branch {
     border-image: none;
     image: none;
-    background: none;
+    background: palette(base); /* don't highlight the branch area on selection */
 }
 
 /* selection of tree items */
