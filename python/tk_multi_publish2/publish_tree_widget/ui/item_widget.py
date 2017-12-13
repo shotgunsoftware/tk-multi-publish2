@@ -47,6 +47,7 @@ class Ui_ItemWidget(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.header.sizePolicy().hasHeightForWidth())
         self.header.setSizePolicy(sizePolicy)
+        self.header.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.header.setObjectName("header")
         self.horizontalLayout.addWidget(self.header)
         self.handle_stack = QtGui.QStackedWidget(self.frame)
