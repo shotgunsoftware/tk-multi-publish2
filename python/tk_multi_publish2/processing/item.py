@@ -54,6 +54,8 @@ class Item(object):
         self._expanded = True
         self._thumbnail_enabled = True
         self._allows_context_change = True
+        # the following var indicates that the current thumbnail overrides the summary one
+        self._thumbnail_explicit = False
 
     def __repr__(self):
         """
@@ -216,6 +218,22 @@ class Item(object):
 
     thumbnail_enabled = property(_get_thumbnail_enabled, _set_thumbnail_enabled)
 
+    def _get_thumbnail_explicit(self):
+        """
+        Flag to indicate that thumbnail has been explicitly set.
+        When this flag is on, the summary thumbnail should be ignored
+        For this this specific item.
+        """
+        return self._thumbnail_explicit
+
+    def _set_thumbnail_explicit(self, enabled):
+        """
+        Setter for _thumbnail_explicit
+        """
+        self._thumbnail_explicit = enabled
+
+    thumbnail_explicit = property(_get_thumbnail_explicit,_set_thumbnail_explicit)
+
     def _get_context(self):
         """
         The context associated with this item.
@@ -256,9 +274,30 @@ class Item(object):
         propagate description to children
         """
         for child in self._children:
-           child.description = self._description
+           child.description = self._description   
 
     description = property(_get_description, _set_description)
+
+    def _get_thumbnail_explicit_recursive(self):
+        """
+        Returns true is item or any of its children is recursive
+        """
+        if self.thumbnail_explicit:
+            return True
+
+        for child in self._children:
+            if child.thumbnail_explicit:
+               return True
+
+        return False
+
+    def _propagate_thumbnail_to_children(self):
+        """
+        propagate thumbnail to children
+        """
+        for child in self._children:
+           child.thumbnail = self.thumbnail
+           child.thumbnail_explicit = False
 
     def _get_thumbnail(self):
         """
