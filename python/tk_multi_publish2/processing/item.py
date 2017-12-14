@@ -280,7 +280,7 @@ class Item(object):
 
     def _get_thumbnail_explicit_recursive(self):
         """
-        Returns true is item or any of its children is recursive
+        Returns true is item or any of its children is explicit
         """
         if self.thumbnail_explicit:
             return True
