@@ -209,30 +209,68 @@ class PublishPlugin(sgtk.Hook):
 
     def accept(self, settings, item):
         """
-        Method called by the publisher to determine if an item is of any
-        interest to this plugin. Only items matching the filters defined via the
-        item_filters property will be presented to this method.
+        This method is called by the publisher to see if the plugin accepts the
+        supplied item for processing.
 
-        A publish task will be generated for each item accepted here. Returns a
-        dictionary with the following booleans:
+        Only items matching the filters defined via the :data:`item_filters`
+        property will be presented to this method.
 
-            - accepted: Indicates if the plugin is interested in this value at
-                all. Required.
-            - enabled: If True, the plugin will be enabled in the UI, otherwise
-                it will be disabled. Optional, True by default.
-            - visible: If True, the plugin will be visible in the UI, otherwise
-                it will be hidden. Optional, True by default.
-            - checked: If True, the plugin will be checked in the UI, otherwise
-                it will be unchecked. Optional, True by default.
+        A publish task will be generated for each item accepted here.
 
-        .. image:: ./resources/accept_options.png
+        This method returns a :class:`dict` of the following form::
 
-        |
+            {
+                "accepted": <bool>,
+                "enabled": <bool>,
+                "visible": <bool>,
+                "checked": <bool>,
+            }
 
-        :param settings: Dictionary of Settings. The keys are strings, matching
-            the keys returned in the settings property. The values are `Setting`
-            instances.
-        :param item: Item to process
+        The keys correspond to the acceptance state of the supplied item. Not
+        all keys are required. The keys are defined as follows:
+
+        * ``accepted``: Indicates if the plugin is interested in this value at all.
+          If ``False``, no task will be created for this plugin. Required.
+        * ``enabled``: If ``True``, the created task will be enabled in the UI,
+          otherwise it will be disabled (no interaction allowed). Optional,
+          ``True`` by default.
+        * ``visible``: If ``True``, the created task will be visible in the UI,
+          otherwise it will be hidden. Optional, ``True`` by default.
+        * ``checked``: If ``True``, the created task will be checked in the UI,
+          otherwise it will be unchecked. Optional, ``True`` by default.
+
+        In addition to the item, the configured settings for this plugin are
+        supplied. The information provided by each of these arguments can be
+        used to decide whether to accept the item.
+
+        For example, the item's ``properties`` :class:`dict` may house meta data
+        about the item, populated during collection. This data can be used to
+        inform the acceptance logic.
+
+        Example implementation:
+
+        .. code-block:: python
+
+            def accept(self, settings, item):
+
+                accept = True
+
+                # get the path for the item as set during collection
+                path = item.properties["path"]
+
+                # ensure the file is not too big
+                size_in_bytes = os.stat(path).st_stize
+                if size_in_bytes > math.pow(10, 9): # 1 GB
+                    self.logger.warning("File is too big (> 1 GB)!")
+                    accept = False
+
+                return {"accepted": accepted}
+
+        :param dict settings: The keys are strings, matching the keys returned
+            in the :data:`settings` property. The values are
+            :class:`~.processing.Setting` instances.
+        :param item: The :class:`~.processing.Item` instance to process for
+            acceptance.
 
         :returns: dictionary with boolean keys accepted, required and enabled
         """
@@ -240,14 +278,35 @@ class PublishPlugin(sgtk.Hook):
 
     def validate(self, settings, item):
         """
-        Validates the given item to check that it is ok to publish.
+        Validates the given item, ensuring it is ok to publish.
 
-        Returns a boolean to indicate validity.
+        Returns a boolean to indicate whether the item is ready to publish.
+        Returning ``True`` will indicate that the item is ready to publish. If
+        ``False`` is returned, the publisher will disallow publishing of the
+        item.
 
-        :param settings: Dictionary of Settings. The keys are strings, matching
-            the keys returned in the settings property. The values are `Setting`
-            instances.
-        :param item: Item to process
+        An exception can also be raised to indicate validation failed.
+        When an exception is raised, the error message will be displayed as a
+        tooltip on the task as well as in the logging view of the publisher.
+
+        Simple implementation example for a Maya session item validation:
+
+        .. code-block:: python
+
+            def validate(self, settings, item):
+
+                 path = cmds.file(query=True, sn=True)
+
+                 # ensure the file has been saved
+                 if not path:
+                    raise Exception("The Maya session has not been saved.")
+
+                 return True
+
+        :param dict settings: The keys are strings, matching the keys returned
+            in the :data:`settings` property. The values are
+            :class:`~.processing.Setting` instances.
+        :param item: The :class:`~.processing.Item` instance to validate.
 
         :returns: True if item is valid, False otherwise.
         """
@@ -257,22 +316,78 @@ class PublishPlugin(sgtk.Hook):
         """
         Executes the publish logic for the given item and settings.
 
-        :param settings: Dictionary of Settings. The keys are strings, matching
-            the keys returned in the settings property. The values are `Setting`
-            instances.
-        :param item: Item to process
+        Any raised exceptions will indicate that the publish pass has failed and
+        the publisher will stop execution.
+
+        Simple implementation example for a Maya session item publish:
+
+        .. code-block:: python
+
+            def publish(self, settings, item):
+
+                path = item.properties["path"]
+
+                # ensure the session is saved
+                cmds.file(rename=path)
+                cmds.file(save=True, force=True)
+
+                # the hook's parent is the publisher
+                publisher = self.parent
+
+                # get the publish info
+                publish_version = publisher.util.get_version_number(path)
+                publish_name = publisher.util.get_publish_name(path)
+
+                # register the publish and pack the publish info into the item's
+                # properties dict
+                item.properties["sg_publish_data"] = sgtk.util.register_publish(
+                    "tk": publisher.sgtk,
+                    "context": item.context,
+                    "comment": item.description,
+                    "path": path,
+                    "name": publish_name,
+                    "version_number": publish_version,
+                    "thumbnail_path": item.get_thumbnail_as_path(),
+                    "published_file_type": "Maya Scene",
+                    "dependency_paths": self._maya_get_session_depenencies()
+                )
+
+        :param dict settings: The keys are strings, matching the keys returned
+            in the :data:`settings` property. The values are
+            :class:`~.processing.Setting` instances.
+        :param item: The :class:`~.processing.Item` instance to validate.
         """
         raise NotImplementedError
 
     def finalize(self, settings, item):
         """
-        Execute the finalization pass. This pass executes once all the publish
-        tasks have completed, and can for example be used to version up files.
+        Execute the finalize logic for the given item and settings.
 
-        :param settings: Dictionary of Settings. The keys are strings, matching
-            the keys returned in the settings property. The values are `Setting`
-            instances.
-        :param item: Item to process
+        This method can be used to do any type of cleanup or reporting after
+        publishing is complete.
+
+        Any raised exceptions will indicate that the finalize pass has failed
+        and the publisher will stop execution.
+
+        Simple implementation example for a Maya session item finalization:
+
+        .. code-block:: python
+
+            def finalize(self, settings, item):
+
+                path = item.properties["path"]
+
+                # get the next version of the path
+                next_version_path = publisher.util.get_next_version_path(path)
+
+                # save to the next version path
+                cmds.file(rename=next_version_path)
+                cmds.file(save=True, force=True)
+
+        :param dict settings: The keys are strings, matching the keys returned
+            in the :data:`settings` property. The values are
+            :class:`~.processing.Setting` instances.
+        :param item: The :class:`~.processing.Item` instance to validate.
         """
         raise NotImplementedError
 
@@ -389,4 +504,3 @@ class PublishPlugin(sgtk.Hook):
         # is a no-op. this method is required to be defined in order for the
         # custom UI to show up in the app
         pass
-

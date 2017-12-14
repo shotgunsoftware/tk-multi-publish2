@@ -81,8 +81,6 @@ def get_file_path_components(path):
 
     Returns file path components in the form::
 
-    Examples::
-
         # path="/path/to/the/file/my_file.v001.ext"
 
         {
