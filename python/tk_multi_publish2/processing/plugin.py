@@ -137,6 +137,55 @@ class PublishPlugin(PluginBase):
 
         self._icon_pixmap = self._load_plugin_icon()
 
+        if not self.has_custom_ui:
+            # we've got a hook instance that has not implemented the custom
+            # ui settings methods. This is most likely becuase they're using
+            # an older core that does not support base class injection. we will
+            # do some black-magic-tom-foolery (TM) to patch the class...
+            self._patch_plugin_ui_methods()
+
+    def _patch_plugin_ui_methods(self):
+        """
+        The plugin's hook instance does not implement the custom UI methods.
+        We'll patch the instance with the methods defined in our base class.
+        """
+
+        import types
+        base_class = self._bundle.base_hooks.PublishPlugin
+
+        # first, we get the function object for each of the methods we want to
+        # patch. then, we bind the functions to the hook instance. This only
+        # binds the function to the instance of the hook, not to the class
+        # (so that existing plugin instances that have these methods defined
+        # aren't impacted). The `types.MethodType` method is not well documented
+        # however, this seems to be a common approach to bind methods to an
+        # existing class instance. This post provides a nice overview:
+        # https://www.ianlewis.org/en/dynamically-adding-method-classes-or-class-instanc
+
+        # create_settings_widget
+        create_settings_widget = base_class.create_settings_widget.__func__
+        self._hook_instance.create_settings_widget = types.MethodType(
+            create_settings_widget,
+            self._hook_instance,
+            self._hook_instance.__class__
+        )
+
+        # get_ui_settings
+        get_ui_settings = base_class.get_ui_settings.__func__
+        self._hook_instance.get_ui_settings = types.MethodType(
+            get_ui_settings,
+            self._hook_instance,
+            self._hook_instance.__class__
+        )
+
+        # set_ui_settings
+        set_ui_settings = base_class.set_ui_settings.__func__
+        self._hook_instance.set_ui_settings = types.MethodType(
+            set_ui_settings,
+            self._hook_instance,
+            self._hook_instance.__class__
+        )
+
     def _create_hook_instance(self, path):
         """
         Create the plugin's hook instance.
@@ -145,10 +194,18 @@ class PublishPlugin(PluginBase):
         implementation.
         """
 
-        return self._bundle.create_hook_instance(
-            path,
-            base_class=self._bundle.base_hooks.PublishPlugin
-        )
+        try:
+            # attempt to inject the base class plugin
+            hook_instance = self._bundle.create_hook_instance(
+                path,
+                base_class=self._bundle.base_hooks.PublishPlugin
+            )
+        except TypeError, e:
+            # likely that core doesn't support the base class injection.
+            # fall back to regular hook instance
+            hook_instance = self._bundle.create_hook_instance(path)
+
+        return hook_instance
 
     def _load_plugin_icon(self):
         """
@@ -420,10 +477,18 @@ class CollectorPlugin(PluginBase):
         implementation.
         """
 
-        return self._bundle.create_hook_instance(
-            path,
-            base_class=self._bundle.base_hooks.CollectorPlugin
-        )
+        try:
+            # attempt to inject the base class plugin
+            hook_instance = self._bundle.create_hook_instance(
+                path,
+                base_class=self._bundle.base_hooks.CollectorPlugin
+            )
+        except TypeError, e:
+            # likely that core doesn't support the base class injection.
+            # fall back to regular hook instance
+            hook_instance = self._bundle.create_hook_instance(path)
+
+        return hook_instance
 
     def run_process_current_session(self, item):
         """
