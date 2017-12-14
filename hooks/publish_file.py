@@ -436,16 +436,6 @@ class BasicFilePublishPlugin(HookBaseClass):
             }
         )
 
-        self.logger.info(
-            "Render submitted. Time for coffee...",
-            extra={
-                "action_open_url": {
-                    "label": "Find Coffee",
-                    "url": "https://www.google.com/search?q=best+coffee+near+me"
-                }
-            }
-        )
-
     ############################################################################
     # protected methods
 
