@@ -135,10 +135,11 @@ class Thumbnail(QtGui.QLabel):
         if self._multiple_values == True:
             p = QtGui.QPainter(self)
             p.drawPixmap(0,0,self.width(),self.height(),self._no_thumb_pixmap,0,0,self._no_thumb_pixmap.width(),self._no_thumb_pixmap.height())
-            p.setFont(QtGui.QFont("Arial", 14, QtGui.QFont.Bold))
+            p.fillRect(0,0,self.width(),self.height(),QtGui.QColor(42,42,42,237))
+            p.setFont(QtGui.QFont("Arial", 15, QtGui.QFont.Bold))
             pen = QtGui.QPen(QtGui.QColor("#18A7E3"))
             p.setPen(pen)
-            p.drawText(self.rect(),QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter,"Multiple Values")
+            p.drawText(self.rect(), QtCore.Qt.AlignCenter,"Multiple Values")
 
         else:
            # paint thumbnail
