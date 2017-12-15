@@ -473,7 +473,7 @@ class AppDialog(QtGui.QWidget):
         if not self._current_item:
             # this is the summary item
             self._summary_thumbnail = pixmap
-            if pixmap != None:
+            if pixmap:
                 # update all items with the summary thumbnail
                 for top_level_item in self._plugin_manager.top_level_items:
                     top_level_item.thumbnail = self._summary_thumbnail
@@ -521,14 +521,14 @@ class AppDialog(QtGui.QWidget):
 
         # if summary thumbnail is defined, item thumbnail should inherit it
         # unless item thumbnail was set after summary thumbnail
-        if self._summary_thumbnail != None and not item.thumbnail_explicit:
+        if self._summary_thumbnail and not item.thumbnail_explicit:
             item.thumbnail = self._summary_thumbnail
         
         self.ui.item_thumbnail._set_multiple_values_indicator(False)
         self.ui.item_thumbnail.set_thumbnail(item.thumbnail)
         
 
-        # 45629 -> Items with default thumbnails should still be able to have override thumbnails set by the user
+        # Items with default thumbnails should still be able to have override thumbnails set by the user
         self.ui.item_thumbnail.setEnabled(True)
 
         if item.parent.is_root():

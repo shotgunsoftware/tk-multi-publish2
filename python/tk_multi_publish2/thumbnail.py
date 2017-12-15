@@ -131,16 +131,18 @@ class Thumbnail(QtGui.QLabel):
         """
         Paint Event override
         """
-        # paint thumbnail
-        QtGui.QLabel.paintEvent(self, paint_event)
-
         # paint multiple values indicator
         if self._multiple_values == True:
             p = QtGui.QPainter(self)
-            p.setFont(QtGui.QFont("Arial", 22, QtGui.QFont.Bold))
-            pen = QtGui.QPen(QtGui.QColor("#FF0000"))
+            p.drawPixmap(0,0,self.width(),self.height(),self._no_thumb_pixmap,0,0,self._no_thumb_pixmap.width(),self._no_thumb_pixmap.height())
+            p.setFont(QtGui.QFont("Arial", 14, QtGui.QFont.Bold))
+            pen = QtGui.QPen(QtGui.QColor("#0307FF"))
             p.setPen(pen)
-            p.drawText(self.rect(),QtCore.Qt.AlignRight,"* ")
+            p.drawText(self.rect(),QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter,"Multiple Values")
+
+        else:
+           # paint thumbnail
+           QtGui.QLabel.paintEvent(self, paint_event)
 
     def _set_screenshot_pixmap(self, pixmap):
         """

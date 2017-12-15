@@ -286,7 +286,7 @@ class Item(object):
             return True
 
         for child in self._children:
-            if child.thumbnail_explicit:
+            if child._get_thumbnail_explicit_recursive():
                return True
 
         return False
@@ -298,6 +298,7 @@ class Item(object):
         for child in self._children:
            child.thumbnail = self.thumbnail
            child.thumbnail_explicit = False
+           child._propagate_thumbnail_to_children()
 
     def _get_thumbnail(self):
         """
