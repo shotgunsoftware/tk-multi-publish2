@@ -20,13 +20,17 @@ class Item(object):
     An object representing an scene or file item that should be processed.
     Items are constructed and returned by the collector hook.
 
+    Items should always be created via the :meth:`Item.create_item` method of
+    an existing item (typically the ``parent_item`` supplied to one of the
+    collector's methods). The constructor should never be used within a
+    collector.
+
     Items are organized as a tree with access to parent and children.
     """
 
     def __init__(self, item_type, display_type, name, parent):
         """
-        Items should always be generated via the :meth:`Item.create_item` factory
-        method and never created via the constructor.
+        Initialize an item. Should never be called.
 
         :param str item_type: Item type, typically following a hierarchical dot notation.
             For example, 'file', 'file.image', 'file.quicktime' or 'maya_scene'
@@ -110,13 +114,55 @@ class Item(object):
         """
         Factory method for generating new items.
 
+        The ``item_type`` is a string that represents the type of the item. This
+        can be any string, but is typically defined by studio convention. This
+        value is used by the publish plugins to identify which items to act
+        upon.
+
+        The basic Shotgun integrations, for example, use a hierarchical dot
+        notation such as: ``file.image``, ``file.image.sequence``,
+        ``file.movie``, and ``maya.session``.
+
+        The current convention used within the shipped integrations is to
+        classify files that exist on disk as ``file.{type}`` (``file.image`` or
+        ``file.video`` for example). This classification is determined from the
+        mimetype in the base collector. In addition, any sequence-based items
+        are classified as ``file.{type}.sequence`` (``file.image.sequence`` for
+        example).
+
+        For items defined within a DCC-session that must be save or exported
+        prior to publish, the shipped integrations use the form ``{dcc}.{type}``
+        for the primary session item and ``{dcc}.{type}.{subtype}`` for items
+        within the session.
+
+        In Maya, for example, the primary session item would be of type
+        ``maya.session`` and an item representing all geomtery in the session
+        would be ``maya.session.geometry``.
+
+        These are merely conventions used in the shipped integrations and can be
+        altered to meet studio requirements. It is recommended to look at each
+        of the publish plugins shipped with the publisher and housed in each of
+        the toolkit engines to see what item types are supported by default.
+
+        The ``display_type`` argument corresponds to the item type, but is used
+        for display purposes only.
+
+        Examples include: ``Image File``, ``Movie File``, and ``Maya Scene``.
+
+        The ``name`` argument is the display name for the item instance. This
+        can be the name of a file or a node name in Nuke or Houdini, or a
+        combination of both. This value is displayed to the user and should make
+        it easy for the user to identify what the item represents in terms of
+        the current session or a file on disk.
+
         .. image:: ./resources/create_item_args.png
 
-        :param str item_type: Item type, typically following a hierarchical dot notation.
-            For example, 'file', 'file.image', 'file.quicktime' or 'maya_scene'
+        |
+        :param str item_type: Item type, typically following a hierarchical dot
+            notation.
         :param str display_type: Equivalent to the type, but for display purposes.
-        :param str name: The name to represent the item in a UI.
-            This can be a node name in a DCC or a file name.
+        :param str name: The name to represent the item in a UI. This can be a
+            node name in a DCC or a file name.
         """
         child_item = Item(item_type, display_type, name, parent=self)
         self._children.append(child_item)
@@ -127,22 +173,32 @@ class Item(object):
     @property
     def parent(self):
         """
-        Parent Item object
+        The parent item (read only)
         """
         return self._parent
 
     @property
     def children(self):
         """
-        List of associated child items
+        List of associated child items (read only)
         """
         return self._children
 
     @property
     def properties(self):
         """
-        Access to a free form property bag where
-        item data can be stored.
+        A free form :class:`dict` where arbitrary data can be stored on the
+        item.
+
+        The properties dictionary itself is read only (calling
+        ``item.properties = my_properties`` is invalid) but arbitrary key value
+        pairs can be set within the dictionary itself.
+
+        This property provides a way to store data for an item across publish
+        plugins and between the various publish phases within a plugin.
+
+        It is also useful for accessing data stored on parent items that
+        may be useful to plugin attached to child items.
         """
         return self._properties
 
@@ -175,8 +231,9 @@ class Item(object):
 
     def _get_type(self):
         """
-        Item type as a string, typically following a hierarchical dot notation.
-        For example, 'file', 'file.image', 'file.quicktime' or 'maya_scene'
+        The item type as defined when Publish item was created.
+
+        See :meth:`Item.create_item` for more info.
         """
         return self._type
 
@@ -221,8 +278,9 @@ class Item(object):
     def _get_context(self):
         """
         The context associated with this item.
-        If no context has been defined, the parent context
-        will be returned or None if that hasn't been defined.
+
+        If no context has been defined, the parent context will be returned or
+        if that hasn't been defined, :class:`None` will be returned.
         """
         if self._context:
             return self._context
@@ -239,9 +297,14 @@ class Item(object):
 
     def _get_description(self):
         """
-        Description of the item, description of the parent if not found
-        or None if no description could be found.
+        The description for this item that will be displayed to the user and
+        associated with the eventual Publish in Shotgun.
+
+        If no description has been set for this item, the parent item's
+        description will be returned. If no description has been set for the
+        parent, None will be returned.
         """
+
         if self._description:
             return self._description
         elif self.parent:
@@ -264,12 +327,13 @@ class Item(object):
 
     def _get_thumbnail(self):
         """
-        The associated thumbnail, as a QPixmap.
-        The thumbnail is an image to represent the item visually
-        such as a thumbnail of an image or a screenshot of a scene.
+        The associated thumbnail, as a :class:`QtGui.QPixmap`.
 
-        If no thumbnail has been defined for this node, the parent
-        thumbnail is returned, or None if no thumbnail exists.
+        The thumbnail is an image to represent the item visually such as a
+        thumbnail of an image or a screenshot of a scene.
+
+        If no thumbnail has been defined for this node, the parent thumbnail is
+        returned, or None if no thumbnail exists.
         """
         if self._thumb_pixmap:
             return self._thumb_pixmap
@@ -391,6 +455,7 @@ class Item(object):
 
         .. image:: ./resources/item_icon.png
 
+        |
         If no icon has been defined for this node, the parent
         icon is returned, or a default one if not defined
         """
