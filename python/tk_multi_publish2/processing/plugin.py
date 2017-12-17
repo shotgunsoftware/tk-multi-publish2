@@ -8,6 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import inspect
 import traceback
 import sgtk
 from contextlib import contextmanager
@@ -243,7 +244,7 @@ class PublishPlugin(PluginBase):
         """
         return self._settings
 
-    def run_create_settings_widget(self, parent):
+    def run_create_settings_widget(self, parent, items_for_selected_tasks=None):
         """
         Creates a custom widget to edit a plugin's settings.
 
@@ -251,7 +252,20 @@ class PublishPlugin(PluginBase):
         :type parent: :class:`QtGui.QWidget`
         """
         with self._handle_plugin_error(None, "Error laying out widgets: %s"):
-            return self._hook_instance.create_settings_widget(parent)
+
+            # see if the hook instance method expects the
+            # items_for_selected_tasks argument which was added after the
+            # initial release of the hook method.
+            method_args = inspect.getargspec(
+                self._hook_instance.create_settings_widget).args
+
+            if "items_for_selected_tasks" in method_args:
+                return self._hook_instance.create_settings_widget(
+                    parent,
+                    items_for_selected_tasks=items_for_selected_tasks
+                )
+            else:
+                return self._hook_instance.create_settings_widget(parent)
 
     def run_get_ui_settings(self, parent):
         """

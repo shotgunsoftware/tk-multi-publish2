@@ -208,14 +208,21 @@ class PluginWithUi(HookBaseClass):
     Plugin for creating generic publishes in Shotgun
     """
 
-    def create_settings_widget(self, parent):
+    def create_settings_widget(self, parent, items_for_selected_tasks=None):
         """
         Creates a QT widget, parented below the given parent object, to
         provide viewing and editing capabilities for the given settings.
 
         :param parent: QWidget to parent the widget under
+        :param items_for_selected_tasks: Items associated with all selected tasks
         :return: QWidget with an editor for the given setting or None if no custom widget is desired.
         """
+
+        if items_for_selected_tasks:
+            self.logger.debug("Got items for selected tasks...")
+            for item in items_for_selected_tasks:
+                self.logger.debug(" Item: %s" % (item,))
+
         return CustomWidgetController(parent)
 
     def get_ui_settings(self, controller):
