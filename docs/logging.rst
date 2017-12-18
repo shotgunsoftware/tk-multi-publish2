@@ -110,7 +110,7 @@ of the publish UI.
 ----
 
 Show in Shotgun Action
-======================
+----------------------
 
 A common action for showing an entity's detail page in Shotgun.
 
