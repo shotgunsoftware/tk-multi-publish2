@@ -11,11 +11,6 @@ from a publish in Maya.
 The standard logging methods can be used to display information, warnings,
 errors, and debug messages to the user.
 
-----
-
-Actions
-=======
-
 The publisher has a special logging handler that will make use of the standard
 ``extra`` :class:`dict` to display action buttons next to the log messages.
 These special action button types are detailed below:
