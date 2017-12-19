@@ -493,8 +493,8 @@ class AppDialog(QtGui.QWidget):
             else:
                 self.ui.context_widget.enable_editing(
                     False,
-                    "<p>This item does not support publishing to a different "
-                    "task or link. It will be published to "
+                    "<p>Context changing has been disabled for this item. "
+                    "It will be associated with "
                     "<strong><a style='color:#C8C8C8; text-decoration:none' "
                     "href='%s'>%s</a></strong></p>" %
                     (item.context.shotgun_url, item.context)
