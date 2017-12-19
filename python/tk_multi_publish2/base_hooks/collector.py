@@ -10,8 +10,10 @@
 
 import sgtk
 
+HookBaseClass = sgtk.get_hook_baseclass()
 
-class CollectorPlugin(sgtk.Hook):
+
+class CollectorPlugin(HookBaseClass):
     """
     This class defines the required interface for a collector plugin.
     Collectors are used to gather individual files that are loaded via the

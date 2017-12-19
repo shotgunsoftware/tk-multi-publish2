@@ -10,8 +10,10 @@
 
 import sgtk
 
+HookBaseClass = sgtk.get_hook_baseclass()
 
-class PublishPlugin(sgtk.Hook):
+
+class PublishPlugin(HookBaseClass):
     """
     This class defines the required interface for a publish plugin. Publish
     plugins are responsible for operating on items collected by the collector
