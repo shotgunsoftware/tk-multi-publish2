@@ -511,10 +511,10 @@ class AppDialog(QtGui.QWidget):
         # generate a summary
 
         if len(summary) == 0:
-            summary_text = "Nothing will published."
+            summary_text = "No items to process."
 
         else:
-            summary_text = "<p>The following items will be published:</p>"
+            summary_text = "<p>The following items will be processed:</p>"
             summary_text += "".join(["<p>%s</p>" % line for line in summary])
 
         self.ui.item_summary.setText(summary_text)
