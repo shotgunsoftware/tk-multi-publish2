@@ -11,7 +11,7 @@ from tank.platform.qt import QtCore, QtGui
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(875, 757)
+        Dialog.resize(709, 588)
         self.verticalLayout_7 = QtGui.QVBoxLayout(Dialog)
         self.verticalLayout_7.setSpacing(0)
         self.verticalLayout_7.setContentsMargins(0, 0, 0, 0)
@@ -222,7 +222,7 @@ class Ui_Dialog(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 515, 170))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 98, 28))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.verticalLayout_10 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_10.setSpacing(0)
@@ -289,7 +289,7 @@ class Ui_Dialog(object):
         self.task_settings_scroll_area.setWidgetResizable(True)
         self.task_settings_scroll_area.setObjectName("task_settings_scroll_area")
         self.task_settings_parent = QtGui.QWidget()
-        self.task_settings_parent.setGeometry(QtCore.QRect(0, 0, 515, 605))
+        self.task_settings_parent.setGeometry(QtCore.QRect(0, 0, 408, 432))
         self.task_settings_parent.setObjectName("task_settings_parent")
         self.verticalLayout_13 = QtGui.QVBoxLayout(self.task_settings_parent)
         self.verticalLayout_13.setObjectName("verticalLayout_13")
