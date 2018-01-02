@@ -50,7 +50,9 @@ class PluginBase(object):
         """
         Create the plugin's hook instance. Subclasses can reimplement for more
         sophisticated hook instantiation.
-        :return:
+
+        :param str path: The path to the hook file.
+        :return: A hook instance
         """
         return self._bundle.create_hook_instance(path)
 

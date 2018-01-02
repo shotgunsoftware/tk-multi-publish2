@@ -15,9 +15,8 @@ logger = sgtk.platform.get_logger(__name__)
 
 class MultiPublish2(sgtk.platform.Application):
     """
-    Main app class for publisher.
-
-    Command registration and API methods.
+    This is the :class:`sgtk.platform.Application` subclass that defines the
+    top-level publish2 interface.
     """
 
     def init_app(self):
@@ -27,10 +26,10 @@ class MultiPublish2(sgtk.platform.Application):
         tk_multi_publish2 = self.import_module("tk_multi_publish2")
 
         # make the util methods available via the app instance
-        self.util = tk_multi_publish2.util
+        self._util = tk_multi_publish2.util
 
         # make the base plugins available via the app
-        self.base_hooks = tk_multi_publish2.base_hooks
+        self._base_hooks = tk_multi_publish2.base_hooks
 
         display_name = self.get_setting("display_name")
         # "Publish Render" ---> publish_render
@@ -52,6 +51,49 @@ class MultiPublish2(sgtk.platform.Application):
             }
         }
         self.engine.register_command(menu_caption, cb, menu_options)
+
+    @property
+    def base_hooks(self):
+        """
+        Exposes the publish2 ``base_hooks`` module.
+
+        This module provides base class implementations of collector and publish
+        plugin hooks:
+
+        - :class:`~.base_hooks.CollectorPlugin`
+        - :class:`~.base_hooks.PublishPlugin`
+
+        Access to these classes won't typically be needed when writing hooks as
+        they are are injected into the class hierarchy automatically for any
+        collector or publish plugins configured.
+
+        :return: A handle on the app's ``base_hooks`` module.
+        """
+        return self._base_hooks
+
+    @property
+    def util(self):
+        """
+        Exposes the publish2 ``util`` module.
+
+        This module provides methods that are useful to collector and publish
+        plugin hooks. Example code running in a hook:
+
+        .. code-block:: python
+
+            # get a handle on the publish2 app
+            app = self.parent
+
+            # call a util method
+            path_components = app.util.get_file_path_components(path)
+
+        Some of the methods available via ``util`` are the ``path_info`` hook
+        methods. Exposing them via this property allows them to be called
+        directly.
+
+        :return: A handle on the app's ``util`` module.
+        """
+        return self._util
 
     @property
     def context_change_allowed(self):

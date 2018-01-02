@@ -158,6 +158,7 @@ class Item(object):
         .. image:: ./resources/create_item_args.png
 
         |
+
         :param str item_type: Item type, typically following a hierarchical dot
             notation.
         :param str display_type: Equivalent to the type, but for display purposes.
@@ -456,6 +457,7 @@ class Item(object):
         .. image:: ./resources/item_icon.png
 
         |
+
         If no icon has been defined for this node, the parent
         icon is returned, or a default one if not defined
         """
