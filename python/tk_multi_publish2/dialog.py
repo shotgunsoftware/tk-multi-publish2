@@ -493,8 +493,8 @@ class AppDialog(QtGui.QWidget):
             else:
                 self.ui.context_widget.enable_editing(
                     False,
-                    "<p>This item does not support publishing to a different "
-                    "task or link. It will be published to "
+                    "<p>Context changing has been disabled for this item. "
+                    "It will be associated with "
                     "<strong><a style='color:#C8C8C8; text-decoration:none' "
                     "href='%s'>%s</a></strong></p>" %
                     (item.context.shotgun_url, item.context)
@@ -511,10 +511,10 @@ class AppDialog(QtGui.QWidget):
         # generate a summary
 
         if len(summary) == 0:
-            summary_text = "Nothing will published."
+            summary_text = "No items to process."
 
         else:
-            summary_text = "<p>The following items will be published:</p>"
+            summary_text = "<p>The following items will be processed:</p>"
             summary_text += "".join(["<p>%s</p>" % line for line in summary])
 
         self.ui.item_summary.setText(summary_text)
