@@ -292,6 +292,9 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         if publishes:
 
+            self.logging.debug(
+                "Conflicting publishes: %s" % (pprint.pformat(publishes),))
+
             if ("work_template" in item.properties or
                 "publish_template" in item.properties):
 

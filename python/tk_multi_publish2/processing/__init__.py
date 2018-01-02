@@ -9,6 +9,6 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 from .plugin_manager import PluginManager
-from .task import Task
 from .item import Item
-
+from .setting import Setting
+from .task import Task

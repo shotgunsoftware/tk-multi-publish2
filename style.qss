@@ -163,7 +163,7 @@ DropAreaFrame[dragging="true"] {
 #items_tree::branch {
     border-image: none;
     image: none;
-    background: none;
+    background: palette(base); /* don't highlight the branch area on selection */
 }
 
 /* selection of tree items */
@@ -483,5 +483,22 @@ QMenu::item::indicator {
 
 #summary_frame {
     background-color: rgba(20, 20, 20, 95%);
+}
+
+/* --------------------------------------------------------------------- */
+/* Group Boxes                                                           */
+/* --------------------------------------------------------------------- */
+
+QGroupBox {
+    border: 1px solid #333333;
+    border-radius: 4px;
+    background-color: #3A3A3A;
+    margin-top: 18px;
+}
+
+QGroupBox::title {
+    top: -18px;
+    font-weight: bold;
+    font-size: 18px;
 }
 

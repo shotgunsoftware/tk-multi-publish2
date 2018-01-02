@@ -42,9 +42,6 @@ class AppDialog(QtGui.QWidget):
     # details ui panes
     (ITEM_DETAILS, TASK_DETAILS, PLEASE_SELECT_DETAILS, MULTI_EDIT_NOT_SUPPORTED) = range(4)
 
-    # settings ui panes, those are both present on the TASK_DETAILS pane.
-    (BUILTIN_TASK_DETAILS, CUSTOM_TASK_DETAILS) = range(2)
-
     def __init__(self, parent=None):
         """
         :param parent: The parent QWidget for this control
@@ -168,9 +165,7 @@ class AppDialog(QtGui.QWidget):
 
         # hide settings for now
         self.ui.item_settings_label.hide()
-        self.ui.task_settings_label.hide()
         self.ui.item_settings.hide()
-        self.ui.task_settings.hide()
 
         # create a plugin manager
         self._plugin_manager = PluginManager(self._progress_handler.logger)
@@ -327,35 +322,16 @@ class AppDialog(QtGui.QWidget):
             # Note: At this point we don't really care if current task actually had a UI, we can
             # certainly tear down an empty widget.
             logger.debug("The ui is going to change, so clear the current one.")
-            self.ui.custom_settings_page.widget = None
+            self.ui.task_settings.widget = None
             self._current_tasks = new_task_selection
             return
 
         # A task was picked, so make sure our page is in foreground.
         self.ui.details_stack.setCurrentIndex(self.TASK_DETAILS)
 
+        # set the header for the task plugin
         self.ui.task_icon.setPixmap(new_task_selection.plugin.icon)
         self.ui.task_name.setText(new_task_selection.plugin.name)
-
-        # If the new task selection does not have a custom UI, a simple tear down of the custom UI
-        # and setting the built-in fields will suffice.
-        if not new_task_selection.has_custom_ui:
-            logger.debug("Clearing custom UI and using default task details...")
-            self.ui.custom_settings_page.widget = None
-
-            # All the items are of the same type,
-            self.ui.settings_stack.setCurrentIndex(self.BUILTIN_TASK_DETAILS)
-            self.ui.task_description.setText(new_task_selection.plugin.description)
-
-            # skip settings for now
-            # self.ui.task_settings.set_data(task.settings.values())
-
-            self._current_tasks = new_task_selection
-            return
-
-        # At this point we can assume we're going to have to show a UI, because new task exists
-        # and it has a custom UI.
-        self.ui.settings_stack.setCurrentIndex(self.CUSTOM_TASK_DETAILS)
 
         # Now figure out if we need to create/replace the widgets.
         if (
@@ -367,8 +343,9 @@ class AppDialog(QtGui.QWidget):
             logger.debug("Reusing custom ui from %s.", new_task_selection.plugin)
         else:
             logger.debug("Building a custom ui for %s.", new_task_selection.plugin)
-            widget = new_task_selection.plugin.run_create_settings_widget(self.ui.custom_settings_page)
-            self.ui.custom_settings_page.widget = widget
+            widget = new_task_selection.plugin.run_create_settings_widget(
+                self.ui.task_settings_parent)
+            self.ui.task_settings.widget = widget
 
         # Update the UI with the settings from the current plugin.
         if self._push_settings_into_ui(new_task_selection):
@@ -385,7 +362,7 @@ class AppDialog(QtGui.QWidget):
             on the values edited in the UI.
         """
         if selected_tasks.has_custom_ui:
-            widget = self.ui.custom_settings_page.widget
+            widget = self.ui.task_settings.widget
             settings = self._current_tasks.get_settings(widget)
         else:
             # TODO: Implement getting the settings from the generic UI, if we ever implement one.
@@ -416,7 +393,7 @@ class AppDialog(QtGui.QWidget):
 
         if selected_tasks.has_custom_ui:
             try:
-                selected_tasks.set_settings(self.ui.custom_settings_page.widget, tasks_settings)
+                selected_tasks.set_settings(self.ui.task_settings.widget, tasks_settings)
             except NotImplementedError:
                 self.ui.details_stack.setCurrentIndex(self.MULTI_EDIT_NOT_SUPPORTED)
                 return False
@@ -542,8 +519,8 @@ class AppDialog(QtGui.QWidget):
             else:
                 self.ui.context_widget.enable_editing(
                     False,
-                    "<p>This item does not support publishing to a different "
-                    "task or link. It will be published to "
+                    "<p>Context changing has been disabled for this item. "
+                    "It will be associated with "
                     "<strong><a style='color:#C8C8C8; text-decoration:none' "
                     "href='%s'>%s</a></strong></p>" %
                     (item.context.shotgun_url, item.context)
@@ -560,10 +537,10 @@ class AppDialog(QtGui.QWidget):
         # generate a summary
 
         if len(summary) == 0:
-            summary_text = "Nothing will published."
+            summary_text = "No items to process."
 
         else:
-            summary_text = "<p>The following items will be published:</p>"
+            summary_text = "<p>The following items will be processed:</p>"
             summary_text += "".join(["<p>%s</p>" % line for line in summary])
 
         self.ui.item_summary.setText(summary_text)

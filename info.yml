@@ -79,7 +79,7 @@ description: "Provides UI and functionality to publish files to Shotgun."
 
 # Required minimum versions for this item to run
 requires_shotgun_version:
-requires_core_version: "v0.18.72"
+requires_core_version: "v0.18.122"
 requires_engine_version: 
 
 # this app works in all engines - it does not contain 
