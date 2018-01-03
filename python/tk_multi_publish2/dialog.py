@@ -886,6 +886,8 @@ class AppDialog(QtGui.QWidget):
             # show cancel button
             self.ui.stop_processing.show()
 
+            # is the app configured to execute the validation when publish
+            # is triggered?
             if self._bundle.get_setting("validate_on_publish"):
                 # do_validate returns the number of issues encountered
                 if self.do_validate(standalone=False) > 0:
@@ -895,14 +897,16 @@ class AppDialog(QtGui.QWidget):
                     )
                     self.ui.button_container.show()
                     return
+
+            # validation not required on publish, it has already run though
             elif self._validation_run:
                 self._progress_handler.logger.info(
                     "Skipping validation pass just before publish. "
                     "It was already run manually.")
+
+            # validation not required on publish. no validation done yet
             else:
-                # validation has not been run and validate is configured to not
-                # run before publishing. get user confirmation that they would
-                # like to continue
+                # get user confirmation that they would like to continue
                 button_clicked = QtGui.QMessageBox.question(
                     self,
                     "%s without Validation?" % (self._display_action_name,),
@@ -911,6 +915,7 @@ class AppDialog(QtGui.QWidget):
                     buttons=QtGui.QMessageBox.Yes | QtGui.QMessageBox.Cancel
                 )
                 if button_clicked == QtGui.QMessageBox.Cancel:
+                    # user does not want ot continue.
                     self.ui.button_container.show()
                     return
 
