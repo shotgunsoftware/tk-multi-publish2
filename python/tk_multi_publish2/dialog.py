@@ -864,6 +864,7 @@ class AppDialog(QtGui.QWidget):
                 # reset the progress
                 self._progress_handler.reset_progress()
 
+        # remember that validation has completed at least once
         self._validation_run = True
 
         return num_issues
