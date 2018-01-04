@@ -11,7 +11,6 @@
 import traceback
 
 import sgtk
-from sgtk import TankError
 from sgtk.platform.qt import QtCore, QtGui
 
 from .ui.dialog import Ui_Dialog
@@ -63,6 +62,7 @@ class AppDialog(QtGui.QWidget):
         shotgun_globals.register_bg_task_manager(self._task_manager)
 
         self._bundle = sgtk.platform.current_bundle()
+        self._validation_run = False
 
         # set up the UI
         self.ui = Ui_Dialog()
@@ -175,8 +175,8 @@ class AppDialog(QtGui.QWidget):
         self._summary_thumbnail = None 
 
         # set publish button text
-        display_action_name = self._bundle.get_setting("display_action_name")
-        self.ui.publish.setText(display_action_name)
+        self._display_action_name = self._bundle.get_setting("display_action_name")
+        self.ui.publish.setText(self._display_action_name)
 
         # run collections
         self._full_rebuild()        
@@ -653,6 +653,9 @@ class AppDialog(QtGui.QWidget):
         # select summary
         self.ui.items_tree.select_first_item()
 
+        # reset the validation flag
+        self._validation_run = False
+
     def _on_drop(self, files):
         """
         When someone drops stuff into the publish.
@@ -861,6 +864,9 @@ class AppDialog(QtGui.QWidget):
                 # reset the progress
                 self._progress_handler.reset_progress()
 
+        # remember that validation has completed at least once
+        self._validation_run = True
+
         return num_issues
 
     def do_publish(self):
@@ -880,12 +886,41 @@ class AppDialog(QtGui.QWidget):
             # show cancel button
             self.ui.stop_processing.show()
 
-            issues = self.do_validate(standalone=False)
+            # is the app configured to execute the validation when publish
+            # is triggered?
+            if self._bundle.get_setting("validate_on_publish"):
+                # do_validate returns the number of issues encountered
+                if self.do_validate(standalone=False) > 0:
+                    self._progress_handler.logger.error(
+                        "Validation errors detected. "
+                        "Not proceeding with publish."
+                    )
+                    self.ui.button_container.show()
+                    return
 
-            if issues > 0:
-                self._progress_handler.logger.error("Validation errors detected. Not proceeding with publish.")
-                self.ui.button_container.show()
-                return
+            # validation not required on publish, it has already run though
+            elif self._validation_run:
+                self._progress_handler.logger.info(
+                    "Skipping validation pass just before publish. "
+                    "It was already run manually.")
+
+            # validation not required on publish. no validation done yet
+            else:
+                # get user confirmation that they would like to continue
+                button_clicked = QtGui.QMessageBox.question(
+                    self,
+                    "%s without Validation?" % (self._display_action_name,),
+                    "You are attempting to %s without validation. Are you sure "
+                    "you wish to continue?" % (self._display_action_name,),
+                    buttons=QtGui.QMessageBox.Yes | QtGui.QMessageBox.Cancel
+                )
+                if button_clicked == QtGui.QMessageBox.Cancel:
+                    # user does not want ot continue.
+                    self.ui.button_container.show()
+                    return
+
+                self._progress_handler.logger.info(
+                    "User skipped validation step.")
 
             if self._stop_processing_flagged:
                 # stop processing
@@ -986,6 +1021,9 @@ class AppDialog(QtGui.QWidget):
 
         # select summary
         self.ui.items_tree.select_first_item()
+
+        # reset the validation flag
+        self._validation_run = False
 
     def _visit_tree_r(self, parent, action, action_name):
         """

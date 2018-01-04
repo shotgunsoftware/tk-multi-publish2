@@ -70,6 +70,16 @@ configuration:
            not be displayed."
         default_value: ""
 
+    validate_on_publish:
+        type: bool
+        default_value: true
+        description:
+          "If true (default), clicking the Publish button will execute the
+           validation logic before publishing. If false, validation will be
+           skipped. If false, and no validation has been manually triggered,
+           a popup, confirmation dialog will be displayed before proceeding
+           with the publish logic."
+
 # the Shotgun fields that this app needs in order to operate correctly
 requires_shotgun_fields:
 
