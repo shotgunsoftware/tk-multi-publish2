@@ -69,6 +69,25 @@ class AppDialog(QtGui.QWidget):
         self.ui.setupUi(self)
 
         self.ui.context_widget.set_up(self._task_manager)
+        self.ui.context_widget.restrict_entity_types_by_link("PublishedFile", "entity")
+
+        self.ui.context_widget.set_task_tooltip(
+            "<p>The task that the selected item will be associated with "
+            "in Shotgun after publishing. It is recommended to always "
+            "fill out the Task field when publishing. The menu button "
+            "to the right will provide suggestions for Tasks to publish "
+            "to including the Tasks assigned to you, recently used Tasks, "
+            "and Tasks related to the entity Link populated in the field below.</p>"
+        )
+        self.ui.context_widget.set_link_tooltip(
+            "<p>The entity that the selected item will be associated with "
+            "in Shotgun after publishing. By selecting a Task in the field "
+            "above, the Link will automatically be populated. It is recommended "
+            "that you always populate the Task field when publishing. "
+            "The Task menu above will display any tasks associated with "
+            "the entity populated in this field.</p>"
+        )
+
         self.ui.context_widget.context_changed.connect(self._on_item_context_change)
 
         # make sure the splitter expands the detail area only
