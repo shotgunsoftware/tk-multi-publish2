@@ -1113,7 +1113,7 @@ Please select a single task.</string>
   <customwidget>
    <class>ContextWidget</class>
    <extends>QWidget</extends>
-   <header>..context_widget</header>
+   <header>..qtwidgets</header>
    <container>1</container>
   </customwidget>
   <customwidget>

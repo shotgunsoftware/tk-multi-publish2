@@ -502,7 +502,7 @@ class Ui_Dialog(object):
         self.close.setText(QtGui.QApplication.translate("Dialog", "Close", None, QtGui.QApplication.UnicodeUTF8))
 
 from ..thumbnail import Thumbnail
-from ..context_widget import ContextWidget
+from ..qtwidgets import ContextWidget
 from ..progress_status_label import ProgressStatusLabel
 from ..publish_description_edit import PublishDescriptionEdit
 from ..custom_settings_widget import CustomSettingsWidget

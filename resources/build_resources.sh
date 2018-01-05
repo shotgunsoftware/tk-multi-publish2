@@ -61,8 +61,4 @@ UI_PYTHON_PATH=../python/tk_multi_publish2/progress/ui
 build_ui progress_details_widget
 build_ui more_info_widget
 
-# build tree UIs:
-echo "building context interfaces..."
-UI_PYTHON_PATH=../python/tk_multi_publish2/context_widget/ui
-build_ui context_editor_widget
 

@@ -15,7 +15,9 @@ easily from with Qt Designer
 
 import sgtk
 
-elided_label= sgtk.platform.import_framework("tk-framework-qtwidgets", "elided_label")
+elided_label = sgtk.platform.import_framework("tk-framework-qtwidgets", "elided_label")
 ElidedLabel = elided_label.ElidedLabel
 
+context_selector = sgtk.platform.import_framework("tk-framework-qtwidgets", "context_selector")
+ContextWidget = context_selector.ContextWidget
 
