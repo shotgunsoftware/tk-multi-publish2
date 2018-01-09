@@ -61,7 +61,7 @@ class PublishPlugin(HookBaseClass):
             distinction between items and tasks in the interface.
 
         """
-        raise NotImplementedError
+        return None
 
     @property
     def name(self):

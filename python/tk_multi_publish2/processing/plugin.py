@@ -164,19 +164,20 @@ class PublishPlugin(PluginBase):
         pixmap = None
         try:
             icon_path = self._hook_instance.icon
-            try:
-                pixmap = QtGui.QPixmap(icon_path)
-            except Exception, e:
-                self._logger.warning(
-                    "%r: Could not load icon '%s': %s" % (self, icon_path, e)
-                )
+            if icon_path:
+                try:
+                    pixmap = QtGui.QPixmap(icon_path)
+                except Exception, e:
+                    self._logger.warning(
+                        "%r: Could not load icon '%s': %s" % (self, icon_path, e)
+                    )
         except AttributeError:
             # plugin does not have an icon
             pass
 
         # load default pixmap if hook doesn't define one
         if pixmap is None:
-            pixmap = QtGui.QPixmap(":/tk_multi_publish2/item.png")
+            pixmap = QtGui.QPixmap(":/tk_multi_publish2/task.png")
 
         return pixmap
 

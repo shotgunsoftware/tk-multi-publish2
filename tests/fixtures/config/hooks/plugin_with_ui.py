@@ -188,7 +188,7 @@ class CustomWidgetController(QtGui.QWidget):
     """
     This is the plugin's custom UI.
     """
-    def __init__(self, parent):
+    def __init__(self, parent, description_widget=None):
         QtGui.QWidget.__init__(self, parent)
 
         layout = QtGui.QFormLayout(self)
@@ -201,6 +201,9 @@ class CustomWidgetController(QtGui.QWidget):
         self.edit.editor.setFocus()
         self.number.editor.setMinimum(0)
         self.number.editor.setMaximum(100)
+
+        if description_widget:
+            layout.addRow(description_widget)
 
 
 class PluginWithUi(HookBaseClass):
@@ -216,7 +219,10 @@ class PluginWithUi(HookBaseClass):
         :param parent: QWidget to parent the widget under
         :return: QWidget with an editor for the given setting or None if no custom widget is desired.
         """
-        return CustomWidgetController(parent)
+        return CustomWidgetController(
+            parent,
+            description_widget=super(PluginWithUi, self).create_settings_widget(parent)
+        )
 
     def get_ui_settings(self, controller):
         """
