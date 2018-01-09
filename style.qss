@@ -362,7 +362,7 @@ ProgressDetailsWidget #log_tree::item {
     background-color: rgba(20, 20, 20, 50%);
 }
 
-#drop_area_browse {
+#drop_area_browse_file, #drop_area_browse_seq {
     border: none;
     border-radius: 2px;
     background-color: {{SG_HIGHLIGHT_COLOR}};

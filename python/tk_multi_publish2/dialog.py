@@ -154,7 +154,10 @@ class AppDialog(QtGui.QWidget):
         self.ui.browse.clicked.connect(self._on_browse)
 
         # drop area browse button
-        self.ui.drop_area_browse.clicked.connect(self._on_browse)
+        self.ui.drop_area_browse_file.clicked.connect(
+            lambda: self._on_browse(folders=False))
+        self.ui.drop_area_browse_seq.clicked.connect(
+            lambda: self._on_browse(folders=True))
 
         # currently displayed item
         self._current_item = None
@@ -1111,18 +1114,23 @@ class AppDialog(QtGui.QWidget):
         if sync_required:
             self._synchronize_tree()
 
-    def _on_browse(self):
+    def _on_browse(self, folders=False):
         """Opens a file dialog to browse to files for publishing."""
 
-        file_dialog = QtGui.QFileDialog(
-            parent=self,
-            caption="Browse files to publish"
-        )
+        if folders:
+            caption = "Browse folders to publish image sequences"
+            file_mode = QtGui.QFileDialog.Directory
+        else:
+            caption = "Browse files to publish"
+            file_mode = QtGui.QFileDialog.ExistingFiles
+
+        file_dialog = QtGui.QFileDialog(parent=self, caption=caption)
         file_dialog.setLabelText(QtGui.QFileDialog.Accept, "Select")
         file_dialog.setLabelText(QtGui.QFileDialog.Reject, "Cancel")
         file_dialog.setOption(QtGui.QFileDialog.DontResolveSymlinks)
         file_dialog.setOption(QtGui.QFileDialog.DontUseNativeDialog)
-        file_dialog.setFileMode(QtGui.QFileDialog.ExistingFiles)
+        file_dialog.setFileMode(file_mode)
+
         if not file_dialog.exec_():
             return
 

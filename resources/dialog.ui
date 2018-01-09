@@ -23,7 +23,7 @@
    <item>
     <widget class="QStackedWidget" name="main_stack">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="large_drop_area_frame">
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -35,7 +35,7 @@
          <property name="frameShadow">
           <enum>QFrame::Raised</enum>
          </property>
-         <layout class="QGridLayout" name="gridLayout_2">
+         <layout class="QGridLayout" name="gridLayout_2" rowstretch="3,0,4" columnstretch="1,0,1">
           <item row="0" column="1">
            <spacer name="verticalSpacer">
             <property name="orientation">
@@ -93,7 +93,7 @@
              </widget>
             </item>
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout" stretch="3,0,1,0,3">
+             <layout class="QVBoxLayout" name="verticalLayout" stretch="3,0,1,0,0,3">
               <property name="spacing">
                <number>8</number>
               </property>
@@ -118,7 +118,7 @@
 }</string>
                 </property>
                 <property name="text">
-                 <string>Drag and drop files here</string>
+                 <string>Drag and drop files or folders here</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
@@ -151,7 +151,7 @@
                  </spacer>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="drop_area_browse">
+                 <widget class="QPushButton" name="drop_area_browse_file">
                   <property name="minimumSize">
                    <size>
                     <width>0</width>
@@ -165,11 +165,11 @@
                    <string>Browse files to publish</string>
                   </property>
                   <property name="text">
-                   <string>Browse files to publish</string>
+                   <string>Browse files to publish     </string>
                   </property>
                   <property name="icon">
                    <iconset resource="resources.qrc">
-                    <normaloff>:/tk_multi_publish2/browse_white.png</normaloff>:/tk_multi_publish2/browse_white.png</iconset>
+                    <normaloff>:/tk_multi_publish2/file.png</normaloff>:/tk_multi_publish2/file.png</iconset>
                   </property>
                   <property name="iconSize">
                    <size>
@@ -181,6 +181,60 @@
                 </item>
                 <item>
                  <spacer name="horizontalSpacer_3">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_4">
+                <item>
+                 <spacer name="horizontalSpacer_6">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="drop_area_browse_seq">
+                  <property name="focusPolicy">
+                   <enum>Qt::NoFocus</enum>
+                  </property>
+                  <property name="toolTip">
+                   <string>Browse sequences to publish</string>
+                  </property>
+                  <property name="text">
+                   <string>Browse folders to publish
+image sequences</string>
+                  </property>
+                  <property name="icon">
+                   <iconset resource="resources.qrc">
+                    <normaloff>:/tk_multi_publish2/image_sequence.png</normaloff>:/tk_multi_publish2/image_sequence.png</iconset>
+                  </property>
+                  <property name="iconSize">
+                   <size>
+                    <width>32</width>
+                    <height>32</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_7">
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
@@ -513,8 +567,8 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>408</width>
-                       <height>102</height>
+                       <width>82</width>
+                       <height>26</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_10" stretch="0,1">
