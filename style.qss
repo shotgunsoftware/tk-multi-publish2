@@ -56,6 +56,9 @@ QToolButton:pressed {
     background-color: rgba(200, 200, 200, 35%);
 }
 
+QToolButton::menu-indicator#browse {
+    image: none;
+}
 
 /* --------------------------------------------------------------------- */
 /* Full screen drop area */

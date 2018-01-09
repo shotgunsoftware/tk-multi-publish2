@@ -23,10 +23,13 @@
    <item>
     <widget class="QStackedWidget" name="main_stack">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="large_drop_area_frame">
       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <property name="spacing">
+        <number>0</number>
+       </property>
        <item>
         <widget class="DropAreaFrame" name="large_drop_area">
          <property name="frameShape">
@@ -36,6 +39,12 @@
           <enum>QFrame::Raised</enum>
          </property>
          <layout class="QGridLayout" name="gridLayout_2" rowstretch="3,0,4" columnstretch="1,0,1">
+          <property name="margin">
+           <number>0</number>
+          </property>
+          <property name="spacing">
+           <number>0</number>
+          </property>
           <item row="0" column="1">
            <spacer name="verticalSpacer">
             <property name="orientation">
@@ -64,6 +73,9 @@
           </item>
           <item row="1" column="1">
            <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <property name="spacing">
+             <number>0</number>
+            </property>
             <item>
              <widget class="QLabel" name="label_5">
               <property name="minimumSize">
@@ -93,9 +105,9 @@
              </widget>
             </item>
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout" stretch="3,0,1,0,0,3">
+             <layout class="QVBoxLayout" name="verticalLayout" stretch="10,0,0,0,0,0,10">
               <property name="spacing">
-               <number>8</number>
+               <number>0</number>
               </property>
               <item>
                <spacer name="verticalSpacer_3">
@@ -126,6 +138,19 @@
                </widget>
               </item>
               <item>
+               <spacer name="verticalSpacer_5">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>0</width>
+                  <height>12</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
                <widget class="QLabel" name="label">
                 <property name="text">
                  <string>Or, if you prefer...</string>
@@ -136,7 +161,23 @@
                </widget>
               </item>
               <item>
+               <spacer name="verticalSpacer_6">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>0</width>
+                  <height>16</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
                <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <property name="spacing">
+                 <number>0</number>
+                </property>
                 <item>
                  <spacer name="horizontalSpacer_2">
                   <property name="orientation">
@@ -151,11 +192,17 @@
                  </spacer>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="drop_area_browse_file">
+                 <widget class="QToolButton" name="drop_area_browse_file">
                   <property name="minimumSize">
                    <size>
-                    <width>0</width>
-                    <height>0</height>
+                    <width>150</width>
+                    <height>85</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>150</width>
+                    <height>85</height>
                    </size>
                   </property>
                   <property name="focusPolicy">
@@ -165,7 +212,8 @@
                    <string>Browse files to publish</string>
                   </property>
                   <property name="text">
-                   <string>Browse files to publish     </string>
+                   <string>Browse files to publish
+    </string>
                   </property>
                   <property name="icon">
                    <iconset resource="resources.qrc">
@@ -177,25 +225,11 @@
                     <height>32</height>
                    </size>
                   </property>
+                  <property name="toolButtonStyle">
+                   <enum>Qt::ToolButtonTextUnderIcon</enum>
+                  </property>
                  </widget>
                 </item>
-                <item>
-                 <spacer name="horizontalSpacer_3">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_4">
                 <item>
                  <spacer name="horizontalSpacer_6">
                   <property name="orientation">
@@ -203,14 +237,26 @@
                   </property>
                   <property name="sizeHint" stdset="0">
                    <size>
-                    <width>40</width>
-                    <height>20</height>
+                    <width>12</width>
+                    <height>0</height>
                    </size>
                   </property>
                  </spacer>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="drop_area_browse_seq">
+                 <widget class="QToolButton" name="drop_area_browse_seq">
+                  <property name="minimumSize">
+                   <size>
+                    <width>150</width>
+                    <height>85</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>150</width>
+                    <height>85</height>
+                   </size>
+                  </property>
                   <property name="focusPolicy">
                    <enum>Qt::NoFocus</enum>
                   </property>
@@ -231,10 +277,13 @@ image sequences</string>
                     <height>32</height>
                    </size>
                   </property>
+                  <property name="toolButtonStyle">
+                   <enum>Qt::ToolButtonTextUnderIcon</enum>
+                  </property>
                  </widget>
                 </item>
                 <item>
-                 <spacer name="horizontalSpacer_7">
+                 <spacer name="horizontalSpacer_3">
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
@@ -567,8 +616,8 @@ image sequences</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>82</width>
-                       <height>26</height>
+                       <width>98</width>
+                       <height>28</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_10" stretch="0,1">
@@ -859,7 +908,7 @@ Please select a single task.</string>
                </property>
                <property name="icon">
                 <iconset resource="resources.qrc">
-                 <normaloff>:/tk_multi_publish2/browse.png</normaloff>:/tk_multi_publish2/browse.png</iconset>
+                 <normaloff>:/tk_multi_publish2/browse_menu.png</normaloff>:/tk_multi_publish2/browse_menu.png</iconset>
                </property>
                <property name="iconSize">
                 <size>

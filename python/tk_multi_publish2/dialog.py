@@ -150,8 +150,32 @@ class AppDialog(QtGui.QWidget):
             # no url. hide the button!
             self.ui.help.hide()
 
+        # browse file action
+        self._browse_file_action = QtGui.QAction(self)
+        self._browse_file_action.setText("Browse files to publish")
+        self._browse_file_action.setIcon(
+            QtGui.QIcon(":/tk_multi_publish2/file.png"))
+        self._browse_file_action.triggered.connect(
+            lambda: self._on_browse(folders=False))
+
+        # browse folder action
+        self._browse_folder_action = QtGui.QAction(self)
+        self._browse_folder_action.setText(
+            "Browse folders to publish image sequences")
+        self._browse_folder_action.setIcon(QtGui.QIcon(
+            ":/tk_multi_publish2/image_sequence.png"))
+        self._browse_folder_action.triggered.connect(
+            lambda: self._on_browse(folders=True))
+
+        # browse menu
+        self._browse_menu = QtGui.QMenu(self)
+        self._browse_menu.addAction(self._browse_file_action)
+        self._browse_menu.addAction(self._browse_folder_action)
+
         # browse tool button
         self.ui.browse.clicked.connect(self._on_browse)
+        self.ui.browse.setMenu(self._browse_menu)
+        self.ui.browse.setPopupMode(QtGui.QToolButton.DelayedPopup)
 
         # drop area browse button
         self.ui.drop_area_browse_file.clicked.connect(
@@ -1117,9 +1141,15 @@ class AppDialog(QtGui.QWidget):
     def _on_browse(self, folders=False):
         """Opens a file dialog to browse to files for publishing."""
 
+        options = [
+            QtGui.QFileDialog.DontResolveSymlinks,
+            QtGui.QFileDialog.DontUseNativeDialog
+        ]
+
         if folders:
             caption = "Browse folders to publish image sequences"
             file_mode = QtGui.QFileDialog.Directory
+            options.append(QtGui.QFileDialog.ShowDirsOnly)
         else:
             caption = "Browse files to publish"
             file_mode = QtGui.QFileDialog.ExistingFiles
@@ -1127,9 +1157,10 @@ class AppDialog(QtGui.QWidget):
         file_dialog = QtGui.QFileDialog(parent=self, caption=caption)
         file_dialog.setLabelText(QtGui.QFileDialog.Accept, "Select")
         file_dialog.setLabelText(QtGui.QFileDialog.Reject, "Cancel")
-        file_dialog.setOption(QtGui.QFileDialog.DontResolveSymlinks)
-        file_dialog.setOption(QtGui.QFileDialog.DontUseNativeDialog)
         file_dialog.setFileMode(file_mode)
+
+        for option in options:
+            file_dialog.setOption(option)
 
         if not file_dialog.exec_():
             return
