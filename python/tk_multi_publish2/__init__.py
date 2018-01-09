@@ -10,8 +10,8 @@
 
 import sgtk
 
-import base_hooks
-import util
+from . import base_hooks
+from . import util
 
 def show_dialog(app):
     """
