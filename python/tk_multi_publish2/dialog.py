@@ -177,7 +177,11 @@ class AppDialog(QtGui.QWidget):
         self.ui.browse.setMenu(self._browse_menu)
         self.ui.browse.setPopupMode(QtGui.QToolButton.DelayedPopup)
 
-        # drop area browse button
+        # drop area browse button. Note, not using the actions created above
+        # because making the buttons look right when they're usingt he action's
+        # text/icon proved difficult. Instead, the button text/icon are defined
+        # in the designer file. So as a note, if you want to change the text or
+        # icon, you'll need to do it above and in designer.
         self.ui.drop_area_browse_file.clicked.connect(
             lambda: self._on_browse(folders=False))
         self.ui.drop_area_browse_seq.clicked.connect(
@@ -1141,34 +1145,41 @@ class AppDialog(QtGui.QWidget):
     def _on_browse(self, folders=False):
         """Opens a file dialog to browse to files for publishing."""
 
+        # options for either browse type
         options = [
             QtGui.QFileDialog.DontResolveSymlinks,
             QtGui.QFileDialog.DontUseNativeDialog
         ]
 
         if folders:
+            # browse folders specifics
             caption = "Browse folders to publish image sequences"
             file_mode = QtGui.QFileDialog.Directory
             options.append(QtGui.QFileDialog.ShowDirsOnly)
         else:
+            # browse files specifics
             caption = "Browse files to publish"
             file_mode = QtGui.QFileDialog.ExistingFiles
 
+        # create the dialog
         file_dialog = QtGui.QFileDialog(parent=self, caption=caption)
         file_dialog.setLabelText(QtGui.QFileDialog.Accept, "Select")
         file_dialog.setLabelText(QtGui.QFileDialog.Reject, "Cancel")
         file_dialog.setFileMode(file_mode)
 
+        # set the appropriate options
         for option in options:
             file_dialog.setOption(option)
 
+        # browse!
         if not file_dialog.exec_():
             return
 
-        files = file_dialog.selectedFiles()
-        if files:
+        # process the browsed files/folders for publishing
+        paths = file_dialog.selectedFiles()
+        if paths:
             # simulate dropping the files into the dialog
-            self._on_drop(files)
+            self._on_drop(paths)
 
     def _open_url(self, url):
         """Opens the supplied url in the appropriate browser."""
