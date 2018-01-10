@@ -150,11 +150,42 @@ class AppDialog(QtGui.QWidget):
             # no url. hide the button!
             self.ui.help.hide()
 
+        # browse file action
+        self._browse_file_action = QtGui.QAction(self)
+        self._browse_file_action.setText("Browse files to publish")
+        self._browse_file_action.setIcon(
+            QtGui.QIcon(":/tk_multi_publish2/file.png"))
+        self._browse_file_action.triggered.connect(
+            lambda: self._on_browse(folders=False))
+
+        # browse folder action
+        self._browse_folder_action = QtGui.QAction(self)
+        self._browse_folder_action.setText(
+            "Browse folders to publish image sequences")
+        self._browse_folder_action.setIcon(QtGui.QIcon(
+            ":/tk_multi_publish2/image_sequence.png"))
+        self._browse_folder_action.triggered.connect(
+            lambda: self._on_browse(folders=True))
+
+        # browse menu
+        self._browse_menu = QtGui.QMenu(self)
+        self._browse_menu.addAction(self._browse_file_action)
+        self._browse_menu.addAction(self._browse_folder_action)
+
         # browse tool button
         self.ui.browse.clicked.connect(self._on_browse)
+        self.ui.browse.setMenu(self._browse_menu)
+        self.ui.browse.setPopupMode(QtGui.QToolButton.DelayedPopup)
 
-        # drop area browse button
-        self.ui.drop_area_browse.clicked.connect(self._on_browse)
+        # drop area browse button. Note, not using the actions created above
+        # because making the buttons look right when they're usingt he action's
+        # text/icon proved difficult. Instead, the button text/icon are defined
+        # in the designer file. So as a note, if you want to change the text or
+        # icon, you'll need to do it above and in designer.
+        self.ui.drop_area_browse_file.clicked.connect(
+            lambda: self._on_browse(folders=False))
+        self.ui.drop_area_browse_seq.clicked.connect(
+            lambda: self._on_browse(folders=True))
 
         # currently displayed item
         self._current_item = None
@@ -1111,25 +1142,44 @@ class AppDialog(QtGui.QWidget):
         if sync_required:
             self._synchronize_tree()
 
-    def _on_browse(self):
+    def _on_browse(self, folders=False):
         """Opens a file dialog to browse to files for publishing."""
 
-        file_dialog = QtGui.QFileDialog(
-            parent=self,
-            caption="Browse files to publish"
-        )
+        # options for either browse type
+        options = [
+            QtGui.QFileDialog.DontResolveSymlinks,
+            QtGui.QFileDialog.DontUseNativeDialog
+        ]
+
+        if folders:
+            # browse folders specifics
+            caption = "Browse folders to publish image sequences"
+            file_mode = QtGui.QFileDialog.Directory
+            options.append(QtGui.QFileDialog.ShowDirsOnly)
+        else:
+            # browse files specifics
+            caption = "Browse files to publish"
+            file_mode = QtGui.QFileDialog.ExistingFiles
+
+        # create the dialog
+        file_dialog = QtGui.QFileDialog(parent=self, caption=caption)
         file_dialog.setLabelText(QtGui.QFileDialog.Accept, "Select")
         file_dialog.setLabelText(QtGui.QFileDialog.Reject, "Cancel")
-        file_dialog.setOption(QtGui.QFileDialog.DontResolveSymlinks)
-        file_dialog.setOption(QtGui.QFileDialog.DontUseNativeDialog)
-        file_dialog.setFileMode(QtGui.QFileDialog.ExistingFiles)
+        file_dialog.setFileMode(file_mode)
+
+        # set the appropriate options
+        for option in options:
+            file_dialog.setOption(option)
+
+        # browse!
         if not file_dialog.exec_():
             return
 
-        files = file_dialog.selectedFiles()
-        if files:
+        # process the browsed files/folders for publishing
+        paths = file_dialog.selectedFiles()
+        if paths:
             # simulate dropping the files into the dialog
-            self._on_drop(files)
+            self._on_drop(paths)
 
     def _open_url(self, url):
         """Opens the supplied url in the appropriate browser."""
