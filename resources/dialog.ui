@@ -901,7 +901,7 @@ Please select a single task.</string>
                 </size>
                </property>
                <property name="toolTip">
-                <string>Browse files to publish</string>
+                <string>&lt;p&gt;Click this button to browse files for publishing. You can also click and hold the button to show the full browsing menu which includes an option to browse folders to publish image sequences.&lt;/p&gt;</string>
                </property>
                <property name="text">
                 <string>...</string>

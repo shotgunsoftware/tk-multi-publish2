@@ -513,7 +513,7 @@ class Ui_Dialog(object):
         self.please_select_an_item.setText(QtGui.QApplication.translate("Dialog", "Please select tasks of the same type or a single item.", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("Dialog", "Multiple selection not supported on tasks of this type.\n"
 "Please select a single task.", None, QtGui.QApplication.UnicodeUTF8))
-        self.browse.setToolTip(QtGui.QApplication.translate("Dialog", "Browse files to publish", None, QtGui.QApplication.UnicodeUTF8))
+        self.browse.setToolTip(QtGui.QApplication.translate("Dialog", "<p>Click this button to browse files for publishing. You can also click and hold the button to show the full browsing menu which includes an option to browse folders to publish image sequences.</p>", None, QtGui.QApplication.UnicodeUTF8))
         self.browse.setText(QtGui.QApplication.translate("Dialog", "...", None, QtGui.QApplication.UnicodeUTF8))
         self.refresh.setToolTip(QtGui.QApplication.translate("Dialog", "Refresh", None, QtGui.QApplication.UnicodeUTF8))
         self.refresh.setText(QtGui.QApplication.translate("Dialog", "...", None, QtGui.QApplication.UnicodeUTF8))
