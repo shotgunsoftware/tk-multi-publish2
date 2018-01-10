@@ -731,6 +731,12 @@ class AppDialog(QtGui.QWidget):
 
         try:
             self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
+
+            # ensure the progress details are parented here in case we get
+            # stuck here.
+            self._progress_handler.progress_details.set_parent(
+                self.ui.main_frame)
+
             self._overlay.show_loading()
             self.ui.button_container.hide()
             num_items_created = self._plugin_manager.add_external_files(str_files)
@@ -781,10 +787,16 @@ class AppDialog(QtGui.QWidget):
         if len(self._plugin_manager.top_level_items) == 0:
             # nothing in list. show the full screen drag and drop ui
             self.ui.main_stack.setCurrentIndex(self.DRAG_SCREEN)
+
+            # ensure the progress details widget is available for overlay on the
+            # drop area
             self._progress_handler.progress_details.set_parent(
                 self.ui.large_drop_area)
         else:
             self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
+
+            # ensure the progress details widget is available for overlay on the
+            # main frame of the publish ui
             self._progress_handler.progress_details.set_parent(
                 self.ui.main_frame)
             self.ui.items_tree.build_tree()
