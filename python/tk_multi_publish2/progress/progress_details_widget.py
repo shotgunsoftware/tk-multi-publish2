@@ -57,7 +57,7 @@ class ProgressDetailsWidget(QtGui.QWidget):
 
     def set_parent(self, parent):
         """
-        Sets the parent for the progress details widget
+        Sets the parent for the progress details widget.
         """
 
         if self.parent() and self.parent() == parent:
@@ -70,11 +70,9 @@ class ProgressDetailsWidget(QtGui.QWidget):
         # if we have an existing resize filter, remove it from the current
         # parent widget
         if self._filter:
-            print "\n\nREMOVING FILTER '%s' from PARENT '%s'\n\n" % (self._filter, self.parent().objectName())
             self.parent().removeEventFilter(self._filter)
 
         # reparent the widget
-        print "\n\nSETTING NEW PARENT '%s'\n\n" % (parent.objectName(),)
         self.setParent(parent)
 
         # hook up a new listener to the new parent so this widget follows along
@@ -82,7 +80,6 @@ class ProgressDetailsWidget(QtGui.QWidget):
         self._filter = ResizeEventFilter(parent)
         self._filter.resized.connect(self._on_parent_resized)
         parent.installEventFilter(self._filter)
-        print "\n\nINSTALLING FILTER '%s' on PARENT '%s'\n\n" % (self._filter, parent.objectName())
 
         if visible:
             self.show()
@@ -113,7 +110,8 @@ class ProgressDetailsWidget(QtGui.QWidget):
         Adjust geometry of the widget based on progress widget
         """
 
-        #self.setGeometry(self.parent().geometry())
+        # move + fixed size seems to work. setting the geometry is offset for
+        # some reason.
         self.move(0, 0)
         self.setFixedWidth(self.parent().width())
         self.setFixedHeight(self.parent().height())
