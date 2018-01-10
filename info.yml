@@ -78,7 +78,10 @@ configuration:
            validation logic before publishing. If false, validation will be
            skipped. If false, and no validation has been manually triggered,
            a popup, confirmation dialog will be displayed before proceeding
-           with the publish logic."
+           with the publish logic. NOTE: This is an advanced option. Setting
+           this to 'false' will most likely break the shipped toolkit
+           integrations which assume validation is always run before
+           publishing."
 
 # the Shotgun fields that this app needs in order to operate correctly
 requires_shotgun_fields:
