@@ -487,7 +487,7 @@ image sequences</string>
               <item>
                <widget class="QStackedWidget" name="details_stack">
                 <property name="currentIndex">
-                 <number>0</number>
+                 <number>1</number>
                 </property>
                 <widget class="QWidget" name="details_item">
                  <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,1,1,1,1,5,1,5">
@@ -796,7 +796,7 @@ image sequences</string>
                        <height>432</height>
                       </rect>
                      </property>
-                     <layout class="QVBoxLayout" name="verticalLayout_13">
+                     <layout class="QVBoxLayout" name="verticalLayout_13" stretch="0,10">
                       <property name="spacing">
                        <number>-1</number>
                       </property>

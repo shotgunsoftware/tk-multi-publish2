@@ -346,6 +346,7 @@ class Ui_Dialog(object):
         self.verticalLayout_13.addWidget(self.task_settings)
         spacerItem13 = QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout_13.addItem(spacerItem13)
+        self.verticalLayout_13.setStretch(1, 10)
         self.task_settings_scroll_area.setWidget(self.task_settings_parent)
         self.verticalLayout_11.addWidget(self.task_settings_scroll_area)
         self.details_stack.addWidget(self.details_task)
@@ -501,7 +502,7 @@ class Ui_Dialog(object):
 
         self.retranslateUi(Dialog)
         self.main_stack.setCurrentIndex(1)
-        self.details_stack.setCurrentIndex(0)
+        self.details_stack.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
         Dialog.setTabOrder(self.item_comments, self.validate)
         Dialog.setTabOrder(self.validate, self.publish)
