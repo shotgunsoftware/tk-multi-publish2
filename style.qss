@@ -145,6 +145,14 @@ DropAreaFrame#large_drop_area[dragging="true"] {
     border: 2px solid {{SG_HIGHLIGHT_COLOR}};
 }
 
+#drag_progress_message {
+    border: none;
+}
+
+#drag_progress_message:hover {
+    text-decoration: underline;
+}
+
 /* left hand side frame when someone drag something in */
 DropAreaFrame[dragging="true"] {
     border: 2px solid {{SG_HIGHLIGHT_COLOR}};

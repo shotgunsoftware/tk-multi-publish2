@@ -68,7 +68,7 @@ class ProgressHandler(object):
 
 
         # parent our progress widget overlay
-        self._progress_details = ProgressDetailsWidget(self._progress_bar, self._progress_bar.parent())
+        self._progress_details = ProgressDetailsWidget(self._progress_bar.parent())
         self._progress_details.copy_to_clipboard_clicked.connect(self._copy_log_to_clipboard)
 
         # clicking on the log toggles the logging window
@@ -103,6 +103,12 @@ class ProgressHandler(object):
         Hides details window if it's shown
         """
         self._progress_details.hide()
+
+    def show_details(self):
+        """
+        Shows details window if it's hidden
+        """
+        self._progress_details.show()
 
     def select_last_message(self, publish_instance):
         """
@@ -217,6 +223,13 @@ class ProgressHandler(object):
         The logger root for all publish related info
         """
         return self._log_wrapper.logger
+
+    @property
+    def progress_details(self):
+        """
+        The progress details widget.
+        """
+        return self._progress_details
 
     def set_phase(self, phase):
         """

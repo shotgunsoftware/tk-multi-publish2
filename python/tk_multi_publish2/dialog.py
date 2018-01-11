@@ -104,6 +104,9 @@ class AppDialog(QtGui.QWidget):
         self.ui.large_drop_area.something_dropped.connect(self._on_drop)
         self.ui.items_tree.tree_reordered.connect(self._synchronize_tree)
 
+        # hide the drag screen progress button by default
+        self.ui.drag_progress_message.hide()
+
         # buttons
         self.ui.validate.clicked.connect(self.do_validate)
         self.ui.publish.clicked.connect(self.do_publish)
@@ -212,6 +215,10 @@ class AppDialog(QtGui.QWidget):
         # link the summary overlay status button with the log window
         self._overlay.info_clicked.connect(
             self._progress_handler._progress_details.toggle)
+
+        # connect the drag screen progress button to show the progress details
+        self.ui.drag_progress_message.clicked.connect(
+            self._progress_handler.show_details)
 
         # hide settings for now
         self.ui.item_settings_label.hide()
@@ -724,6 +731,12 @@ class AppDialog(QtGui.QWidget):
 
         try:
             self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
+
+            # ensure the progress details are parented here in case we get
+            # stuck here.
+            self._progress_handler.progress_details.set_parent(
+                self.ui.main_frame)
+
             self._overlay.show_loading()
             self.ui.button_container.hide()
             num_items_created = self._plugin_manager.add_external_files(str_files)
@@ -747,6 +760,22 @@ class AppDialog(QtGui.QWidget):
             self._overlay.hide()
             self.ui.button_container.show()
 
+        if (len(self._plugin_manager.top_level_items) == 0 and
+            self.ui.main_stack.currentIndex() == self.DRAG_SCREEN):
+            # there are no top-level items and we're still on the drag screen.
+            # something not good happened. show a button to open the progress
+            # details with additional info.
+
+            self.ui.drag_progress_message.setText(
+                "Could not determine items to %s. "
+                "Click for more info..." %
+                (self._display_action_name,)
+            )
+            self.ui.drag_progress_message.show()
+        else:
+            # there are items and/or we're no longer on the drag screen
+            self.ui.drag_progress_message.hide()
+
         # lastly, select the summary
         self.ui.items_tree.select_first_item()
 
@@ -758,8 +787,18 @@ class AppDialog(QtGui.QWidget):
         if len(self._plugin_manager.top_level_items) == 0:
             # nothing in list. show the full screen drag and drop ui
             self.ui.main_stack.setCurrentIndex(self.DRAG_SCREEN)
+
+            # ensure the progress details widget is available for overlay on the
+            # drop area
+            self._progress_handler.progress_details.set_parent(
+                self.ui.large_drop_area)
         else:
             self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
+
+            # ensure the progress details widget is available for overlay on the
+            # main frame of the publish ui
+            self._progress_handler.progress_details.set_parent(
+                self.ui.main_frame)
             self.ui.items_tree.build_tree()
 
     def _set_tree_items_expanded(self, expanded):

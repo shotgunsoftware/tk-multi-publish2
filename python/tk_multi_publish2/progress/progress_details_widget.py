@@ -23,12 +23,12 @@ class ProgressDetailsWidget(QtGui.QWidget):
 
     copy_to_clipboard_clicked = QtCore.Signal()
 
-    def __init__(self, progress_widget, parent):
+    def __init__(self, parent):
         """
         :param parent: The model parent.
         :type parent: :class:`~PySide.QtGui.QObject`
         """
-        super(ProgressDetailsWidget, self).__init__(parent)
+        super(ProgressDetailsWidget, self).__init__()
 
         self._bundle = sgtk.platform.current_bundle()
 
@@ -36,13 +36,8 @@ class ProgressDetailsWidget(QtGui.QWidget):
         self.ui = Ui_ProgressDetailsWidget()
         self.ui.setupUi(self)
 
-        self._progress_widget = progress_widget
-
-        # hook up a listener to the parent window so this widget
-        # follows along when the parent window changes size
-        filter = ResizeEventFilter(parent)
-        filter.resized.connect(self._on_parent_resized)
-        parent.installEventFilter(filter)
+        self._filter = None
+        self.set_parent(parent)
 
         # dispatch clipboard signal
         self.ui.copy_log_button.clicked.connect(self.copy_to_clipboard_clicked.emit)
@@ -59,6 +54,35 @@ class ProgressDetailsWidget(QtGui.QWidget):
         self.ui.log_tree.setIndentation(8)
 
         self.hide()
+
+    def set_parent(self, parent):
+        """
+        Sets the parent for the progress details widget.
+        """
+
+        if self.parent() and self.parent() == parent:
+            return
+
+        # remember if the details widget was visible. as per qt docs, we'll need
+        # to show it again after reparenting.
+        visible = self.isVisible()
+
+        # if we have an existing resize filter, remove it from the current
+        # parent widget
+        if self._filter:
+            self.parent().removeEventFilter(self._filter)
+
+        # reparent the widget
+        self.setParent(parent)
+
+        # hook up a new listener to the new parent so this widget follows along
+        # when the parent window changes size
+        self._filter = ResizeEventFilter(parent)
+        self._filter.resized.connect(self._on_parent_resized)
+        parent.installEventFilter(self._filter)
+
+        if visible:
+            self.show()
 
     def toggle(self):
         """
@@ -85,14 +109,12 @@ class ProgressDetailsWidget(QtGui.QWidget):
         """
         Adjust geometry of the widget based on progress widget
         """
-        pos = self._progress_widget.pos()
 
-        self.setGeometry(QtCore.QRect(
-            pos.x(),
-            5,
-            self._progress_widget.width(),
-            pos.y() - 5
-        ))
+        # move + fixed size seems to work. setting the geometry is offset for
+        # some reason.
+        self.move(0, 0)
+        self.setFixedWidth(self.parent().width())
+        self.setFixedHeight(self.parent().height())
 
     def _on_parent_resized(self):
         """
@@ -100,7 +122,6 @@ class ProgressDetailsWidget(QtGui.QWidget):
         When associated widget is resized this slot is being called.
         """
         self.__recompute_position()
-
 
 
 class ResizeEventFilter(QtCore.QObject):
