@@ -58,7 +58,7 @@ class Item(object):
         self._thumbnail_enabled = True
         self._allows_context_change = True
         # the following var indicates that the current thumbnail overrides the summary one
-        self._thumbnail_explicit = False
+        self._thumbnail_explicit = True
 
     def __repr__(self):
         """
