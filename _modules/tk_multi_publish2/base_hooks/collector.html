@@ -1,0 +1,465 @@
+
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tk_multi_publish2.base_hooks.collector &mdash; tk-multi-publish2 v2.0.12 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="tk-multi-publish2 v2.0.12 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    <a href='http://developer.shotgunsoftware.com'>
+    
+        <img style='width: 191px;
+                height: 60px; 
+                margin: 2px;
+                border-radius: 0px; 
+                padding: 0px;' 
+            src='../../../_static/logo@2x.png'/>
+    
+    </a>
+    
+
+          
+            <a href="../../../index.html" class="icon icon-home"> tk-multi-publish2
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../execution.html">Publish Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../collector.html">Collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../items.html">Items</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plugin.html">Publish Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utility.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../application.html">Application Interface</a></li>
+</ul>
+
+            
+          
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px; 
+                color: #b3b3b3; 
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>    
+    <style>
+        a.custom_post_menu { display: inline; 
+                             padding: 0px; 
+                             text-decoration: underline; }
+    </style>
+
+    <b>tk-multi-publish2</b> v2.0.12.<br>
+    
+        This documentation is part of the Shotgun Pipeline Toolkit.
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    The code associated with this documentation can be found 
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-multi-publish2'>here</a>.
+
+    </div>
+
+
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">tk-multi-publish2</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>tk_multi_publish2.base_hooks.collector</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for tk_multi_publish2.base_hooks.collector</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2017 Shotgun Software Inc.</span>
+<span class="c1"># </span>
+<span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
+<span class="c1"># </span>
+<span class="c1"># This work is provided &quot;AS IS&quot; and subject to the Shotgun Pipeline Toolkit </span>
+<span class="c1"># Source Code License included in this distribution package. See LICENSE.</span>
+<span class="c1"># By accessing, using, copying or modifying this work you indicate your </span>
+<span class="c1"># agreement to the Shotgun Pipeline Toolkit Source Code License. All rights </span>
+<span class="c1"># not expressly granted therein are reserved by Shotgun Software Inc.</span>
+
+<span class="kn">import</span> <span class="nn">sgtk</span>
+
+<span class="n">HookBaseClass</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">get_hook_baseclass</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="CollectorPlugin"><a class="viewcode-back" href="../../../collector.html#tk_multi_publish2.base_hooks.CollectorPlugin">[docs]</a><span class="k">class</span> <span class="nc">CollectorPlugin</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class defines the required interface for a collector plugin.</span>
+<span class="sd">    Collectors are used to gather individual files that are loaded via the</span>
+<span class="sd">    file browser or dragged and dropped into the Publish2 UI. It is also used</span>
+<span class="sd">    to gather items to be published within the current DCC session.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">############################################################################</span>
+    <span class="c1"># Collector properties</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A :class:`dict` defining the configuration interface for this collector.</span>
+
+<span class="sd">        The values configured for the collector will be supplied via settings</span>
+<span class="sd">        parameter in the :func:`process_current_session` and</span>
+<span class="sd">        :func:`process_file` methods.</span>
+
+<span class="sd">        The dictionary can include any number of settings required by the</span>
+<span class="sd">        collector, and takes the form::</span>
+
+<span class="sd">            {</span>
+<span class="sd">                &lt;setting_name&gt;: {</span>
+<span class="sd">                    &quot;type&quot;: &lt;type&gt;,</span>
+<span class="sd">                    &quot;default&quot;: &lt;default&gt;,</span>
+<span class="sd">                    &quot;description&quot;: &lt;description&gt;</span>
+<span class="sd">                },</span>
+<span class="sd">                &lt;setting_name&gt;: {</span>
+<span class="sd">                    &quot;type&quot;: &lt;type&gt;,</span>
+<span class="sd">                    &quot;default&quot;: &lt;default&gt;,</span>
+<span class="sd">                    &quot;description&quot;: &lt;description&gt;</span>
+<span class="sd">                },</span>
+<span class="sd">                ...</span>
+<span class="sd">            }</span>
+
+<span class="sd">        The keys in the dictionary represent the names of the settings. The</span>
+<span class="sd">        values are a dictionary comprised of 3 additional key/value pairs.</span>
+
+<span class="sd">        * ``type``: The type of the setting. This should correspond to one of</span>
+<span class="sd">          the data types that toolkit accepts for app and engine settings such</span>
+<span class="sd">          as ``hook``, ``template``, ``string``, etc.</span>
+<span class="sd">        * ``default``: The default value for the settings. This can be ``None``.</span>
+<span class="sd">        * ``description``: A description of the setting as a string.</span>
+
+<span class="sd">        Example implementation:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            @property</span>
+<span class="sd">            def settings(self):</span>
+<span class="sd">                return {</span>
+<span class="sd">                    &quot;Work Template&quot;: {</span>
+<span class="sd">                        &quot;type&quot;: &quot;template&quot;,</span>
+<span class="sd">                        &quot;default&quot;: None,</span>
+<span class="sd">                        &quot;description&quot;: &quot;A work file template required by this collector.&quot;</span>
+<span class="sd">                    },</span>
+<span class="sd">                    &quot;Exclude Objects&quot;: {</span>
+<span class="sd">                        &quot;type&quot;: &quot;list&quot;,</span>
+<span class="sd">                        &quot;default&quot;: [&quot;obj1&quot;, &quot;obj2&quot;, &quot;obj3&quot;],</span>
+<span class="sd">                        &quot;description&quot;: &quot;A list of objects to ignore.&quot;</span>
+<span class="sd">                    }</span>
+<span class="sd">                }</span>
+
+<span class="sd">        The settings are exposed via the ``collector_settings`` setting in the</span>
+<span class="sd">        app&#39;s configuration. Example::</span>
+
+<span class="sd">            collector_settings:</span>
+<span class="sd">                Work Template: my_work_template</span>
+<span class="sd">                Exclude Objects: [obj1, obj4]</span>
+
+<span class="sd">        .. note:: See the hooks defined in the publisher app&#39;s ``hooks/`` folder</span>
+<span class="sd">           for additional example implementations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="c1">############################################################################</span>
+    <span class="c1"># Collection methods</span>
+
+<div class="viewcode-block" id="CollectorPlugin.process_current_session"><a class="viewcode-back" href="../../../collector.html#tk_multi_publish2.base_hooks.CollectorPlugin.process_current_session">[docs]</a>    <span class="k">def</span> <span class="nf">process_current_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">parent_item</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method analyzes the current engine session and creates a hierarchy</span>
+<span class="sd">        of items for publishing.</span>
+
+<span class="sd">        A typical implementation of this method would create an item that</span>
+<span class="sd">        represents the current session (e.g. the current Maya file) or all open</span>
+<span class="sd">        documents in a multi-document scenario (such as Photoshop). Top level</span>
+<span class="sd">        items area created as children of the supplied ``parent_item``.</span>
+
+<span class="sd">        Any additional items, specific to the current session, can then be</span>
+<span class="sd">        created as children of the session item. This is not a requirement</span>
+<span class="sd">        however.</span>
+
+<span class="sd">        The image below shows a maya scene item with a child item that</span>
+<span class="sd">        represents a playblast to be published. Each of these items has one or</span>
+<span class="sd">        more publish tasks attached to them.</span>
+
+<span class="sd">        .. image:: ./resources/collected_session_item.png</span>
+
+<span class="sd">        |</span>
+
+<span class="sd">        The ``settings`` argument is a dictionary where the keys are the names</span>
+<span class="sd">        of the settings defined by the :func:`settings` property and the values</span>
+<span class="sd">        are :class:`~.processing.Setting` instances as</span>
+<span class="sd">        configured for this instance of the publish app.</span>
+
+<span class="sd">        To create items within this method, use the</span>
+<span class="sd">        :meth:`~.processing.Item.create_item` method available on the supplied</span>
+<span class="sd">        ``parent_item``.</span>
+
+<span class="sd">        Example Maya implementation:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            def process_current_session(settings, parent_item):</span>
+
+<span class="sd">                path = cmds.file(query=True, sn=True)</span>
+
+<span class="sd">                session_item = parent_item.create_item(</span>
+<span class="sd">                    &quot;maya.session&quot;,</span>
+<span class="sd">                    &quot;Maya Session&quot;,</span>
+<span class="sd">                    os.path.basename(path)</span>
+<span class="sd">                )</span>
+
+<span class="sd">                # additional work here to prep the session item such as defining</span>
+<span class="sd">                # an icon, populating the properties dictionary, etc.</span>
+<span class="sd">                session_item.properties[&quot;path&quot;] = path</span>
+
+<span class="sd">                # collect additional file types, parented under the session</span>
+<span class="sd">                self._collect_geometry(settings, session_item)</span>
+
+<span class="sd">        .. note:: See the hooks defined in the publisher app&#39;s ``hooks/`` folder</span>
+<span class="sd">           for additional example implementations.</span>
+
+<span class="sd">        :param dict settings: A dictionary of configured</span>
+<span class="sd">            :class:`~.processing.Setting` objects for this</span>
+<span class="sd">            collector.</span>
+<span class="sd">        :param parent_item: The root :class:`~.processing.Item` instance to</span>
+<span class="sd">            collect child items for.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="CollectorPlugin.process_file"><a class="viewcode-back" href="../../../collector.html#tk_multi_publish2.base_hooks.CollectorPlugin.process_file">[docs]</a>    <span class="k">def</span> <span class="nf">process_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">parent_item</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method creates one or more items to publish for the supplied file</span>
+<span class="sd">        path.</span>
+
+<span class="sd">        The image below shows a collected text file item to be published.</span>
+
+<span class="sd">        .. image:: ./resources/collected_file.png</span>
+
+<span class="sd">        |</span>
+
+<span class="sd">        A typical implementation of this method involves processing the supplied</span>
+<span class="sd">        path to determine what type of file it is and how to display it before</span>
+<span class="sd">        creating the item to publish.</span>
+
+<span class="sd">        The ``settings`` argument is a dictionary where the keys are the names</span>
+<span class="sd">        of the settings defined by the :func:`settings` property and the values</span>
+<span class="sd">        are :class:`~.processing.Setting` instances as</span>
+<span class="sd">        configured for this instance of the publish app.</span>
+
+<span class="sd">        To create items within this method, use the</span>
+<span class="sd">        :meth:`~.processing.Item.create_item` method available on the supplied</span>
+<span class="sd">        ``parent_item``.</span>
+
+<span class="sd">        Example implementation:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            def process_file(settings, parent_item):</span>
+
+<span class="sd">                # make sure the path is normalized. no trailing separator,</span>
+<span class="sd">                # separators are appropriate for the current os, no double</span>
+<span class="sd">                # separators, etc.</span>
+<span class="sd">                path = sgtk.util.ShotgunPath.normalize(path)</span>
+
+<span class="sd">                # do some processing of the file to determine its type, and how</span>
+<span class="sd">                # to display it.</span>
+<span class="sd">                ...</span>
+
+<span class="sd">                # create and populate the item</span>
+<span class="sd">                file_item = parent_item.create_item(</span>
+<span class="sd">                    item_type,</span>
+<span class="sd">                    type_display,</span>
+<span class="sd">                    os.path.basename(path)</span>
+<span class="sd">                )</span>
+
+<span class="sd">                # additional work here to prep the session item such as defining</span>
+<span class="sd">                # an icon, populating the properties dictionary, etc.</span>
+<span class="sd">                session_item.properties[&quot;path&quot;] = path</span>
+
+<span class="sd">        .. note:: See the hooks defined in the publisher app&#39;s ``hooks/`` folder</span>
+<span class="sd">           for additional example implementations.</span>
+
+<span class="sd">        :param dict settings: A dictionary of configured</span>
+<span class="sd">            :class:`~.processing.Setting` objects for this</span>
+<span class="sd">            collector.</span>
+<span class="sd">        :param parent_item: The root :class:`~.processing.Item` instance to</span>
+<span class="sd">            collect child items for.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Autodesk.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'v2.0.12',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+</body>
+</html>

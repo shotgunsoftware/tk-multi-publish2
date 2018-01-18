@@ -1,0 +1,542 @@
+
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Publish Items &mdash; tk-multi-publish2 v2.0.12 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="tk-multi-publish2 v2.0.12 documentation" href="index.html"/>
+        <link rel="next" title="Publish Plugins" href="plugin.html"/>
+        <link rel="prev" title="Collector" href="collector.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    <a href='http://developer.shotgunsoftware.com'>
+    
+        <img style='width: 191px;
+                height: 60px; 
+                margin: 2px;
+                border-radius: 0px; 
+                padding: 0px;' 
+            src='_static/logo@2x.png'/>
+    
+    </a>
+    
+
+          
+            <a href="index.html" class="icon icon-home"> tk-multi-publish2
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="execution.html">Publish Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="collector.html">Collection</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Items</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugin.html">Publish Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utility.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="application.html">Application Interface</a></li>
+</ul>
+
+            
+          
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px; 
+                color: #b3b3b3; 
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>    
+    <style>
+        a.custom_post_menu { display: inline; 
+                             padding: 0px; 
+                             text-decoration: underline; }
+    </style>
+
+    <b>tk-multi-publish2</b> v2.0.12.<br>
+    
+        This documentation is part of the Shotgun Pipeline Toolkit.
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    The code associated with this documentation can be found 
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-multi-publish2'>here</a>.
+
+    </div>
+
+
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">tk-multi-publish2</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Publish Items</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="publish-items">
+<h1>Publish Items<a class="headerlink" href="#publish-items" title="Permalink to this headline">¶</a></h1>
+<p>Publish items are the individual UI elements displayed to the user for
+publishing. These items are created during the collection phase of the
+publisher. Items can be displayed in a flat list for example when a collection
+of unrelated files are dragged and dropped into the publisher. Alternatively,
+items can be displayed in a hierarchy when it is important to show some
+relationship between them.</p>
+<hr class="docutils" />
+<dl class="class">
+<dt id="tk_multi_publish2.processing.Item">
+<em class="property">class </em><code class="descclassname">tk_multi_publish2.processing.</code><code class="descname">Item</code><span class="sig-paren">(</span><em>item_type</em>, <em>display_type</em>, <em>name</em>, <em>parent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/processing/item.html#Item"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.processing.Item" title="Permalink to this definition">¶</a></dt>
+<dd><p>An object representing an scene or file item that should be processed.
+Items are constructed and returned by the collector hook.</p>
+<p>Items should always be created via the <a class="reference internal" href="#tk_multi_publish2.processing.Item.create_item" title="tk_multi_publish2.processing.Item.create_item"><code class="xref py py-meth docutils literal"><span class="pre">Item.create_item()</span></code></a> method of
+an existing item (typically the <code class="docutils literal"><span class="pre">parent_item</span></code> supplied to one of the
+collector&#8217;s methods). The constructor should never be used within a
+collector.</p>
+<p>Items are organized as a tree with access to parent and children.</p>
+<p>Initialize an item. Should never be called.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>item_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Item type, typically following a hierarchical dot notation.
+For example, &#8216;file&#8217;, &#8216;file.image&#8217;, &#8216;file.quicktime&#8217; or &#8216;maya_scene&#8217;</li>
+<li><strong>display_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Equivalent to the type, but for display purposes.</li>
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The name to represent the item in a UI.
+This can be a node name in a DCC or a file name.</li>
+<li><strong>parent</strong> (<a class="reference internal" href="#tk_multi_publish2.processing.Item" title="tk_multi_publish2.processing.Item"><em>Item</em></a>) &#8211; Parent item.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="tk_multi_publish2.processing.Item.create_item">
+<code class="descname">create_item</code><span class="sig-paren">(</span><em>item_type</em>, <em>display_type</em>, <em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/processing/item.html#Item.create_item"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.processing.Item.create_item" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory method for generating new items.</p>
+<p>The <code class="docutils literal"><span class="pre">item_type</span></code> is a string that represents the type of the item. This
+can be any string, but is typically defined by studio convention. This
+value is used by the publish plugins to identify which items to act
+upon.</p>
+<p>The basic Shotgun integrations, for example, use a hierarchical dot
+notation such as: <code class="docutils literal"><span class="pre">file.image</span></code>, <code class="docutils literal"><span class="pre">file.image.sequence</span></code>,
+<code class="docutils literal"><span class="pre">file.movie</span></code>, and <code class="docutils literal"><span class="pre">maya.session</span></code>.</p>
+<p>The current convention used within the shipped integrations is to
+classify files that exist on disk as <code class="docutils literal"><span class="pre">file.{type}</span></code> (<code class="docutils literal"><span class="pre">file.image</span></code> or
+<code class="docutils literal"><span class="pre">file.video</span></code> for example). This classification is determined from the
+mimetype in the base collector. In addition, any sequence-based items
+are classified as <code class="docutils literal"><span class="pre">file.{type}.sequence</span></code> (<code class="docutils literal"><span class="pre">file.image.sequence</span></code> for
+example).</p>
+<p>For items defined within a DCC-session that must be save or exported
+prior to publish, the shipped integrations use the form <code class="docutils literal"><span class="pre">{dcc}.{type}</span></code>
+for the primary session item and <code class="docutils literal"><span class="pre">{dcc}.{type}.{subtype}</span></code> for items
+within the session.</p>
+<p>In Maya, for example, the primary session item would be of type
+<code class="docutils literal"><span class="pre">maya.session</span></code> and an item representing all geomtery in the session
+would be <code class="docutils literal"><span class="pre">maya.session.geometry</span></code>.</p>
+<p>These are merely conventions used in the shipped integrations and can be
+altered to meet studio requirements. It is recommended to look at each
+of the publish plugins shipped with the publisher and housed in each of
+the toolkit engines to see what item types are supported by default.</p>
+<p>The <code class="docutils literal"><span class="pre">display_type</span></code> argument corresponds to the item type, but is used
+for display purposes only.</p>
+<p>Examples include: <code class="docutils literal"><span class="pre">Image</span> <span class="pre">File</span></code>, <code class="docutils literal"><span class="pre">Movie</span> <span class="pre">File</span></code>, and <code class="docutils literal"><span class="pre">Maya</span> <span class="pre">Scene</span></code>.</p>
+<p>The <code class="docutils literal"><span class="pre">name</span></code> argument is the display name for the item instance. This
+can be the name of a file or a node name in Nuke or Houdini, or a
+combination of both. This value is displayed to the user and should make
+it easy for the user to identify what the item represents in terms of
+the current session or a file on disk.</p>
+<img alt="_images/create_item_args.png" src="_images/create_item_args.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>item_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Item type, typically following a hierarchical dot
+notation.</li>
+<li><strong>display_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Equivalent to the type, but for display purposes.</li>
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The name to represent the item in a UI. This can be a
+node name in a DCC or a file name.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tk_multi_publish2.processing.Item.parent">
+<code class="descname">parent</code><a class="headerlink" href="#tk_multi_publish2.processing.Item.parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>The parent item (read only)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tk_multi_publish2.processing.Item.children">
+<code class="descname">children</code><a class="headerlink" href="#tk_multi_publish2.processing.Item.children" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of associated child items (read only)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tk_multi_publish2.processing.Item.properties">
+<code class="descname">properties</code><a class="headerlink" href="#tk_multi_publish2.processing.Item.properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>A free form <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> where arbitrary data can be stored on the
+item.</p>
+<p>The properties dictionary itself is read only (calling
+<code class="docutils literal"><span class="pre">item.properties</span> <span class="pre">=</span> <span class="pre">my_properties</span></code> is invalid) but arbitrary key value
+pairs can be set within the dictionary itself.</p>
+<p>This property provides a way to store data for an item across publish
+plugins and between the various publish phases within a plugin.</p>
+<p>It is also useful for accessing data stored on parent items that
+may be useful to plugin attached to child items.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tk_multi_publish2.processing.Item.name">
+<code class="descname">name</code><a class="headerlink" href="#tk_multi_publish2.processing.Item.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the item as a string.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tk_multi_publish2.processing.Item.type">
+<code class="descname">type</code><a class="headerlink" href="#tk_multi_publish2.processing.Item.type" title="Permalink to this definition">¶</a></dt>
+<dd><p>The item type as defined when Publish item was created.</p>
+<p>See <a class="reference internal" href="#tk_multi_publish2.processing.Item.create_item" title="tk_multi_publish2.processing.Item.create_item"><code class="xref py py-meth docutils literal"><span class="pre">Item.create_item()</span></code></a> for more info.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tk_multi_publish2.processing.Item.display_type">
+<code class="descname">display_type</code><a class="headerlink" href="#tk_multi_publish2.processing.Item.display_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>A human readable type string, suitable for UI and display purposes.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tk_multi_publish2.processing.Item.thumbnail_enabled">
+<code class="descname">thumbnail_enabled</code><a class="headerlink" href="#tk_multi_publish2.processing.Item.thumbnail_enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flag to indicate that thumbnails can be interacted with.</p>
+<ul class="simple">
+<li>If <code class="docutils literal"><span class="pre">True</span></code>, thumbnails will be visible and editable in the publish UI
+(via screen capture).</li>
+<li>If <code class="docutils literal"><span class="pre">False</span></code> and a thumbnail has been set via the <a class="reference internal" href="#tk_multi_publish2.processing.Item.thumbnail" title="tk_multi_publish2.processing.Item.thumbnail"><code class="xref py py-meth docutils literal"><span class="pre">thumbnail()</span></code></a>
+property, the thumbnail will be visible but screen capture will be
+disabled.</li>
+<li>If <code class="docutils literal"><span class="pre">False</span></code> and no thumbnail has been specified, no thumbnail will
+appear in the UI.</li>
+</ul>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tk_multi_publish2.processing.Item.thumbnail_explicit">
+<code class="descname">thumbnail_explicit</code><a class="headerlink" href="#tk_multi_publish2.processing.Item.thumbnail_explicit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flag to indicate that thumbnail has been explicitly set.
+When this flag is on, the summary thumbnail should be ignored
+For this this specific item.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tk_multi_publish2.processing.Item.context">
+<code class="descname">context</code><a class="headerlink" href="#tk_multi_publish2.processing.Item.context" title="Permalink to this definition">¶</a></dt>
+<dd><p>The context associated with this item.</p>
+<p>If no context has been defined, the parent context will be returned or
+if that hasn&#8217;t been defined, <code class="xref py py-class docutils literal"><span class="pre">None</span></code> will be returned.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tk_multi_publish2.processing.Item.description">
+<code class="descname">description</code><a class="headerlink" href="#tk_multi_publish2.processing.Item.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>The description for this item that will be displayed to the user and
+associated with the eventual Publish in Shotgun.</p>
+<p>If no description has been set for this item, the parent item&#8217;s
+description will be returned. If no description has been set for the
+parent, None will be returned.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tk_multi_publish2.processing.Item.thumbnail">
+<code class="descname">thumbnail</code><a class="headerlink" href="#tk_multi_publish2.processing.Item.thumbnail" title="Permalink to this definition">¶</a></dt>
+<dd><p>The associated thumbnail, as a <code class="xref py py-class docutils literal"><span class="pre">QtGui.QPixmap</span></code>.</p>
+<p>The thumbnail is an image to represent the item visually such as a
+thumbnail of an image or a screenshot of a scene.</p>
+<p>If no thumbnail has been defined for this node, the parent thumbnail is
+returned, or None if no thumbnail exists.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tk_multi_publish2.processing.Item.expanded">
+<code class="descname">expanded</code><a class="headerlink" href="#tk_multi_publish2.processing.Item.expanded" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flag to indicate that this item&#8217;s children should be expanded.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tk_multi_publish2.processing.Item.checked">
+<code class="descname">checked</code><a class="headerlink" href="#tk_multi_publish2.processing.Item.checked" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flag to indicate that this item should be checked by default.</p>
+<p>Please note that the final state of the node is also affected by
+the child tasks. Below are some examples of how this interaction
+plays out in practice:</p>
+<ul class="simple">
+<li>If all child tasks/items return <code class="docutils literal"><span class="pre">checked:</span> <span class="pre">False</span></code> in their accept
+method, the parent item will be unchecked, regardless
+of the state of this property.</li>
+<li>If one or more child tasks return <code class="docutils literal"><span class="pre">checked:</span> <span class="pre">True</span></code> and the item
+checked state is False, the item and all its sub-items will be
+unchecked.</li>
+</ul>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tk_multi_publish2.processing.Item.enabled">
+<code class="descname">enabled</code><a class="headerlink" href="#tk_multi_publish2.processing.Item.enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flag to indicate that this item and its children should be enabled.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_multi_publish2.processing.Item.set_thumbnail_from_path">
+<code class="descname">set_thumbnail_from_path</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/processing/item.html#Item.set_thumbnail_from_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.processing.Item.set_thumbnail_from_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper method. Parses the contents of the given file path
+and tries to convert it into a QPixmap which is then
+used to set the thumbnail for the item.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to a file on disk</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_multi_publish2.processing.Item.get_thumbnail_as_path">
+<code class="descname">get_thumbnail_as_path</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/processing/item.html#Item.get_thumbnail_as_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.processing.Item.get_thumbnail_as_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper method. Writes the associated thumbnail to a temp file
+on disk and returns the path. This path is automatically deleted
+when the object goes out of scope.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Path to a file on disk or None if no thumbnail set</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tk_multi_publish2.processing.Item.icon">
+<code class="descname">icon</code><a class="headerlink" href="#tk_multi_publish2.processing.Item.icon" title="Permalink to this definition">¶</a></dt>
+<dd><p>The associated icon, as a QPixmap.
+The icon is a small square image used to represent the item visually</p>
+<img alt="_images/item_icon.png" src="_images/item_icon.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>If no icon has been defined for this node, the parent
+icon is returned, or a default one if not defined</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_multi_publish2.processing.Item.set_icon_from_path">
+<code class="descname">set_icon_from_path</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/processing/item.html#Item.set_icon_from_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.processing.Item.set_icon_from_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper method. Parses the contents of the given file path
+and tries to convert it into a QPixmap which is then
+used to set the icon for the item.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to a file on disk</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tk_multi_publish2.processing.Item.context_change_allowed">
+<code class="descname">context_change_allowed</code><a class="headerlink" href="#tk_multi_publish2.processing.Item.context_change_allowed" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if item allows context change, False otherwise. Default is True</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="plugin.html" class="btn btn-neutral float-right" title="Publish Plugins" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="collector.html" class="btn btn-neutral" title="Collector" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Autodesk.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'v2.0.12',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,313 @@
+
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Publish Execution &mdash; tk-multi-publish2 v2.0.12 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="tk-multi-publish2 v2.0.12 documentation" href="index.html"/>
+        <link rel="next" title="Collector" href="collector.html"/>
+        <link rel="prev" title="Shotgun Publisher API reference, v2.0.12" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    <a href='http://developer.shotgunsoftware.com'>
+    
+        <img style='width: 191px;
+                height: 60px; 
+                margin: 2px;
+                border-radius: 0px; 
+                padding: 0px;' 
+            src='_static/logo@2x.png'/>
+    
+    </a>
+    
+
+          
+            <a href="index.html" class="icon icon-home"> tk-multi-publish2
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+                <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Publish Execution</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#collection-acceptance">Collection &amp; Acceptance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#item-review">Item Review</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#publishing">Publishing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="collector.html">Collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="items.html">Items</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugin.html">Publish Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utility.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="application.html">Application Interface</a></li>
+</ul>
+
+            
+          
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px; 
+                color: #b3b3b3; 
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>    
+    <style>
+        a.custom_post_menu { display: inline; 
+                             padding: 0px; 
+                             text-decoration: underline; }
+    </style>
+
+    <b>tk-multi-publish2</b> v2.0.12.<br>
+    
+        This documentation is part of the Shotgun Pipeline Toolkit.
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    The code associated with this documentation can be found 
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-multi-publish2'>here</a>.
+
+    </div>
+
+
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">tk-multi-publish2</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Publish Execution</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="publish-execution">
+<h1>Publish Execution<a class="headerlink" href="#publish-execution" title="Permalink to this headline">¶</a></h1>
+<p>The publisher has several phases of execution that developers should be aware
+of before implementing custom publishing workflows.</p>
+<div class="section" id="collection-acceptance">
+<h2>Collection &amp; Acceptance<a class="headerlink" href="#collection-acceptance" title="Permalink to this headline">¶</a></h2>
+<p>When the Publisher is launched, items for the current user session are collected
+via the collector hook. The <a class="reference internal" href="collector.html#tk_multi_publish2.base_hooks.CollectorPlugin.process_current_session" title="tk_multi_publish2.base_hooks.CollectorPlugin.process_current_session"><code class="xref py py-meth docutils literal"><span class="pre">process_current_session()</span></code></a>
+method of the configured collector plugin will be executed.</p>
+<p>Similarly, if the user drags and drops external files, or browses external files
+via the file browser, the collector plugin&#8217;s
+<a class="reference internal" href="collector.html#tk_multi_publish2.base_hooks.CollectorPlugin.process_file" title="tk_multi_publish2.base_hooks.CollectorPlugin.process_file"><code class="xref py py-meth docutils literal"><span class="pre">process_file()</span></code></a> method will be executed.</p>
+<p>These methods will create items to be displayed in the Publisher interface.
+These items represent the &#8220;things&#8221; to be published.</p>
+<p>Before the collected items are showing in the UI however, they will be processed
+for acceptance. Each configured publish plugin will have a chance to accept each
+collected item.</p>
+<p>This acceptance phase has two tiers. The first tier is done by comparing the
+collected item&#8217;s type to a list of filters provided by the publish plugin. If
+the item&#8217;s type matches one of the plugin&#8217;s filters, the second tier of
+acceptance is executed by running the publish plugin&#8217;s
+<a class="reference internal" href="plugin.html#tk_multi_publish2.base_hooks.PublishPlugin.accept" title="tk_multi_publish2.base_hooks.PublishPlugin.accept"><code class="xref py py-meth docutils literal"><span class="pre">accept()</span></code></a> method.</p>
+<p>All collected items will display one or more publish plugins that accepted them
+as tasks to be executed in the interface. These will show up as child items in
+the UI. Each of these tasks represents an instance of the associated
+publish plugin. Conceptually, these are the &#8220;actions&#8221; to be performed on the
+items.</p>
+</div>
+<div class="section" id="item-review">
+<h2>Item Review<a class="headerlink" href="#item-review" title="Permalink to this headline">¶</a></h2>
+<p>Once the acceptance phase is complete, the user can review the items, make
+changes to the target context of each, provide publish descriptions, take screen
+grabs, and update settings. Additional files can be dragged and dropped or
+browsed for collection.</p>
+</div>
+<div class="section" id="publishing">
+<h2>Publishing<a class="headerlink" href="#publishing" title="Permalink to this headline">¶</a></h2>
+<p>After the artist had taken the time to review the collected items, they can
+perform one of two actions.</p>
+<ol class="arabic simple">
+<li>They can run a validation pass on the items. This will execute the
+<a class="reference internal" href="plugin.html#tk_multi_publish2.base_hooks.PublishPlugin.validate" title="tk_multi_publish2.base_hooks.PublishPlugin.validate"><code class="xref py py-meth docutils literal"><span class="pre">validate()</span></code></a> method on each publish plugin in the list
+in the order in which they are displayed, passing in their parent item as
+the item to process. Any errors or warnings logged during this phase will be
+displayed in the UI.</li>
+<li>The user can also decide to run the full publish pass. This will include all
+the validation steps above followed by execution of each plugin&#8217;s
+<a class="reference internal" href="plugin.html#tk_multi_publish2.base_hooks.PublishPlugin.publish" title="tk_multi_publish2.base_hooks.PublishPlugin.publish"><code class="xref py py-meth docutils literal"><span class="pre">publish()</span></code></a> and <a class="reference internal" href="plugin.html#tk_multi_publish2.base_hooks.PublishPlugin.finalize" title="tk_multi_publish2.base_hooks.PublishPlugin.finalize"><code class="xref py py-meth docutils literal"><span class="pre">finalize()</span></code></a> methods.
+The publisher will execute the <code class="docutils literal"><span class="pre">publish</span></code> method of each task, followed by
+the execution of each task&#8217;s <code class="docutils literal"><span class="pre">finalize</span></code> method. Again, the order will match
+the order of tasks in the interface.</li>
+</ol>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="collector.html" class="btn btn-neutral float-right" title="Collector" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Shotgun Publisher API reference, v2.0.12" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Autodesk.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'v2.0.12',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+</body>
+</html>

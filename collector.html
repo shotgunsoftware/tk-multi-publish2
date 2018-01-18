@@ -1,0 +1,480 @@
+
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Collector &mdash; tk-multi-publish2 v2.0.12 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="tk-multi-publish2 v2.0.12 documentation" href="index.html"/>
+        <link rel="next" title="Publish Items" href="items.html"/>
+        <link rel="prev" title="Publish Execution" href="execution.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    <a href='http://developer.shotgunsoftware.com'>
+    
+        <img style='width: 191px;
+                height: 60px; 
+                margin: 2px;
+                border-radius: 0px; 
+                padding: 0px;' 
+            src='_static/logo@2x.png'/>
+    
+    </a>
+    
+
+          
+            <a href="index.html" class="icon icon-home"> tk-multi-publish2
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="execution.html">Publish Execution</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Collection</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#collector-api">Collector API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="items.html">Items</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugin.html">Publish Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utility.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="application.html">Application Interface</a></li>
+</ul>
+
+            
+          
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px; 
+                color: #b3b3b3; 
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>    
+    <style>
+        a.custom_post_menu { display: inline; 
+                             padding: 0px; 
+                             text-decoration: underline; }
+    </style>
+
+    <b>tk-multi-publish2</b> v2.0.12.<br>
+    
+        This documentation is part of the Shotgun Pipeline Toolkit.
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    The code associated with this documentation can be found 
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-multi-publish2'>here</a>.
+
+    </div>
+
+
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">tk-multi-publish2</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Collector</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="collector">
+<h1>Collector<a class="headerlink" href="#collector" title="Permalink to this headline">¶</a></h1>
+<p>The collector hook handles processing the current user’s session for items to
+publish. It also handles processing any file paths that have been dragged and
+dropped onto the Publisher. It’s primary purpose is to discover and classify
+items to present to the user for publishing.</p>
+<p>To define custom collection behavior for drag/drop or within a DCC, you simply
+need to write a collector plugin or take over and modify one of the collectors
+that come with the shipped integrations. For example, to allow publishing of
+cameras in Maya, you could take over the Maya collector and add the logic for
+creating publish items for each camera to be published in the current session.</p>
+<hr class="docutils" />
+<div class="section" id="collector-api">
+<h2>Collector API<a class="headerlink" href="#collector-api" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tk_multi_publish2.base_hooks.CollectorPlugin">
+<em class="property">class </em><code class="descclassname">tk_multi_publish2.base_hooks.</code><code class="descname">CollectorPlugin</code><span class="sig-paren">(</span><em>parent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/collector.html#CollectorPlugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.CollectorPlugin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">tank.hook.Hook</span></code></p>
+<p>This class defines the required interface for a collector plugin.
+Collectors are used to gather individual files that are loaded via the
+file browser or dragged and dropped into the Publish2 UI. It is also used
+to gather items to be published within the current DCC session.</p>
+<dl class="attribute">
+<dt id="tk_multi_publish2.base_hooks.CollectorPlugin.settings">
+<code class="descname">settings</code><a class="headerlink" href="#tk_multi_publish2.base_hooks.CollectorPlugin.settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> defining the configuration interface for this collector.</p>
+<p>The values configured for the collector will be supplied via settings
+parameter in the <a class="reference internal" href="#tk_multi_publish2.base_hooks.CollectorPlugin.process_current_session" title="tk_multi_publish2.base_hooks.CollectorPlugin.process_current_session"><code class="xref py py-func docutils literal"><span class="pre">process_current_session()</span></code></a> and
+<a class="reference internal" href="#tk_multi_publish2.base_hooks.CollectorPlugin.process_file" title="tk_multi_publish2.base_hooks.CollectorPlugin.process_file"><code class="xref py py-func docutils literal"><span class="pre">process_file()</span></code></a> methods.</p>
+<p>The dictionary can include any number of settings required by the
+collector, and takes the form:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="o">&lt;</span><span class="n">setting_name</span><span class="o">&gt;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">type</span><span class="o">&gt;</span><span class="p">,</span>
+        <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">default</span><span class="o">&gt;</span><span class="p">,</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">description</span><span class="o">&gt;</span>
+    <span class="p">},</span>
+    <span class="o">&lt;</span><span class="n">setting_name</span><span class="o">&gt;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">type</span><span class="o">&gt;</span><span class="p">,</span>
+        <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">default</span><span class="o">&gt;</span><span class="p">,</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">description</span><span class="o">&gt;</span>
+    <span class="p">},</span>
+    <span class="o">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The keys in the dictionary represent the names of the settings. The
+values are a dictionary comprised of 3 additional key/value pairs.</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">type</span></code>: The type of the setting. This should correspond to one of
+the data types that toolkit accepts for app and engine settings such
+as <code class="docutils literal"><span class="pre">hook</span></code>, <code class="docutils literal"><span class="pre">template</span></code>, <code class="docutils literal"><span class="pre">string</span></code>, etc.</li>
+<li><code class="docutils literal"><span class="pre">default</span></code>: The default value for the settings. This can be <code class="docutils literal"><span class="pre">None</span></code>.</li>
+<li><code class="docutils literal"><span class="pre">description</span></code>: A description of the setting as a string.</li>
+</ul>
+<p>Example implementation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="nd">@property</span>
+<span class="k">def</span> <span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;Work Template&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;template&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;A work file template required by this collector.&quot;</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;Exclude Objects&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;list&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;obj1&quot;</span><span class="p">,</span> <span class="s2">&quot;obj2&quot;</span><span class="p">,</span> <span class="s2">&quot;obj3&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;A list of objects to ignore.&quot;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+<p>The settings are exposed via the <code class="docutils literal"><span class="pre">collector_settings</span></code> setting in the
+app&#8217;s configuration. Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">collector_settings</span><span class="p">:</span>
+    <span class="n">Work</span> <span class="n">Template</span><span class="p">:</span> <span class="n">my_work_template</span>
+    <span class="n">Exclude</span> <span class="n">Objects</span><span class="p">:</span> <span class="p">[</span><span class="n">obj1</span><span class="p">,</span> <span class="n">obj4</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">See the hooks defined in the publisher app&#8217;s <code class="docutils literal"><span class="pre">hooks/</span></code> folder
+for additional example implementations.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_multi_publish2.base_hooks.CollectorPlugin.process_current_session">
+<code class="descname">process_current_session</code><span class="sig-paren">(</span><em>settings</em>, <em>parent_item</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/collector.html#CollectorPlugin.process_current_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.CollectorPlugin.process_current_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method analyzes the current engine session and creates a hierarchy
+of items for publishing.</p>
+<p>A typical implementation of this method would create an item that
+represents the current session (e.g. the current Maya file) or all open
+documents in a multi-document scenario (such as Photoshop). Top level
+items area created as children of the supplied <code class="docutils literal"><span class="pre">parent_item</span></code>.</p>
+<p>Any additional items, specific to the current session, can then be
+created as children of the session item. This is not a requirement
+however.</p>
+<p>The image below shows a maya scene item with a child item that
+represents a playblast to be published. Each of these items has one or
+more publish tasks attached to them.</p>
+<img alt="_images/collected_session_item.png" src="_images/collected_session_item.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">settings</span></code> argument is a dictionary where the keys are the names
+of the settings defined by the <a class="reference internal" href="#tk_multi_publish2.base_hooks.CollectorPlugin.settings" title="tk_multi_publish2.base_hooks.CollectorPlugin.settings"><code class="xref py py-func docutils literal"><span class="pre">settings()</span></code></a> property and the values
+are <code class="xref py py-class docutils literal"><span class="pre">Setting</span></code> instances as
+configured for this instance of the publish app.</p>
+<p>To create items within this method, use the
+<a class="reference internal" href="items.html#tk_multi_publish2.processing.Item.create_item" title="tk_multi_publish2.processing.Item.create_item"><code class="xref py py-meth docutils literal"><span class="pre">create_item()</span></code></a> method available on the supplied
+<code class="docutils literal"><span class="pre">parent_item</span></code>.</p>
+<p>Example Maya implementation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process_current_session</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">parent_item</span><span class="p">):</span>
+
+    <span class="n">path</span> <span class="o">=</span> <span class="n">cmds</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">sn</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">session_item</span> <span class="o">=</span> <span class="n">parent_item</span><span class="o">.</span><span class="n">create_item</span><span class="p">(</span>
+        <span class="s2">&quot;maya.session&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Maya Session&quot;</span><span class="p">,</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># additional work here to prep the session item such as defining</span>
+    <span class="c1"># an icon, populating the properties dictionary, etc.</span>
+    <span class="n">session_item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>
+
+    <span class="c1"># collect additional file types, parented under the session</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_collect_geometry</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">session_item</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">See the hooks defined in the publisher app&#8217;s <code class="docutils literal"><span class="pre">hooks/</span></code> folder
+for additional example implementations.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; A dictionary of configured
+<code class="xref py py-class docutils literal"><span class="pre">Setting</span></code> objects for this
+collector.</li>
+<li><strong>parent_item</strong> &#8211; The root <a class="reference internal" href="items.html#tk_multi_publish2.processing.Item" title="tk_multi_publish2.processing.Item"><code class="xref py py-class docutils literal"><span class="pre">Item</span></code></a> instance to
+collect child items for.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_multi_publish2.base_hooks.CollectorPlugin.process_file">
+<code class="descname">process_file</code><span class="sig-paren">(</span><em>settings</em>, <em>parent_item</em>, <em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/collector.html#CollectorPlugin.process_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.CollectorPlugin.process_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates one or more items to publish for the supplied file
+path.</p>
+<p>The image below shows a collected text file item to be published.</p>
+<img alt="_images/collected_file.png" src="_images/collected_file.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>A typical implementation of this method involves processing the supplied
+path to determine what type of file it is and how to display it before
+creating the item to publish.</p>
+<p>The <code class="docutils literal"><span class="pre">settings</span></code> argument is a dictionary where the keys are the names
+of the settings defined by the <a class="reference internal" href="#tk_multi_publish2.base_hooks.CollectorPlugin.settings" title="tk_multi_publish2.base_hooks.CollectorPlugin.settings"><code class="xref py py-func docutils literal"><span class="pre">settings()</span></code></a> property and the values
+are <code class="xref py py-class docutils literal"><span class="pre">Setting</span></code> instances as
+configured for this instance of the publish app.</p>
+<p>To create items within this method, use the
+<a class="reference internal" href="items.html#tk_multi_publish2.processing.Item.create_item" title="tk_multi_publish2.processing.Item.create_item"><code class="xref py py-meth docutils literal"><span class="pre">create_item()</span></code></a> method available on the supplied
+<code class="docutils literal"><span class="pre">parent_item</span></code>.</p>
+<p>Example implementation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process_file</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">parent_item</span><span class="p">):</span>
+
+    <span class="c1"># make sure the path is normalized. no trailing separator,</span>
+    <span class="c1"># separators are appropriate for the current os, no double</span>
+    <span class="c1"># separators, etc.</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">ShotgunPath</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="c1"># do some processing of the file to determine its type, and how</span>
+    <span class="c1"># to display it.</span>
+    <span class="o">...</span>
+
+    <span class="c1"># create and populate the item</span>
+    <span class="n">file_item</span> <span class="o">=</span> <span class="n">parent_item</span><span class="o">.</span><span class="n">create_item</span><span class="p">(</span>
+        <span class="n">item_type</span><span class="p">,</span>
+        <span class="n">type_display</span><span class="p">,</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># additional work here to prep the session item such as defining</span>
+    <span class="c1"># an icon, populating the properties dictionary, etc.</span>
+    <span class="n">session_item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">See the hooks defined in the publisher app&#8217;s <code class="docutils literal"><span class="pre">hooks/</span></code> folder
+for additional example implementations.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; A dictionary of configured
+<code class="xref py py-class docutils literal"><span class="pre">Setting</span></code> objects for this
+collector.</li>
+<li><strong>parent_item</strong> &#8211; The root <a class="reference internal" href="items.html#tk_multi_publish2.processing.Item" title="tk_multi_publish2.processing.Item"><code class="xref py py-class docutils literal"><span class="pre">Item</span></code></a> instance to
+collect child items for.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="items.html" class="btn btn-neutral float-right" title="Publish Items" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="execution.html" class="btn btn-neutral" title="Publish Execution" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Autodesk.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'v2.0.12',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+</body>
+</html>

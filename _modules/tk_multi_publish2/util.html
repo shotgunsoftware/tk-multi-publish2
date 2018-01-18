@@ -1,0 +1,671 @@
+
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tk_multi_publish2.util &mdash; tk-multi-publish2 v2.0.12 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="tk-multi-publish2 v2.0.12 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    <a href='http://developer.shotgunsoftware.com'>
+    
+        <img style='width: 191px;
+                height: 60px; 
+                margin: 2px;
+                border-radius: 0px; 
+                padding: 0px;' 
+            src='../../_static/logo@2x.png'/>
+    
+    </a>
+    
+
+          
+            <a href="../../index.html" class="icon icon-home"> tk-multi-publish2
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../execution.html">Publish Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../collector.html">Collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../items.html">Items</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plugin.html">Publish Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utility.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../application.html">Application Interface</a></li>
+</ul>
+
+            
+          
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px; 
+                color: #b3b3b3; 
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>    
+    <style>
+        a.custom_post_menu { display: inline; 
+                             padding: 0px; 
+                             text-decoration: underline; }
+    </style>
+
+    <b>tk-multi-publish2</b> v2.0.12.<br>
+    
+        This documentation is part of the Shotgun Pipeline Toolkit.
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    The code associated with this documentation can be found 
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-multi-publish2'>here</a>.
+
+    </div>
+
+
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">tk-multi-publish2</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>tk_multi_publish2.util</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for tk_multi_publish2.util</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2017 Shotgun Software Inc.</span>
+<span class="c1">#</span>
+<span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
+<span class="c1">#</span>
+<span class="c1"># This work is provided &quot;AS IS&quot; and subject to the Shotgun Pipeline Toolkit</span>
+<span class="c1"># Source Code License included in this distribution package. See LICENSE.</span>
+<span class="c1"># By accessing, using, copying or modifying this work you indicate your</span>
+<span class="c1"># agreement to the Shotgun Pipeline Toolkit Source Code License. All rights</span>
+<span class="c1"># not expressly granted therein are reserved by Shotgun Software Inc.</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+
+<span class="kn">import</span> <span class="nn">sgtk</span>
+
+<span class="c1"># create a logger to use throughout</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="c1"># ---- file/path util functions</span>
+
+<div class="viewcode-block" id="get_version_path"><a class="viewcode-back" href="../../utility.html#tk_multi_publish2.util.get_version_path">[docs]</a><span class="k">def</span> <span class="nf">get_version_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a path without a version number, return the path with the supplied</span>
+<span class="sd">    version number.</span>
+
+<span class="sd">    If a version number is detected in the supplied path, the path will be</span>
+<span class="sd">    returned as-is.</span>
+
+<span class="sd">    :param path: The path to inject a version number.</span>
+<span class="sd">    :param version: The version number to inject.</span>
+
+<span class="sd">    :return: The modified path with the supplied version number inserted.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the logic for this method lives in a hook that can be overridden by</span>
+    <span class="c1"># clients. exposing the method here in the publish utils api prevents</span>
+    <span class="c1"># clients from having to call other hooks directly in their</span>
+    <span class="c1"># collector/publisher hook implementations.</span>
+    <span class="n">publisher</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_bundle</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">publisher</span><span class="o">.</span><span class="n">execute_hook_method</span><span class="p">(</span>
+        <span class="s2">&quot;path_info&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;get_version_path&quot;</span><span class="p">,</span>
+        <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="n">version</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_next_version_path"><a class="viewcode-back" href="../../utility.html#tk_multi_publish2.util.get_next_version_path">[docs]</a><span class="k">def</span> <span class="nf">get_next_version_path</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a file path, return a path to the next version.</span>
+
+<span class="sd">    This is typically used by auto-versioning logic in plugins that need to</span>
+<span class="sd">    save the current work file to the next version number.</span>
+
+<span class="sd">    If no version can be identified in the supplied path, ``None`` will be</span>
+<span class="sd">    returned, indicating that the next version path can&#39;t be determined.</span>
+
+<span class="sd">    :param path: The path to a file, likely one to be published.</span>
+
+<span class="sd">    :return: The path to the next version of the supplied path.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the logic for this method lives in a hook that can be overridden by</span>
+    <span class="c1"># clients. exposing the method here in the publish utils api prevents</span>
+    <span class="c1"># clients from having to call other hooks directly in their</span>
+    <span class="c1"># collector/publisher hook implementations.</span>
+    <span class="n">publisher</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_bundle</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">publisher</span><span class="o">.</span><span class="n">execute_hook_method</span><span class="p">(</span>
+        <span class="s2">&quot;path_info&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;get_next_version_path&quot;</span><span class="p">,</span>
+        <span class="n">path</span><span class="o">=</span><span class="n">path</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_file_path_components"><a class="viewcode-back" href="../../utility.html#tk_multi_publish2.util.get_file_path_components">[docs]</a><span class="k">def</span> <span class="nf">get_file_path_components</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convenience method for determining file components for a given path.</span>
+
+<span class="sd">    :param str path: The path to the file to componentize.</span>
+
+<span class="sd">    Returns file path components in the form::</span>
+
+<span class="sd">        # path=&quot;/path/to/the/file/my_file.v001.ext&quot;</span>
+
+<span class="sd">        {</span>
+<span class="sd">            &quot;path&quot;: &quot;/path/to/the/file/my_file.v001.ext&quot;,</span>
+<span class="sd">            &quot;folder&quot;: &quot;/path/to/the/file&quot; ,</span>
+<span class="sd">            &quot;filename&quot;: &quot;my_file.v001.ext&quot;,</span>
+<span class="sd">            &quot;extension&quot;: &quot;ext&quot;,</span>
+<span class="sd">        }</span>
+
+<span class="sd">        # path=&quot;/path/to/the/folder&quot;</span>
+
+<span class="sd">        {</span>
+<span class="sd">            &quot;path&quot;: &quot;/path/to/the/folder&quot;,</span>
+<span class="sd">            &quot;folder&quot;: &quot;/path/to/the&quot; ,</span>
+<span class="sd">            &quot;filename&quot;: &quot;folder&quot;,</span>
+<span class="sd">            &quot;extension&quot;: None,</span>
+<span class="sd">        }</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># get the path in a normalized state. no trailing separator, separators are</span>
+    <span class="c1"># appropriate for current os, no double separators, etc.</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">ShotgunPath</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Getting file path components for path: &#39;</span><span class="si">%s</span><span class="s2">&#39;...&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,))</span>
+
+    <span class="c1"># break it up into the major components</span>
+    <span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="c1"># folder</span>
+        <span class="n">extension</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># file. extract the extension and remove the &quot;.&quot;</span>
+        <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">extension</span><span class="p">)</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">extension</span><span class="p">:</span>
+            <span class="n">extension</span> <span class="o">=</span> <span class="n">extension</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># prevent extension = &quot;&quot;</span>
+            <span class="n">extension</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">file_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+        <span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">,</span>
+        <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span>
+        <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="s2">&quot;Extracted components from path &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
+        <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">file_info</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">file_info</span></div>
+
+
+<div class="viewcode-block" id="get_frame_sequence_path"><a class="viewcode-back" href="../../utility.html#tk_multi_publish2.util.get_frame_sequence_path">[docs]</a><span class="k">def</span> <span class="nf">get_frame_sequence_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">frame_spec</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a path with a frame number, return the sequence path where the frame</span>
+<span class="sd">    number is replaced with a given frame specification such as ``{FRAME}`` or</span>
+<span class="sd">    ``%04d`` or ``$F``.</span>
+
+<span class="sd">    :param path: The input path with a frame number</span>
+<span class="sd">    :param frame_spec: The frame specification to replace the frame number with.</span>
+
+<span class="sd">    :return: The full frame sequence path</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the logic for this method lives in a hook that can be overridden by</span>
+    <span class="c1"># clients. exposing the method here in the publish utils api prevents</span>
+    <span class="c1"># clients from having to call other hooks directly in their</span>
+    <span class="c1"># collector/publisher hook implementations.</span>
+    <span class="n">publisher</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_bundle</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">publisher</span><span class="o">.</span><span class="n">execute_hook_method</span><span class="p">(</span>
+        <span class="s2">&quot;path_info&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;get_frame_sequence_path&quot;</span><span class="p">,</span>
+        <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+        <span class="n">frame_spec</span><span class="o">=</span><span class="n">frame_spec</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_frame_sequences"><a class="viewcode-back" href="../../utility.html#tk_multi_publish2.util.get_frame_sequences">[docs]</a><span class="k">def</span> <span class="nf">get_frame_sequences</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">frame_spec</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a folder, inspect the contained files to find what appear to be</span>
+<span class="sd">    files with frame numbers.</span>
+
+<span class="sd">    :param folder: The path to a folder potentially containing a sequence of</span>
+<span class="sd">        files.</span>
+
+<span class="sd">    :param extensions: A list of file extensions to retrieve paths for.</span>
+<span class="sd">        If not supplied, the extension will be ignored.</span>
+
+<span class="sd">    :param frame_spec: A string to use to represent the frame number in the</span>
+<span class="sd">        return sequence path.</span>
+
+<span class="sd">    :return: A list of tuples for each identified frame sequence. The first</span>
+<span class="sd">        item in the tuple is a sequence path with the frame number replaced</span>
+<span class="sd">        with the supplied frame specification. If no frame spec is supplied,</span>
+<span class="sd">        a python string format spec will be returned with the padding found</span>
+<span class="sd">        in the file.</span>
+
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            get_frame_sequences(</span>
+<span class="sd">                &quot;/path/to/the/folder&quot;,</span>
+<span class="sd">                [&quot;exr&quot;, &quot;jpg&quot;],</span>
+<span class="sd">                frame_spec=&quot;{FRAME}&quot;</span>
+<span class="sd">            )</span>
+
+<span class="sd">            [</span>
+<span class="sd">                (</span>
+<span class="sd">                    &quot;/path/to/the/supplied/folder/key_light1.{FRAME}.exr&quot;,</span>
+<span class="sd">                    [&lt;frame_1_path&gt;, &lt;frame_2_path&gt;, ...]</span>
+<span class="sd">                ),</span>
+<span class="sd">                (</span>
+<span class="sd">                    &quot;/path/to/the/supplied/folder/fill_light1.{FRAME}.jpg&quot;,</span>
+<span class="sd">                    [&lt;frame_1_path&gt;, &lt;frame_2_path&gt;, ...]</span>
+<span class="sd">                )</span>
+<span class="sd">            ]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the logic for this method lives in a hook that can be overridden by</span>
+    <span class="c1"># clients. exposing the method here in the publish utils api prevents</span>
+    <span class="c1"># clients from having to call other hooks directly in their</span>
+    <span class="c1"># collector/publisher hook implementations.</span>
+    <span class="n">publisher</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_bundle</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">publisher</span><span class="o">.</span><span class="n">execute_hook_method</span><span class="p">(</span>
+        <span class="s2">&quot;path_info&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;get_frame_sequences&quot;</span><span class="p">,</span>
+        <span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">,</span>
+        <span class="n">extensions</span><span class="o">=</span><span class="n">extensions</span><span class="p">,</span>
+        <span class="n">frame_spec</span><span class="o">=</span><span class="n">frame_spec</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_publish_name"><a class="viewcode-back" href="../../utility.html#tk_multi_publish2.util.get_publish_name">[docs]</a><span class="k">def</span> <span class="nf">get_publish_name</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">sequence</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a file path, return the display name to use for publishing.</span>
+
+<span class="sd">    Typically, this is a name where the path and any version number are removed</span>
+<span class="sd">    in order to keep the publish name consistent as subsequent versions are</span>
+<span class="sd">    published.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        in: /path/to/the/file/my_file.v001.jpg</span>
+<span class="sd">        out: my_file.jpg</span>
+
+<span class="sd">    :param path: The path to a file, likely one to be published.</span>
+<span class="sd">    :param sequence: If True, treat the path as a sequence name and replace</span>
+<span class="sd">        the frame number with placeholder</span>
+
+<span class="sd">    :return: A publish display name for the provided path.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the logic for this method lives in a hook that can be overridden by</span>
+    <span class="c1"># clients. exposing the method here in the publish utils api prevents</span>
+    <span class="c1"># clients from having to call other hooks directly in their</span>
+    <span class="c1"># collector/publisher hook implementations.</span>
+    <span class="n">publisher</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_bundle</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">publisher</span><span class="o">.</span><span class="n">execute_hook_method</span><span class="p">(</span>
+        <span class="s2">&quot;path_info&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;get_publish_name&quot;</span><span class="p">,</span>
+        <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+        <span class="n">sequence</span><span class="o">=</span><span class="n">sequence</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_version_number"><a class="viewcode-back" href="../../utility.html#tk_multi_publish2.util.get_version_number">[docs]</a><span class="k">def</span> <span class="nf">get_version_number</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract a version number from the supplied path.</span>
+
+<span class="sd">    This is used by plugins that need to know what version number to associate</span>
+<span class="sd">    with the file when publishing.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        in: /path/to/the/file/my_file.v001.jpg</span>
+<span class="sd">        out: 1</span>
+
+<span class="sd">    :param path: The path to a file, likely one to be published.</span>
+
+<span class="sd">    :return: An integer representing the version number in the supplied path.</span>
+<span class="sd">        If no version found, ``None`` will be returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the logic for this method lives in a hook that can be overridden by</span>
+    <span class="c1"># clients. exposing the method here in the publish utils api prevents</span>
+    <span class="c1"># clients from having to call other hooks directly in their</span>
+    <span class="c1"># collector/publisher hook implementations.</span>
+    <span class="n">publisher</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_bundle</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">publisher</span><span class="o">.</span><span class="n">execute_hook_method</span><span class="p">(</span>
+        <span class="s2">&quot;path_info&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;get_version_number&quot;</span><span class="p">,</span>
+        <span class="n">path</span><span class="o">=</span><span class="n">path</span>
+    <span class="p">)</span></div>
+
+
+<span class="c1"># ---- publish util functions</span>
+
+<span class="k">def</span> <span class="nf">get_conflicting_publishes</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">publish_name</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of SG published file dicts for any existing publishes that</span>
+<span class="sd">    match the supplied context, path, and publish_name.</span>
+
+<span class="sd">    :param context: The context to search publishes for</span>
+<span class="sd">    :param path: The path to match against previous publishes</span>
+<span class="sd">    :param publish_name: The name of the publish.</span>
+<span class="sd">    :param filters: A list of additional SG find() filters to apply to the</span>
+<span class="sd">        publish search.</span>
+
+<span class="sd">    :return: A list of ``dict``s representing existing publishes that match</span>
+<span class="sd">        the supplied arguments. The paths returned are the standard &quot;id&quot;, and</span>
+<span class="sd">        &quot;type&quot; as well as the &quot;path&quot; field.</span>
+
+<span class="sd">    This method is typically used by publish plugin hooks to determine if there</span>
+<span class="sd">    are existing publishes for a given context, publish_name, and path and</span>
+<span class="sd">    warning appropriately.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">publisher</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_bundle</span><span class="p">()</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="s2">&quot;Getting conflicting publishes for context: </span><span class="si">%s</span><span class="s2">, path: </span><span class="si">%s</span><span class="s2">, name: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
+        <span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">publish_name</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># ask core to do a dry_run of a publish with the supplied criteria. this is</span>
+    <span class="c1"># a workaround for our inability to filter publishes by path. so for now,</span>
+    <span class="c1"># get a dictionary of data that would be used to create a matching publish</span>
+    <span class="c1"># and use that to get publishes via a call to find(). Then we&#39;ll filter</span>
+    <span class="c1"># those by their path field. Once we have the ability in SG to filter by</span>
+    <span class="c1"># path, we can replace this whole method with a simple call to find().</span>
+    <span class="n">publish_data</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">register_publish</span><span class="p">(</span>
+        <span class="n">publisher</span><span class="o">.</span><span class="n">sgtk</span><span class="p">,</span>
+        <span class="n">context</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">,</span>
+        <span class="n">publish_name</span><span class="p">,</span>
+        <span class="n">version_number</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+        <span class="n">dry_run</span><span class="o">=</span><span class="bp">True</span>
+    <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Publish dry run data: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">publish_data</span><span class="p">,))</span>
+
+    <span class="c1"># now build up the filters to match against</span>
+    <span class="n">publish_filters</span> <span class="o">=</span> <span class="p">[</span><span class="n">filters</span><span class="p">]</span> <span class="k">if</span> <span class="n">filters</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;code&quot;</span><span class="p">,</span> <span class="s2">&quot;entity&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;project&quot;</span><span class="p">,</span> <span class="s2">&quot;task&quot;</span><span class="p">]:</span>
+        <span class="n">publish_filters</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">field</span><span class="p">,</span> <span class="s2">&quot;is&quot;</span><span class="p">,</span> <span class="n">publish_data</span><span class="p">[</span><span class="n">field</span><span class="p">]])</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Build publish filters: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">publish_filters</span><span class="p">,))</span>
+
+    <span class="c1"># run the</span>
+    <span class="n">publishes</span> <span class="o">=</span> <span class="n">publisher</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
+        <span class="s2">&quot;PublishedFile&quot;</span><span class="p">,</span>
+        <span class="n">publish_filters</span><span class="p">,</span>
+        <span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="c1"># ensure the path is normalized for comparison</span>
+    <span class="n">normalized_path</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">ShotgunPath</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="c1"># next, extract the publish path from each of the returned publishes and</span>
+    <span class="c1"># compare it against the supplied path. if the paths match, we add the</span>
+    <span class="c1"># publish to the list of publishes to return.</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Comparing publish paths...&quot;</span><span class="p">)</span>
+    <span class="n">matching_publishes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">publish</span> <span class="ow">in</span> <span class="n">publishes</span><span class="p">:</span>
+        <span class="n">publish_path</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">resolve_publish_path</span><span class="p">(</span><span class="n">publisher</span><span class="o">.</span><span class="n">sgtk</span><span class="p">,</span> <span class="n">publish</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">publish_path</span><span class="p">:</span>
+            <span class="c1"># ensure the published path is normalized for comparison</span>
+            <span class="n">normalized_publish_path</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">ShotgunPath</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span>
+                <span class="n">publish_path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">normalized_path</span> <span class="o">==</span> <span class="n">normalized_publish_path</span><span class="p">:</span>
+                <span class="n">matching_publishes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">publish</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">matching_publishes</span>
+
+
+<span class="k">def</span> <span class="nf">clear_status_for_conflicting_publishes</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">publish_data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Clear the status of any conflicting publishes matching the supplied publish</span>
+<span class="sd">    data.</span>
+
+<span class="sd">    The loader app respects the status of publishes to determine which are</span>
+<span class="sd">    available for the user to load in their DCC. Because it is possible to</span>
+<span class="sd">    create a version entry in SG with the same path multiple times, this method</span>
+<span class="sd">    provides an easy way to clear the status of previous publishes for a given</span>
+<span class="sd">    path.</span>
+
+<span class="sd">    The publish data supplied should be the fully populated publish data</span>
+<span class="sd">    returned by a call to ``sgtk.util.register_publish()``.</span>
+
+<span class="sd">    :param publish_data: Dictionary of the current publish data (i.e. the</span>
+<span class="sd">        publish entry whose status will not be cleared).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">publisher</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_bundle</span><span class="p">()</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Clearing the status of any conflicting publishes.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># determine the path from the publish data. this will match the path that</span>
+    <span class="c1"># was used to register the publish</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">resolve_publish_path</span><span class="p">(</span><span class="n">publisher</span><span class="o">.</span><span class="n">sgtk</span><span class="p">,</span> <span class="n">publish_data</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">publish_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+
+    <span class="c1"># get a list of all publishes matching this criteria</span>
+    <span class="n">publishes</span> <span class="o">=</span> <span class="n">get_conflicting_publishes</span><span class="p">(</span>
+        <span class="n">context</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">,</span>
+        <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sg_status_list&quot;</span><span class="p">,</span> <span class="s2">&quot;is_not&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">publishes</span><span class="p">:</span>
+        <span class="c1"># no conflicting publishes. nothing to do.</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No conflicting publishes detected for path: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,))</span>
+        <span class="k">return</span>
+
+    <span class="c1"># do a batch update of the conflicting publishes to clear their status</span>
+    <span class="n">batch_data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">publish</span> <span class="ow">in</span> <span class="n">publishes</span><span class="p">:</span>
+
+        <span class="c1"># make sure we don&#39;t update the supplied publish</span>
+        <span class="k">if</span> <span class="n">publish</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">publish_data</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]:</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># add the update info to the batch data list</span>
+        <span class="n">batch_data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s2">&quot;request_type&quot;</span><span class="p">:</span> <span class="s2">&quot;update&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;entity_type&quot;</span><span class="p">:</span> <span class="n">publish</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;entity_id&quot;</span><span class="p">:</span> <span class="n">publish</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;sg_status_list&quot;</span><span class="p">:</span> <span class="bp">None</span><span class="p">}</span>  <span class="c1"># will clear the status</span>
+        <span class="p">})</span>
+
+    <span class="k">if</span> <span class="n">batch_data</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s2">&quot;Batch updating publish data: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
+            <span class="p">(</span><span class="n">pprint</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span><span class="n">batch_data</span><span class="p">),)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># execute all the updates!</span>
+        <span class="n">publisher</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_data</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Autodesk.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'v2.0.12',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+</body>
+</html>

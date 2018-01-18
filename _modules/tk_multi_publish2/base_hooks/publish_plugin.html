@@ -1,0 +1,756 @@
+
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tk_multi_publish2.base_hooks.publish_plugin &mdash; tk-multi-publish2 v2.0.12 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="tk-multi-publish2 v2.0.12 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    <a href='http://developer.shotgunsoftware.com'>
+    
+        <img style='width: 191px;
+                height: 60px; 
+                margin: 2px;
+                border-radius: 0px; 
+                padding: 0px;' 
+            src='../../../_static/logo@2x.png'/>
+    
+    </a>
+    
+
+          
+            <a href="../../../index.html" class="icon icon-home"> tk-multi-publish2
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../execution.html">Publish Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../collector.html">Collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../items.html">Items</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plugin.html">Publish Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utility.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../application.html">Application Interface</a></li>
+</ul>
+
+            
+          
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px; 
+                color: #b3b3b3; 
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>    
+    <style>
+        a.custom_post_menu { display: inline; 
+                             padding: 0px; 
+                             text-decoration: underline; }
+    </style>
+
+    <b>tk-multi-publish2</b> v2.0.12.<br>
+    
+        This documentation is part of the Shotgun Pipeline Toolkit.
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    The code associated with this documentation can be found 
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-multi-publish2'>here</a>.
+
+    </div>
+
+
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">tk-multi-publish2</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>tk_multi_publish2.base_hooks.publish_plugin</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for tk_multi_publish2.base_hooks.publish_plugin</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2017 Shotgun Software Inc.</span>
+<span class="c1">#</span>
+<span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
+<span class="c1">#</span>
+<span class="c1"># This work is provided &quot;AS IS&quot; and subject to the Shotgun Pipeline Toolkit</span>
+<span class="c1"># Source Code License included in this distribution package. See LICENSE.</span>
+<span class="c1"># By accessing, using, copying or modifying this work you indicate your</span>
+<span class="c1"># agreement to the Shotgun Pipeline Toolkit Source Code License. All rights</span>
+<span class="c1"># not expressly granted therein are reserved by Shotgun Software Inc.</span>
+
+<span class="kn">import</span> <span class="nn">sgtk</span>
+
+<span class="n">HookBaseClass</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">get_hook_baseclass</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="PublishPlugin"><a class="viewcode-back" href="../../../plugin.html#tk_multi_publish2.base_hooks.PublishPlugin">[docs]</a><span class="k">class</span> <span class="nc">PublishPlugin</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class defines the required interface for a publish plugin. Publish</span>
+<span class="sd">    plugins are responsible for operating on items collected by the collector</span>
+<span class="sd">    plugin. Publish plugins define which items they will operate on as well as</span>
+<span class="sd">    the execution logic for each phase of the publish process.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">############################################################################</span>
+    <span class="c1"># Plugin properties</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">icon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The path to an icon on disk that is representative of this plugin</span>
+<span class="sd">        (:class:`str`).</span>
+
+<span class="sd">        The icon will be displayed on the left side of the task driven by this</span>
+<span class="sd">        plugin, as shown in the image below.</span>
+
+<span class="sd">        .. image:: ./resources/task_icon.png</span>
+
+<span class="sd">        |</span>
+
+<span class="sd">        Icons can be stored within the same bundle as the plugin itself and</span>
+<span class="sd">        referenced relative to the disk location of the plugin, accessible via</span>
+<span class="sd">        :meth:`sgtk.Hook.disk_location`.</span>
+
+<span class="sd">        Example implementation:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            @property</span>
+<span class="sd">            def icon(self):</span>
+
+<span class="sd">                return os.path.join(</span>
+<span class="sd">                    self.disk_location,</span>
+<span class="sd">                    &quot;icons&quot;,</span>
+<span class="sd">                    &quot;publish.png&quot;</span>
+<span class="sd">                )</span>
+
+<span class="sd">        .. note:: Publish plugins drive the tasks that operate on publish items.</span>
+<span class="sd">            It can be helpful to think of items as &quot;things&quot; and tasks as the</span>
+<span class="sd">            &quot;actions&quot; that operate on those &quot;things&quot;. A publish icon that</span>
+<span class="sd">            represents some type of action can help artists understand the</span>
+<span class="sd">            distinction between items and tasks in the interface.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The general name for this plugin (:class:`str`).</span>
+
+<span class="sd">        This value is not generally used for display. Instances of the plugin</span>
+<span class="sd">        are defined within the app&#39;s configuration and those instance names are</span>
+<span class="sd">        what is shown in the interface for the tasks.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verbose, multi-line description of what the plugin does (:class:`str`).</span>
+
+<span class="sd">        The string can contain html for formatting for display in the UI (any</span>
+<span class="sd">        html tags supported by Qt&#39;s rich text engine).</span>
+
+<span class="sd">        The description is displayed via the plugin&#39;s default</span>
+<span class="sd">        :meth:`create_settings_widget` implementation, as shown in the image</span>
+<span class="sd">        below:</span>
+
+<span class="sd">        .. image:: ./resources/plugin_description.png</span>
+
+<span class="sd">        |</span>
+
+<span class="sd">        A simple implementation example:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            @property</span>
+<span class="sd">            def description(self):</span>
+
+<span class="sd">                return &#39;&#39;&#39;</span>
+<span class="sd">                Creates a publish in Shotgun.</span>
+
+<span class="sd">                A &lt;b&gt;Publish&lt;/b&gt; entry will be created in Shotgun which will</span>
+<span class="sd">                include a reference to the file&#39;s path on disk. Other users will</span>
+<span class="sd">                be able to access the published file via the</span>
+<span class="sd">                &lt;b&gt;&lt;a href=&#39;%s&#39;&gt;Loader&lt;/a&gt;&lt;/b&gt; so long as they have access to</span>
+<span class="sd">                the file&#39;s location on disk.</span>
+<span class="sd">                &#39;&#39;&#39; % (loader_url,)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A :class:`dict` defining the configuration interface for this plugin.</span>
+
+<span class="sd">        The dictionary can include any number of settings required by the</span>
+<span class="sd">        plugin, and takes the form::</span>
+
+<span class="sd">            {</span>
+<span class="sd">                &lt;setting_name&gt;: {</span>
+<span class="sd">                    &quot;type&quot;: &lt;type&gt;,</span>
+<span class="sd">                    &quot;default&quot;: &lt;default&gt;,</span>
+<span class="sd">                    &quot;description&quot;: &lt;description&gt;</span>
+<span class="sd">                },</span>
+<span class="sd">                &lt;setting_name&gt;: {</span>
+<span class="sd">                    &quot;type&quot;: &lt;type&gt;,</span>
+<span class="sd">                    &quot;default&quot;: &lt;default&gt;,</span>
+<span class="sd">                    &quot;description&quot;: &lt;description&gt;</span>
+<span class="sd">                },</span>
+<span class="sd">                ...</span>
+<span class="sd">            }</span>
+
+<span class="sd">        The keys in the dictionary represent the names of the settings. The</span>
+<span class="sd">        values are a dictionary comprised of 3 additional key/value pairs.</span>
+
+<span class="sd">        * ``type``: The type of the setting. This should correspond to one of</span>
+<span class="sd">          the data types that toolkit accepts for app and engine settings such</span>
+<span class="sd">          as ``hook``, ``template``, ``string``, etc.</span>
+<span class="sd">        * ``default``: The default value for the settings. This can be ``None``.</span>
+<span class="sd">        * ``description``: A description of the setting as a string.</span>
+
+<span class="sd">        Example implementation:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            @property</span>
+<span class="sd">            def settings(self):</span>
+<span class="sd">                return {</span>
+<span class="sd">                    &quot;Publish Template&quot;: {</span>
+<span class="sd">                        &quot;type&quot;: &quot;template&quot;,</span>
+<span class="sd">                        &quot;default&quot;: None,</span>
+<span class="sd">                        &quot;description&quot;: &quot;The output path template for this plugin.&quot;</span>
+<span class="sd">                    },</span>
+<span class="sd">                    &quot;Resolution&quot;: {</span>
+<span class="sd">                        &quot;type&quot;: &quot;str&quot;,</span>
+<span class="sd">                        &quot;default&quot;: &quot;1920x1080&quot;</span>
+<span class="sd">                        &quot;description&quot;: &quot;The output resolution to export before publishing.&quot;</span>
+<span class="sd">                    }</span>
+<span class="sd">                }</span>
+
+<span class="sd">        The settings are exposed via the ``settings`` key as the plugins are</span>
+<span class="sd">        configured via the ``publish_plugins`` setting in the app&#39;s</span>
+<span class="sd">        configuration. Example::</span>
+
+<span class="sd">            publish_plugins:</span>
+<span class="sd">                - name: Export and Publish</span>
+<span class="sd">                  hook: &quot;{config}/export_and_publish.py&quot;</span>
+<span class="sd">                  settings:</span>
+<span class="sd">                      Publish Template: export_template</span>
+<span class="sd">                      Resolution: 2048x1556</span>
+
+<span class="sd">        The values configured for the plugin will be supplied via settings</span>
+<span class="sd">        parameter in the :meth:`accept`, :meth:`validate`, :meth:`publish`, and</span>
+<span class="sd">        :meth:`finalize` methods.</span>
+
+<span class="sd">        The values also drive the custom UI defined by the plugin whick allows</span>
+<span class="sd">        artists to manipulate the settings at runtime. See the</span>
+<span class="sd">        :meth:`create_settings_widget`, :meth:`set_ui_settings`, and</span>
+<span class="sd">        :meth:`get_ui_settings` for additional information.</span>
+
+<span class="sd">        .. note:: See the hooks defined in the publisher app&#39;s ``hooks/`` folder</span>
+<span class="sd">           for additional example implementations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">item_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A :class:`list` of item type wildcard :class:`str` objects that this</span>
+<span class="sd">        plugin is interested in.</span>
+
+<span class="sd">        As items are collected by the collector hook, they are given an item</span>
+<span class="sd">        type string (see :meth:`~.processing.Item.create_item`). The strings</span>
+<span class="sd">        provided by this property will be compared to each collected item&#39;s</span>
+<span class="sd">        type.</span>
+
+<span class="sd">        Only items with types matching entries in this list will be considered</span>
+<span class="sd">        by the :meth:`accept` method. As such, this method makes it possible to</span>
+<span class="sd">        quickly identify which items the plugin may be interested in. Any</span>
+<span class="sd">        sophisticated acceptance logic is deferred to the :meth:`accept` method.</span>
+
+<span class="sd">        Strings can contain glob patters such as ``*``, for example ``[&quot;maya.*&quot;,</span>
+<span class="sd">        &quot;file.maya&quot;]``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="c1">############################################################################</span>
+    <span class="c1"># Publish processing methods</span>
+
+<div class="viewcode-block" id="PublishPlugin.accept"><a class="viewcode-back" href="../../../plugin.html#tk_multi_publish2.base_hooks.PublishPlugin.accept">[docs]</a>    <span class="k">def</span> <span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is called by the publisher to see if the plugin accepts the</span>
+<span class="sd">        supplied item for processing.</span>
+
+<span class="sd">        Only items matching the filters defined via the :data:`item_filters`</span>
+<span class="sd">        property will be presented to this method.</span>
+
+<span class="sd">        A publish task will be generated for each item accepted here.</span>
+
+<span class="sd">        This method returns a :class:`dict` of the following form::</span>
+
+<span class="sd">            {</span>
+<span class="sd">                &quot;accepted&quot;: &lt;bool&gt;,</span>
+<span class="sd">                &quot;enabled&quot;: &lt;bool&gt;,</span>
+<span class="sd">                &quot;visible&quot;: &lt;bool&gt;,</span>
+<span class="sd">                &quot;checked&quot;: &lt;bool&gt;,</span>
+<span class="sd">            }</span>
+
+<span class="sd">        The keys correspond to the acceptance state of the supplied item. Not</span>
+<span class="sd">        all keys are required. The keys are defined as follows:</span>
+
+<span class="sd">        * ``accepted``: Indicates if the plugin is interested in this value at all.</span>
+<span class="sd">          If ``False``, no task will be created for this plugin. Required.</span>
+<span class="sd">        * ``enabled``: If ``True``, the created task will be enabled in the UI,</span>
+<span class="sd">          otherwise it will be disabled (no interaction allowed). Optional,</span>
+<span class="sd">          ``True`` by default.</span>
+<span class="sd">        * ``visible``: If ``True``, the created task will be visible in the UI,</span>
+<span class="sd">          otherwise it will be hidden. Optional, ``True`` by default.</span>
+<span class="sd">        * ``checked``: If ``True``, the created task will be checked in the UI,</span>
+<span class="sd">          otherwise it will be unchecked. Optional, ``True`` by default.</span>
+
+<span class="sd">        In addition to the item, the configured settings for this plugin are</span>
+<span class="sd">        supplied. The information provided by each of these arguments can be</span>
+<span class="sd">        used to decide whether to accept the item.</span>
+
+<span class="sd">        For example, the item&#39;s ``properties`` :class:`dict` may house meta data</span>
+<span class="sd">        about the item, populated during collection. This data can be used to</span>
+<span class="sd">        inform the acceptance logic.</span>
+
+<span class="sd">        Example implementation:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            def accept(self, settings, item):</span>
+
+<span class="sd">                accept = True</span>
+
+<span class="sd">                # get the path for the item as set during collection</span>
+<span class="sd">                path = item.properties[&quot;path&quot;]</span>
+
+<span class="sd">                # ensure the file is not too big</span>
+<span class="sd">                size_in_bytes = os.stat(path).st_stize</span>
+<span class="sd">                if size_in_bytes &gt; math.pow(10, 9): # 1 GB</span>
+<span class="sd">                    self.logger.warning(&quot;File is too big (&gt; 1 GB)!&quot;)</span>
+<span class="sd">                    accept = False</span>
+
+<span class="sd">                return {&quot;accepted&quot;: accepted}</span>
+
+<span class="sd">        :param dict settings: The keys are strings, matching the keys returned</span>
+<span class="sd">            in the :data:`settings` property. The values are</span>
+<span class="sd">            :class:`~.processing.Setting` instances.</span>
+<span class="sd">        :param item: The :class:`~.processing.Item` instance to process for</span>
+<span class="sd">            acceptance.</span>
+
+<span class="sd">        :returns: dictionary with boolean keys accepted, required and enabled</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="PublishPlugin.validate"><a class="viewcode-back" href="../../../plugin.html#tk_multi_publish2.base_hooks.PublishPlugin.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validates the given item, ensuring it is ok to publish.</span>
+
+<span class="sd">        Returns a boolean to indicate whether the item is ready to publish.</span>
+<span class="sd">        Returning ``True`` will indicate that the item is ready to publish. If</span>
+<span class="sd">        ``False`` is returned, the publisher will disallow publishing of the</span>
+<span class="sd">        item.</span>
+
+<span class="sd">        An exception can also be raised to indicate validation failed.</span>
+<span class="sd">        When an exception is raised, the error message will be displayed as a</span>
+<span class="sd">        tooltip on the task as well as in the logging view of the publisher.</span>
+
+<span class="sd">        Simple implementation example for a Maya session item validation:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            def validate(self, settings, item):</span>
+
+<span class="sd">                 path = cmds.file(query=True, sn=True)</span>
+
+<span class="sd">                 # ensure the file has been saved</span>
+<span class="sd">                 if not path:</span>
+<span class="sd">                    raise Exception(&quot;The Maya session has not been saved.&quot;)</span>
+
+<span class="sd">                 return True</span>
+
+<span class="sd">        :param dict settings: The keys are strings, matching the keys returned</span>
+<span class="sd">            in the :data:`settings` property. The values are</span>
+<span class="sd">            :class:`~.processing.Setting` instances.</span>
+<span class="sd">        :param item: The :class:`~.processing.Item` instance to validate.</span>
+
+<span class="sd">        :returns: True if item is valid, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="PublishPlugin.publish"><a class="viewcode-back" href="../../../plugin.html#tk_multi_publish2.base_hooks.PublishPlugin.publish">[docs]</a>    <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Executes the publish logic for the given item and settings.</span>
+
+<span class="sd">        Any raised exceptions will indicate that the publish pass has failed and</span>
+<span class="sd">        the publisher will stop execution.</span>
+
+<span class="sd">        Simple implementation example for a Maya session item publish:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            def publish(self, settings, item):</span>
+
+<span class="sd">                path = item.properties[&quot;path&quot;]</span>
+
+<span class="sd">                # ensure the session is saved</span>
+<span class="sd">                cmds.file(rename=path)</span>
+<span class="sd">                cmds.file(save=True, force=True)</span>
+
+<span class="sd">                # the hook&#39;s parent is the publisher</span>
+<span class="sd">                publisher = self.parent</span>
+
+<span class="sd">                # get the publish info</span>
+<span class="sd">                publish_version = publisher.util.get_version_number(path)</span>
+<span class="sd">                publish_name = publisher.util.get_publish_name(path)</span>
+
+<span class="sd">                # register the publish and pack the publish info into the item&#39;s</span>
+<span class="sd">                # properties dict</span>
+<span class="sd">                item.properties[&quot;sg_publish_data&quot;] = sgtk.util.register_publish(</span>
+<span class="sd">                    &quot;tk&quot;: publisher.sgtk,</span>
+<span class="sd">                    &quot;context&quot;: item.context,</span>
+<span class="sd">                    &quot;comment&quot;: item.description,</span>
+<span class="sd">                    &quot;path&quot;: path,</span>
+<span class="sd">                    &quot;name&quot;: publish_name,</span>
+<span class="sd">                    &quot;version_number&quot;: publish_version,</span>
+<span class="sd">                    &quot;thumbnail_path&quot;: item.get_thumbnail_as_path(),</span>
+<span class="sd">                    &quot;published_file_type&quot;: &quot;Maya Scene&quot;,</span>
+<span class="sd">                    &quot;dependency_paths&quot;: self._maya_get_session_depenencies()</span>
+<span class="sd">                )</span>
+
+<span class="sd">        :param dict settings: The keys are strings, matching the keys returned</span>
+<span class="sd">            in the :data:`settings` property. The values are</span>
+<span class="sd">            :class:`~.processing.Setting` instances.</span>
+<span class="sd">        :param item: The :class:`~.processing.Item` instance to validate.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="PublishPlugin.finalize"><a class="viewcode-back" href="../../../plugin.html#tk_multi_publish2.base_hooks.PublishPlugin.finalize">[docs]</a>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute the finalize logic for the given item and settings.</span>
+
+<span class="sd">        This method can be used to do any type of cleanup or reporting after</span>
+<span class="sd">        publishing is complete.</span>
+
+<span class="sd">        Any raised exceptions will indicate that the finalize pass has failed</span>
+<span class="sd">        and the publisher will stop execution.</span>
+
+<span class="sd">        Simple implementation example for a Maya session item finalization:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            def finalize(self, settings, item):</span>
+
+<span class="sd">                path = item.properties[&quot;path&quot;]</span>
+
+<span class="sd">                # get the next version of the path</span>
+<span class="sd">                next_version_path = publisher.util.get_next_version_path(path)</span>
+
+<span class="sd">                # save to the next version path</span>
+<span class="sd">                cmds.file(rename=next_version_path)</span>
+<span class="sd">                cmds.file(save=True, force=True)</span>
+
+<span class="sd">        :param dict settings: The keys are strings, matching the keys returned</span>
+<span class="sd">            in the :data:`settings` property. The values are</span>
+<span class="sd">            :class:`~.processing.Setting` instances.</span>
+<span class="sd">        :param item: The :class:`~.processing.Item` instance to validate.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+    <span class="c1">############################################################################</span>
+    <span class="c1"># Methods for creating/displaying custom plugin interface</span>
+
+    <span class="c1"># NOTE: We provide a default settings widget implementation here to show the</span>
+    <span class="c1"># plugin&#39;s description. This allows for a consistent default look and</span>
+    <span class="c1"># allows clients to write their own publish plugins while deferring custom</span>
+    <span class="c1"># UI settings implementations until needed.</span>
+
+<div class="viewcode-block" id="PublishPlugin.create_settings_widget"><a class="viewcode-back" href="../../../plugin.html#tk_multi_publish2.base_hooks.PublishPlugin.create_settings_widget">[docs]</a>    <span class="k">def</span> <span class="nf">create_settings_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a Qt widget, for the supplied parent widget (a container widget</span>
+<span class="sd">        on the right side of the publish UI).</span>
+
+<span class="sd">        :param parent: The parent to use for the widget being created</span>
+<span class="sd">        :return: A QtGui.QWidget or subclass that displays information about</span>
+<span class="sd">            the plugin and/or editable widgets for modifying the plugin&#39;s</span>
+<span class="sd">            settings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># defer Qt-related imports</span>
+        <span class="kn">from</span> <span class="nn">sgtk.platform.qt</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+        <span class="c1"># create a group box to display the description</span>
+        <span class="n">description_group_box</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGroupBox</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="n">description_group_box</span><span class="o">.</span><span class="n">setTitle</span><span class="p">(</span><span class="s2">&quot;Description:&quot;</span><span class="p">)</span>
+
+        <span class="c1"># The publish plugin that subclasses this will implement the</span>
+        <span class="c1"># `description` property. We&#39;ll use that here to display the plugin&#39;s</span>
+        <span class="c1"># description in a label.</span>
+        <span class="n">description_label</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+        <span class="n">description_label</span><span class="o">.</span><span class="n">setWordWrap</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">description_label</span><span class="o">.</span><span class="n">setOpenExternalLinks</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="c1"># create the layout to use within the group box</span>
+        <span class="n">description_layout</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">description_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">description_label</span><span class="p">)</span>
+        <span class="n">description_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">description_group_box</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">description_layout</span><span class="p">)</span>
+
+        <span class="c1"># return the description group box as the widget to display</span>
+        <span class="k">return</span> <span class="n">description_group_box</span></div>
+
+<div class="viewcode-block" id="PublishPlugin.get_ui_settings"><a class="viewcode-back" href="../../../plugin.html#tk_multi_publish2.base_hooks.PublishPlugin.get_ui_settings">[docs]</a>    <span class="k">def</span> <span class="nf">get_ui_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Invoked by the publisher when the selection changes so the new settings</span>
+<span class="sd">        can be applied on the previously selected tasks.</span>
+
+<span class="sd">        The widget argument is the widget that was previously created by</span>
+<span class="sd">        `create_settings_widget`.</span>
+
+<span class="sd">        The method returns an dictionary, where the key is the name of a</span>
+<span class="sd">        setting that should be updated and the value is the new value of that</span>
+<span class="sd">        setting. Note that it is not necessary to return all the values from</span>
+<span class="sd">        the UI. This is to allow the publisher to update a subset of settings</span>
+<span class="sd">        when multiple tasks have been selected.</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            {</span>
+<span class="sd">                 &quot;setting_a&quot;: &quot;/path/to/a/file&quot;</span>
+<span class="sd">            }</span>
+
+<span class="sd">        :param widget: The widget that was created by `create_settings_widget`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the default implementation does not show any editable widgets, so this</span>
+        <span class="c1"># is a no-op. this method is required to be defined in order for the</span>
+        <span class="c1"># custom UI to show up in the app</span>
+        <span class="k">return</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="PublishPlugin.set_ui_settings"><a class="viewcode-back" href="../../../plugin.html#tk_multi_publish2.base_hooks.PublishPlugin.set_ui_settings">[docs]</a>    <span class="k">def</span> <span class="nf">set_ui_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Allows the custom UI to populate its fields with the settings from the</span>
+<span class="sd">        currently selected tasks.</span>
+
+<span class="sd">        The widget is the widget created and returned by</span>
+<span class="sd">        `create_settings_widget`.</span>
+
+<span class="sd">        A list of settings dictionaries are supplied representing the current</span>
+<span class="sd">        values of the settings for selected tasks. The settings dictionaries</span>
+<span class="sd">        correspond to the dictionaries returned by the settings property of the</span>
+<span class="sd">        hook.</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            settings = [</span>
+<span class="sd">            {</span>
+<span class="sd">                 &quot;seeting_a&quot;: &quot;/path/to/a/file&quot;</span>
+<span class="sd">                 &quot;setting_b&quot;: False</span>
+<span class="sd">            },</span>
+<span class="sd">            {</span>
+<span class="sd">                 &quot;setting_a&quot;: &quot;/path/to/a/file&quot;</span>
+<span class="sd">                 &quot;setting_b&quot;: False</span>
+<span class="sd">            }]</span>
+
+<span class="sd">        The default values for the settings will be the ones specified in the</span>
+<span class="sd">        environment file. Each task has its own copy of the settings.</span>
+
+<span class="sd">        When invoked with multiple settings dictionaries, it is the</span>
+<span class="sd">        responsibility of the custom UI to decide how to display the</span>
+<span class="sd">        information. If you do not wish to implement the editing of multiple</span>
+<span class="sd">        tasks at the same time, you can raise a `NotImplementedError` when</span>
+<span class="sd">        there is more than one item in the list and the publisher will inform</span>
+<span class="sd">        the user than only one task of that type can be edited at a time.</span>
+
+<span class="sd">        :param widget: The widget that was created by `create_settings_widget`</span>
+<span class="sd">        :param settings: a list of dictionaries of settings for each selected</span>
+<span class="sd">            task.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the default implementation does not show any editable widgets, so this</span>
+        <span class="c1"># is a no-op. this method is required to be defined in order for the</span>
+        <span class="c1"># custom UI to show up in the app</span>
+        <span class="k">pass</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Autodesk.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'v2.0.12',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+</body>
+</html>
