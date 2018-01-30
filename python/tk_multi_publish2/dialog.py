@@ -238,6 +238,11 @@ class AppDialog(QtGui.QWidget):
         # run collections
         self._full_rebuild()        
 
+    @property
+    def manual_load_enabled(self):
+        """ Returns whether user is allowed to load file to the UI """
+        return self._bundle.get_setting("enable_manual_load")
+
     def keyPressEvent(self, event):
         """
         Qt Keypress event
@@ -717,6 +722,13 @@ class AppDialog(QtGui.QWidget):
         """
         When someone drops stuff into the publish.
         """
+
+        # Redundant with not setting up drag & drop in the dialog init
+        # but short circuiting this method further ensure that a user
+        # won't be able to drop something on a minor UI setup bug.
+        if not self.manual_load_enabled:
+            return
+
         # add files and rebuild tree
         self._progress_handler.set_phase(self._progress_handler.PHASE_LOAD)
         self._progress_handler.push("Processing dropped files")

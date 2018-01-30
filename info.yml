@@ -83,6 +83,15 @@ configuration:
            integrations which assume validation is always run before
            publishing."
 
+    enable_manual_load:
+        type: bool
+        default_value: false
+        description:
+          "If true (default, normal operation), the user can interract with the
+           splash screen to drop files or folders. The user can also use the browse
+           buttons to select files or folders. When false, the feature basically
+           disable the user ability to add anything to the project."
+
 # the Shotgun fields that this app needs in order to operate correctly
 requires_shotgun_fields:
 
