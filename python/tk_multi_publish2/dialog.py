@@ -235,8 +235,20 @@ class AppDialog(QtGui.QWidget):
         self._display_action_name = self._bundle.get_setting("display_action_name")
         self.ui.publish.setText(self._display_action_name)
 
+        # Tweak a few UI controls based on the 'manual_load_enabled' property
+        #
+        # hide the drop area ( dashed-line border + plus icon )
+        self.ui.large_drop_area.setVisible(self.manual_load_enabled)
+        self.ui.large_drop_area_label.setVisible(self.manual_load_enabled)
+        self.ui.label.setVisible(self.manual_load_enabled)
+        self.ui.drop_area_browse_file.setVisible(self.manual_load_enabled)
+        self.ui.drop_area_browse_seq.setVisible(self.manual_load_enabled)
+        self.ui.browse.setVisible(self.manual_load_enabled)
+        # The tiny label at bottom of the tree view
+        self.ui.text_below_item_tree.setVisible(self.manual_load_enabled)
+
         # run collections
-        self._full_rebuild()        
+        self._full_rebuild()
 
     @property
     def manual_load_enabled(self):
