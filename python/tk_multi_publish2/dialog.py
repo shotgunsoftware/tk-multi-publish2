@@ -1196,6 +1196,12 @@ class AppDialog(QtGui.QWidget):
     def _on_browse(self, folders=False):
         """Opens a file dialog to browse to files for publishing."""
 
+        # Redundant with disabling UI controls but short circuiting this method
+        # further ensure that a user won't be able to browse for any file even
+        # if a minor UI bug allows a way to do it.
+        if not self.manual_load_enabled:
+            return
+
         # options for either browse type
         options = [
             QtGui.QFileDialog.DontResolveSymlinks,
