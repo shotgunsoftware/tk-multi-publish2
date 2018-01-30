@@ -85,7 +85,7 @@ configuration:
 
     enable_manual_load:
         type: bool
-        default_value: false
+        default_value: true
         description:
           "If true (default, normal operation), the user can interract with the
            splash screen to drop files or folders. The user can also use the browse
