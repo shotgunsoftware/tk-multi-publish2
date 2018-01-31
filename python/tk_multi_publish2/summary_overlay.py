@@ -53,6 +53,20 @@ class SummaryOverlay(QtGui.QWidget):
         self.ui.info.clicked.connect(self.info_clicked.emit)
         self.ui.publish_again.clicked.connect(self.publish_again_clicked.emit)
 
+    def show_no_items_error(self):
+        """
+        Shows a special message when there is no items and the UI is disabled
+
+        NOTE: an instance of this class attached to
+        """
+        self.ui.icon.setPixmap(
+            QtGui.QPixmap(":/tk_multi_publish2/publish_failed.png")
+        )
+        self.ui.label.setText("Could not find any\nitems to publish.")
+        self.ui.info.hide()
+        self.ui.publish_again.hide()
+        self.show()
+
     def show_success(self):
         """
         Shows standard "publish completed successfully!" prompt

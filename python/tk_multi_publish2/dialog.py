@@ -113,9 +113,13 @@ class AppDialog(QtGui.QWidget):
         self.ui.close.clicked.connect(self.close)
         self.ui.close.hide()
 
-        # overlay
+        # overlays
         self._overlay = SummaryOverlay(self.ui.main_frame)
         self._overlay.publish_again_clicked.connect(self._publish_again_clicked)
+        # Special overlay with the sole purpose of displaying a special error
+        # message when the 'enable_manual_load' application option is false.
+        # NOTE: The parent of this instance is `main_stack` rather than main_frame`.
+        self._error_overlay = SummaryOverlay(self.ui.main_stack)
 
         # settings
         self.ui.items_tree.status_clicked.connect(self._on_publish_status_clicked)
@@ -816,6 +820,10 @@ class AppDialog(QtGui.QWidget):
             # drop area
             self._progress_handler.progress_details.set_parent(
                 self.ui.large_drop_area)
+
+            if not self.manual_load_enabled:
+                self._error_overlay.show_no_items_error()
+
         else:
             self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
 
