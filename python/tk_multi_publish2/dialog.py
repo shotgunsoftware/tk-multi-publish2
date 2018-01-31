@@ -99,10 +99,17 @@ class AppDialog(QtGui.QWidget):
         # matter (as long as it's there)
         self.ui.splitter.setSizes([360, 100])
 
+        #
         # drag and drop
-        self.ui.frame.something_dropped.connect(self._on_drop)
-        self.ui.large_drop_area.something_dropped.connect(self._on_drop)
-        self.ui.items_tree.tree_reordered.connect(self._synchronize_tree)
+        #
+        # When 'self.manual_load_enabled' is false, the following
+        # code is not setting up of drag & drop which prevents
+        # the usual visual indicators that something can be
+        # dropped on the target.
+        if self.manual_load_enabled:
+            self.ui.frame.something_dropped.connect(self._on_drop)
+            self.ui.large_drop_area.something_dropped.connect(self._on_drop)
+            self.ui.items_tree.tree_reordered.connect(self._synchronize_tree)
 
         # hide the drag screen progress button by default
         self.ui.drag_progress_message.hide()
@@ -239,7 +246,8 @@ class AppDialog(QtGui.QWidget):
         self._display_action_name = self._bundle.get_setting("display_action_name")
         self.ui.publish.setText(self._display_action_name)
 
-        # Tweak a few UI controls based on the 'manual_load_enabled' property
+        # UI tweaks based on the 'manual_load_enabled' property
+        # disabling drag & drop and browsing for files or folders.
         #
         # hide the drop area ( dashed-line border + plus icon )
         self.ui.large_drop_area.setVisible(self.manual_load_enabled)
@@ -250,6 +258,11 @@ class AppDialog(QtGui.QWidget):
         self.ui.browse.setVisible(self.manual_load_enabled)
         # The tiny label at bottom of the tree view
         self.ui.text_below_item_tree.setVisible(self.manual_load_enabled)
+        # Override tree view setting based on application 'enable_manual_load' option.
+        # This is mostly about preventing OS visual indicators that user can drop
+        # something on the target.
+        self.ui.items_tree.setDragEnabled(self.manual_load_enabled)
+        self.ui.items_tree.setAcceptDrops(self.manual_load_enabled)
 
         # run collections
         self._full_rebuild()
