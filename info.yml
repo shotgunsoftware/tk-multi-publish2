@@ -87,8 +87,8 @@ configuration:
         type: bool
         default_value: true
         description:
-          "If true (default, normal operation), the user can interract with the
-           splash screen to drop files or folders. The user can also use the browse
+          "If true (default, normal operation), the user can interact with the
+           main dialog to drop files or folders. The user can also use the browse
            buttons to select files or folders. When false, the feature basically
            disable the user ability to add anything to the project."
 
