@@ -234,17 +234,11 @@ class AppDialog(QtGui.QWidget):
         self._display_action_name = self._bundle.get_setting("display_action_name")
         self.ui.publish.setText(self._display_action_name)
 
-        # UI tweaks based on the 'manual_load_enabled' property
+        # Special UI tweaks based on the 'manual_load_enabled' property
         #
-        # Hide the drop area ( dashed-line border + plus icon )
-        # which will also hide the child browse buttons and labels
-        # it hosts.
-        self.ui.large_drop_area.setVisible(self.manual_load_enabled)
-
-        # Hide the tiny label at bottom of the tree view
+        # Hide the tiny label at bottom of the tree view and
+        # the browse button in the button container
         self.ui.text_below_item_tree.setVisible(self.manual_load_enabled)
-
-        # Hide the browse button in the button container
         self.ui.browse.setVisible(self.manual_load_enabled)
 
         # run collections
