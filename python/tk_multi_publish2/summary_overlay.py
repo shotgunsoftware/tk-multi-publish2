@@ -55,9 +55,8 @@ class SummaryOverlay(QtGui.QWidget):
 
     def show_no_items_error(self):
         """
-        Shows a special message when there is no items and the UI is disabled
-
-        NOTE: an instance of this class attached to
+        Shows a special message when there is no items collected under an alternate
+        UI operation determined by the 'enable_manual_load' application option.
         """
         self.ui.icon.setPixmap(
             QtGui.QPixmap(":/tk_multi_publish2/publish_failed.png")
