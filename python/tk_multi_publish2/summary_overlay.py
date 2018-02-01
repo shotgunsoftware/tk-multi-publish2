@@ -61,8 +61,10 @@ class SummaryOverlay(QtGui.QWidget):
         self.ui.icon.setPixmap(
             QtGui.QPixmap(":/tk_multi_publish2/publish_failed.png")
         )
-        self.ui.label.setText("<p>Could not find any items to publish.</p>")
-        self.ui.label.setWordWrap(True)
+        # Hardcoding line break so the message displays on 2 lines.
+        # Usage of label's own word wrap displays the message below on 3 lines.
+        # NOTE: Can't manually break line when using <p></p>
+        self.ui.label.setText("Could not find any\nitems to publish.")
         self.ui.info.hide()
         self.ui.publish_again.hide()
         self.show()
