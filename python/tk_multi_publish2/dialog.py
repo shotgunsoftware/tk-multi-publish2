@@ -113,9 +113,8 @@ class AppDialog(QtGui.QWidget):
         self.ui.close.clicked.connect(self.close)
         self.ui.close.hide()
 
-        # overlay
+        # overlays
         self._overlay = SummaryOverlay(self.ui.main_frame)
-        self._overlay.publish_again_clicked.connect(self._publish_again_clicked)
 
         # settings
         self.ui.items_tree.status_clicked.connect(self._on_publish_status_clicked)
@@ -235,8 +234,20 @@ class AppDialog(QtGui.QWidget):
         self._display_action_name = self._bundle.get_setting("display_action_name")
         self.ui.publish.setText(self._display_action_name)
 
+        # Special UI tweaks based on the 'manual_load_enabled' property
+        #
+        # Hide the tiny label at bottom of the tree view and
+        # the browse button in the button container
+        self.ui.text_below_item_tree.setVisible(self.manual_load_enabled)
+        self.ui.browse.setVisible(self.manual_load_enabled)
+
         # run collections
-        self._full_rebuild()        
+        self._full_rebuild()
+
+    @property
+    def manual_load_enabled(self):
+        """ Returns whether user is allowed to load file to the UI """
+        return self._bundle.get_setting("enable_manual_load")
 
     def keyPressEvent(self, event):
         """
@@ -717,6 +728,12 @@ class AppDialog(QtGui.QWidget):
         """
         When someone drops stuff into the publish.
         """
+
+        # Short circuiting method disabling actual action performed on dropping to the target.
+        if not self.manual_load_enabled:
+            self._progress_handler.logger.info("Drag & drop disabled.")
+            return
+
         # add files and rebuild tree
         self._progress_handler.set_phase(self._progress_handler.PHASE_LOAD)
         self._progress_handler.push("Processing dropped files")
@@ -785,13 +802,18 @@ class AppDialog(QtGui.QWidget):
         the low level plugin representation
         """
         if len(self._plugin_manager.top_level_items) == 0:
-            # nothing in list. show the full screen drag and drop ui
-            self.ui.main_stack.setCurrentIndex(self.DRAG_SCREEN)
+            if not self.manual_load_enabled:
+                # No items collected and 'enable_manual_load' application option
+                # false, display that special error overlay.
+                self._show_no_items_error()
+            else:
+                # nothing in list. show the full screen drag and drop ui
+                self.ui.main_stack.setCurrentIndex(self.DRAG_SCREEN)
 
-            # ensure the progress details widget is available for overlay on the
-            # drop area
-            self._progress_handler.progress_details.set_parent(
-                self.ui.large_drop_area)
+                # ensure the progress details widget is available for overlay on the
+                # drop area
+                self._progress_handler.progress_details.set_parent(
+                    self.ui.large_drop_area)
         else:
             self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
 
@@ -1184,6 +1206,12 @@ class AppDialog(QtGui.QWidget):
     def _on_browse(self, folders=False):
         """Opens a file dialog to browse to files for publishing."""
 
+        # Redundant with disabling UI controls but short circuiting this method
+        # further ensure that a user won't be able to browse for any file even
+        # if a minor UI bug allows a way to do it.
+        if not self.manual_load_enabled:
+            return
+
         # options for either browse type
         options = [
             QtGui.QFileDialog.DontResolveSymlinks,
@@ -1235,6 +1263,21 @@ class AppDialog(QtGui.QWidget):
         """
         logger.info("Processing aborted.")
         self._stop_processing_flagged = True
+
+    def _show_no_items_error(self):
+        """
+        Re-organize the UI for presenting the overlay with a special error message
+        when the 'enable_manual_load' application option is false and there is no
+        items collected.
+        """
+        # Hide everything but the close button.
+        self.ui.validate.hide()
+        self.ui.publish.hide()
+        self.ui.button_container.hide()
+        self.ui.close.show()
+
+        self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
+        self._overlay.show_no_items_error()
 
 
 class _TaskSelection(object):

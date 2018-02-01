@@ -53,6 +53,22 @@ class SummaryOverlay(QtGui.QWidget):
         self.ui.info.clicked.connect(self.info_clicked.emit)
         self.ui.publish_again.clicked.connect(self.publish_again_clicked.emit)
 
+    def show_no_items_error(self):
+        """
+        Shows a special message when there is no items collected under an alternate
+        UI operation determined by the 'enable_manual_load' application option.
+        """
+        self.ui.icon.setPixmap(
+            QtGui.QPixmap(":/tk_multi_publish2/publish_failed.png")
+        )
+        # Hardcoding line break so the message displays on 2 lines.
+        # Usage of label's own word wrap displays the message below on 3 lines.
+        # NOTE: Can't manually break line when using <p></p>
+        self.ui.label.setText("Could not find any\nitems to publish.")
+        self.ui.info.hide()
+        self.ui.publish_again.hide()
+        self.show()
+
     def show_success(self):
         """
         Shows standard "publish completed successfully!" prompt
