@@ -115,13 +115,6 @@ class AppDialog(QtGui.QWidget):
 
         # overlays
         self._overlay = SummaryOverlay(self.ui.main_frame)
-        self._overlay.publish_again_clicked.connect(self._publish_again_clicked)
-        # Special overlay with the sole purpose of displaying an extra error
-        # message when the 'enable_manual_load' application option is false and
-        # there is no items collected.
-        #
-        # NOTE: The parent of this instance has to be the top most widget of the dialog
-        self._no_items_overlay = SummaryOverlay(self.ui.main_stack)
 
         # settings
         self.ui.items_tree.status_clicked.connect(self._on_publish_status_clicked)
@@ -253,7 +246,6 @@ class AppDialog(QtGui.QWidget):
 
         # Hide the browse button in the button container
         self.ui.browse.setVisible(self.manual_load_enabled)
-
 
         # run collections
         self._full_rebuild()
@@ -816,19 +808,18 @@ class AppDialog(QtGui.QWidget):
         the low level plugin representation
         """
         if len(self._plugin_manager.top_level_items) == 0:
-            # nothing in list. show the full screen drag and drop ui
-            self.ui.main_stack.setCurrentIndex(self.DRAG_SCREEN)
-
-            # ensure the progress details widget is available for overlay on the
-            # drop area
-            self._progress_handler.progress_details.set_parent(
-                self.ui.large_drop_area)
-
             if not self.manual_load_enabled:
                 # No items collected and 'enable_manual_load' application option
                 # false, display that special error overlay.
-                self._no_items_overlay.show_no_items_error()
+                self._show_no_items_error()
+            else:
+                # nothing in list. show the full screen drag and drop ui
+                self.ui.main_stack.setCurrentIndex(self.DRAG_SCREEN)
 
+                # ensure the progress details widget is available for overlay on the
+                # drop area
+                self._progress_handler.progress_details.set_parent(
+                    self.ui.large_drop_area)
         else:
             self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
 
@@ -1278,6 +1269,21 @@ class AppDialog(QtGui.QWidget):
         """
         logger.info("Processing aborted.")
         self._stop_processing_flagged = True
+
+    def _show_no_items_error(self):
+        """
+        Re-organize the UI for presenting the overlay with a special error message
+        when the 'enable_manual_load' application option is false and there is no
+        items collected.
+        """
+        # Hide everything but the close button.
+        self.ui.validate.hide()
+        self.ui.publish.hide()
+        self.ui.button_container.hide()
+        self.ui.close.show()
+
+        self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
+        self._overlay.show_no_items_error()
 
 
 class _TaskSelection(object):
