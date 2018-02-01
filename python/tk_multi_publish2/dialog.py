@@ -263,6 +263,9 @@ class AppDialog(QtGui.QWidget):
         # something on the target.
         self.ui.items_tree.setDragEnabled(self.manual_load_enabled)
         self.ui.items_tree.setAcceptDrops(self.manual_load_enabled)
+        # Hide the browse button in the button container
+        self.ui.browse.setVisible(self.manual_load_enabled)
+
 
         # run collections
         self._full_rebuild()
