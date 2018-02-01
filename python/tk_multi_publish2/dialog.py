@@ -99,17 +99,10 @@ class AppDialog(QtGui.QWidget):
         # matter (as long as it's there)
         self.ui.splitter.setSizes([360, 100])
 
-        #
         # drag and drop
-        #
-        # When 'self.manual_load_enabled' is false, the following
-        # code is not setting up of drag & drop which prevents
-        # the usual visual indicators that something can be
-        # dropped on the target.
-        if self.manual_load_enabled:
-            self.ui.frame.something_dropped.connect(self._on_drop)
-            self.ui.large_drop_area.something_dropped.connect(self._on_drop)
-            self.ui.items_tree.tree_reordered.connect(self._synchronize_tree)
+        self.ui.frame.something_dropped.connect(self._on_drop)
+        self.ui.large_drop_area.something_dropped.connect(self._on_drop)
+        self.ui.items_tree.tree_reordered.connect(self._synchronize_tree)
 
         # hide the drag screen progress button by default
         self.ui.drag_progress_message.hide()
@@ -258,11 +251,6 @@ class AppDialog(QtGui.QWidget):
         # Hide the tiny label at bottom of the tree view
         self.ui.text_below_item_tree.setVisible(self.manual_load_enabled)
 
-        # Override tree view setting based on application 'enable_manual_load' option.
-        # This is mostly about preventing OS visual indicators that user can drop
-        # something on the target.
-        self.ui.items_tree.setDragEnabled(self.manual_load_enabled)
-        self.ui.items_tree.setAcceptDrops(self.manual_load_enabled)
         # Hide the browse button in the button container
         self.ui.browse.setVisible(self.manual_load_enabled)
 
@@ -755,10 +743,9 @@ class AppDialog(QtGui.QWidget):
         When someone drops stuff into the publish.
         """
 
-        # Redundant with not setting up drag & drop in the dialog init
-        # but short circuiting this method further ensure that a user
-        # won't be able to drop something on a minor UI setup bug.
+        # Short circuiting method disabling actual action performed on dropping to the target.
         if not self.manual_load_enabled:
+            self._progress_handler.logger.info("Drag & drop disabled.")
             return
 
         # add files and rebuild tree
