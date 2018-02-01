@@ -248,15 +248,13 @@ class AppDialog(QtGui.QWidget):
 
         # UI tweaks based on the 'manual_load_enabled' property
         # disabling drag & drop and browsing for files or folders.
-        #
-        # hide the drop area ( dashed-line border + plus icon )
+
+        # Hide the drop area ( dashed-line border + plus icon )
+        # which will also hide the child browse buttons and labels
+        # it hosts.
         self.ui.large_drop_area.setVisible(self.manual_load_enabled)
-        self.ui.large_drop_area_label.setVisible(self.manual_load_enabled)
-        self.ui.label.setVisible(self.manual_load_enabled)
-        self.ui.drop_area_browse_file.setVisible(self.manual_load_enabled)
-        self.ui.drop_area_browse_seq.setVisible(self.manual_load_enabled)
-        self.ui.browse.setVisible(self.manual_load_enabled)
-        # The tiny label at bottom of the tree view
+
+        # Hide the tiny label at bottom of the tree view
         self.ui.text_below_item_tree.setVisible(self.manual_load_enabled)
         # Override tree view setting based on application 'enable_manual_load' option.
         # This is mostly about preventing OS visual indicators that user can drop
