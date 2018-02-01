@@ -123,9 +123,11 @@ class AppDialog(QtGui.QWidget):
         # overlays
         self._overlay = SummaryOverlay(self.ui.main_frame)
         self._overlay.publish_again_clicked.connect(self._publish_again_clicked)
-        # Special overlay with the sole purpose of displaying a special error
-        # message when the 'enable_manual_load' application option is false.
-        # NOTE: The parent of this instance is `main_stack` rather than main_frame`.
+        # Special overlay with the sole purpose of displaying an extra error
+        # message when the 'enable_manual_load' application option is false and
+        # there is no items collected.
+        #
+        # NOTE: The parent of this instance has to be the top most widget of the dialog
         self._no_items_overlay = SummaryOverlay(self.ui.main_stack)
 
         # settings
