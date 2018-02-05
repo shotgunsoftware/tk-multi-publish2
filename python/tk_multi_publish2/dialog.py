@@ -113,8 +113,9 @@ class AppDialog(QtGui.QWidget):
         self.ui.close.clicked.connect(self.close)
         self.ui.close.hide()
 
-        # overlays
+        # overlay
         self._overlay = SummaryOverlay(self.ui.main_frame)
+        self._overlay.publish_again_clicked.connect(self._publish_again_clicked)
 
         # settings
         self.ui.items_tree.status_clicked.connect(self._on_publish_status_clicked)
