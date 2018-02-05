@@ -1275,6 +1275,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.validate.hide()
         self.ui.publish.hide()
         self.ui.button_container.hide()
+        self.ui.progress_bar.hide()
         self.ui.close.show()
 
         self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
