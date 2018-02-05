@@ -1278,6 +1278,8 @@ class AppDialog(QtGui.QWidget):
         self.ui.progress_bar.hide()
         self.ui.close.show()
 
+        self._progress_handler.logger.info("Drag & drop disabled.")
+
         self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
         self._overlay.show_no_items_error()
 
