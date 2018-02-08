@@ -732,7 +732,7 @@ class AppDialog(QtGui.QWidget):
 
         # Short circuiting method disabling actual action performed on dropping to the target.
         if not self.manual_load_enabled:
-            self._progress_handler.logger.info("Drag & drop disabled.")
+            self._progress_handler.logger.error("Drag & drop disabled.")
             return
 
         # add files and rebuild tree
@@ -1278,7 +1278,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.progress_bar.hide()
         self.ui.close.show()
 
-        self._progress_handler.logger.info("Drag & drop disabled.")
+        self._progress_handler.logger.error("Drag & drop disabled.")
 
         self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
         self._overlay.show_no_items_error()
