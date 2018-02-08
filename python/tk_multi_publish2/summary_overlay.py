@@ -65,7 +65,7 @@ class SummaryOverlay(QtGui.QWidget):
         # Usage of label's own word wrap displays the message below on 3 lines.
         # NOTE: Can't manually break line when using <p></p>
         self.ui.label.setText("Could not find any\nitems to publish.")
-        self.ui.info.hide()
+        self.ui.info.setText("For more details, <b><u>click here</u></b>.")
         self.ui.publish_again.hide()
         self.show()
 

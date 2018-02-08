@@ -113,8 +113,9 @@ class AppDialog(QtGui.QWidget):
         self.ui.close.clicked.connect(self.close)
         self.ui.close.hide()
 
-        # overlays
+        # overlay
         self._overlay = SummaryOverlay(self.ui.main_frame)
+        self._overlay.publish_again_clicked.connect(self._publish_again_clicked)
 
         # settings
         self.ui.items_tree.status_clicked.connect(self._on_publish_status_clicked)
@@ -731,7 +732,7 @@ class AppDialog(QtGui.QWidget):
 
         # Short circuiting method disabling actual action performed on dropping to the target.
         if not self.manual_load_enabled:
-            self._progress_handler.logger.info("Drag & drop disabled.")
+            self._progress_handler.logger.error("Drag & drop disabled.")
             return
 
         # add files and rebuild tree
@@ -1274,7 +1275,10 @@ class AppDialog(QtGui.QWidget):
         self.ui.validate.hide()
         self.ui.publish.hide()
         self.ui.button_container.hide()
+        self.ui.progress_bar.hide()
         self.ui.close.show()
+
+        self._progress_handler.logger.error("Drag & drop disabled.")
 
         self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
         self._overlay.show_no_items_error()
