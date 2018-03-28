@@ -17,7 +17,7 @@ not expressly granted therein are reserved by Shotgun Software Inc.
 
 
 /* Get rid of borders for main Listing Views */
-QListView, QTableView, QScrollArea, QFrame {
+QListView, QTableView, QScrollArea {
     border: none;
 }
 
@@ -158,17 +158,7 @@ DropAreaFrame[dragging="true"] {
     border: 2px solid {{SG_HIGHLIGHT_COLOR}};
 }
 
-/* properties for the main tree widget */
-#items_tree {
-    padding: 2px;
-    background-color: #292929;
-    alternate-background-color: #292929;
-    border: none;
-    margin: 0px;
-    /* push the whole tree 20px to the side */
-    margin-left: -28px;
 
-}
 
 /* disable all the 'tree handles' */
 #items_tree::branch {
