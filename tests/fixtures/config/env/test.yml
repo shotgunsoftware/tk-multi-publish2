@@ -49,6 +49,15 @@ engines:
               number: 0
               boolean: false
               supports_multi_edit: false
+          - name: Property Test 1
+            hook: "{self}/publish_file.py:{config}/test_properties_plugin_1.py"
+            settings: {}
+          - name: Property Test 2
+            hook: "{self}/publish_file.py:{config}/test_properties_plugin_2.py"
+            settings: {}
+          - name: Property Test 3
+            hook: "{self}/publish_file.py:{config}/test_properties_plugin_3.py"
+            settings: {}
 
             
 
