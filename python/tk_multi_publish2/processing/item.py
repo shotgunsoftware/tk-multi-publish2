@@ -14,7 +14,7 @@ import os
 import tempfile
 
 import sgtk
-from .plugin import PluginBase
+from ..base_hooks import PublishPlugin
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -195,17 +195,6 @@ class Item(object):
     @property
     def properties(self):
         """
-        A convenience property for accessing ``global_properties``.
-
-        NOTE: Code using this property may be less explicit if mixing both
-        global and local item properties.
-        :return:
-        """
-        return self.global_properties
-
-    @property
-    def global_properties(self):
-        """
         A free form dictionary-like object where arbitrary data can be stored on
         the item.
 
@@ -241,13 +230,13 @@ class Item(object):
 
         # try to determine the current publish plugin
         class_instance = inspect.stack()[1][0].f_locals.get("self")
-        if not class_instance or not isinstance(class_instance, sgtk.Hook):
+        if not class_instance or not isinstance(class_instance, PublishPlugin):
             raise AttributeError(
                 "Could not determine the current publish plugin when accessing "
                 "an item's local properties. Item: %s" % (self,))
 
-        if not class_instance in self._local_properties:
-            self._local_properties[class_instance] = _LocalItemProperties(self)
+        if class_instance not in self._local_properties:
+            self._local_properties[class_instance] = _ItemProperties()
 
         return self._local_properties[class_instance]
 
@@ -619,21 +608,3 @@ class _ItemProperties(collections.MutableMapping):
 
     def __len__(self):
         return len(self.__dict__)
-
-class _LocalItemProperties(_ItemProperties):
-    """
-    Same as _ItemProperties, but falls back to the item's global properties if
-    a value can not be determined from the local values.
-    """
-
-    def __init__(self, item, **kwargs):
-        """
-        Initialize the item properties. This allows an instance to be created
-        with supplied key/value pairs.
-        """
-        super(_LocalItemProperties, self).__init__(**kwargs)
-        self._item = item
-
-    def __getitem__(self, key):
-        # fall back to item's global properties
-        return self.__dict__.get(key, self._item.global_properties[key])

@@ -51,7 +51,7 @@ class BasicFilePublishPlugin(HookBaseClass):
             version to be registered in Shotgun.
 
     The following properties can also be set by a subclass of this plugin via
-    ``item.global_properties`` or ``item.local_properties``.
+    ``item.properties`` or ``item.local_properties``.
 
         publish_template - If set, used to determine where "path" should be
             copied prior to publishing. If not specified, "path" will be
@@ -80,11 +80,12 @@ class BasicFilePublishPlugin(HookBaseClass):
             registering the publish. If the item's parent has been published,
             it's path will be appended to this list.
 
-    It is important to consider when to set a value via
-    ``item.global_properties`` and when to use ``item.local_properties``.
-    Setting these values globally is a way to share information between publish
-    plugins. Values set locally will only be applied during the execution of
-    the current plugin (similar to python's ``threading.local`` storage).
+    It is important to consider when to set a value via ``item.properties`` and
+    when to use ``item.local_properties``. Setting the values on
+    ``item.properties`` is a way to globally share information between publish
+    plugins. Values set via ``item.local_properties`` will only be applied
+    during the execution of the current plugin (similar to python's
+    ``threading.local`` storage).
 
     A common scenario to consider is when you have multiple publish plugins
     acting on the same item. You may, for example, want the ``publish_name`` and
@@ -97,8 +98,8 @@ class BasicFilePublishPlugin(HookBaseClass):
         # set shared properties on the item (potentially in the collector or
         # the first publish plugin). these values will be available to all
         # publish plugins attached to the item.
-        item.global_properties.publish_name = "Gorilla"
-        item.global_properties.publish_version = "0003"
+        item.properties.publish_name = "Gorilla"
+        item.properties.publish_version = "0003"
 
         # set specific properties in subclasses of the base file publish (this
         # class). first publish plugin...
@@ -108,10 +109,6 @@ class BasicFilePublishPlugin(HookBaseClass):
         # in another publish plugin...
         item.local_properties.publish_template = "asset_abc_template"
         item.local_properties.publish_type = "Alembic Cache"
-
-    NOTE: When attempting to access a local property that hasn't been defined,
-    a lookup will be done on the global properties. The global property will be
-    returned if defined.
 
     NOTE: accessing these ``publish_*`` values on the item does not necessarily
     return the value used during publish execution. Use the corresponding
@@ -482,7 +479,8 @@ class BasicFilePublishPlugin(HookBaseClass):
             None if no template could be identified.
         """
 
-        return item.local_properties.get("publish_template")
+        return item.local_properties.get("publish_template") or \
+            item.properties.get("publish_template")
 
     def get_publish_type(self, settings, item):
         """
@@ -495,7 +493,8 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
 
         # publish type explicitly set or defined on the item
-        publish_type = item.local_properties.get("publish_type")
+        publish_type = item.local_properties.get("publish_type") or \
+                item.properties.get("publish_type")
         if publish_type:
             return publish_type
 
@@ -548,7 +547,8 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
 
         # publish type explicitly set or defined on the item
-        publish_path = item.local_properties.get("publish_path")
+        publish_path = item.local_properties.get("publish_path") or \
+            item.properties.get("publish_path")
         if publish_path:
             return publish_path
 
@@ -602,7 +602,8 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
 
         # publish version explicitly set or defined on the item
-        publish_version = item.local_properties.get("publish_version")
+        publish_version = item.local_properties.get("publish_version") or \
+            item.properties.get("publish_version")
         if publish_version:
             return publish_version
 
@@ -648,7 +649,8 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
 
         # publish name explicitly set or defined on the item
-        publish_name = item.local_properties.get("publish_name")
+        publish_name = item.local_properties.get("publish_name") or \
+            item.properties.get("publish_name")
         if publish_name:
             return publish_name
 
@@ -680,7 +682,20 @@ class BasicFilePublishPlugin(HookBaseClass):
             SG for this publish
         """
 
-        return item.local_properties.get("publish_dependencies", [])
+        # local properties first
+        dependencies = item.local_properties.get("publish_dependencies")
+
+        # have to check against `None` here since `[]` is valid and may have
+        # been explicitly set on the item
+        if dependencies is None:
+            # get from the global item properties.
+            dependencies = item.properties.get("publish_dependencies")
+
+        if dependencies is None:
+            # not set globally or locally on the item. make it []
+            dependencies = []
+
+        return dependencies
 
     ############################################################################
     # protected methods
