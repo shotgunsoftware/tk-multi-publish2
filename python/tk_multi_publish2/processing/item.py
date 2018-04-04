@@ -259,16 +259,16 @@ class Item(object):
         """
 
         # try to determine the current publish plugin
-        class_instance = inspect.stack()[1][0].f_locals.get("self")
-        if not class_instance or not isinstance(class_instance, PublishPlugin):
+        calling_object = inspect.stack()[1][0].f_locals.get("self")
+        if not calling_object or not isinstance(calling_object, PublishPlugin):
             raise AttributeError(
                 "Could not determine the current publish plugin when accessing "
                 "an item's local properties. Item: %s" % (self,))
 
-        if class_instance not in self._local_properties:
-            self._local_properties[class_instance] = _ItemProperties()
+        if calling_object not in self._local_properties:
+            self._local_properties[calling_object] = _ItemProperties()
 
-        return self._local_properties[class_instance]
+        return self._local_properties[calling_object]
 
     @property
     def tasks(self):
