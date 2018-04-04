@@ -208,6 +208,9 @@ class Item(object):
 
         For properties that are local to the current plugin, see
         ``local_properties``.
+
+        This property can also be used to store data on an items that may then
+        be accessed by plugins attached to the item's children.
         """
         return self._global_properties
 
