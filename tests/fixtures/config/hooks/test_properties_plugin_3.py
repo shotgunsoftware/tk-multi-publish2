@@ -23,9 +23,9 @@ class PluginWithoutUi(HookBaseClass):
         return ["plugin.property_test"]
 
     def accept(self, settings, item):
-        self.publish_name = "beauty.jpg"
-        self.publish_version = "008"
-        self.publish_dependencies = []
+        item.local_properties.publish_name = "beauty.jpg"
+        item.local_properties.publish_version = "008"
+        item.local_properties["publish_dependencies"] = []
         return {"accepted": True}
 
     def validate(self, settings, item):
@@ -33,6 +33,9 @@ class PluginWithoutUi(HookBaseClass):
 
     def publish(self, settings, item):
         self._ensure_properties_correct(settings, item)
+
+    def finalize(self, settings, item):
+        pass
 
     def _ensure_properties_correct(self, settings, item):
 

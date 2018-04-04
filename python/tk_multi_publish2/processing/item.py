@@ -8,9 +8,13 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import collections
+import inspect
 import os
-import sgtk
 import tempfile
+
+import sgtk
+from .plugin import PluginBase
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -48,7 +52,8 @@ class Item(object):
         self._children = []
         self._tasks = []
         self._context = None
-        self._properties = {}
+        self._global_properties = _ItemProperties()
+        self._local_properties = {}
         self._description = None
         self._created_temp_files = []
         self._bundle = sgtk.platform.current_bundle()
@@ -190,20 +195,61 @@ class Item(object):
     @property
     def properties(self):
         """
-        A free form :class:`dict` where arbitrary data can be stored on the
-        item.
+        A convenience property for accessing ``global_properties``.
 
-        The properties dictionary itself is read only (calling
-        ``item.properties = my_properties`` is invalid) but arbitrary key value
-        pairs can be set within the dictionary itself.
-
-        This property provides a way to store data for an item across publish
-        plugins and between the various publish phases within a plugin.
-
-        It is also useful for accessing data stored on parent items that
-        may be useful to plugin attached to child items.
+        NOTE: Code using this property may be less explicit if mixing both
+        global and local item properties.
+        :return:
         """
-        return self._properties
+        return self.global_properties
+
+    @property
+    def global_properties(self):
+        """
+        A free form dictionary-like object where arbitrary data can be stored on
+        the item.
+
+        The properties dictionary itself is read only (calling ``item.properties
+        = my_properties`` is invalid) but arbitrary key value pairs can be set
+        within the dictionary itself.
+
+        This property provides a way to store data that is global across all
+        attached publish plugins. It is also useful for accessing data stored
+        on parent items that may be useful to plugin attached to child items.
+
+        For properties that are local to the current plugin, see
+        ``local_properties``.
+        """
+        return self._global_properties
+
+    @property
+    def local_properties(self):
+        """
+        A dictionary-like object that houses item properties local to the
+        current publish plugin instance.
+
+        This property behaves like the local storage in python's threading
+        module, except here, the data is local to the current publish plugin.
+
+        You can get and set values for this property using standard dictionary
+        notation or via dot notation.
+
+        Attempts to access this property outside of a publish plugin will raise
+        an ``AttributeError``.
+        :return:
+        """
+
+        # try to determine the current publish plugin
+        class_instance = inspect.stack()[1][0].f_locals.get("self")
+        if not class_instance or not isinstance(class_instance, sgtk.Hook):
+            raise AttributeError(
+                "Could not determine the current publish plugin when accessing "
+                "an item's local properties. Item: %s" % (self,))
+
+        if not class_instance in self._local_properties:
+            self._local_properties[class_instance] = _LocalItemProperties(self)
+
+        return self._local_properties[class_instance]
 
     @property
     def tasks(self):
@@ -543,3 +589,51 @@ class Item(object):
         Enable/disable context change for this item.
         """
         self._allows_context_change = allow
+
+
+class _ItemProperties(collections.MutableMapping):
+    """
+    A dictionary-like object for storing arbitrary item properties.
+
+    Provides access via standard dict syntax as well as dot notation.
+    """
+
+    def __init__(self, **kwargs):
+        """
+        Initialize the item properties. This allows an instance to be created
+        with supplied key/value pairs.
+        """
+        self.__dict__.update(**kwargs)
+
+    def __setitem__(self, key, value):
+        self.__dict__[key] = value
+
+    def __getitem__(self, key):
+        return self.__dict__[key]
+
+    def __delitem__(self, key):
+        del self.__dict__[key]
+
+    def __iter__(self):
+        return iter(self.__dict__)
+
+    def __len__(self):
+        return len(self.__dict__)
+
+class _LocalItemProperties(_ItemProperties):
+    """
+    Same as _ItemProperties, but falls back to the item's global properties if
+    a value can not be determined from the local values.
+    """
+
+    def __init__(self, item, **kwargs):
+        """
+        Initialize the item properties. This allows an instance to be created
+        with supplied key/value pairs.
+        """
+        super(_LocalItemProperties, self).__init__(**kwargs)
+        self._item = item
+
+    def __getitem__(self, key):
+        # fall back to item's global properties
+        return self.__dict__.get(key, self._item.global_properties[key])

@@ -31,6 +31,9 @@ class PluginWithoutUi(HookBaseClass):
     def publish(self, settings, item):
         self._ensure_properties_correct(settings, item)
 
+    def finalize(self, settings, item):
+        pass
+
     def _ensure_properties_correct(self, settings, item):
 
         # publish_type

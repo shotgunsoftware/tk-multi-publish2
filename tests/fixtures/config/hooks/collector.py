@@ -53,12 +53,15 @@ class BasicSceneCollector(HookBaseClass):
         property_item.properties["path"] = "/foo/bar/image.%04d.jpg"
 
         # set some properties on the property item for debugging
-        property_item.properties["publish_type"] = "Awesomeness"
-        property_item.properties["publish_path"] = "/foo/bar/publish/image.%04d.jpg"
+
+        # dot notation
+        property_item.properties.publish_type = "Awesomeness"
+        property_item.properties.publish_path = "/foo/bar/publish/image.%04d.jpg"
+
+        # standard dict notation
         property_item.properties["publish_name"] = "image.jpg"
         property_item.properties["publish_version"] = "007"
         property_item.properties["publish_dependencies"] = [
             "/foo/bar/model.abc",
             "/foo/bar/rig.ma"
         ]
-

@@ -23,9 +23,9 @@ class PluginWithoutUi(HookBaseClass):
         return ["plugin.property_test"]
 
     def accept(self, settings, item):
-        self.publish_type = "Greatness"
-        self.publish_path = "/foo/bar/baz/publish/image.%04d.jpg"
-        self.publish_name = "render.jpg"
+        item.local_properties.publish_type = "Greatness"
+        item.local_properties.publish_path = "/foo/bar/baz/publish/image.%04d.jpg"
+        item.local_properties["publish_name"] = "render.jpg"
         return {"accepted": True}
 
     def validate(self, settings, item):
@@ -33,6 +33,9 @@ class PluginWithoutUi(HookBaseClass):
 
     def publish(self, settings, item):
         self._ensure_properties_correct(settings, item)
+
+    def finalize(self, settings, item):
+        pass
 
     def _ensure_properties_correct(self, settings, item):
 

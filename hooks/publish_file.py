@@ -50,23 +50,41 @@ class BasicFilePublishPlugin(HookBaseClass):
             a version key can be extracted, it will be used as the publish
             version to be registered in Shotgun.
 
-    The following properties are typically set by a subclass of this plugin via
-    the ``item.properties`` dictionary or by using the plugin instance's
-    properties of the same name::
+    The following properties can also be set by a subclass of this plugin via
+    ``item.global_properties`` or ``item.local_properties``.
 
-        - ``publish_template``
-        - ``publish_type``
-        - ``publish_path``
-        - ``publish_name``
-        - ``publish_version``
-        - ``publish_dependencies``
+        publish_template - If set, used to determine where "path" should be
+            copied prior to publishing. If not specified, "path" will be
+            published in place.
 
-    See the documentation for these properties below.
+        publish_type - If set, will be supplied to SG as the publish type when
+            registering "path" as a new publish. If not set, will be determined
+            via the plugin's "File Type" setting.
 
-    It is important to consider when to set a value via ``item.properties`` and
-    when to use the plugin instance properties. Setting these values on the item
-    is a way to share information between publish plugins. Values set on the
-    plugin instance will only be applied during the execution of that plugin.
+        publish_path - If set, will be supplied to SG as the publish path when
+            registering the new publish. If not set, will be determined by the
+            "published_file" property if available, falling back to publishing
+            "path" in place.
+
+        publish_name - If set, will be supplied to SG as the publish name when
+            registering the new publish. If not available, will be determined
+            by the "work_template" property if available, falling back to the
+            ``path_info`` hook logic.
+
+        publish_version - If set, will be supplied to SG as the publish version
+            when registering the new publish. If not available, will be
+            determined by the "work_template" property if available, falling
+            back to the ``path_info`` hook logic.
+
+        publish_dependencies - A list of files to include as dependencies when
+            registering the publish. If the item's parent has been published,
+            it's path will be appended to this list.
+
+    It is important to consider when to set a value via
+    ``item.global_properties`` and when to use ``item.local_properties``.
+    Setting these values globally is a way to share information between publish
+    plugins. Values set locally will only be applied during the execution of
+    the current plugin (similar to python's ``threading.local`` storage).
 
     A common scenario to consider is when you have multiple publish plugins
     acting on the same item. You may, for example, want the ``publish_name`` and
@@ -76,25 +94,30 @@ class BasicFilePublishPlugin(HookBaseClass):
 
     Example::
 
-        # set shared properties on the item (potentially in the first publish
-        # plugin). these values will be available to all publish plugins
-        # attached to the item.
-        item.properties["publish_name"] = "Gorilla"
-        item.properties["publish_version"] = "0003"
+        # set shared properties on the item (potentially in the collector or
+        # the first publish plugin). these values will be available to all
+        # publish plugins attached to the item.
+        item.global_properties.publish_name = "Gorilla"
+        item.global_properties.publish_version = "0003"
 
         # set specific properties in subclasses of the base file publish (this
         # class). first publish plugin...
-        self.publish_template = "asset_fbx_template"
-        self.publish_type = "FBX File"
+        item.local_properties.publish_template = "asset_fbx_template"
+        item.local_properties.publish_type = "FBX File"
 
         # in another publish plugin...
-        self.publish_template = "asset_abc_template"
-        self.publish_type = "Alembic Cache"
+        item.local_properties.publish_template = "asset_abc_template"
+        item.local_properties.publish_type = "Alembic Cache"
 
-    NOTE: properties values set on the plugin instance will override similar
-    values defined on the item. Additional fallback logic is used if neither is
+    NOTE: When attempting to access a local property that hasn't been defined,
+    a lookup will be done on the global properties. The global property will be
+    returned if defined.
+
+    NOTE: accessing these ``publish_*`` values on the item does not necessarily
+    return the value used during publish execution. Use the corresponding
+    ``get_publish_*`` methods which include fallback logic when no property is
     set. For example, if a ``work_template`` is used, the publish version and
-    name might be extracted from the template fields.
+    name might be extracted from the template fields in the fallback logic.
 
     This plugin will also set an ``sg_publish_data`` property on the item during
     the ``publish`` method which may be useful for child items.
@@ -107,22 +130,6 @@ class BasicFilePublishPlugin(HookBaseClass):
     ``sg_publish_data`` from the item after calling the base class ``publish``
     method in your plugin subclass.
     """
-
-    def __init__(self, parent):
-        """
-        Initialize the hook instance.
-        """
-
-        # initialize the base class
-        super(BasicFilePublishPlugin, self).__init__(parent)
-
-        # set some instance members
-        self._publish_template = None
-        self._publish_type = None
-        self._publish_path = None
-        self._publish_name = None
-        self._publish_version = None
-        self._publish_dependencies = None
 
     ############################################################################
     # standard publish plugin properties
@@ -464,72 +471,6 @@ class BasicFilePublishPlugin(HookBaseClass):
             }
         )
 
-    ############################################################################
-    # publish properties
-
-    def _set_publish_template(self, template):
-        """
-        Set the publish_template for this plugin to use.
-        :param template: A template object
-        """
-        self._publish_template = template
-
-    publish_template = property(None, _set_publish_template)
-
-    def _set_publish_type(self, publish_type):
-        """
-        Set the publish_type for this plugin to use.
-        :param publish_type: A string representing the publish type to store in
-            Shotgun.
-        """
-        self._publish_type = publish_type
-
-    publish_type = property(None, _set_publish_type)
-
-    def _set_publish_path(self, path):
-        """
-        Sets the publish_path for this plugin to use.
-        :param path: A string file path
-        """
-        self._publish_path = path
-
-    publish_path = property(None, _set_publish_path)
-
-    def _set_publish_name(self, name):
-        """
-        Sets the publish_name for this plugin to use.
-        :param name: The publish name to use
-        """
-        self._publish_name = name
-
-    publish_name = property(None, _set_publish_name)
-
-    def _set_publish_version(self, version):
-        """
-        Sets the publish_version for this plugin to use
-        :param version: The version number to publish to.
-        """
-        self._publish_version = version
-
-    publish_version = property(None, _set_publish_version)
-
-    def _set_publish_dependencies(self, dependencies):
-        """
-        Sets the publish dependencies.
-        :param dependencies: A list of file paths that this publish is
-            dependent on.
-        """
-        self._publish_dependencies = dependencies
-
-    publish_dependencies = property(None, _set_publish_dependencies)
-
-    # The properties above define the "setter", `self.publish_X = value`
-    # interface for explicitly setting the publish_* values on the plugin
-    # instance. The "getter" methods below are defined as methods since they
-    # require the settings and item as context for the full evaluation of the
-    # value. Most of these can be called without explicitly setting a value on
-    # the plugin instance due to their fallback logic.
-
     def get_publish_template(self, settings, item):
         """
         Get a publish template for the supplied settings and item.
@@ -541,7 +482,7 @@ class BasicFilePublishPlugin(HookBaseClass):
             None if no template could be identified.
         """
 
-        return self._publish_template or item.properties.get("publish_template")
+        return item.local_properties.get("publish_template")
 
     def get_publish_type(self, settings, item):
         """
@@ -554,7 +495,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
 
         # publish type explicitly set or defined on the item
-        publish_type = self._publish_type or item.properties.get("publish_type")
+        publish_type = item.local_properties.get("publish_type")
         if publish_type:
             return publish_type
 
@@ -607,7 +548,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
 
         # publish type explicitly set or defined on the item
-        publish_path = self._publish_path or item.properties.get("publish_path")
+        publish_path = item.local_properties.get("publish_path")
         if publish_path:
             return publish_path
 
@@ -661,8 +602,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
 
         # publish version explicitly set or defined on the item
-        publish_version = self._publish_version or \
-            item.properties.get("publish_version")
+        publish_version = item.local_properties.get("publish_version")
         if publish_version:
             return publish_version
 
@@ -708,7 +648,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
 
         # publish name explicitly set or defined on the item
-        publish_name = self._publish_name or item.properties.get("publish_name")
+        publish_name = item.local_properties.get("publish_name")
         if publish_name:
             return publish_name
 
@@ -740,10 +680,7 @@ class BasicFilePublishPlugin(HookBaseClass):
             SG for this publish
         """
 
-        if self._publish_dependencies is not None:
-            return self._publish_dependencies
-
-        return item.properties.get("publish_dependencies", [])
+        return item.local_properties.get("publish_dependencies", [])
 
     ############################################################################
     # protected methods
