@@ -225,7 +225,37 @@ class Item(object):
 
         Attempts to access this property outside of a publish plugin will raise
         an ``AttributeError``.
-        :return:
+
+        It is important to consider when to set a value via ``item.properties``
+        and when to use ``item.local_properties``. Setting the values on
+        ``item.properties`` is a way to globally share information between
+        publish plugins. Values set via ``item.local_properties`` will only be
+        applied during the execution of the current plugin (similar to python's
+        ``threading.local`` storage).
+
+        A common scenario to consider is when you have multiple publish plugins
+        acting on the same item. You may, for example, want the ``publish_name``
+        and ``publish_version`` to be shared by each plugin, while setting the
+        remaining properties on each plugin instance since they will be specific
+        to that plugin's output.
+
+        Example::
+
+            # set shared properties on the item (potentially in the collector or
+            # the first publish plugin). these values will be available to all
+            # publish plugins attached to the item.
+            item.properties.publish_name = "Gorilla"
+            item.properties.publish_version = "0003"
+
+            # set specific properties in subclasses of the base file publish (this
+            # class). first publish plugin...
+            item.local_properties.publish_template = "asset_fbx_template"
+            item.local_properties.publish_type = "FBX File"
+
+            # in another publish plugin...
+            item.local_properties.publish_template = "asset_abc_template"
+            item.local_properties.publish_type = "Alembic Cache"
+
         """
 
         # try to determine the current publish plugin

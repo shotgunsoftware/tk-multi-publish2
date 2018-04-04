@@ -80,36 +80,6 @@ class BasicFilePublishPlugin(HookBaseClass):
             registering the publish. If the item's parent has been published,
             it's path will be appended to this list.
 
-    It is important to consider when to set a value via ``item.properties`` and
-    when to use ``item.local_properties``. Setting the values on
-    ``item.properties`` is a way to globally share information between publish
-    plugins. Values set via ``item.local_properties`` will only be applied
-    during the execution of the current plugin (similar to python's
-    ``threading.local`` storage).
-
-    A common scenario to consider is when you have multiple publish plugins
-    acting on the same item. You may, for example, want the ``publish_name`` and
-    ``publish_version`` to be shared by each plugin, while setting the remaining
-    properties on each plugin instance since they will be specific to that
-    plugin's output.
-
-    Example::
-
-        # set shared properties on the item (potentially in the collector or
-        # the first publish plugin). these values will be available to all
-        # publish plugins attached to the item.
-        item.properties.publish_name = "Gorilla"
-        item.properties.publish_version = "0003"
-
-        # set specific properties in subclasses of the base file publish (this
-        # class). first publish plugin...
-        item.local_properties.publish_template = "asset_fbx_template"
-        item.local_properties.publish_type = "FBX File"
-
-        # in another publish plugin...
-        item.local_properties.publish_template = "asset_abc_template"
-        item.local_properties.publish_type = "Alembic Cache"
-
     NOTE: accessing these ``publish_*`` values on the item does not necessarily
     return the value used during publish execution. Use the corresponding
     ``get_publish_*`` methods which include fallback logic when no property is
@@ -243,7 +213,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         return ["file.*"]
 
     ############################################################################
-    # standard publish plugin mehtods
+    # standard publish plugin methods
 
     def accept(self, settings, item):
         """
@@ -271,7 +241,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         :returns: dictionary with boolean keys accepted, required and enabled
         """
 
-        path = item.properties["path"]
+        path = item.properties.path
 
         # log the accepted file and display a button to reveal it in the fs
         self.logger.info(
@@ -394,8 +364,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         # if the parent item has a publish path, include it in the list of
         # dependencies
         if "sg_publish_path" in item.parent.properties:
-            publish_dependencies.append(
-                item.parent.properties["sg_publish_path"])
+            publish_dependencies.append(item.parent.properties.sg_publish_path)
 
         # handle copying of work to publish if templates are in play
         self._copy_work_to_publish(settings, item)
@@ -428,7 +397,7 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         # create the publish and stash it in the item properties for other
         # plugins to use.
-        item.properties["sg_publish_data"] = sgtk.util.register_publish(
+        item.properties.sg_publish_data = sgtk.util.register_publish(
             **publish_data)
         self.logger.info("Publish registered!")
 
@@ -447,7 +416,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         publisher = self.parent
 
         # get the data for the publish that was just created in SG
-        publish_data = item.properties["sg_publish_data"]
+        publish_data = item.properties.sg_publish_data
 
         # ensure conflicting publishes have their status cleared
         publisher.util.clear_status_for_conflicting_publishes(
@@ -456,7 +425,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         self.logger.info(
             "Cleared the status of all previous, conflicting publishes")
 
-        path = item.properties["path"]
+        path = item.properties.path
         self.logger.info(
             "Publish created for file: %s" % (path,),
             extra={
@@ -500,7 +469,7 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         # fall back to the path info hook logic
         publisher = self.parent
-        path = item.properties["path"]
+        path = item.properties.path
 
         # get the publish path components
         path_info = publisher.util.get_file_path_components(path)
@@ -553,7 +522,7 @@ class BasicFilePublishPlugin(HookBaseClass):
             return publish_path
 
         # fall back to template/path logic
-        path = item.properties["path"]
+        path = item.properties.path
 
         work_template = item.properties.get("work_template")
         publish_template = self.get_publish_template(settings, item)
@@ -609,7 +578,7 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         # fall back to the template/path_info logic
         publisher = self.parent
-        path = item.properties["path"]
+        path = item.properties.path
 
         work_template = item.properties.get("work_template")
         work_fields = None
@@ -656,11 +625,11 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         # fall back to the path_info logic
         publisher = self.parent
-        path = item.properties["path"]
+        path = item.properties.path
 
         if "sequence_paths" in item.properties:
             # generate the name from one of the actual files in the sequence
-            name_path = item.properties["sequence_paths"][0]
+            name_path = item.properties.sequence_paths[0]
             is_sequence = True
         else:
             name_path = path
@@ -743,7 +712,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         # ---- get a list of files to be copied
 
         # by default, the path that was collected for publishing
-        work_files = [item.properties["path"]]
+        work_files = [item.properties.path]
 
         # if this is a sequence, get the attached files
         if "sequence_paths" in item.properties:
@@ -751,7 +720,7 @@ class BasicFilePublishPlugin(HookBaseClass):
             if not work_files:
                 self.logger.warning(
                     "Sequence publish without a list of files. Publishing "
-                    "the sequence path in place: %s" % (item.properties["path"])
+                    "the sequence path in place: %s" % (item.properties.path,)
                 )
                 return
 
