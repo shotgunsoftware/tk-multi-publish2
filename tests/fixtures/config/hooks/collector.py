@@ -43,3 +43,25 @@ class BasicSceneCollector(HookBaseClass):
             "This is another item that has a UI",
             "This is a the display name of another item with a UI"
         )
+
+        property_item = parent_item.create_item(
+            "plugin.property_test",
+            "Dummy item for testing properties",
+            "Property Test"
+        )
+
+        property_item.properties["path"] = "/foo/bar/image.%04d.jpg"
+
+        # set some properties on the property item for debugging
+
+        # dot notation
+        property_item.properties.publish_type = "Awesomeness"
+        property_item.properties.publish_path = "/foo/bar/publish/image.%04d.jpg"
+
+        # standard dict notation
+        property_item.properties["publish_name"] = "image.jpg"
+        property_item.properties["publish_version"] = "007"
+        property_item.properties["publish_dependencies"] = [
+            "/foo/bar/model.abc",
+            "/foo/bar/rig.ma"
+        ]

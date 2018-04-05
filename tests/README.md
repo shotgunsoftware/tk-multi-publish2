@@ -3,6 +3,7 @@ About the test app
 To launch the test app, you need to make sure the following repos are
 adjacent to the tk-multi-publish2 repo.
 
+- tk-core (for bootstrapping)
 - tk-frameworks-qtwidgets
 - tk-frameworks-shotgunutils
 

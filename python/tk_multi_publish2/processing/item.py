@@ -8,9 +8,13 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import collections
+import inspect
 import os
-import sgtk
 import tempfile
+
+import sgtk
+from ..base_hooks import PublishPlugin
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -48,7 +52,8 @@ class Item(object):
         self._children = []
         self._tasks = []
         self._context = None
-        self._properties = {}
+        self._global_properties = _ItemProperties()
+        self._local_properties = {}
         self._description = None
         self._created_temp_files = []
         self._bundle = sgtk.platform.current_bundle()
@@ -190,20 +195,113 @@ class Item(object):
     @property
     def properties(self):
         """
-        A free form :class:`dict` where arbitrary data can be stored on the
+        A free form dictionary-like object where arbitrary data can be stored on
+        the item.
+
+        The properties dictionary itself is read only (calling ``item.properties
+        = my_properties`` is invalid) but arbitrary key value pairs can be set
+        within the dictionary itself.
+
+        This property provides a way to store data that is global across all
+        attached publish plugins. It is also useful for accessing data stored
+        on parent items that may be useful to plugin attached to child items.
+
+        For properties that are local to the current plugin, see
+        ``local_properties``.
+
+        This property can also be used to store data on an items that may then
+        be accessed by plugins attached to the item's children.
+        """
+        return self._global_properties
+
+    @property
+    def local_properties(self):
+        """
+        A dictionary-like object that houses item properties local to the
+        current publish plugin instance.
+
+        This property behaves like the local storage in python's threading
+        module, except here, the data is local to the current publish plugin.
+
+        You can get and set values for this property using standard dictionary
+        notation or via dot notation.
+
+        Attempts to access this property outside of a publish plugin will raise
+        an ``AttributeError``.
+
+        It is important to consider when to set a value via
+        :meth:`Item.properties`` and when to use :meth:`Item.local_properties`.
+        Setting the values on ``item.properties`` is a way to globally share
+        information between publish plugins. Values set via
+        ``item.local_properties`` will only be applied during the execution of
+        the current plugin (similar to python's ``threading.local`` storage).
+
+        A common scenario to consider is when you have multiple publish plugins
+        acting on the same item. You may, for example, want the ``publish_name``
+        and ``publish_version`` to be shared by each plugin, while setting the
+        remaining properties on each plugin instance since they will be specific
+        to that plugin's output.
+
+        Example::
+
+            # set shared properties on the item (potentially in the collector or
+            # the first publish plugin). these values will be available to all
+            # publish plugins attached to the item.
+            item.properties.publish_name = "Gorilla"
+            item.properties.publish_version = "0003"
+
+            # set specific properties in subclasses of the base file publish (this
+            # class). first publish plugin...
+            item.local_properties.publish_template = "asset_fbx_template"
+            item.local_properties.publish_type = "FBX File"
+
+            # in another publish plugin...
+            item.local_properties.publish_template = "asset_abc_template"
+            item.local_properties.publish_type = "Alembic Cache"
+
+        """
+        return self._get_local_properties()
+
+    def _get_local_properties(self):
+        """
+        This is done in a separate method to allow access to any method in this
+        class. We look 2 levels up in the stack to get the calling plugin class.
+        If this is called more than one level deep in this class, expect issues.
+        """
+
+        # try to determine the current publish plugin
+        calling_object = inspect.stack()[2][0].f_locals.get("self")
+        if not calling_object or not isinstance(calling_object, PublishPlugin):
+            raise AttributeError(
+                "Could not determine the current publish plugin when accessing "
+                "an item's local properties. Item: %s" % (self,))
+
+        if calling_object not in self._local_properties:
+            self._local_properties[calling_object] = _ItemProperties()
+
+        return self._local_properties[calling_object]
+
+    def get_property(self, name, default_value=None):
+        """
+        This is a convenience method that will retrieve a property set on the
         item.
 
-        The properties dictionary itself is read only (calling
-        ``item.properties = my_properties`` is invalid) but arbitrary key value
-        pairs can be set within the dictionary itself.
+        If the property was set via :meth:`Item.local_properties`, then that will be
+        returned. Otherwise, the value set via :meth:`Item.properties` will be
+        returned. If the property is not set on the item, then the supplied
+        ``default_value`` will be returned (default is ``None``).
 
-        This property provides a way to store data for an item across publish
-        plugins and between the various publish phases within a plugin.
+        :param name: The property to retrieve.
+        :param default_value: The value to return if the property is not set on
+            the item.
 
-        It is also useful for accessing data stored on parent items that
-        may be useful to plugin attached to child items.
+        :return: The value of the supplied property.
         """
-        return self._properties
+
+        local_properties = self._get_local_properties()
+
+        return local_properties.get(name) or self.properties.get(name) or \
+            default_value
 
     @property
     def tasks(self):
@@ -543,3 +641,33 @@ class Item(object):
         Enable/disable context change for this item.
         """
         self._allows_context_change = allow
+
+
+class _ItemProperties(collections.MutableMapping):
+    """
+    A dictionary-like object for storing arbitrary item properties.
+
+    Provides access via standard dict syntax as well as dot notation.
+    """
+
+    def __init__(self, **kwargs):
+        """
+        Initialize the item properties. This allows an instance to be created
+        with supplied key/value pairs.
+        """
+        self.__dict__.update(**kwargs)
+
+    def __setitem__(self, key, value):
+        self.__dict__[key] = value
+
+    def __getitem__(self, key):
+        return self.__dict__[key]
+
+    def __delitem__(self, key):
+        del self.__dict__[key]
+
+    def __iter__(self):
+        return iter(self.__dict__)
+
+    def __len__(self):
+        return len(self.__dict__)
