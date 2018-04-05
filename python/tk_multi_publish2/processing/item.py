@@ -229,12 +229,12 @@ class Item(object):
         Attempts to access this property outside of a publish plugin will raise
         an ``AttributeError``.
 
-        It is important to consider when to set a value via ``item.properties``
-        and when to use ``item.local_properties``. Setting the values on
-        ``item.properties`` is a way to globally share information between
-        publish plugins. Values set via ``item.local_properties`` will only be
-        applied during the execution of the current plugin (similar to python's
-        ``threading.local`` storage).
+        It is important to consider when to set a value via
+        :meth:`Item.properties`` and when to use :meth:`Item.local_properties`.
+        Setting the values on ``item.properties`` is a way to globally share
+        information between publish plugins. Values set via
+        ``item.local_properties`` will only be applied during the execution of
+        the current plugin (similar to python's ``threading.local`` storage).
 
         A common scenario to consider is when you have multiple publish plugins
         acting on the same item. You may, for example, want the ``publish_name``
@@ -260,9 +260,17 @@ class Item(object):
             item.local_properties.publish_type = "Alembic Cache"
 
         """
+        return self._get_local_properties()
+
+    def _get_local_properties(self):
+        """
+        This is done in a separate method to allow access to any method in this
+        class. We look 2 levels up in the stack to get the calling plugin class.
+        If this is called more than one level deep in this class, expect issues.
+        """
 
         # try to determine the current publish plugin
-        calling_object = inspect.stack()[1][0].f_locals.get("self")
+        calling_object = inspect.stack()[2][0].f_locals.get("self")
         if not calling_object or not isinstance(calling_object, PublishPlugin):
             raise AttributeError(
                 "Could not determine the current publish plugin when accessing "
@@ -272,6 +280,28 @@ class Item(object):
             self._local_properties[calling_object] = _ItemProperties()
 
         return self._local_properties[calling_object]
+
+    def get_property(self, name, default_value=None):
+        """
+        This is a convenience method that will retrieve a property set on the
+        item.
+
+        If the property was set via :meth:`Item.local_properties`, then that will be
+        returned. Otherwise, the value set via :meth:`Item.properties` will be
+        returned. If the property is not set on the item, then the supplied
+        ``default_value`` will be returned (default is ``None``).
+
+        :param name: The property to retrieve.
+        :param default_value: The value to return if the property is not set on
+            the item.
+
+        :return: The value of the supplied property.
+        """
+
+        local_properties = self._get_local_properties()
+
+        return local_properties.get(name) or self.properties.get(name) or \
+            default_value
 
     @property
     def tasks(self):

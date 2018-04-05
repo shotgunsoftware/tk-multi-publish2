@@ -51,7 +51,7 @@ class BasicFilePublishPlugin(HookBaseClass):
             version to be registered in Shotgun.
 
     The following properties can also be set by a subclass of this plugin via
-    ``item.properties`` or ``item.local_properties``.
+    :meth:`Item.properties` or :meth:`Item.local_properties`.
 
         publish_template - If set, used to determine where "path" should be
             copied prior to publishing. If not specified, "path" will be
@@ -448,8 +448,7 @@ class BasicFilePublishPlugin(HookBaseClass):
             None if no template could be identified.
         """
 
-        return item.local_properties.get("publish_template") or \
-            item.properties.get("publish_template")
+        return item.get_property("publish_template")
 
     def get_publish_type(self, settings, item):
         """
@@ -462,8 +461,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
 
         # publish type explicitly set or defined on the item
-        publish_type = item.local_properties.get("publish_type") or \
-                item.properties.get("publish_type")
+        publish_type = item.get_property("publish_type")
         if publish_type:
             return publish_type
 
@@ -516,8 +514,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
 
         # publish type explicitly set or defined on the item
-        publish_path = item.local_properties.get("publish_path") or \
-            item.properties.get("publish_path")
+        publish_path = item.get_property("publish_path")
         if publish_path:
             return publish_path
 
@@ -571,8 +568,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
 
         # publish version explicitly set or defined on the item
-        publish_version = item.local_properties.get("publish_version") or \
-            item.properties.get("publish_version")
+        publish_version = item.get_property("publish_version")
         if publish_version:
             return publish_version
 
@@ -618,8 +614,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
 
         # publish name explicitly set or defined on the item
-        publish_name = item.local_properties.get("publish_name") or \
-            item.properties.get("publish_name")
+        publish_name = item.get_property("publish_name")
         if publish_name:
             return publish_name
 
