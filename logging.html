@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Logging &mdash; tk-multi-publish2 v2.0.13 documentation</title>
+  <title>Logging &mdash; tk-multi-publish2 v2.1.0 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.0.13 documentation" href="index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.1.0 documentation" href="index.html"/>
         <link rel="next" title="Utilities" href="utility.html"/>
         <link rel="prev" title="Publish Plugins" href="plugin.html"/> 
 
@@ -127,7 +127,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.0.13.<br>
+    <b>tk-multi-publish2</b> v2.1.0.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -187,12 +187,12 @@ from a publish in Maya.</p>
 <p>The standard logging methods can be used to display information, warnings,
 errors, and debug messages to the user.</p>
 <p>The publisher has a special logging handler that will make use of the standard
-<code class="docutils literal"><span class="pre">extra</span></code> <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> to display action buttons next to the log messages.
+<code class="docutils literal"><span class="pre">extra</span></code> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> to display action buttons next to the log messages.
 These special action button types are detailed below:</p>
 <div class="section" id="generic-action">
 <h2>Generic Action<a class="headerlink" href="#generic-action" title="Permalink to this headline">¶</a></h2>
 <p>A generic button to execute a callback method when clicked.</p>
-<p>The <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> supplied takes the following form:</p>
+<p>The <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> supplied takes the following form:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot;action_button&quot;</span><span class="p">:</span> <span class="p">{</span>
     <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">,</span>
     <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">tooltip</span><span class="o">&gt;</span><span class="p">,</span>
@@ -201,7 +201,7 @@ These special action button types are detailed below:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>The values in the <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> are:</p>
+<p>The values in the <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> are:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">label</span></code>: The text to display on the button itself</li>
 <li><code class="docutils literal"><span class="pre">tooltip</span></code>: The tooltip text to display when the mouse is over the button.</li>
@@ -234,7 +234,7 @@ of the publish UI:</p>
 <h2>Show Folder Action<a class="headerlink" href="#show-folder-action" title="Permalink to this headline">¶</a></h2>
 <p>A common action for showing the folder for a supplied path in the system&#8217;s file
 browser.</p>
-<p>The <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> supplied takes the following form:</p>
+<p>The <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> supplied takes the following form:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot;action_button&quot;</span><span class="p">:</span> <span class="p">{</span>
     <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">,</span>
     <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">tooltip</span><span class="o">&gt;</span><span class="p">,</span>
@@ -242,7 +242,7 @@ browser.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>The values in the <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> are:</p>
+<p>The values in the <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> are:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">label</span></code>: The text to display on the button itself. The default value is
 <code class="docutils literal"><span class="pre">&quot;Show</span> <span class="pre">Folder&quot;</span></code>. Optional.</li>
@@ -269,7 +269,7 @@ of the publish UI.</p>
 <div class="section" id="show-in-shotgun-action">
 <h2>Show in Shotgun Action<a class="headerlink" href="#show-in-shotgun-action" title="Permalink to this headline">¶</a></h2>
 <p>A common action for showing an entity&#8217;s detail page in Shotgun.</p>
-<p>The <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> supplied takes the following form:</p>
+<p>The <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> supplied takes the following form:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot;action_show_in_shotgun&quot;</span><span class="p">:</span> <span class="p">{</span>
     <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">,</span>
     <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">tooltip</span><span class="o">&gt;</span><span class="p">,</span>
@@ -277,13 +277,13 @@ of the publish UI.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>The values in the <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> are:</p>
+<p>The values in the <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> are:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">label</span></code>: The text to display on the button itself. The default value is
 <code class="docutils literal"><span class="pre">&quot;Show</span> <span class="pre">Entity&quot;</span></code>. Optional.</li>
 <li><code class="docutils literal"><span class="pre">tooltip</span></code>: Optional tooltip text to display when the mouse is over the
 button. The default value is <code class="docutils literal"><span class="pre">&quot;Reveal</span> <span class="pre">the</span> <span class="pre">entity</span> <span class="pre">in</span> <span class="pre">Shotgun.&quot;</span></code>.</li>
-<li><code class="docutils literal"><span class="pre">entity</span></code>: Required, standard Shotgun entity <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a>.</li>
+<li><code class="docutils literal"><span class="pre">entity</span></code>: Required, standard Shotgun entity <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a>.</li>
 </ul>
 <p>Example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
@@ -309,7 +309,7 @@ of the publish UI.</p>
 <p>A common action for showing more information than what typically fits on a
 single line of logging output. The output will be shown in a text browser popup
 dialog.</p>
-<p>The <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> supplied takes the following form:</p>
+<p>The <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> supplied takes the following form:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot;action_show_more_info&quot;</span><span class="p">:</span> <span class="p">{</span>
     <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">,</span>
     <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">tooltip</span><span class="o">&gt;</span><span class="p">,</span>
@@ -317,13 +317,13 @@ dialog.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>The values in the <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> are:</p>
+<p>The values in the <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> are:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">label</span></code>: The text to display on the button itself. The default value is
 <code class="docutils literal"><span class="pre">&quot;More</span> <span class="pre">Info...&quot;</span></code>. Optional.</li>
 <li><code class="docutils literal"><span class="pre">tooltip</span></code>: Optional tooltip text to display when the mouse is over the
 button. The default value is <code class="docutils literal"><span class="pre">&quot;Show</span> <span class="pre">additional</span> <span class="pre">logging</span> <span class="pre">info.&quot;</span></code>.</li>
-<li><code class="docutils literal"><span class="pre">test</span></code>: Required, <a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></a> with additional information to display to
+<li><code class="docutils literal"><span class="pre">test</span></code>: Required, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></a> with additional information to display to
 the user. The text can contain html for formatting for display in the popup
 window (any html tags supported by Qt&#8217;s rich text engine).</li>
 </ul>
@@ -353,7 +353,7 @@ of the publish UI.</p>
 <div class="section" id="open-url-action">
 <h2>Open URL Action<a class="headerlink" href="#open-url-action" title="Permalink to this headline">¶</a></h2>
 <p>A common action for opening a supplied URL in the default browser.</p>
-<p>The <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> supplied takes the following form:</p>
+<p>The <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> supplied takes the following form:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot;action_show_more_info&quot;</span><span class="p">:</span> <span class="p">{</span>
     <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">,</span>
     <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">tooltip</span><span class="o">&gt;</span><span class="p">,</span>
@@ -361,7 +361,7 @@ of the publish UI.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>The values in the <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> are:</p>
+<p>The values in the <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> are:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">label</span></code>: The text to display on the button itself. The default value is
 <code class="docutils literal"><span class="pre">&quot;Open</span> <span class="pre">URL&quot;</span></code>. Optional.</li>
@@ -427,7 +427,7 @@ of the publish UI.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'v2.0.13',
+            VERSION:'v2.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

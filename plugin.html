@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Publish Plugins &mdash; tk-multi-publish2 v2.0.13 documentation</title>
+  <title>Publish Plugins &mdash; tk-multi-publish2 v2.1.0 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.0.13 documentation" href="index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.1.0 documentation" href="index.html"/>
         <link rel="next" title="Logging" href="logging.html"/>
         <link rel="prev" title="Publish Items" href="items.html"/> 
 
@@ -123,7 +123,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.0.13.<br>
+    <b>tk-multi-publish2</b> v2.1.0.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -201,7 +201,7 @@ the execution logic for each phase of the publish process.</p>
 <dt id="tk_multi_publish2.base_hooks.PublishPlugin.icon">
 <code class="descname">icon</code><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin.icon" title="Permalink to this definition">¶</a></dt>
 <dd><p>The path to an icon on disk that is representative of this plugin
-(<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></a>).</p>
+(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></a>).</p>
 <p>The icon will be displayed on the left side of the task driven by this
 plugin, as shown in the image below.</p>
 <img alt="_images/task_icon.png" src="_images/task_icon.png" />
@@ -235,7 +235,7 @@ distinction between items and tasks in the interface.</p>
 <dl class="attribute">
 <dt id="tk_multi_publish2.base_hooks.PublishPlugin.name">
 <code class="descname">name</code><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin.name" title="Permalink to this definition">¶</a></dt>
-<dd><p>The general name for this plugin (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></a>).</p>
+<dd><p>The general name for this plugin (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></a>).</p>
 <p>This value is not generally used for display. Instances of the plugin
 are defined within the app&#8217;s configuration and those instance names are
 what is shown in the interface for the tasks.</p>
@@ -244,7 +244,7 @@ what is shown in the interface for the tasks.</p>
 <dl class="attribute">
 <dt id="tk_multi_publish2.base_hooks.PublishPlugin.description">
 <code class="descname">description</code><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin.description" title="Permalink to this definition">¶</a></dt>
-<dd><p>Verbose, multi-line description of what the plugin does (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></a>).</p>
+<dd><p>Verbose, multi-line description of what the plugin does (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></a>).</p>
 <p>The string can contain html for formatting for display in the UI (any
 html tags supported by Qt&#8217;s rich text engine).</p>
 <p>The description is displayed via the plugin&#8217;s default
@@ -274,7 +274,7 @@ below:</p>
 <dl class="attribute">
 <dt id="tk_multi_publish2.base_hooks.PublishPlugin.settings">
 <code class="descname">settings</code><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin.settings" title="Permalink to this definition">¶</a></dt>
-<dd><p>A <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> defining the configuration interface for this plugin.</p>
+<dd><p>A <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> defining the configuration interface for this plugin.</p>
 <p>The dictionary can include any number of settings required by the
 plugin, and takes the form:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -346,7 +346,7 @@ for additional example implementations.</p>
 <dl class="attribute">
 <dt id="tk_multi_publish2.base_hooks.PublishPlugin.item_filters">
 <code class="descname">item_filters</code><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin.item_filters" title="Permalink to this definition">¶</a></dt>
-<dd><p>A <code class="xref py py-class docutils literal"><span class="pre">list</span></code> of item type wildcard <a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></a> objects that this
+<dd><p>A <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">list</span></code></a> of item type wildcard <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></a> objects that this
 plugin is interested in.</p>
 <p>As items are collected by the collector hook, they are given an item
 type string (see <a class="reference internal" href="items.html#tk_multi_publish2.processing.Item.create_item" title="tk_multi_publish2.processing.Item.create_item"><code class="xref py py-meth docutils literal"><span class="pre">create_item()</span></code></a>). The strings
@@ -368,7 +368,7 @@ supplied item for processing.</p>
 <p>Only items matching the filters defined via the <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.item_filters" title="tk_multi_publish2.base_hooks.PublishPlugin.item_filters"><code class="xref py py-data docutils literal"><span class="pre">item_filters</span></code></a>
 property will be presented to this method.</p>
 <p>A publish task will be generated for each item accepted here.</p>
-<p>This method returns a <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> of the following form:</p>
+<p>This method returns a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> of the following form:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s2">&quot;accepted&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">bool</span><span class="o">&gt;</span><span class="p">,</span>
     <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">bool</span><span class="o">&gt;</span><span class="p">,</span>
@@ -393,7 +393,7 @@ otherwise it will be unchecked. Optional, <code class="docutils literal"><span c
 <p>In addition to the item, the configured settings for this plugin are
 supplied. The information provided by each of these arguments can be
 used to decide whether to accept the item.</p>
-<p>For example, the item&#8217;s <code class="docutils literal"><span class="pre">properties</span></code> <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> may house meta data
+<p>For example, the item&#8217;s <code class="docutils literal"><span class="pre">properties</span></code> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> may house meta data
 about the item, populated during collection. This data can be used to
 inform the acceptance logic.</p>
 <p>Example implementation:</p>
@@ -418,7 +418,7 @@ inform the acceptance logic.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; The keys are strings, matching the keys returned
+<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) &#8211; The keys are strings, matching the keys returned
 in the <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.settings" title="tk_multi_publish2.base_hooks.PublishPlugin.settings"><code class="xref py py-data docutils literal"><span class="pre">settings</span></code></a> property. The values are
 <code class="xref py py-class docutils literal"><span class="pre">Setting</span></code> instances.</li>
 <li><strong>item</strong> &#8211; The <a class="reference internal" href="items.html#tk_multi_publish2.processing.Item" title="tk_multi_publish2.processing.Item"><code class="xref py py-class docutils literal"><span class="pre">Item</span></code></a> instance to process for
@@ -461,7 +461,7 @@ tooltip on the task as well as in the logging view of the publisher.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; The keys are strings, matching the keys returned
+<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) &#8211; The keys are strings, matching the keys returned
 in the <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.settings" title="tk_multi_publish2.base_hooks.PublishPlugin.settings"><code class="xref py py-data docutils literal"><span class="pre">settings</span></code></a> property. The values are
 <code class="xref py py-class docutils literal"><span class="pre">Setting</span></code> instances.</li>
 <li><strong>item</strong> &#8211; The <a class="reference internal" href="items.html#tk_multi_publish2.processing.Item" title="tk_multi_publish2.processing.Item"><code class="xref py py-class docutils literal"><span class="pre">Item</span></code></a> instance to validate.</li>
@@ -517,7 +517,7 @@ the publisher will stop execution.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; The keys are strings, matching the keys returned
+<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) &#8211; The keys are strings, matching the keys returned
 in the <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.settings" title="tk_multi_publish2.base_hooks.PublishPlugin.settings"><code class="xref py py-data docutils literal"><span class="pre">settings</span></code></a> property. The values are
 <code class="xref py py-class docutils literal"><span class="pre">Setting</span></code> instances.</li>
 <li><strong>item</strong> &#8211; The <a class="reference internal" href="items.html#tk_multi_publish2.processing.Item" title="tk_multi_publish2.processing.Item"><code class="xref py py-class docutils literal"><span class="pre">Item</span></code></a> instance to validate.</li>
@@ -554,7 +554,7 @@ and the publisher will stop execution.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; The keys are strings, matching the keys returned
+<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) &#8211; The keys are strings, matching the keys returned
 in the <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.settings" title="tk_multi_publish2.base_hooks.PublishPlugin.settings"><code class="xref py py-data docutils literal"><span class="pre">settings</span></code></a> property. The values are
 <code class="xref py py-class docutils literal"><span class="pre">Setting</span></code> instances.</li>
 <li><strong>item</strong> &#8211; The <a class="reference internal" href="items.html#tk_multi_publish2.processing.Item" title="tk_multi_publish2.processing.Item"><code class="xref py py-class docutils literal"><span class="pre">Item</span></code></a> instance to validate.</li>
@@ -703,7 +703,7 @@ task.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'v2.0.13',
+            VERSION:'v2.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

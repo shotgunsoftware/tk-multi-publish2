@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Publish Items &mdash; tk-multi-publish2 v2.0.13 documentation</title>
+  <title>Publish Items &mdash; tk-multi-publish2 v2.1.0 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.0.13 documentation" href="index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.1.0 documentation" href="index.html"/>
         <link rel="next" title="Publish Plugins" href="plugin.html"/>
         <link rel="prev" title="Collector" href="collector.html"/> 
 
@@ -120,7 +120,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.0.13.<br>
+    <b>tk-multi-publish2</b> v2.1.0.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -196,10 +196,10 @@ collector.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>item_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Item type, typically following a hierarchical dot notation.
+<li><strong>item_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) &#8211; Item type, typically following a hierarchical dot notation.
 For example, &#8216;file&#8217;, &#8216;file.image&#8217;, &#8216;file.quicktime&#8217; or &#8216;maya_scene&#8217;</li>
-<li><strong>display_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Equivalent to the type, but for display purposes.</li>
-<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The name to represent the item in a UI.
+<li><strong>display_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) &#8211; Equivalent to the type, but for display purposes.</li>
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) &#8211; The name to represent the item in a UI.
 This can be a node name in a DCC or a file name.</li>
 <li><strong>parent</strong> (<a class="reference internal" href="#tk_multi_publish2.processing.Item" title="tk_multi_publish2.processing.Item"><em>Item</em></a>) &#8211; Parent item.</li>
 </ul>
@@ -252,10 +252,10 @@ the current session or a file on disk.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>item_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Item type, typically following a hierarchical dot
+<li><strong>item_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) &#8211; Item type, typically following a hierarchical dot
 notation.</li>
-<li><strong>display_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Equivalent to the type, but for display purposes.</li>
-<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The name to represent the item in a UI. This can be a
+<li><strong>display_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) &#8211; Equivalent to the type, but for display purposes.</li>
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) &#8211; The name to represent the item in a UI. This can be a
 node name in a DCC or a file name.</li>
 </ul>
 </td>
@@ -279,15 +279,86 @@ node name in a DCC or a file name.</li>
 <dl class="attribute">
 <dt id="tk_multi_publish2.processing.Item.properties">
 <code class="descname">properties</code><a class="headerlink" href="#tk_multi_publish2.processing.Item.properties" title="Permalink to this definition">¶</a></dt>
-<dd><p>A free form <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> where arbitrary data can be stored on the
+<dd><p>A free form dictionary-like object where arbitrary data can be stored on
+the item.</p>
+<p>The properties dictionary itself is read only (calling <code class="docutils literal"><span class="pre">item.properties</span>
+<span class="pre">=</span> <span class="pre">my_properties</span></code> is invalid) but arbitrary key value pairs can be set
+within the dictionary itself.</p>
+<p>This property provides a way to store data that is global across all
+attached publish plugins. It is also useful for accessing data stored
+on parent items that may be useful to plugin attached to child items.</p>
+<p>For properties that are local to the current plugin, see
+<code class="docutils literal"><span class="pre">local_properties</span></code>.</p>
+<p>This property can also be used to store data on an items that may then
+be accessed by plugins attached to the item&#8217;s children.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tk_multi_publish2.processing.Item.local_properties">
+<code class="descname">local_properties</code><a class="headerlink" href="#tk_multi_publish2.processing.Item.local_properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>A dictionary-like object that houses item properties local to the
+current publish plugin instance.</p>
+<p>This property behaves like the local storage in python&#8217;s threading
+module, except here, the data is local to the current publish plugin.</p>
+<p>You can get and set values for this property using standard dictionary
+notation or via dot notation.</p>
+<p>Attempts to access this property outside of a publish plugin will raise
+an <code class="docutils literal"><span class="pre">AttributeError</span></code>.</p>
+<p>It is important to consider when to set a value via
+<code class="xref py py-meth docutils literal"><span class="pre">Item.properties`()</span></code> and when to use <a class="reference internal" href="#tk_multi_publish2.processing.Item.local_properties" title="tk_multi_publish2.processing.Item.local_properties"><code class="xref py py-meth docutils literal"><span class="pre">Item.local_properties()</span></code></a>.
+Setting the values on <code class="docutils literal"><span class="pre">item.properties</span></code> is a way to globally share
+information between publish plugins. Values set via
+<code class="docutils literal"><span class="pre">item.local_properties</span></code> will only be applied during the execution of
+the current plugin (similar to python&#8217;s <code class="docutils literal"><span class="pre">threading.local</span></code> storage).</p>
+<p>A common scenario to consider is when you have multiple publish plugins
+acting on the same item. You may, for example, want the <code class="docutils literal"><span class="pre">publish_name</span></code>
+and <code class="docutils literal"><span class="pre">publish_version</span></code> to be shared by each plugin, while setting the
+remaining properties on each plugin instance since they will be specific
+to that plugin&#8217;s output.</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># set shared properties on the item (potentially in the collector or</span>
+<span class="c1"># the first publish plugin). these values will be available to all</span>
+<span class="c1"># publish plugins attached to the item.</span>
+<span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">publish_name</span> <span class="o">=</span> <span class="s2">&quot;Gorilla&quot;</span>
+<span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">publish_version</span> <span class="o">=</span> <span class="s2">&quot;0003&quot;</span>
+
+<span class="c1"># set specific properties in subclasses of the base file publish (this</span>
+<span class="c1"># class). first publish plugin...</span>
+<span class="n">item</span><span class="o">.</span><span class="n">local_properties</span><span class="o">.</span><span class="n">publish_template</span> <span class="o">=</span> <span class="s2">&quot;asset_fbx_template&quot;</span>
+<span class="n">item</span><span class="o">.</span><span class="n">local_properties</span><span class="o">.</span><span class="n">publish_type</span> <span class="o">=</span> <span class="s2">&quot;FBX File&quot;</span>
+
+<span class="c1"># in another publish plugin...</span>
+<span class="n">item</span><span class="o">.</span><span class="n">local_properties</span><span class="o">.</span><span class="n">publish_template</span> <span class="o">=</span> <span class="s2">&quot;asset_abc_template&quot;</span>
+<span class="n">item</span><span class="o">.</span><span class="n">local_properties</span><span class="o">.</span><span class="n">publish_type</span> <span class="o">=</span> <span class="s2">&quot;Alembic Cache&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_multi_publish2.processing.Item.get_property">
+<code class="descname">get_property</code><span class="sig-paren">(</span><em>name</em>, <em>default_value=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/processing/item.html#Item.get_property"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.processing.Item.get_property" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a convenience method that will retrieve a property set on the
 item.</p>
-<p>The properties dictionary itself is read only (calling
-<code class="docutils literal"><span class="pre">item.properties</span> <span class="pre">=</span> <span class="pre">my_properties</span></code> is invalid) but arbitrary key value
-pairs can be set within the dictionary itself.</p>
-<p>This property provides a way to store data for an item across publish
-plugins and between the various publish phases within a plugin.</p>
-<p>It is also useful for accessing data stored on parent items that
-may be useful to plugin attached to child items.</p>
+<p>If the property was set via <a class="reference internal" href="#tk_multi_publish2.processing.Item.local_properties" title="tk_multi_publish2.processing.Item.local_properties"><code class="xref py py-meth docutils literal"><span class="pre">Item.local_properties()</span></code></a>, then that will be
+returned. Otherwise, the value set via <a class="reference internal" href="#tk_multi_publish2.processing.Item.properties" title="tk_multi_publish2.processing.Item.properties"><code class="xref py py-meth docutils literal"><span class="pre">Item.properties()</span></code></a> will be
+returned. If the property is not set on the item, then the supplied
+<code class="docutils literal"><span class="pre">default_value</span></code> will be returned (default is <code class="docutils literal"><span class="pre">None</span></code>).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> &#8211; The property to retrieve.</li>
+<li><strong>default_value</strong> &#8211; The value to return if the property is not set on
+the item.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The value of the supplied property.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
@@ -399,7 +470,7 @@ used to set the thumbnail for the item.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to a file on disk</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) &#8211; Path to a file on disk</td>
 </tr>
 </tbody>
 </table>
@@ -444,7 +515,7 @@ used to set the icon for the item.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to a file on disk</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) &#8211; Path to a file on disk</td>
 </tr>
 </tbody>
 </table>
@@ -500,7 +571,7 @@ used to set the icon for the item.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'v2.0.13',
+            VERSION:'v2.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
