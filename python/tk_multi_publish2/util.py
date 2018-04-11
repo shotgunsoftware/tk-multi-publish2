@@ -217,7 +217,7 @@ def get_frame_sequences(folder, extensions=None, frame_spec=None):
     )
 
 
-def get_publish_name(path, sequence=False):
+def get_publish_name(path, sequence=False, version=False, remove_padding=False):
     """
     Given a file path, return the display name to use for publishing.
 
@@ -233,6 +233,8 @@ def get_publish_name(path, sequence=False):
     :param path: The path to a file, likely one to be published.
     :param sequence: If True, treat the path as a sequence name and replace
         the frame number with placeholder
+    :param version: If True, removes the version from the path
+    :param remove_padding: If True, removes padding from the path
 
     :return: A publish display name for the provided path.
     """
@@ -246,7 +248,9 @@ def get_publish_name(path, sequence=False):
         "path_info",
         "get_publish_name",
         path=path,
-        sequence=sequence
+        sequence=sequence,
+        version=version,
+        remove_padding=remove_padding
     )
 
 
