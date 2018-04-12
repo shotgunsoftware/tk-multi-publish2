@@ -14,62 +14,6 @@ import sgtk
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
-# This is a dictionary of file type info that allows the basic collector to
-# identify common production file types and associate them with a display name,
-# item type, and config icon.
-COMMON_FILE_INFO = {
-    "Alembic Cache": {
-        "extensions": ["abc"],
-        "icon": "alembic.png",
-        "item_type": "file.alembic",
-    },
-    "3dsmax Scene": {
-        "extensions": ["max"],
-        "icon": "3dsmax.png",
-        "item_type": "file.3dsmax",
-    },
-    "Hiero Project": {
-        "extensions": ["hrox"],
-        "icon": "hiero.png",
-        "item_type": "file.hiero",
-    },
-    "Houdini Scene": {
-        "extensions": ["hip", "hipnc"],
-        "icon": "houdini.png",
-        "item_type": "file.houdini",
-    },
-    "Maya Scene": {
-        "extensions": ["ma", "mb"],
-        "icon": "maya.png",
-        "item_type": "file.maya",
-    },
-    "Motion Builder FBX": {
-        "extensions": ["fbx"],
-        "icon": "motionbuilder.png",
-        "item_type": "file.motionbuilder",
-    },
-    "Nuke Script": {
-        "extensions": ["nk"],
-        "icon": "nuke.png",
-        "item_type": "file.nuke",
-    },
-    "Photoshop Image": {
-        "extensions": ["psd", "psb"],
-        "icon": "photoshop.png",
-        "item_type": "file.photoshop",
-    },
-    "Rendered Image": {
-        "extensions": ["dpx", "exr"],
-        "icon": "image_sequence.png",
-        "item_type": "file.image",
-    },
-    "Texture Image": {
-        "extensions": ["tif", "tiff", "tx", "tga", "dds", "rat"],
-        "icon": "texture.png",
-        "item_type": "file.texture",
-    },
-}
-
 
 class BasicSceneCollector(HookBaseClass):
     """
@@ -95,6 +39,94 @@ class BasicSceneCollector(HookBaseClass):
             "path".
 
     """
+
+    @property
+    def common_file_info(self):
+        """
+        A dictionary of file type info that allows the basic collector to
+        identify common production file types and associate them with a display
+        name, item type, and config icon.
+
+        The dictionary returned is of the form::
+
+            {
+                <Publish Type>: {
+                    "extensions": [<ext>, <ext>, ...],
+                    "icon": <icon path>,
+                    "item_type": <item type>
+                },
+                <Publish Type>: {
+                    "extensions": [<ext>, <ext>, ...],
+                    "icon": <icon path>,
+                    "item_type": <item type>
+                },
+                ...
+            }
+
+        See the collector source to see the default values returned.
+
+        Subclasses can override this property, get the default values via
+        ``super``, then update the dictionary as necessary by
+        adding/removing/modifying values.
+        """
+
+        if not hasattr(self, "_common_file_info"):
+
+            # do this once to avoid unnecessary processing
+            self._common_file_info = {
+                "Alembic Cache": {
+                    "extensions": ["abc"],
+                    "icon": self._get_icon_path("alembic.png"),
+                    "item_type": "file.alembic",
+                },
+                "3dsmax Scene": {
+                    "extensions": ["max"],
+                    "icon": self._get_icon_path("3dsmax.png"),
+                    "item_type": "file.3dsmax",
+                },
+                "Hiero Project": {
+                    "extensions": ["hrox"],
+                    "icon": self._get_icon_path("hiero.png"),
+                    "item_type": "file.hiero",
+                },
+                "Houdini Scene": {
+                    "extensions": ["hip", "hipnc"],
+                    "icon": self._get_icon_path("houdini.png"),
+                    "item_type": "file.houdini",
+                },
+                "Maya Scene": {
+                    "extensions": ["ma", "mb"],
+                    "icon": self._get_icon_path("maya.png"),
+                    "item_type": "file.maya",
+                },
+                "Motion Builder FBX": {
+                    "extensions": ["fbx"],
+                    "icon": self._get_icon_path("motionbuilder.png"),
+                    "item_type": "file.motionbuilder",
+                },
+                "Nuke Script": {
+                    "extensions": ["nk"],
+                    "icon": self._get_icon_path("nuke.png"),
+                    "item_type": "file.nuke",
+                },
+                "Photoshop Image": {
+                    "extensions": ["psd", "psb"],
+                    "icon": self._get_icon_path("photoshop.png"),
+                    "item_type": "file.photoshop",
+                },
+                "Rendered Image": {
+                    "extensions": ["dpx", "exr"],
+                    "icon": self._get_icon_path("image_sequence.png"),
+                    "item_type": "file.image",
+                },
+                "Texture Image": {
+                    "extensions": ["tif", "tiff", "tx", "tga", "dds", "rat"],
+                    "icon": self._get_icon_path("texture.png"),
+                    "item_type": "file.texture",
+                },
+            }
+
+        return self._common_file_info
 
     @property
     def settings(self):
@@ -225,7 +257,9 @@ class BasicSceneCollector(HookBaseClass):
 
         publisher = self.parent
         img_sequences = publisher.util.get_frame_sequences(
-            folder, IMAGE_EXTENSIONS_LIST)
+            folder,
+            self._image_extensions
+        )
 
         file_items = []
 
@@ -314,21 +348,22 @@ class BasicSceneCollector(HookBaseClass):
         # default values used if no specific type can be determined
         type_display = "File"
         item_type = "file.unknown"
-        icon_name = "file.png"
 
         # keep track if a common type was identified for the extension
         common_type_found = False
 
+        icon_path = None
+
         # look for the extension in the common file type info dict
-        for display in COMMON_FILE_INFO:
-            type_info = COMMON_FILE_INFO[display]
+        for display in self.common_file_info:
+            type_info = self.common_file_info[display]
 
             if extension in type_info["extensions"]:
                 # found the extension in the common types lookup. extract the
                 # item type, icon name.
                 type_display = display
                 item_type = type_info["item_type"]
-                icon_name = type_info["icon"]
+                icon_path = type_info["icon"]
                 common_type_found = True
                 break
 
@@ -352,10 +387,11 @@ class BasicSceneCollector(HookBaseClass):
 
                 type_display = "%s File" % (category.title(),)
                 item_type = "file.%s" % (category,)
-                icon_name = "%s.png" % (category,)
+                icon_path = self._get_icon_path("%s.png" % (category,))
 
-        # construct a full path to the icon given the name defined above
-        icon_path = self._get_icon_path(icon_name)
+        # fall back to a simple file icon
+        if not icon_path:
+            icon_path = self._get_icon_path("file.png")
 
         # everything should be populated. return the dictionary
         return dict(
@@ -364,44 +400,68 @@ class BasicSceneCollector(HookBaseClass):
             icon_path=icon_path,
         )
 
-    def _get_icon_path(self, icon_name):
+    def _get_icon_path(self, icon_name, icons_folders=None):
         """
-        Helper to get the full path to an icon from the app's resources folder.
-        If the supplied icon_name doesn't exist there, fall back to the file.png
-        icon.
+        Helper to get the full path to an icon.
+
+        By default, the app's ``hooks/icons`` folder will be searched.
+        Additional search paths can be provided via the ``icons_folders`` arg.
+
+        :param icon_name: The file name of the icon. ex: "alembic.png"
+        :param icons_folders: A list of icons folders to find the supplied icon
+            name.
+
+        :returns: The full path to the icon of the supplied name, or a default
+            icon if the name could not be found.
         """
-        icon_path = os.path.join(
-            self.disk_location,
-            "icons",
-            icon_name
-        )
+
+        # ensure the publisher's icons folder is included in the search
+        app_icon_folder = os.path.join(self.disk_location, "icons")
+
+        # build the list of folders to search
+        if icons_folders:
+            icons_folders.append(app_icon_folder)
+        else:
+            icons_folders = [app_icon_folder]
+
+        # keep track of whether we've found the icon path
+        found_icon_path = None
+
+        # iterate over all the folders to find the icon. first match wins
+        for icons_folder in icons_folders:
+            icon_path = os.path.join(icons_folder, icon_name)
+            if os.path.exists(icon_path):
+                found_icon_path = icon_path
+                break
 
         # supplied file name doesn't exist. return the default file.png image
-        if not os.path.exists(icon_path):
-            icon_path = os.path.join(
-                self.disk_location,
-                "icons",
-                "file.png"
-            )
+        if not found_icon_path:
+            found_icon_path = os.path.join(app_icon_folder, "file.png")
 
-        return icon_path
+        return found_icon_path
 
+    def _image_extensions(self):
 
-def _build_image_extensions_list():
+        if not hasattr(self, "_image_extensions"):
 
-    image_file_types = ["Photoshop Image", "Rendered Image", "Texture Image"]
-    image_extensions = set()
+            image_file_types = [
+                "Photoshop Image",
+                "Rendered Image",
+                "Texture Image"
+            ]
+            image_extensions = set()
 
-    for image_file_type in image_file_types:
-        image_extensions.update(COMMON_FILE_INFO[image_file_type]["extensions"])
+            for image_file_type in image_file_types:
+                image_extensions.update(
+                    self.common_file_info[image_file_type]["extensions"])
 
-    # get all the image mime type image extensions as well
-    mimetypes.init()
-    types_map = mimetypes.types_map
-    for (ext, mimetype) in types_map.iteritems():
-        if mimetype.startswith("image/"):
-            image_extensions.add(ext.lstrip("."))
+            # get all the image mime type image extensions as well
+            mimetypes.init()
+            types_map = mimetypes.types_map
+            for (ext, mimetype) in types_map.iteritems():
+                if mimetype.startswith("image/"):
+                    image_extensions.add(ext.lstrip("."))
 
-    return list(image_extensions)
+            self._image_extensions = list(image_extensions)
 
-IMAGE_EXTENSIONS_LIST = _build_image_extensions_list()
+        return self._image_extensions
