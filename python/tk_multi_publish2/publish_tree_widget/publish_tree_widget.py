@@ -67,7 +67,8 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         self.itemDoubleClicked.connect(lambda i, c: i.double_clicked(c))
         
         # workaround to make the scrollbar work properly for QT versions < 5 on macOS
-        self.verticalScrollBar().valueChanged.connect(self.updateEditorGeometries)
+        if QtCore.__version__.startswith("4."):
+            self.verticalScrollBar().valueChanged.connect(self.updateEditorGeometries)
 
     def set_plugin_manager(self, plugin_manager):
         """
