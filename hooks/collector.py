@@ -258,7 +258,7 @@ class BasicSceneCollector(HookBaseClass):
         publisher = self.parent
         img_sequences = publisher.util.get_frame_sequences(
             folder,
-            self._image_extensions
+            self._get_image_extensions()
         )
 
         file_items = []
@@ -440,7 +440,7 @@ class BasicSceneCollector(HookBaseClass):
 
         return found_icon_path
 
-    def _image_extensions(self):
+    def _get_image_extensions(self):
 
         if not hasattr(self, "_image_extensions"):
 
