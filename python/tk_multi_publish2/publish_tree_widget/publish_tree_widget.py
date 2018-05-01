@@ -8,7 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-
+import sys
 import sgtk
 from collections import defaultdict
 from sgtk.platform.qt import QtCore, QtGui
@@ -65,6 +65,14 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
         # forward double clicks on items to the items themselves
         self.itemDoubleClicked.connect(lambda i, c: i.double_clicked(c))
+        
+        # workaround to make the scrollbar work properly for QT versions < 5 on macOS
+        # This look like a bug tracked on the QT side
+        # ( https://bugreports.qt.io/browse/QTBUG-27043 )
+        # This is essentially a workaround suggested on this thread
+        # ( https://stackoverflow.com/questions/15331256/qlistwidget-with-custom-widget-does-not-scroll-properly-in-mac-os )
+        if QtCore.__version__.startswith("4.") and sys.platform == "darwin":
+            self.verticalScrollBar().valueChanged.connect(self.updateEditorGeometries)
 
     def set_plugin_manager(self, plugin_manager):
         """
