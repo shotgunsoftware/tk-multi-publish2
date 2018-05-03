@@ -69,10 +69,13 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         # workaround to make the scrollbar work properly for QT versions < 5 on macOS
         # This look like a bug tracked on the QT side
         # ( https://bugreports.qt.io/browse/QTBUG-27043 )
-        # This is essentially a workaround suggested on this thread
+        # This inspired by a workaround suggested on this thread
         # ( https://stackoverflow.com/questions/15331256/qlistwidget-with-custom-widget-does-not-scroll-properly-in-mac-os )
         if QtCore.__version__.startswith("4.") and sys.platform == "darwin":
+            self.verticalScrollBar().actionTriggered.connect(self.updateEditorGeometries)
             self.verticalScrollBar().valueChanged.connect(self.updateEditorGeometries)
+            self.verticalScrollBar().sliderMoved.connect(self.updateEditorGeometries)
+            self.verticalScrollBar().rangeChanged.connect(self.updateEditorGeometries)
 
     def set_plugin_manager(self, plugin_manager):
         """
