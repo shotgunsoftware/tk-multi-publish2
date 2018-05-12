@@ -123,6 +123,21 @@ class TreeNodeItem(TreeNodeBase):
         super(TreeNodeItem, self).setExpanded(expand)
         self._check_expand_state()
 
+    def show_expand_indicator(self, show):
+        """
+        Hides the expand/collapse indicator. Typically called after tasks are
+        parented to an item and all the tasks are hidden as per their plugin
+        acceptance criteria.
+
+        :param bool show: If True, show the indicator. Hide if False
+        """
+        if show:
+            self._embedded_widget.expand_indicator.show()
+            self._embedded_widget.expand_placeholder.hide()
+        else:
+            self._embedded_widget.expand_indicator.hide()
+            self._embedded_widget.expand_placeholder.show()
+
     def double_clicked(self, column):
         """Called when the item is double clicked
 

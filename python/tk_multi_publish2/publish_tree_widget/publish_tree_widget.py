@@ -115,8 +115,11 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
         # create children
         for task in item.tasks:
-            task = TreeNodeTask(task, ui_item)
-            self.__created_items.append(task)
+            ui_task = TreeNodeTask(task, ui_item)
+            self.__created_items.append(ui_task)
+
+        # see if expand indicator should be shown
+        _check_expand_indicator(ui_item)
 
         for child in item.children:
             self._build_item_tree_r(child, enabled, level+1, ui_item)
@@ -473,6 +476,28 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             # bubble up all events that aren't drag select related
             super(PublishTreeWidget, self).mouseMoveEvent(event)
 
+
+def _check_expand_indicator(node_item):
+    """
+    Check to see if the expand indicator should be shown. Hide/Show
+    accordingly.
+    """
+
+    # only process tree node items (not context, summary, or task items)
+    if not isinstance(node_item, TreeNodeItem):
+        return
+
+    has_visible_children = False
+    for task in node_item.item.tasks:
+        if task.visible:
+            has_visible_children = True
+            break
+
+    # if the item has no visible children, hide the expand/collapse
+    # indicator
+    node_item.show_expand_indicator(has_visible_children)
+
+
 def _init_item_r(parent_item):
 
     # qt seems to drop the associated widget
@@ -482,9 +507,14 @@ def _init_item_r(parent_item):
     # the internal widget as part of re-inserting the node into the tree.
     parent_item.build_internal_widget()
 
+    _check_expand_indicator(parent_item)
+
     # do this for all children of the supplied item recursively
     for child_index in xrange(parent_item.childCount()):
         child = parent_item.child(child_index)
+        if isinstance(child, TreeNodeTask):
+            # maintain visibility setting after re-init (usually drop)
+            child.setHidden(not child.task.visible)
         child.setExpanded(True)
         _init_item_r(child)
 
