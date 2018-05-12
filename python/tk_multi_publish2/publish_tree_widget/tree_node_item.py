@@ -141,6 +141,10 @@ class TreeNodeItem(TreeNodeBase):
     def update_expand_indicator(self):
         """
         Check to see if the expand indicator should be shown.
+
+        Show/hide based on the state of the children. If any plugins are
+        visible, then show the indicator. If any sub items exist, show the
+        indicator.
         """
 
         show_indicator = False
@@ -151,10 +155,12 @@ class TreeNodeItem(TreeNodeBase):
             if isinstance(child_item, TreeNodeTask):
                 if child_item.task.visible:
                     show_indicator = True
+                    # we know there's somethign to show. short-circuit
                     break
             else:
                 # there is a sub item. definitely show expand indicator
                 show_indicator = True
+                # we know there's somethign to show. short-circuit
                 break
 
         self.show_expand_indicator(show_indicator)
