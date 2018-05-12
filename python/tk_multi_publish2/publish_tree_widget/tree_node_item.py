@@ -138,6 +138,27 @@ class TreeNodeItem(TreeNodeBase):
             self._embedded_widget.expand_indicator.hide()
             self._embedded_widget.expand_placeholder.show()
 
+    def update_expand_indicator(self):
+        """
+        Check to see if the expand indicator should be shown.
+        """
+
+        show_indicator = False
+
+        for child_index in xrange(self.childCount()):
+            child_item = self.child(child_index)
+
+            if isinstance(child_item, TreeNodeTask):
+                if child_item.task.visible:
+                    show_indicator = True
+                    break
+            else:
+                # there is a sub item. definitely show expand indicator
+                show_indicator = True
+                break
+
+        self.show_expand_indicator(show_indicator)
+
     def double_clicked(self, column):
         """Called when the item is double clicked
 
