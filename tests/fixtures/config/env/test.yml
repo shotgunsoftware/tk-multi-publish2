@@ -58,6 +58,15 @@ engines:
           - name: Property Test 3
             hook: "{self}/publish_file.py:{config}/test_properties_plugin_3.py"
             settings: {}
+          - name: Plugin 1 of 3 (#2 should be HIDDEN)
+            hook: "{self}/publish_file.py:{config}/visible_plugin1.py"
+            settings: {}
+          - name: Invisible Plugin
+            hook: "{self}/publish_file.py:{config}/hidden_plugin2.py"
+            settings: {}
+          - name: Plugin 3 of 3 (#2 should be HIDDEN)
+            hook: "{self}/publish_file.py:{config}/visible_plugin3.py"
+            settings: {}
 
             
 

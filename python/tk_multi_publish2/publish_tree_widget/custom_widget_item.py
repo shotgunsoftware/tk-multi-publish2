@@ -50,6 +50,9 @@ class CustomTreeWidgetItem(CustomTreeWidgetBase):
         # hide the drag handle by default
         self.ui.handle_stack.hide()
 
+        # hide the expand placeholder by default
+        self.ui.expand_placeholder.hide()
+
         self.ui.checkbox.stateChanged.connect(self._on_checkbox_click)
         self.ui.checkbox.nextCheckState = self.nextCheckState
         self.ui.status.clicked.connect(self._on_status_click)
@@ -98,3 +101,8 @@ class CustomTreeWidgetItem(CustomTreeWidgetBase):
     def expand_indicator(self):
         """Exposes the expand_indicator widget."""
         return self.ui.expand_indicator
+
+    @property
+    def expand_placeholder(self):
+        """Exposes the expand_placeholder widget."""
+        return self.ui.expand_placeholder
