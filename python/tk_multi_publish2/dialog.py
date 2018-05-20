@@ -955,10 +955,10 @@ class AppDialog(QtGui.QWidget):
         self._progress_handler.set_phase(self._progress_handler.PHASE_VALIDATE)
         self._progress_handler.push("Running validation pass")
 
-        parent = self.ui.items_tree.invisibleRootItem()
         num_issues = 0
         self.ui.stop_processing.show()
         try:
+            parent = self.ui.items_tree.invisibleRootItem()
             num_issues = self._visit_tree_r(parent, lambda child: child.validate(standalone), "Validating")
         finally:
             self._progress_handler.pop()
@@ -1043,9 +1043,8 @@ class AppDialog(QtGui.QWidget):
             self._progress_handler.set_phase(self._progress_handler.PHASE_PUBLISH)
             self._progress_handler.push("Running publishing pass")
 
-            parent = self.ui.items_tree.invisibleRootItem()
-
             # clear all icons
+            parent = self.ui.items_tree.invisibleRootItem()
             self._reset_tree_icon_r(parent)
 
             try:
@@ -1064,9 +1063,15 @@ class AppDialog(QtGui.QWidget):
 
                 # inform the progress system of the current mode
                 self._progress_handler.set_phase(self._progress_handler.PHASE_FINALIZE)
-
                 self._progress_handler.push("Running finalizing pass")
+
                 try:
+                    # note: Bugfix SG-4584: Re-acquire the parent pointer as we are iterating.
+                    # If publishing is long running, it's seems the root item pointer for some
+                    # reason gets GCed. By getting a fresh handle, we ensure that we won't run
+                    # into issues where the python object exists but the underlying C++ object
+                    # has been deleted.
+                    parent = self.ui.items_tree.invisibleRootItem()
                     self._visit_tree_r(parent, lambda child: child.finalize(), "Finalizing")
                 except Exception, e:
                     # ensure the full error shows up in the log file
