@@ -102,8 +102,17 @@ class MultiPublish2(sgtk.platform.Application):
         """
         return True
 
+    def create_manager(self, publish_logger=logger):
+        """
+        Create and return a :class:`tk_multi_publish2.PublishManager` instance.
+        """
+
+        static_pub2 = self.import_module("tk_multi_publish2", static=True)
+        return static_pub2.PublishManager(publish_logger=publish_logger)
+
     def destroy_app(self):
         """
         Tear down the app
         """
         self.log_debug("Destroying tk-multi-publish2")
+
