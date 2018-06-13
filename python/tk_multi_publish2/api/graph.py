@@ -8,14 +8,15 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-#try:
-#   import cPickle as pickle
-#except:
-#   import pickle
-import pickle
+
+import sys
+
+try:
+    import cPickle as pickle
+except:
+    import pickle
 
 import sgtk
-
 from .item import PublishItem
 
 logger = sgtk.platform.get_logger(__name__)
@@ -27,7 +28,8 @@ class PublishGraph(object):
     def load(path):
 
         with open(path, "rb") as graph_file:
-            graph = pickle.load(graph_file)
+            unpickler = _PublishGraphUnpicklerFactory.get_unpickler(graph_file)
+            graph = unpickler.load()
 
         return graph
 
@@ -222,3 +224,50 @@ class PublishGraph(object):
             yield item
             for child_item in self._traverse_graph(item):
                 yield child_item
+
+
+class _PublishGraphUnpicklerFactory(object):
+
+    MAPPED_MODULES = {}
+
+    @classmethod
+    def unpickle_find_class(cls, module_name, class_name):
+
+        # given a namespaced module/classname, return the same module in the new
+        # tk namespace. example module name:
+        #     tkimp4b0b5e4c49974e21813a21928b101a9f.tk_multi_publish2.base_hooks
+        #          ^------------------------------^
+        #           this part will be different in
+        #           a separate/reloaded tk process
+
+        matched_class = None
+
+        if module_name.startswith("tkimp"):
+
+            if module_name not in cls.MAPPED_MODULES:
+
+                module_parts = module_name.split(".")
+                actual_module_name = ".".join(module_parts[1:])
+
+                for (sys_module_name, sys_module) in sys.modules.iteritems():
+                    if sys_module_name.endswith(actual_module_name):
+                        cls.MAPPED_MODULES[module_name] = getattr(
+                            sys_module, class_name)
+                        break
+
+            matched_class = cls.MAPPED_MODULES.get(module_name)
+
+        return matched_class
+
+    @classmethod
+    def get_unpickler(cls, file_obj):
+
+        if pickle.__name__ == "cPickle":
+            unpickler = pickle.Unpickler(file_obj)
+            unpickler.find_global = cls.unpickle_find_class
+        else:
+            class UnpicklerSubclass(pickle.Unpickler):
+                find_class = staticmethod(cls.unpickle_find_class)
+            unpickler = UnpicklerSubclass(file_obj)
+
+        return unpickler

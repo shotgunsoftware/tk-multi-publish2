@@ -23,7 +23,10 @@ class MultiPublish2(sgtk.platform.Application):
         """
         Called as the application is being initialized
         """
+
         tk_multi_publish2 = self.import_module("tk_multi_publish2")
+
+        self._manager_class = tk_multi_publish2.PublishManager
 
         # make the util methods available via the app instance
         self._util = tk_multi_publish2.util
@@ -107,8 +110,7 @@ class MultiPublish2(sgtk.platform.Application):
         Create and return a :class:`tk_multi_publish2.PublishManager` instance.
         """
 
-        static_pub2 = self.import_module("tk_multi_publish2", static=True)
-        return static_pub2.PublishManager(publish_logger=publish_logger)
+        return self._manager_class(publish_logger=publish_logger)
 
     def destroy_app(self):
         """

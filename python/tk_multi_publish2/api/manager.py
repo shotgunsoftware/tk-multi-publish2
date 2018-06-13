@@ -24,9 +24,6 @@ logger = sgtk.platform.get_logger(__name__)
 #  item api must be identical
     # consider how to handle Qt stuff in api
 
-
-
-
 class PublishManager(object):
     """
     This class is used for managing and executing a publish graph.
@@ -175,9 +172,6 @@ class PublishManager(object):
 
         NOTE: the manager's current graph will be lost.
         """
-
-
-
         self._graph = PublishGraph.load(path)
 
     def save_graph(self, path):

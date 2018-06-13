@@ -9,4 +9,4 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 from .collector_instance import CollectorPluginInstance
-from .publish_instance import PublishPluginInstance
+from .publish_plugin_instance import PublishPluginInstance

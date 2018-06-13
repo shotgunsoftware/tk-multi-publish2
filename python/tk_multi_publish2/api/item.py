@@ -15,7 +15,6 @@ import sgtk
 
 from .data import PublishData
 from .task import PublishTask
-from ..base_hooks import PublishPlugin
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -371,22 +370,17 @@ class PublishItem(object):
         # try to determine the current publish plugin
         calling_object = inspect.stack()[2][0].f_locals.get("self")
 
-        plugin_classes = (
-            PublishPlugin,
-            sgtk.platform.current_bundle().base_hooks.PublishPlugin
-        )
-
-        if not calling_object or not isinstance(calling_object, plugin_classes):
+        if not calling_object or not isinstance(calling_object, sgtk.hook.Hook):
             raise AttributeError(
                 "Could not determine the current publish plugin when accessing "
                 "an item's local properties. Item: %s" % (self,))
 
-        object_id = id(calling_object)
+        plugin_id = calling_object.id
 
-        if object_id not in self._local_properties:
-            self._local_properties[object_id] = PublishData()
+        if plugin_id not in self._local_properties:
+            self._local_properties[plugin_id] = PublishData()
 
-        return self._local_properties[object_id]
+        return self._local_properties[plugin_id]
 
     # TODO: consider
     def set_icon_from_path(self, path):
