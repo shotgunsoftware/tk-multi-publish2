@@ -48,8 +48,6 @@ class PluginInstanceBase(object):
         self._settings = {}
 
         # create an instance of the hook
-        # TODO: we need to make this picklable. implement __get/setstate__
-        #       methods, storing the path
         self._hook_instance = self._create_hook_instance(self._path)
 
         # kick things off

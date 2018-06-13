@@ -8,6 +8,8 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import uuid
+
 import sgtk
 
 HookBaseClass = sgtk.get_hook_baseclass()
@@ -23,6 +25,15 @@ class PublishPlugin(HookBaseClass):
 
     ############################################################################
     # Plugin properties
+
+    def __init__(self, *args, **kwargs):
+
+        super(PublishPlugin, self).__init__(*args, **kwargs)
+        self._id = uuid.uuid4().hex
+
+    @property
+    def id(self):
+        return self._id
 
     @property
     def icon(self):
