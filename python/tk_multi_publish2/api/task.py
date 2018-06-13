@@ -11,6 +11,7 @@
 import uuid
 
 import sgtk
+from .plugins.setting import Setting
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -44,7 +45,7 @@ class PublishTask(object):
         # need to make a deep copy of the settings
         self._settings = {}
         for (setting_name, setting) in plugin.settings.items():
-            self._settings[setting_name] = setting.deep_copy()
+            self._settings[setting_name] = Setting.deep_copy(setting)
 
         self._active = True
         self._visible = True

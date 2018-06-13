@@ -15,8 +15,19 @@ class PublishData(collections.MutableMapping):
     """
     A simple dictionary-like object for storing arbitrary data.
 
-    Provides access via standard dict syntax as well as dot notation.
+    Provides access via standard dict syntax as well as dot notation. This is
+    used as the base class for any arbitrary data exposed by the publish API
+    including internal representation of settings (as configured or modified
+    by the UI) and publish item properties.
     """
+
+    @classmethod
+    def deep_copy(cls, pub_data_obj):
+        """
+        Returns a new :class:`~.PublishData`` instance with a deep copy of the
+        data for the supplied object.
+        """
+        return PublishData(**pub_data_obj.to_dict())
 
     def __init__(self, **kwargs):
         """
@@ -25,22 +36,11 @@ class PublishData(collections.MutableMapping):
         """
         self.__dict__.update(**kwargs)
 
-    def deep_copy(self):
-        """
-        Returns a new ``PublishData`` instance with a deep copy of the data
-        defined by the current instance.
-        """
-        return PublishData(**self.to_dict())
-
     def to_dict(self):
         """
         Returns a regular dict representation of the object.
         """
-        object_dict = {}
-        for (key, value) in self.items():
-            object_dict[key] = value
-
-        return object_dict
+        return self.__dict__
 
     def __setitem__(self, key, value):
         self.__dict__[key] = value
