@@ -10,6 +10,7 @@
 
 
 import sys
+import traceback
 
 try:
     import cPickle as pickle
@@ -23,21 +24,75 @@ logger = sgtk.platform.get_logger(__name__)
 
 
 class PublishGraph(object):
+    """
+    This class defines the internal representation of a publish graph. Instances
+    store the relationships between items (the things to be published) and
+    their child items. In addition to items, the graph instances store the tasks
+    which operate on items. The tasks represent instances of a configured plugin
+    that have been associated with an item.
+
+    At a high level, a publish graph might be structured like this::
+
+        * root
+            * item1
+                * itemA
+                * itemB
+            * item2
+                * itemC
+            * item3
+                * itemD
+            ...
+
+    Each item in the graph (excluding the root) might have one or more
+    associated tasks.
+
+    The :class:`~.PublishGraph` class itself is strictly used for storing the
+    associations between items and the tasks that are assigned to items. It has
+    no knowledge of what the items represent or what the tasks do. It provides
+    methods for traversing the graph and modifying it by
+    adding/removing/modifying items and tasks.
+
+    The class also provides an interface for serialization and deserialization
+    of graph instances.
+    """
 
     @staticmethod
-    def load(path):
+    def load(file_path):
+        """
+        This method returns a new :class:`~.PublishGraph` instance by reading
+        a serialized graph file from disk.
 
-        with open(path, "rb") as graph_file:
-            unpickler = _PublishGraphUnpicklerFactory.get_unpickler(graph_file)
-            graph = unpickler.load()
+        :param file_path: The path to a serialized publish graph.
+        :return: A :class:`~.PublishGraph` instance
+        """
+
+        with open(file_path, "rb") as graph_file:
+
+            # In order to unpickle the file, we rely on the custom unpickler
+            # factory. The factory will provide an Unpickler instance that
+            # knows how to handle instances of classes that were pickled after
+            # being imported using bundle.import_module(). See the unpickler
+            # factory class below for more details.
+            unpickler = _PublishGraphUnpicklerFactory.create(graph_file)
+            try:
+                graph = unpickler.load()
+            except Exception:
+                logger.error(
+                    "There was an error trying to load the publish graph for "
+                    "the file: %s.\n%s" % (file_path, traceback.format_exc())
+                )
+                raise
 
         return graph
 
     def __init__(self):
+        """Initialize the publish graph instance."""
 
-        self._root_item = PublishItem(self, "root", "_root", "_root")
-
-        # different structures define the graph itself
+        # these internal members define the structure and relationships of the
+        # graph itself. we intentionally only store complex objects in a single
+        # place like _items, _tasks, and _plugins. All other lookups are id
+        # based to keep the complexity down and simplify serialization of the
+        # graph.
         self._child_lookup = {}
         self._items = []
         self._items_by_id = {}
@@ -48,54 +103,77 @@ class PublishGraph(object):
         self._tasks_by_id = {}
         self._item_by_task = {}
 
-        # be sure to add the root item
+        # The root item is the sole parent of all top-level publish items. It
+        # has no use other than organization and provides an easy interface for
+        # beginning iteration and accessing all top-level items.
+        self._root_item = PublishItem(self, "root", "_root", "_root")
         self.add_item(self._root_item)
 
     def __iter__(self):
         """Iterates over the graph, depth first."""
 
+        # start at the top and recurse down, yielding items as they're returned
         for item in self._traverse_graph(self._root_item):
             yield item
 
     def add_item(self, item, parent_item=None):
+        """
+        Add the supplied item to the graph.
 
-        item_ids = [n.id for n in self._items]
+        If a parent is supplied, make it the parent of the supplied item. If no
+        parent is supplied, the root item will be the parent.
+
+        :param item: The item to add to the graph. A :class:`~.item.PublishItem`
+            instance.
+        :param parent_item: The item to parent ``item`` to. A
+            :class:`~.item.PublishItem` instance.
+        """
 
         # if specified, ensure the parent item is in the graph
-        if parent_item and parent_item.id not in item_ids:
-            raise LookupError(
+        if parent_item and parent_item.id not in self._items_by_id:
+            raise sgtk.TankError(
                 "Can not add item %s to the graph because the specified parent "
                 "item, %s, does not exist in the graph." % (item, parent_item)
             )
 
-        # use the root if no parent specified (and the item being added isn't
-        # the root item itself)
+        # use the root if no parent specified and the item being added isn't
+        # the root item itself. This means the root item should be the only item
+        # without a parent.
         if not parent_item and item != self._root_item:
             parent_item = self._root_item
 
         # make sure the item doesn't already exist in the graph
-        if item.id in item_ids:
-            raise LookupError("The supplied item already exists in the graph.")
+        if item.id in self._items_by_id:
+            raise sgtk.TankError(
+                "The supplied item already exists in the graph.")
 
-        # initialize the child list for the item
+        # initialize the child list for the item. this is where we'll store a
+        # list of child item ids as they're added to the model with this item
+        # as the parent
         self._child_lookup[item.id] = []
 
         # add the item to the list of items. Note, we're using a list here to
         # maintain order
         self._items.append(item)
 
-        # for convenience, create a lookup by id
+        # for convenience, create a lookup by id. this allows us to quickly
+        # check if an item already exists in the graph given that we're storing
+        # the actual objects in a list.
         self._items_by_id[item.id] = item
 
         # add the item to the parent and child lookups
         if parent_item:
+            # create a quick look up from item to parent and vice versa
             self._parent_lookup[item.id] = parent_item.id
             self._child_lookup[parent_item.id].append(item.id)
 
-        # prepopulate the list of tasks for the item
+        # prepopulate the list of tasks for the item. this is where we'll store
+        # a list of tasks associated with this item as they are attached to
+        # this item during collection
         self._tasks_by_item[item.id] = []
 
     def remove_item(self, item):
+        # TODO!
         pass
 
         # remove from items list
@@ -105,6 +183,19 @@ class PublishGraph(object):
         # do the same for any children recursively
 
     def add_plugin(self, plugin):
+        """Add the supplied plugin to the graph.
+
+        This method is used to store a plugin instance with the graph. This
+        allows the graph to house all plugin instance definitions so that the
+        Tasks only need store the task-specific settings to be used during
+        execution.
+
+        This method typically does not need to be called externally as this is
+        handled automatically during Task instance initialization.
+
+        :param plugin: A :class:`~.plugins.PublishPluginInstace` hook with
+            configured settings that the graph should be aware of.
+        """
 
         if plugin.id in self._plugins:
             logger.debug(
@@ -116,39 +207,55 @@ class PublishGraph(object):
         self._plugins[plugin.id] = plugin
 
     def add_task(self, task, parent_item):
-        # TODO: docstring
+        """
+        Add a task to an item.
+
+        The supplied task is associated with the supplied parent item by adding
+        it to the list of associated tasks.
+
+        :param task: The :class:`~.task.PublishTask` to associate with the
+            supplied item.
+        :param parent_item: The :class:`~.item.PublishItem` the task will be
+            associated with.
+        """
 
         # ensure the task's plugin has been added to the graph
         if task.plugin.id not in self._plugins:
-            raise LookupError(
+            raise sgtk.TankError(
                 "Unable to add task '%s' to the graph. It references a plugin "
                 "that the graph is unaware of. Please be sure to add the "
                 "plugin to the graph first by calling `add_plugin()`."
             )
 
-        item_ids = [n.id for n in self._items]
-
-        if parent_item.id not in item_ids:
-            raise LookupError(
+        # ensure the parent item actually exists in the graph
+        if parent_item.id not in self._items_by_id:
+            raise sgtk.TankError(
                 "Unable to add task '%s' to item '%s'. The item does not exist "
                 "in the graph."
             )
 
+        # update the internal state to reflect the new task/item association
         self._tasks.append(task)
         self._tasks_by_id[task.id] = task
         self._tasks_by_item[parent_item.id].append(task.id)
         self._item_by_task[task.id] = parent_item.id
 
     def get_parent(self, child_item):
-        """Returns the parent of the supplied item."""
+        """
+        Returns the parent item for the supplied child item.
 
+        Will return the root item if the supplied item is a top-level publish
+        item. Will return ``None`` if the supplied item is the root item.
+
+        :param child_item: The item for which the parent will be returned.
+        :return: A :class:`~.item.PublishItem` instance.
+        """
+
+        # use the parent lookup to find the parent item's id
         parent_id = self._parent_lookup.get(child_item.id)
+        return self._items_by_id.get(parent_id)
 
-        if not parent_id:
-            return None
-
-        return self._items_by_id[parent_id]
-
+    # TODO: resume here!
     def get_children(self, parent_item):
         """Returns a list of all child items of the supplied parent."""
         child_item_ids = self._child_lookup[parent_item.id]
@@ -260,7 +367,7 @@ class _PublishGraphUnpicklerFactory(object):
         return matched_class
 
     @classmethod
-    def get_unpickler(cls, file_obj):
+    def create(cls, file_obj):
 
         if pickle.__name__ == "cPickle":
             unpickler = pickle.Unpickler(file_obj)
