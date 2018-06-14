@@ -87,27 +87,7 @@ class PublishGraph(object):
 
     def __init__(self):
         """Initialize the publish graph instance."""
-
-        # these internal members define the structure and relationships of the
-        # graph itself. we intentionally only store complex objects in a single
-        # place like _items, _tasks, and _plugins. All other lookups are id
-        # based to keep the complexity down and simplify serialization of the
-        # graph.
-        self._child_lookup = {}
-        self._items = []
-        self._items_by_id = {}
-        self._parent_lookup = {}
-        self._plugins = {}
-        self._tasks = []
-        self._tasks_by_item = {}
-        self._tasks_by_id = {}
-        self._item_by_task = {}
-
-        # The root item is the sole parent of all top-level publish items. It
-        # has no use other than organization and provides an easy interface for
-        # beginning iteration and accessing all top-level items.
-        self._root_item = PublishItem(self, "root", "_root", "_root")
-        self.add_item(self._root_item)
+        self._init_state()
 
     def __iter__(self):
         """Iterates over the graph, depth first."""
@@ -172,15 +152,103 @@ class PublishGraph(object):
         # this item during collection
         self._tasks_by_item[item.id] = []
 
-    def remove_item(self, item):
-        # TODO!
-        pass
+    def clear(self, include_persistent=False):
+        """Clears the graph of all non-persistent items.
 
-        # remove from items list
-        # remove from items_by_id dict
-        # remove from parent lookup
-        # remove from child lookups
-        # do the same for any children recursively
+        If ``include_persistent`` is ``True``, all items will be cleared from
+        the graph.
+        """
+
+        if include_persistent:
+            # this is a much simpler proposition. simply clear the state of
+            # everything
+            self._init_state()
+            return
+
+        # if we're here, we need to be methodical about clearing the graph.
+        # we need to process the top level items and remove any that are not
+        # persistent, cleaning up the internal state as we go.
+
+        # ---- ITEMS
+
+        items_to_keep = [self._root_item]
+        items_to_keep.extend(self.persistent_items)
+        for item in self.persistent_items:
+            # include the ancestors of the persistent items as the ones to keep
+            items_to_keep.extend(self.get_ancestors(item))
+
+        # reset the items list to include only items to keep
+        self._items = items_to_keep
+
+        # rebuild the items by id lookup
+        self._items_by_id = {}
+        for item in self._items:
+            self._items_by_id[item.id] = item
+
+        # clean up the parent lookup
+        ids_to_del = []
+        for item_id in self._parent_lookup:
+            if item_id not in self._items_by_id:
+                ids_to_del.append(item_id)
+        for item_id in ids_to_del:
+            del self._parent_lookup[item_id]
+
+        # clean up the child lookup
+        ids_to_del = []
+        for item_id in self._child_lookup:
+            if item_id not in self._items_by_id:
+                ids_to_del.append(item_id)
+            else:
+                # remove child items from the lookup that may have been removed.
+                child_ids = self._child_lookup[item_id]
+                self._child_lookup[item_id] = [
+                    i for i in child_ids if i in self._items_by_id]
+
+        for item_id in ids_to_del:
+            del self._child_lookup[item_id]
+
+        # ---- TASKS
+
+        # reset the tasks based on the items we're keeping
+        tasks_to_keep = []
+        for item in self._items:
+            if item.id in self._tasks_by_item:
+                for task_id in self._tasks_by_item[item.id]:
+                    tasks_to_keep.append(self._tasks_by_id[task_id])
+        self._tasks = tasks_to_keep
+
+        # rebuild the task by id lookup
+        self._tasks_by_id = {}
+        for task in self._tasks:
+            self._tasks_by_id[task.id] = task
+
+        # clean up the tasks by item lookup
+        ids_to_del = []
+        for item_id in self._tasks_by_item:
+            if item_id not in self._items_by_id:
+                ids_to_del.append(item_id)
+        for item_id in ids_to_del:
+            del self._tasks_by_item[item_id]
+
+        # clean up the item by task lookup
+        ids_to_del = []
+        for task_id in self._items_by_task:
+            if task_id not in self._tasks_by_id:
+                ids_to_del.append(task_id)
+        for task_id in ids_to_del:
+            del self._items_by_task[task_id]
+
+        # ---- PLUGINS
+
+        # determine the plugins used by the remaining task
+        plugins_to_keep = set()
+        for task in self._tasks:
+            plugins_to_keep.add(task.plugin)
+
+        # reset the plugin lookup
+        self._plugins = {}
+        for plugin in list(plugins_to_keep):
+            self._plugins[plugin.id] = plugin
 
     def add_plugin(self, plugin):
         """Add the supplied plugin to the graph.
@@ -238,7 +306,7 @@ class PublishGraph(object):
         self._tasks.append(task)
         self._tasks_by_id[task.id] = task
         self._tasks_by_item[parent_item.id].append(task.id)
-        self._item_by_task[task.id] = parent_item.id
+        self._items_by_task[task.id] = parent_item.id
 
     def get_parent(self, child_item):
         """
@@ -255,9 +323,14 @@ class PublishGraph(object):
         parent_id = self._parent_lookup.get(child_item.id)
         return self._items_by_id.get(parent_id)
 
-    # TODO: resume here!
     def get_children(self, parent_item):
-        """Returns a list of all child items of the supplied parent."""
+        """Returns a list of all child items of the supplied parent.
+
+        :param parent_item: A :class:`~.item.PublishItem` representing the
+            parent item to return children for
+        :returns: A list of child items. The list may be empty if there are no
+            child items.
+        """
         child_item_ids = self._child_lookup[parent_item.id]
 
         child_items = []
@@ -266,8 +339,15 @@ class PublishGraph(object):
 
         return child_items
 
+    def get_ancestors(self, parent_item):
+        """Returns a list of all ancestors for a given item.
+
+        This includes children, children's children, and so on.
+        """
+        return list(self._traverse_graph(parent_item))
+
     def get_items_for_ids(self, item_ids):
-        """Return items in the graph for the supplied ids."""
+        """A convenience method to return items in the graph for the supplied ids."""
 
         items = []
 
@@ -279,7 +359,7 @@ class PublishGraph(object):
 
     def get_item_for_task(self, task):
         """Returns the item the supplied task is associated with."""
-        item_id = self._item_by_task.get(task.id)
+        item_id = self._items_by_task.get(task.id)
         return self._items_by_id.get(item_id)
 
     def get_plugin_by_id(self, plugin_id):
@@ -295,13 +375,21 @@ class PublishGraph(object):
                 "added to the graph." % (item,)
             )
 
-        task_ids = self._tasks_by_item.get(item.id)
+        task_ids = self._tasks_by_item.get(item.id, [])
 
         tasks = []
         for task_id in task_ids:
             tasks.append(self._tasks_by_id[task_id])
 
         return tasks
+
+    def pformat(self):
+        """Returns a human-readable string representation of the graph"""
+        return self._format_graph(self._root_item)
+
+    def pprint(self):
+        """Prints a human-readable string represenation of the graph."""
+        print self.pformat()
 
     def save(self, path):
         """Save the graph to disk at the supplied path."""
@@ -320,9 +408,62 @@ class PublishGraph(object):
         return self._items
 
     @property
+    def persistent_items(self):
+        """Returns a list of persistent items in the graph."""
+        return [i for i in self.root_item.children if i.persistent]
+
+    @property
     def root_item(self):
         """Returns the root item of this graph."""
         return self._root_item
+
+    def _init_state(self):
+        """The init/reset the graph state."""
+
+        # NOTE: this is factored out to simplify a full reset of the object.
+
+        # these internal members define the structure and relationships of the
+        # graph itself. we intentionally only store complex objects in a single
+        # place like _items, _tasks, and _plugins. All other lookups are id
+        # based to keep the complexity down and simplify serialization of the
+        # graph.
+        self._child_lookup = {}
+        self._items = []
+        self._items_by_id = {}
+        self._parent_lookup = {}
+        self._plugins = {}
+        self._tasks = []
+        self._tasks_by_item = {}
+        self._tasks_by_id = {}
+        self._items_by_task = {}
+
+        # The root item is the sole parent of all top-level publish items. It
+        # has no use other than organization and provides an easy interface for
+        # beginning iteration and accessing all top-level items.
+        self._root_item = PublishItem(self, "root", "_root", "_root")
+        self.add_item(self._root_item)
+
+    def _format_graph(self, parent_item, depth=0):
+        """
+        Depth first traversal and string formatting of the graph given a root
+        node.
+        """
+
+        graph_str = ""
+
+        for item in self.get_children(parent_item):
+
+            # format the item itself
+            graph_str += "%s[item] %s\n" % ((depth * 2) * " ", str(item))
+
+            # now do the item's tasks
+            for task in item.tasks:
+                graph_str += "%s[task] %s\n" % (((depth * 2) + 2) * " ", str(task))
+
+            # process the children as well
+            graph_str += "%s" % (self._format_graph(item, depth=depth+1),)
+
+        return graph_str
 
     def _traverse_graph(self, parent_item):
         """Depth first traversal of the supplied item."""

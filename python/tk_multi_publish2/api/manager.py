@@ -18,7 +18,6 @@ from .plugins import CollectorPluginInstance, PublishPluginInstance
 logger = sgtk.platform.get_logger(__name__)
 
 # TODO:
-#
 #  collector plugin api must be identical
 #  publish plugin api must be identical
 #  item api must be identical
@@ -37,6 +36,11 @@ class PublishManager(object):
     CONFIG_COLLECTOR_HOOK_PATH = "collector"
     CONFIG_COLLECTOR_SETTINGS = "collector_settings"
     CONFIG_PLUGIN_DEFINITIONS = "publish_plugins"
+
+    ############################################################################
+    # special item property keys
+
+    PROPERTY_KEY_COLLECTED_FILE_PATH = "__collected_file_path__"
 
     ############################################################################
     # instance methods
@@ -58,10 +62,6 @@ class PublishManager(object):
 
         # a logger to be used by the various collector/publish plugins
         self.publish_logger = publish_logger
-
-        # TODO: move this info to the graph structure. api to mark nodes as "persistent" instead?
-        # keep a handle on created, external file items
-        self._file_items = {}
 
         # the graph representation
         self._graph = PublishGraph()
@@ -122,7 +122,14 @@ class PublishManager(object):
                     "No items collected for path: %s" % (file_path,))
                 continue
 
-            self._file_items[file_path] = new_file_items
+            # Mark new items as persistent and include the file path that was
+            # used for collection as part of the item properties
+            for file_item in new_file_items:
+                if file_item.parent == self._graph.root_item:
+                    # only top-level items can be marked as persistent
+                    file_item.persistent = True
+                file_item.properties[self.PROPERTY_KEY_COLLECTED_FILE_PATH] = \
+                    file_path
 
             # attach the appropriate plugins to the new items
             self._attach_plugins(new_file_items)
@@ -141,18 +148,17 @@ class PublishManager(object):
         :returns: A list of the items created.
         """
 
-        # get a list of all items in the graph prior to collection
+        # this will clear the graph of all non-persistent items.
+        self._graph.clear()
+
+        # get a list of all items in the graph prior to collection (this should
+        # be only the persistent items)
         item_ids_before = [i.id for i in self._graph.items]
 
         # we supply the root item of the graph for parenting of items that
         # are collected.
         self._collector_instance.run_process_current_session(
             self._graph.root_item)
-
-        # ensure any external files added to the previous graph state are
-        # restored in the new graph
-        for file_item in self._file_items:
-            self._graph.add_item(file_item)
 
         # get a list of all items in the graph after collection
         item_ids_after = [i.id for i in self._graph.items]
@@ -426,4 +432,15 @@ class PublishManager(object):
         Returns ``True`` if the supplied file path has been collected into the
         graph already. ``False`` otherwise.
         """
-        return file_path in self._file_items
+
+        # check each persistent item for a collected file path. if it matches
+        # the supplied path, then the path has already been collected.
+        for item in self._graph.persistent_items:
+            if self.PROPERTY_KEY_COLLECTED_FILE_PATH in item.properties:
+                collected_path = \
+                    item.properties[self.PROPERTY_KEY_COLLECTED_FILE_PATH]
+                if collected_path == file_path:
+                    return True
+
+        # no existing, persistent item was collected with this path
+        return False
