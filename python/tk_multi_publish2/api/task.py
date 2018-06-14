@@ -57,6 +57,10 @@ class PublishTask(object):
         """Representation of the item as a string."""
         return "<[%s] %s: %s>" % (self._id, self.__class__.__name__, self._name)
 
+    def __str__(self):
+        """Human readable representation of the task."""
+        return self.name
+
     def validate(self):
         """
         Validate this Task

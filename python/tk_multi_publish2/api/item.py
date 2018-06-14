@@ -65,12 +65,17 @@ class PublishItem(object):
         self._context = None
         self._global_properties = PublishData()
         self._local_properties = {}
+        self._persistent = False
         self._type_spec = type_spec
         self._type_display = type_display
 
     def __repr__(self):
         """Representation of the item as a string."""
         return "<[%s] %s: %s>" % (self._id, self.__class__.__name__, self._name)
+
+    def __str__(self):
+        """Human readable string representation of the item"""
+        return "%s (%s)" % (self._name, self._type_display)
 
     def add_item(self, item):
         """Add the supplied item to the graph as a child of this item."""
@@ -315,8 +320,26 @@ class PublishItem(object):
 
     @property
     def parent(self):
-        """Returns the item's parent item."""
+        """The item's parent item."""
         return self._graph.get_parent(self)
+
+    @property
+    def persistent(self):
+        """The item should not be removed when the graph is cleared."""
+        return self._persistent
+
+    @persistent.setter
+    def persistent(self, is_persistent):
+        """Set the item to persistent or not.
+
+        Only top-level items can be set to persistent.
+        """
+
+        if self.parent != self._graph.root_item:
+            raise sgtk.TankError(
+                "Only top-level graph items can be made persistent.")
+
+        self._persistent = is_persistent
 
     @property
     def properties(self):
