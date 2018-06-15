@@ -184,8 +184,6 @@ class PublishManager(object):
         """Serialize and save the underlying publish graph to disk."""
         self._graph.save(path)
 
-    # TODO: clear external files
-
     def validate(self):
 
         all_valid = True

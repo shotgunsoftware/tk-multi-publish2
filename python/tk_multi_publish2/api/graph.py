@@ -169,86 +169,17 @@ class PublishGraph(object):
         # we need to process the top level items and remove any that are not
         # persistent, cleaning up the internal state as we go.
 
-        # ---- ITEMS
-
+        # build a list of all items we want to keep
         items_to_keep = [self._root_item]
         items_to_keep.extend(self.persistent_items)
         for item in self.persistent_items:
             # include the ancestors of the persistent items as the ones to keep
             items_to_keep.extend(self.get_ancestors(item))
 
-        # reset the items list to include only items to keep
-        self._items = items_to_keep
+        # what's left are the items to delete
+        items_to_delete = list(set(self._items) - set(items_to_keep))
 
-        # rebuild the items by id lookup
-        self._items_by_id = {}
-        for item in self._items:
-            self._items_by_id[item.id] = item
-
-        # clean up the parent lookup
-        ids_to_del = []
-        for item_id in self._parent_lookup:
-            if item_id not in self._items_by_id:
-                ids_to_del.append(item_id)
-        for item_id in ids_to_del:
-            del self._parent_lookup[item_id]
-
-        # clean up the child lookup
-        ids_to_del = []
-        for item_id in self._child_lookup:
-            if item_id not in self._items_by_id:
-                ids_to_del.append(item_id)
-            else:
-                # remove child items from the lookup that may have been removed.
-                child_ids = self._child_lookup[item_id]
-                self._child_lookup[item_id] = [
-                    i for i in child_ids if i in self._items_by_id]
-
-        for item_id in ids_to_del:
-            del self._child_lookup[item_id]
-
-        # ---- TASKS
-
-        # reset the tasks based on the items we're keeping
-        tasks_to_keep = []
-        for item in self._items:
-            if item.id in self._tasks_by_item:
-                for task_id in self._tasks_by_item[item.id]:
-                    tasks_to_keep.append(self._tasks_by_id[task_id])
-        self._tasks = tasks_to_keep
-
-        # rebuild the task by id lookup
-        self._tasks_by_id = {}
-        for task in self._tasks:
-            self._tasks_by_id[task.id] = task
-
-        # clean up the tasks by item lookup
-        ids_to_del = []
-        for item_id in self._tasks_by_item:
-            if item_id not in self._items_by_id:
-                ids_to_del.append(item_id)
-        for item_id in ids_to_del:
-            del self._tasks_by_item[item_id]
-
-        # clean up the item by task lookup
-        ids_to_del = []
-        for task_id in self._items_by_task:
-            if task_id not in self._tasks_by_id:
-                ids_to_del.append(task_id)
-        for task_id in ids_to_del:
-            del self._items_by_task[task_id]
-
-        # ---- PLUGINS
-
-        # determine the plugins used by the remaining task
-        plugins_to_keep = set()
-        for task in self._tasks:
-            plugins_to_keep.add(task.plugin)
-
-        # reset the plugin lookup
-        self._plugins = {}
-        for plugin in list(plugins_to_keep):
-            self._plugins[plugin.id] = plugin
+        self._remove_items(items_to_delete)
 
     def add_plugin(self, plugin):
         """Add the supplied plugin to the graph.
@@ -347,8 +278,9 @@ class PublishGraph(object):
         return list(self._traverse_graph(parent_item))
 
     def get_items_for_ids(self, item_ids):
-        """A convenience method to return items in the graph for the supplied ids."""
-
+        """
+        A convenience method to return items in the graph for the supplied ids.
+        """
         items = []
 
         for item_id in item_ids:
@@ -390,6 +322,14 @@ class PublishGraph(object):
     def pprint(self):
         """Prints a human-readable string represenation of the graph."""
         print self.pformat()
+
+    def remove_item(self, item):
+        """Remove the supplied item from the graph."""
+
+        if item == self.root_item:
+            raise sgtk.TankError("Removing the root item is not allowed.")
+
+        self._remove_items([item])
 
     def save(self, path):
         """Save the graph to disk at the supplied path."""
@@ -464,6 +404,112 @@ class PublishGraph(object):
             graph_str += "%s" % (self._format_graph(item, depth=depth+1),)
 
         return graph_str
+
+    def _remove_items(self, items):
+        """
+        Remove the supplied items from the tree.
+
+        The internal state of the graph is fairly simple, relying on ids to
+        keep track of the relationships between items, between items and tasks,
+        and between tasks an plugins. In order to update the overall state, this
+        code updates each of these lists/dicts to remove the supplied item,
+        task, and plugin objects/ids appropriately.
+
+        :param items: The items to remove.
+        """
+
+        if self.root_item in items:
+            raise sgtk.TankError("Removing the root item is not allowed.")
+
+        # use the full list to determine what to keep. we'll use this to know
+        # what to keep which makes the logic fairly straight forward.
+        items_to_keep = set(self._items) - set(items)
+
+        # now that we know what to keep we need to maintain the order. i.e. we
+        # can't just set _items to items_to_keep.
+        self._items = [i for i in self._items if i in items_to_keep]
+
+        # rebuild the items by id lookup. this lookup provides quick access to
+        # items based on their id since we store the objects once and use the
+        # ids to keep track of relationships.
+        self._items_by_id = {}
+        for item in self._items:
+            self._items_by_id[item.id] = item
+
+        # clean up the parent lookup. this is a lookup from a child id to its
+        # parent item id. make a list of all the ids in the lookup that need
+        # to be removed, the delete each of those
+        ids_to_del = []
+        for item_id in self._parent_lookup:
+            if item_id not in self._items_by_id:
+                ids_to_del.append(item_id)
+        # do this separately so as not to modify the lookup while iterating
+        for item_id in ids_to_del:
+            del self._parent_lookup[item_id]
+
+        # clean up the child lookup. This is a lookup from a parent id to a
+        # list of child ids. Here we remove entries for items that are being
+        # removed. We also remove items to be removed from the list of child
+        # items.
+        ids_to_del = []
+        for item_id in self._child_lookup:
+            if item_id not in self._items_by_id:
+                ids_to_del.append(item_id)
+            else:
+                # remove child items from the lookup that may have been removed.
+                child_ids = self._child_lookup[item_id]
+                self._child_lookup[item_id] = [
+                    i for i in child_ids if i in self._items_by_id]
+        # do this separately so as not to modify the lookup while iterating
+        for item_id in ids_to_del:
+            del self._child_lookup[item_id]
+
+        # ---- TASKS
+
+        # reset the tasks based on the items we're keeping. go through the items
+        # we're keeping (already populated in self._items) and make a list of
+        # all the tasks assigned to them (the ones we're keeping)
+        tasks_to_keep = []
+        for item in self._items:
+            if item.id in self._tasks_by_item:
+                for task_id in self._tasks_by_item[item.id]:
+                    tasks_to_keep.append(self._tasks_by_id[task_id])
+
+        # reset the list of tasks now that we know what we're keeping
+        self._tasks = tasks_to_keep
+
+        # rebuild the task by id lookup. like items, simply build the
+        self._tasks_by_id = {}
+        for task in self._tasks:
+            self._tasks_by_id[task.id] = task
+
+        # clean up the tasks by item lookup
+        ids_to_del = []
+        for item_id in self._tasks_by_item:
+            if item_id not in self._items_by_id:
+                ids_to_del.append(item_id)
+        for item_id in ids_to_del:
+            del self._tasks_by_item[item_id]
+
+        # clean up the item by task lookup
+        ids_to_del = []
+        for task_id in self._items_by_task:
+            if task_id not in self._tasks_by_id:
+                ids_to_del.append(task_id)
+        for task_id in ids_to_del:
+            del self._items_by_task[task_id]
+
+        # ---- PLUGINS
+
+        # determine the plugins used by the remaining tasks
+        plugins_to_keep = set()
+        for task in self._tasks:
+            plugins_to_keep.add(task.plugin)
+
+        # reset the plugin lookup
+        self._plugins = {}
+        for plugin in list(plugins_to_keep):
+            self._plugins[plugin.id] = plugin
 
     def _traverse_graph(self, parent_item):
         """Depth first traversal of the supplied item."""
