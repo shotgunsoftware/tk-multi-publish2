@@ -77,13 +77,20 @@ class PublishItem(object):
         """Human readable string representation of the item"""
         return "%s (%s)" % (self._name, self._type_display)
 
-    def add_item(self, item):
+    def add_item(self, child_item):
         """Add the supplied item to the graph as a child of this item."""
-        self._graph.add_item(item, parent_item=self)
+        self._graph.add_item(child_item, parent_item=self)
 
-    def remove_item(self):
-        # TODO
-        pass
+    def remove_item(self, child_item):
+        """Remove the supplied child of this item."""
+
+        if child_item not in self.children:
+            raise sgtk.TankError(
+                "Unable to remove child item. Item %s is not a child of %s in "
+                "the graph." % (child_item, self)
+            )
+
+        self._graph.remove_item(child_item)
 
     def create_item(self, item_type, display_type, name):
         """
