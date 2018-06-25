@@ -578,9 +578,12 @@ class _PublishGraphUnpicklerFactory(object):
         """
 
         if pickle.__name__ == "cPickle":
+            # You can't subclass cPickle method so we create an instance and
+            # monkey patch.
             unpickler = pickle.Unpickler(file_obj)
             unpickler.find_global = cls.unpickle_find_class
         else:
+            # We can subclass pickle, so do that and return an instance
             class UnpicklerSubclass(pickle.Unpickler):
                 find_class = staticmethod(cls.unpickle_find_class)
             unpickler = UnpicklerSubclass(file_obj)

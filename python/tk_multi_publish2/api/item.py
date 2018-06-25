@@ -78,11 +78,19 @@ class PublishItem(object):
         return "%s (%s)" % (self._name, self._type_display)
 
     def add_item(self, child_item):
-        """Add the supplied item to the graph as a child of this item."""
+        """
+        Add the supplied item to the graph as a child of this item.
+
+        :param child_item: The item to add as a child of the current item.
+        """
         self._graph.add_item(child_item, parent_item=self)
 
     def remove_item(self, child_item):
-        """Remove the supplied child of this item."""
+        """
+        Remove the supplied child of this item.
+
+        :param child_item: The child item to remove from the current item.
+        """
 
         if child_item not in self.children:
             raise sgtk.TankError(
@@ -161,7 +169,11 @@ class PublishItem(object):
         return child_item
 
     def add_task(self, plugin):
-        # TODO: add docstring
+        """
+        Create a new publish task and attach it to this item.
+
+        :param plugin: The plugin instance this task will represent/execute.
+        """
 
         # create the task item and add it to the graph
         child_task = PublishTask(

@@ -37,6 +37,10 @@ class PublishPluginInstance(PluginInstanceBase):
         super(PublishPluginInstance, self).__init__(path, settings, logger)
 
     def __getstate__(self):
+        """
+        This method is used during serialization to return the state of the
+        plugin instance as a dictionary.
+        """
 
         state = super(PublishPluginInstance, self).__getstate__()
         state["name"] = self._name
@@ -44,6 +48,10 @@ class PublishPluginInstance(PluginInstanceBase):
         return state
 
     def __setstate__(self, state):
+        """
+        This method accepts a deserialized dictionary and returns the current
+        instance populated with that state.
+        """
 
         super(PublishPluginInstance, self).__setstate__(state)
         self._name = state["name"]

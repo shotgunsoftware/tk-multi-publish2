@@ -67,6 +67,10 @@ class PluginInstanceBase(object):
         return bundle.create_hook_instance(path)
 
     def __getstate__(self):
+        """
+        This method is used during serialization to return the state of the
+        plugin instance as a dictionary.
+        """
 
         return {
             "id": self._id,
@@ -77,6 +81,10 @@ class PluginInstanceBase(object):
         }
 
     def __setstate__(self, state):
+        """
+        This method accepts a deserialized dictionary and returns the current
+        instance populated with that state.
+        """
 
         self._id = state["id"]
         self._path = state["path"]
