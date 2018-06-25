@@ -43,8 +43,7 @@ class PublishGraph(object):
                 * itemD
             ...
 
-    Each item in the graph (excluding the root) might have one or more
-    associated tasks.
+    Each item in the graph (excluding the root) can have associated tasks.
 
     The :class:`~.PublishGraph` class itself is strictly used for storing the
     associations between items and the tasks that are assigned to items. It has
@@ -87,6 +86,9 @@ class PublishGraph(object):
 
     def __init__(self):
         """Initialize the publish graph instance."""
+
+        # we want to reset the state of the graph on clear() so we use a
+        # separate method to handle initialization
         self._init_state()
 
     def __iter__(self):
@@ -152,16 +154,16 @@ class PublishGraph(object):
         # this item during collection
         self._tasks_by_item[item.id] = []
 
-    def clear(self, include_persistent=False):
+    def clear(self, clear_persistent=False):
         """Clears the graph of all non-persistent items.
 
-        If ``include_persistent`` is ``True``, all items will be cleared from
-        the graph.
+        :param bool clear_persistent: If ``True``, all items will be cleared
+            from the graph, including persistent items.
         """
 
-        if include_persistent:
+        if clear_persistent:
             # this is a much simpler proposition. simply clear the state of
-            # everything
+            # everything. allow garbage collection to do the rest
             self._init_state()
             return
 
@@ -320,7 +322,7 @@ class PublishGraph(object):
         return self._format_graph(self._root_item)
 
     def pprint(self):
-        """Prints a human-readable string represenation of the graph."""
+        """Prints a human-readable string representation of the graph."""
         print self.pformat()
 
     def remove_item(self, item):
@@ -387,6 +389,9 @@ class PublishGraph(object):
         """
         Depth first traversal and string formatting of the graph given a root
         node.
+
+        :param parent_item: The item to begin with
+        :param depth: The current depth of the traversal (used for indentation)
         """
 
         graph_str = ""
@@ -512,7 +517,10 @@ class PublishGraph(object):
             self._plugins[plugin.id] = plugin
 
     def _traverse_graph(self, parent_item):
-        """Depth first traversal of the supplied item."""
+        """Depth first traversal of the supplied item.
+
+        :param parent_item: The item to begin traversing
+        """
 
         for item in self.get_children(parent_item):
             yield item
@@ -521,11 +529,21 @@ class PublishGraph(object):
 
 
 class _PublishGraphUnpicklerFactory(object):
+    """
+    This is a factory class for returning an instance of Unpickler to handle
+    serialized publish graphs. The Unpickler instance returned depends on
+    whether ``pickle`` or ``cPickle`` is being used.
+    """
 
     MAPPED_MODULES = {}
 
     @classmethod
     def unpickle_find_class(cls, module_name, class_name):
+        """
+        This is the custom unpickle logic for handling toolkit namespaced
+        imports. It handles finding the imported module/class that matches the
+        serialized one.
+        """
 
         # given a namespaced module/classname, return the same module in the new
         # tk namespace. example module name:
@@ -555,6 +573,9 @@ class _PublishGraphUnpicklerFactory(object):
 
     @classmethod
     def create(cls, file_obj):
+        """
+        Factory method to return an Unpickler for the supplied file object.
+        """
 
         if pickle.__name__ == "cPickle":
             unpickler = pickle.Unpickler(file_obj)
