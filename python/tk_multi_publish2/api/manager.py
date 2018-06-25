@@ -18,16 +18,14 @@ from .plugins import CollectorPluginInstance, PublishPluginInstance
 logger = sgtk.platform.get_logger(__name__)
 
 # TODO:
-#  collector plugin api must be identical
-#  publish plugin api must be identical
-#  item api must be identical
+#  collector plugin api must be identical to existing code
+#  publish plugin api must be identical to existing code
+#  item api must be identical to existing code
     # consider how to handle Qt stuff in api
 
 class PublishManager(object):
     """
     This class is used for managing and executing a publish graph.
-
-    TODO: more description here...
     """
 
     ############################################################################
@@ -40,6 +38,10 @@ class PublishManager(object):
     ############################################################################
     # special item property keys
 
+    # this is the key we'll use to store a special property on items that
+    # are collected via a file path. we can use this later on to determine which
+    # items were added to the graph via path collection and what that original
+    # path was (client code could add multiple items for a single path).
     PROPERTY_KEY_COLLECTED_FILE_PATH = "__collected_file_path__"
 
     ############################################################################
@@ -66,8 +68,10 @@ class PublishManager(object):
         # the graph representation
         self._graph = PublishGraph()
 
-        # collector and publish plugins
+        # collector instance for this context
         self._collector_instance = None
+
+        # a lookup of context to publish plugins.
         self._processed_contexts = {}
 
         # initialize the collector plugin
