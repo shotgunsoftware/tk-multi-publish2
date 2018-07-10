@@ -26,7 +26,6 @@ class PublishTask(object):
     def __init__(self, graph, plugin):
         """
         Initialize the task.
-        # TODO
         """
 
         # every task created in the graph has a unique id
@@ -45,7 +44,7 @@ class PublishTask(object):
         # need to make a deep copy of the settings
         self._settings = {}
         for (setting_name, setting) in plugin.settings.items():
-            self._settings[setting_name] = Setting.deep_copy(setting)
+            self._settings[setting_name] = Setting.clone(setting)
 
         self._active = True
         self._visible = True

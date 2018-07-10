@@ -1,4 +1,4 @@
-# Copyright (c) 2017 Shotgun Software Inc.
+# Copyright (c) 2018 Shotgun Software Inc.
 #
 # CONFIDENTIAL AND PROPRIETARY
 #
@@ -38,7 +38,7 @@ class PluginInstanceBase(object):
 
         self._logger = publish_logger
 
-        # every plugin created for use in the graph has a unique id
+        # every plugin created for use in the graph has a unique id.
         self._id = uuid.uuid4().hex
 
         # all plugins need a hook and a name
@@ -109,7 +109,6 @@ class PluginInstanceBase(object):
         try:
             hook_settings_schema = self._hook_instance.settings
         except AttributeError, e:
-            import traceback
             # property not defined by the hook
             logger.debug("no settings property defined by hook")
             hook_settings_schema = {}

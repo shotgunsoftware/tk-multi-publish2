@@ -8,6 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+from collections import defaultdict
 import inspect
 import uuid
 
@@ -64,7 +65,7 @@ class PublishItem(object):
         self._description = None
         self._context = None
         self._global_properties = PublishData()
-        self._local_properties = {}
+        self._local_properties = defaultdict(PublishData)
         self._persistent = False
         self._type_spec = type_spec
         self._type_display = type_display
