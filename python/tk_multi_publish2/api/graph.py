@@ -12,6 +12,7 @@
 import sys
 import traceback
 
+# use the faster `cPickle` if available
 try:
     import cPickle as pickle
 except:
@@ -55,8 +56,10 @@ class PublishGraph(object):
     of graph instances.
     """
 
+    # FIXME: consider updating the internals to store the graph as a json
+    #        document.
     @staticmethod
-    def load(file_path):
+    def load_file(file_path):
         """
         This method returns a new :class:`~.PublishGraph` instance by reading
         a serialized graph file from disk.
@@ -65,16 +68,9 @@ class PublishGraph(object):
         :return: A :class:`~.PublishGraph` instance
         """
 
-        with open(file_path, "rb") as graph_file:
-
-            # In order to unpickle the file, we rely on the custom unpickler
-            # factory. The factory will provide an Unpickler instance that
-            # knows how to handle instances of classes that were pickled after
-            # being imported using bundle.import_module(). See the unpickler
-            # factory class below for more details.
-            unpickler = _PublishGraphUnpicklerFactory.create(graph_file)
+        with open(file_path, "rb") as graph_file_obj:
             try:
-                graph = unpickler.load()
+                return PublishGraph.load(graph_file_obj)
             except Exception:
                 logger.error(
                     "There was an error trying to load the publish graph for "
@@ -82,7 +78,16 @@ class PublishGraph(object):
                 )
                 raise
 
-        return graph
+    @staticmethod
+    def load(file_obj):
+
+        # In order to unpickle the file, we rely on the custom unpickler
+        # factory. The factory will provide an Unpickler instance that
+        # knows how to handle instances of classes that were pickled after
+        # being imported using bundle.import_module(). See the unpickler
+        # factory class below for more details.
+        unpickler = _PublishGraphUnpicklerFactory.create(file_obj)
+        return unpickler.load()
 
     def __init__(self):
         """Initialize the publish graph instance."""
@@ -175,8 +180,9 @@ class PublishGraph(object):
         items_to_keep = [self._root_item]
         items_to_keep.extend(self.persistent_items)
         for item in self.persistent_items:
-            # include the ancestors of the persistent items as the ones to keep
-            items_to_keep.extend(self.get_ancestors(item))
+            # include the descendants of the persistent items as the ones to
+            # keep
+            items_to_keep.extend(self.get_descendants(item))
 
         # what's left are the items to delete
         items_to_delete = list(set(self._items) - set(items_to_keep))
@@ -272,8 +278,8 @@ class PublishGraph(object):
 
         return child_items
 
-    def get_ancestors(self, parent_item):
-        """Returns a list of all ancestors for a given item.
+    def get_descendants(self, parent_item):
+        """Returns a list of all descendants for a given item.
 
         This includes children, children's children, and so on.
         """

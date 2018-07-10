@@ -108,7 +108,7 @@ class MultiPublish2(sgtk.platform.Application):
         """
         return True
 
-    def create_manager(self, publish_logger=logger):
+    def create_manager(self, publish_logger=None):
         """
         Create and return a :class:`tk_multi_publish2.PublishManager` instance.
         See the :class:`tk_multi_publish2.PublishManager` docs for details on

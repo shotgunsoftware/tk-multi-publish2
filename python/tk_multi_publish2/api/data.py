@@ -1,4 +1,4 @@
-# Copyright (c) 2017 Shotgun Software Inc.
+# Copyright (c) 2018 Shotgun Software Inc.
 #
 # CONFIDENTIAL AND PROPRIETARY
 #
@@ -22,12 +22,12 @@ class PublishData(collections.MutableMapping):
     """
 
     @classmethod
-    def deep_copy(cls, pub_data_obj):
+    def clone(cls, pub_data_obj):
         """
         Returns a new :class:`~.PublishData`` instance with a deep copy of the
         data for the supplied object.
         """
-        return PublishData(**pub_data_obj.to_dict())
+        return PublishData(**pub_data_obj.__dict__)
 
     def __init__(self, **kwargs):
         """
@@ -35,12 +35,6 @@ class PublishData(collections.MutableMapping):
         key/value pairs.
         """
         self.__dict__.update(**kwargs)
-
-    def to_dict(self):
-        """
-        Returns a regular dict representation of the object.
-        """
-        return self.__dict__
 
     def __setitem__(self, key, value):
         self.__dict__[key] = value

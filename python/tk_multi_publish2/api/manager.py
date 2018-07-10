@@ -226,8 +226,6 @@ class PublishManager(object):
 
         self.publish_logger.info("Executing publish pass...")
 
-        # TODO: re-validate?
-
         for item in self._graph:
             if not item.active:
                 self.publish_logger.debug(
@@ -388,18 +386,27 @@ class PublishManager(object):
                 engine_instance_name=engine.instance_name
             )
 
-            # since we've supplied an instance name, we should get a list with a
-            # single dictionary returned. if not, return an empty list of
-            # plugins.
-            if len(context_settings) != 1:
+            app_settings = None
+            if len(context_settings) > 1:
+                # There's more than one instance of that app for the engine
+                # instance, so we'll need to deterministically pick one. We'll
+                # pick the one with the same application instance name as the
+                # current app instance.
+                for settings in context_settings:
+                    if settings.get("app_instance") == self._bundle.instance_name:
+                        app_settings = settings
+            elif len(context_settings) == 1:
+                app_settings = context_settings[0]["settings"]
+
+
+            if app_settings:
+                plugin_settings = app_settings[self.CONFIG_PLUGIN_DEFINITIONS]
+            else:
                 self.publish_logger.debug(
                     "Could not find publish plugin settings for context: %s" %
                     (context,)
                 )
-
-            # retrieve the settings from the returned list of dictionaries
-            app_settings = context_settings[0]["settings"]
-            plugin_settings = app_settings[self.CONFIG_PLUGIN_DEFINITIONS]
+                plugin_settings = []
 
         # build up a list of all configured publish plugins here
         plugins = []
