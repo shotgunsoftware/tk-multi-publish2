@@ -27,8 +27,8 @@ class MultiPublish2(sgtk.platform.Application):
         tk_multi_publish2 = self.import_module("tk_multi_publish2")
 
         # the manager class provides the interface for publishing. We store a
-        # reference to it to enable the create_manager method exposed on the
-        # application itself.
+        # reference to it to enable the create_publish_manager method exposed on
+        # the application itself
         self._manager_class = tk_multi_publish2.PublishManager
 
         # make the util methods available via the app instance
@@ -108,7 +108,7 @@ class MultiPublish2(sgtk.platform.Application):
         """
         return True
 
-    def create_manager(self, publish_logger=None):
+    def create_publish_manager(self, publish_logger=None):
         """
         Create and return a :class:`tk_multi_publish2.PublishManager` instance.
         See the :class:`tk_multi_publish2.PublishManager` docs for details on

@@ -27,7 +27,7 @@ class PublishData(collections.MutableMapping):
         Returns a new :class:`~.PublishData`` instance with a deep copy of the
         data for the supplied object.
         """
-        return PublishData(**pub_data_obj.__dict__)
+        return PublishData(**pub_data_obj.to_dict())
 
     def __init__(self, **kwargs):
         """
@@ -35,6 +35,9 @@ class PublishData(collections.MutableMapping):
         key/value pairs.
         """
         self.__dict__.update(**kwargs)
+
+    def to_dict(self):
+        return self.__dict__
 
     def __setitem__(self, key, value):
         self.__dict__[key] = value
