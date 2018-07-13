@@ -8,8 +8,6 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-import uuid
-
 import sgtk
 from .setting import Setting
 
@@ -38,9 +36,6 @@ class PluginInstanceBase(object):
 
         self._logger = publish_logger
 
-        # every plugin created for use in the graph has a unique id.
-        self._id = uuid.uuid4().hex
-
         # all plugins need a hook and a name
         self._path = path
         self._configured_settings = settings
@@ -66,38 +61,28 @@ class PluginInstanceBase(object):
         bundle = sgtk.platform.current_bundle()
         return bundle.create_hook_instance(path)
 
-    def __getstate__(self):
+    def to_dict(self):
         """
         This method is used during serialization to return the state of the
         plugin instance as a dictionary.
         """
 
+        converted_settings = {}
+        for (k, setting) in self._settings.iteritems():
+            converted_settings[k] = setting.to_dict()
+
         return {
-            "id": self._id,
             "path": self._path,
             "configured_settings": self._configured_settings,
             "logger": self.logger.name,
-            "settings": self._settings
+            "settings": converted_settings
         }
-
-    def __setstate__(self, state):
-        """
-        This method accepts a deserialized dictionary and returns the current
-        instance populated with that state.
-        """
-
-        self._id = state["id"]
-        self._path = state["path"]
-        self._configured_settings = state["configured_settings"]
-        self._logger = sgtk.platform.get_logger(state["logger"])
-        self._settings = state["settings"]
-        self._hook_instance = self._create_hook_instance(self._path)
 
     def __repr__(self):
         """
         String representation
         """
-        return "<[%s] %s: %s>" % (self.id, self.__class__.__name__, self._path)
+        return "<%s: %s>" % (self.__class__.__name__, self._path)
 
     def _validate_and_resolve_config(self):
         """
@@ -142,15 +127,6 @@ class PluginInstanceBase(object):
             setting.value = value
 
             self._settings[setting_name] = setting
-
-    @property
-    def id(self):
-        """The id of the plugin.
-
-        This id is unique to the plugin and is persistent across serialization/
-        deserialization.
-        """
-        return self._id
 
     @property
     def logger(self):

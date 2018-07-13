@@ -11,7 +11,7 @@
 import uuid
 
 import sgtk
-from .plugins.setting import Setting
+from .plugins import Setting, PublishPluginInstance
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -23,23 +23,40 @@ class PublishTask(object):
     particular publishing plugin operating on a collected item.
     """
 
-    def __init__(self, graph, plugin):
+    @classmethod
+    def from_dict(cls, task_dict, item=None):
+
+        # create the plugin instance here...
+        plugin = PublishPluginInstance.from_dict(task_dict["plugin"])
+
+        new_task = PublishTask(plugin, item)
+        new_task._name = task_dict["name"]
+        new_task._description = task_dict["description"]
+        new_task._active = task_dict["active"]
+        new_task._visible = task_dict["visible"]
+        new_task._enabled = task_dict["enabled"]
+
+        for (k, setting) in task_dict["settings"].iteritems():
+            new_setting = Setting(
+                setting["name"],
+                setting["type"],
+                setting["default_value"],
+                setting["description"]
+            )
+            new_setting.value = setting["value"]
+            new_task._settings[k] = new_setting
+
+        return new_task
+
+    def __init__(self, plugin, item):
         """
         Initialize the task.
         """
 
-        # every task created in the graph has a unique id
-        self._id = uuid.uuid4().hex
-
-        # A pointer to the graph that this task is a part of
-        self._graph = graph
-
-        # ensure the plugin has been added to the graph
-        graph.add_plugin(plugin)
-
-        self._name = plugin.name
-        self._description = plugin.description
-        self._plugin_id = plugin.id
+        self._item = item
+        self._plugin = plugin
+        self._name = None # task name override of plugin name
+        self._description = None # task description override of plugin desc.
 
         # need to make a deep copy of the settings
         self._settings = {}
@@ -50,11 +67,27 @@ class PublishTask(object):
         self._visible = True
         self._enabled = True
 
-        logger.debug("Created publish graph task: %s" % (self,))
+        logger.debug("Created publish tree task: %s" % (self,))
+
+    def to_dict(self):
+
+        converted_settings = {}
+        for (k, setting) in self._settings.iteritems():
+            converted_settings[k] = setting.to_dict()
+
+        return {
+            "plugin": self.plugin.to_dict(),
+            "name": self._name,
+            "description": self._description,
+            "settings": converted_settings,
+            "active": self._active,
+            "visible": self._visible,
+            "enabled": self._enabled,
+        }
 
     def __repr__(self):
         """Representation of the item as a string."""
-        return "<[%s] %s: %s>" % (self._id, self.__class__.__name__, self._name)
+        return "<%s: %s>" % (self.__class__.__name__, self._name)
 
     def __str__(self):
         """Human readable representation of the task."""
@@ -97,7 +130,7 @@ class PublishTask(object):
 
         * ``True``: Set the item to be active
         * ``False``: Set the item to be inactive
-        * ``None``: Clear the item's state, rely on inheritance within the graph
+        * ``None``: Clear the item's state, rely on inheritance within the tree
         """
         self._active = active_state
 
@@ -107,7 +140,7 @@ class PublishTask(object):
         The description of the item if it has been explicitly set,
         ``None`` otherwise.
         """
-        return self._description
+        return self._description or self.plugin.description
 
     @description.setter
     def description(self, new_description):
@@ -115,19 +148,14 @@ class PublishTask(object):
         self._description = new_description
 
     @property
-    def id(self):
-        """The unique id of the task."""
-        return self._id
-
-    @property
     def item(self):
         """The item this task is associated with"""
-        return self._graph.get_item_for_task(self)
+        return self._item
 
     @property
     def name(self):
         """The display name of the task."""
-        return self._name
+        return self._name or self.plugin.name
 
     @name.setter
     def name(self, new_name):
@@ -137,7 +165,7 @@ class PublishTask(object):
     @property
     def plugin(self):
         """Returns the plugin associated with this task"""
-        return self._graph.get_plugin_by_id(self._plugin_id)
+        return self._plugin
 
     @property
     def settings(self):

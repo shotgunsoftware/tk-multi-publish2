@@ -24,6 +24,19 @@ class PublishPluginInstance(PluginInstanceBase):
     Each plugin object reflects an instance in the app configuration.
     """
 
+    @classmethod
+    def from_dict(cls, instance_dict):
+
+        instance = cls(
+            instance_dict["name"],
+            instance_dict["path"],
+            instance_dict["settings"],
+            logger  # TODO
+        )
+        instance._configured_settings = instance_dict["configured_settings"]
+
+        return instance
+
     def __init__(self, name, path, settings, logger):
         """
         :param name: Name to be used for this plugin instance
@@ -34,27 +47,22 @@ class PublishPluginInstance(PluginInstanceBase):
         # all plugins need a hook and a name
         self._name = name
 
+        # TODO: existing code stores task instances on the plugin. Need to
+        # determine if this is required. If it is, consider how best to
+        # serialize. Breaking API: (property `tasks`, method `add_task`)
+
         super(PublishPluginInstance, self).__init__(path, settings, logger)
 
-    def __getstate__(self):
+    def to_dict(self):
         """
         This method is used during serialization to return the state of the
         plugin instance as a dictionary.
         """
 
-        state = super(PublishPluginInstance, self).__getstate__()
+        state = super(PublishPluginInstance, self).to_dict()
         state["name"] = self._name
 
         return state
-
-    def __setstate__(self, state):
-        """
-        This method accepts a deserialized dictionary and returns the current
-        instance populated with that state.
-        """
-
-        super(PublishPluginInstance, self).__setstate__(state)
-        self._name = state["name"]
 
     def _create_hook_instance(self, path):
         """

@@ -12,20 +12,15 @@ import fnmatch
 
 import sgtk
 
-from .graph import PublishGraph
+from .tree import PublishTree
 from .plugins import CollectorPluginInstance, PublishPluginInstance
 
 logger = sgtk.platform.get_logger(__name__)
 
-# TODO:
-#  collector plugin api must be identical to existing code
-#  publish plugin api must be identical to existing code
-#  item api must be identical to existing code
-    # consider how to handle Qt stuff in api
 
 class PublishManager(object):
     """
-    This class is used for managing and executing a publish graph.
+    This class is used for managing and executing publishes.
     """
 
     ############################################################################
@@ -40,7 +35,7 @@ class PublishManager(object):
 
     # this is the key we'll use to store a special property on items that
     # are collected via a file path. we can use this later on to determine which
-    # items were added to the graph via path collection and what that original
+    # items were added to the tree via path collection and what that original
     # path was (client code could add multiple items for a single path).
     PROPERTY_KEY_COLLECTED_FILE_PATH = "__collected_file_path__"
 
@@ -65,8 +60,8 @@ class PublishManager(object):
         # a logger to be used by the various collector/publish plugins
         self.publish_logger = publish_logger
 
-        # the graph representation
-        self._graph = PublishGraph()
+        # the underlying tree representation of the items to publish
+        self._tree = PublishTree()
 
         # collector instance for this context
         self._collector_instance = None
@@ -82,10 +77,17 @@ class PublishManager(object):
         self.publish_logger.debug("Loading plugins for the current context...")
         self._load_publish_plugins(self._bundle.context)
 
+    def clear(self):
+        """
+        Clear all items to be published.
+        :return:
+        """
+        self._tree.clear(clear_persistent=True)
+
     def collect_files(self, file_paths):
         """
-        Run the collection logic to populate the graph with items for each
-        supplied path.
+        Run the collection logic to populate the publish tree with items for
+        each supplied path.
 
         :param file_paths: A list of file paths to collect as items to publish.
         :returns: A list of the items created.
@@ -95,8 +97,8 @@ class PublishManager(object):
 
         for file_path in file_paths:
 
-            # get a list of all items in the graph prior to collection
-            item_ids_before = [i.id for i in self._graph.items]
+            # get a list of all items in the tree prior to collection
+            items_before = self._tree.items
 
             if self._path_already_collected(file_path):
                 self.publish_logger.debug(
@@ -107,19 +109,18 @@ class PublishManager(object):
                 self.publish_logger.debug(
                     "Collecting file path: %s" % (file_path,))
 
-                # we supply the root item of the graph for parenting of items
+                # we supply the root item of the tree for parenting of items
                 # that are collected.
                 self._collector_instance.run_process_file(
-                    self._graph.root_item,
+                    self._tree.root_item,
                     file_path
                 )
 
-            # get a list of all items in the graph after collection
-            item_ids_after = [i.id for i in self._graph.items]
+            # get a list of all items in the tree after collection
+            items_after = self._tree.items
 
             # calculate which items are new
-            new_file_item_ids = list(set(item_ids_after) - set(item_ids_before))
-            new_file_items = self._graph.get_items_for_ids(new_file_item_ids)
+            new_file_items = list(set(items_after) - set(items_before))
 
             if not new_file_items:
                 self.publish_logger.debug(
@@ -129,7 +130,7 @@ class PublishManager(object):
             # Mark new items as persistent and include the file path that was
             # used for collection as part of the item properties
             for file_item in new_file_items:
-                if file_item.parent == self._graph.root_item:
+                if file_item.parent == self._tree.root_item:
                     # only top-level items can be marked as persistent
                     file_item.persistent = True
                 file_item.properties[self.PROPERTY_KEY_COLLECTED_FILE_PATH] = \
@@ -144,32 +145,31 @@ class PublishManager(object):
 
     def collect_session(self):
         """
-        Run the collection logic to populate the graph with items to publish.
+        Run the collection logic to populate the tree with items to publish.
 
-        This will reestablish the state of the graph, recomputing everything.
-        Any externally added file paths will be retained.
+        This will reestablish the state of the publish tree, recomputing
+        everything. Any externally added file paths will be retained.
 
         :returns: A list of the items created.
         """
 
-        # this will clear the graph of all non-persistent items.
-        self._graph.clear()
+        # this will clear the tree of all non-persistent items.
+        self._tree.clear()
 
-        # get a list of all items in the graph prior to collection (this should
+        # get a list of all items in the tree prior to collection (this should
         # be only the persistent items)
-        item_ids_before = [i.id for i in self._graph.items]
+        items_before = self._tree.items
 
-        # we supply the root item of the graph for parenting of items that
+        # we supply the root item of the tree for parenting of items that
         # are collected.
         self._collector_instance.run_process_current_session(
-            self._graph.root_item)
+            self._tree.root_item)
 
-        # get a list of all items in the graph after collection
-        item_ids_after = [i.id for i in self._graph.items]
+        # get a list of all items in the tree after collection
+        items_after = self._tree.items
 
         # calculate which items are new
-        new_item_ids = list(set(item_ids_after) - set(item_ids_before))
-        new_items = self._graph.get_items_for_ids(new_item_ids)
+        new_items = list(set(items_after) - set(items_before))
 
         # attach the appropriate plugins to the new items
         if new_items:
@@ -177,23 +177,34 @@ class PublishManager(object):
 
         return new_items
 
-    def load_graph(self, path):
-        """Deserialize and load a graph that was previously to disk.
-
-        NOTE: the manager's current graph will be lost.
+    def load(self, path, publish_logger=None):
         """
-        self._graph = PublishGraph.load(path)
+        Load a publish tree that was saved to disk.
+        """
+        self._tree = PublishTree.load_file(path)
 
-    def save_graph(self, path):
-        """Serialize and save the underlying publish graph to disk."""
-        self._graph.save(path)
+    def remove_item(self, item):
+        """
+        Remove the supplied item from the items to be published.
+        """
+        self._tree.remove_item(item)
+
+    def save(self, path):
+        """Serialize and save the underlying publish tree to disk."""
+        self._tree.save_file(path)
 
     def validate(self):
+        """
+        Validate the items in the publish tree.
+
+        Each collected item with attached publish plugins will validate the
+        state of the item in preparation for publishing.
+        """
 
         all_valid = True
 
         self.publish_logger.info("Running validation pass...")
-        for item in self._graph:
+        for item in self._tree:
             if not item.active:
                 self.publish_logger.debug(
                     "Skipping item '%s' because it is inactive" % (item,))
@@ -223,10 +234,16 @@ class PublishManager(object):
         return all_valid
 
     def publish(self):
+        """
+        Publish the collected items.
+
+        Each task assigned to collected items will execute their publish
+        payload. Items are processed in depth first order.
+        """
 
         self.publish_logger.info("Executing publish pass...")
 
-        for item in self._graph:
+        for item in self._tree:
             if not item.active:
                 self.publish_logger.debug(
                     "Skipping item '%s' because it is inactive" % (item,))
@@ -258,9 +275,10 @@ class PublishManager(object):
         return self._bundle.context
 
     @property
-    def graph(self):
-        """Returns the graph object this manager is operating on."""
-        return self._graph
+    def items(self):
+        """A depth-first generator of all items to be published."""
+        for item in self._tree.items:
+            yield item
 
     @property
     def publish_logger(self):
@@ -272,6 +290,11 @@ class PublishManager(object):
         """Set the logger to be used during publish execution."""
         self._logger = publish_logger
 
+    @property
+    def top_level_items(self):
+        """Returns a list of top-level items to be published."""
+        return self._tree.root_item.children
+
     ############################################################################
     # protected methods
 
@@ -280,10 +303,10 @@ class PublishManager(object):
         For each item supplied, load the appropriate plugins and add matching
         tasks.
         """
-
-        # TODO: clear existing plugins/tasks to allow rerunning attach logic?
-
         for item in items:
+
+            # clear existing tasks for this item
+            item.clear_tasks()
 
             self.publish_logger.debug("Processing item: %s" % (item,))
 
@@ -359,6 +382,10 @@ class PublishManager(object):
         )
 
     def _load_publish_plugins(self, context):
+        """
+        Given a context, this method load the corresponding, configured publish
+        plugins.
+        """
 
         # return the cached plugins if the context has already been processed
         if context in self._processed_contexts:
@@ -439,12 +466,12 @@ class PublishManager(object):
     def _path_already_collected(self, file_path):
         """
         Returns ``True`` if the supplied file path has been collected into the
-        graph already. ``False`` otherwise.
+        tree already. ``False`` otherwise.
         """
 
         # check each persistent item for a collected file path. if it matches
         # the supplied path, then the path has already been collected.
-        for item in self._graph.persistent_items:
+        for item in self._tree.persistent_items:
             if self.PROPERTY_KEY_COLLECTED_FILE_PATH in item.properties:
                 collected_path = \
                     item.properties[self.PROPERTY_KEY_COLLECTED_FILE_PATH]

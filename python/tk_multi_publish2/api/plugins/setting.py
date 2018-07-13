@@ -13,7 +13,7 @@ from ..data import PublishData
 
 class Setting(PublishData):
     """
-    Holds configured settings for a task in a publish graph.
+    Holds configured settings for a task in a publish tree.
     """
 
     def __init__(self, name, data_type, default_value, description=None):

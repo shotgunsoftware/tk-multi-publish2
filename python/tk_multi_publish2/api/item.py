@@ -10,7 +10,6 @@
 
 from collections import defaultdict
 import inspect
-import uuid
 
 import sgtk
 
@@ -26,67 +25,136 @@ class PublishItem(object):
     or an object of some type in an artist's session.
     """
 
-    def __init__(self, graph, name, type_spec, type_display):
+    @classmethod
+    def from_dict(cls, item_dict, parent=None):
         """
-        Initialize an item in the graph.
+        Create a publish item instance given the supplied dictionary. The
+        supplied dictionary is typically the result of calling ``to_dict`` on
+        a publish item instance during serialization.
+        """
+
+        new_item = PublishItem(
+            item_dict["name"],
+            item_dict["type_spec"],
+            item_dict["type_display"]
+        )
+
+        new_item._active = item_dict["active"]
+        new_item._description = item_dict["description"]
+
+        for child_dict in item_dict["children"]:
+            new_item._children.append(
+                PublishItem.from_dict(child_dict, parent=new_item)
+            )
+
+        new_item._global_properties = PublishData(
+            **item_dict["global_properties"])
+
+        for (k, prop_dict) in item_dict["local_properties"].iteritems():
+            new_item._local_properties[k] = PublishData(**prop_dict)
+
+        new_item._parent = parent
+
+        new_item._persistent = item_dict["persistent"]
+
+        if item_dict["context"]:
+            new_item._context = sgtk.Context(
+                sgtk.platform.current_bundle().sgtk,
+                **item_dict["context"]
+            )
+
+        for task_dict in item_dict["tasks"]:
+            new_item._tasks.append(
+                PublishTask.from_dict(task_dict, item=new_item)
+            )
+
+        return new_item
+
+    def __init__(self, name, type_spec, type_display, parent=None):
+        """
+        Initialize an item in the tree.
 
         :param name: The display name of the item to create.
         :param type_spec: The type specification for this item.
         :param type_display: The type display string.
 
-        Items store an explicit state that may not represent its actual state
-        within the overall publish graph. For example, if no ``context`` has
-        been set on the item, it will be inherited from its parent in the
-        publish graph. Use the containing graph API to evaluate the inherited
-        state of the item.
-
-        These properties can inherit state from their parents within the graph:
-
-        * ``context``
-
-        If these properties are set to ``None``, their value will be inherited
-        when the graph is processed.
+        NOTE: Items store an explicit state that may not represent its actual
+        state within the overall publish tree. For example, if no ``context``
+        has been set on the item, it will be inherited from its parent in the
+        publish tree.
         """
 
         # NOTE: since this object is serializable, any members added should be
-        # simple python types or serializable objects. Please account for
-        # this in the to/from dict methods if adding additional members.
+        # simple python types or serializable objects.
 
-        # every item created in the graph has a unique id
-        self._id = uuid.uuid4().hex
-
-        # A pointer to the graph that this item is a part of. This allows an
-        # item to define a direct interface for adding child items.
-        self._graph = graph
-
-        # These members are common to all graph items.
-        self._name = name
+        # These members are common to all tree items.
         self._active = True
-        self._description = None
+        self._children = []
         self._context = None
+        self._description = None
         self._global_properties = PublishData()
         self._local_properties = defaultdict(PublishData)
+        self._name = name
+        self._parent = parent
         self._persistent = False
-        self._type_spec = type_spec
+        self._tasks = []
         self._type_display = type_display
+        self._type_spec = type_spec
+
+    def __iter__(self):
+        """Iterates over the item's descendents, depth first."""
+
+        for item in self._traverse_item(self):
+            yield item
+
+    def to_dict(self):
+        """
+        Returns a dictionary representation of the publish item. Typically used
+        during serialization.
+        """
+
+        converted_local_properties = {}
+        for (k, prop) in self._local_properties.iteritems():
+            converted_local_properties[k] = prop.to_dict()
+
+        context_value = None
+        # check _context here to avoid traversing parent. if no context manually
+        # assigned to the item, it will inherit it from the parent or current
+        # bundle context on deserialize.
+        if self._context:
+            context_value = {
+                "project": self._context.project,
+                "entity": self._context.entity,
+                "step": self._context.step,
+                "task": self._context.task,
+                "user": self._context.user,
+                "additional_entities": self._context.additional_entities,
+                "source_entity": self._context.source_entity,
+            }
+
+        return {
+            "active": self.active,
+            "children": [c.to_dict() for c in self._children],
+            "context": context_value,
+            "description": self.description,
+            "global_properties": self._global_properties.to_dict(),
+            "local_properties": converted_local_properties,
+            "name": self.name,
+            "persistent": self.persistent,
+            "tasks": [t.to_dict() for t in self._tasks],
+            "type_display": self.type_display,
+            "type_spec": self.type_spec,
+        }
 
     def __repr__(self):
         """Representation of the item as a string."""
-        return "<[%s] %s: %s>" % (self._id, self.__class__.__name__, self._name)
+        return "<%s: %s>" % (self.__class__.__name__, self._name)
 
     def __str__(self):
         """Human readable string representation of the item"""
         return "%s (%s)" % (self._name, self._type_display)
 
-    def add_item(self, child_item):
-        """
-        Add the supplied item to the graph as a child of this item.
-
-        :param child_item: The item to add as a child of the current item.
-        """
-        self._graph.add_item(child_item, parent_item=self)
-
-    def remove_item(self, child_item):
+    def remove_child(self, child_item):
         """
         Remove the supplied child of this item.
 
@@ -96,10 +164,10 @@ class PublishItem(object):
         if child_item not in self.children:
             raise sgtk.TankError(
                 "Unable to remove child item. Item %s is not a child of %s in "
-                "the graph." % (child_item, self)
+                "the publish tree." % (child_item, self)
             )
 
-        self._graph.remove_item(child_item)
+        self._children = [i for i in self._children if i != child_item]
 
     def create_item(self, item_type, display_type, name):
         """
@@ -159,13 +227,12 @@ class PublishItem(object):
         """
 
         child_item = PublishItem(
-            self._graph,
             name,
             item_type,
-            display_type
+            display_type,
+            parent=self
         )
-
-        self._graph.add_item(child_item, parent_item=self)
+        self._children.append(child_item)
 
         return child_item
 
@@ -176,15 +243,17 @@ class PublishItem(object):
         :param plugin: The plugin instance this task will represent/execute.
         """
 
-        # create the task item and add it to the graph
-        child_task = PublishTask(
-            self._graph,
-            plugin
-        )
-
-        self._graph.add_task(child_task, self)
+        # create the task item and add it to the tree
+        child_task = PublishTask(plugin, self)
+        self._tasks.append(child_task)
 
         return child_task
+
+    def clear_tasks(self):
+        """
+        Clear all tasks for this item.
+        """
+        self._tasks = []
 
     def get_property(self, name, default_value=None):
         """
@@ -226,14 +295,14 @@ class PublishItem(object):
 
         * ``True``: Set the item to be active
         * ``False``: Set the item to be inactive
-        * ``None``: Clear the item's state, rely on inheritance within the graph
+        * ``None``: Clear the item's state, rely on inheritance within the tree
         """
         self._active = active_state
 
     @property
     def children(self):
         """Return the children of this item."""
-        return self._graph.get_children(self)
+        return self._children
 
     @property
     def context(self):
@@ -273,13 +342,9 @@ class PublishItem(object):
         self._description = new_description
 
     @property
-    def id(self):
-        """The id of the item.
-
-        This id is unique to the item and is persistent across serialization/
-        deserialization.
-        """
-        return self._id
+    def is_root(self):
+        """Returns ``True`` if this item is the root, ``False`` otherwise."""
+        return self.parent is None and self.name == "__root__"
 
     @property
     def local_properties(self):
@@ -341,11 +406,11 @@ class PublishItem(object):
     @property
     def parent(self):
         """The item's parent item."""
-        return self._graph.get_parent(self)
+        return self._parent
 
     @property
     def persistent(self):
-        """The item should not be removed when the graph is cleared."""
+        """Indicates if the item should be removed when the tree is cleared."""
         return self._persistent
 
     @persistent.setter
@@ -355,9 +420,9 @@ class PublishItem(object):
         Only top-level items can be set to persistent.
         """
 
-        if self.parent != self._graph.root_item:
+        if not self.parent or not self.parent.is_root:
             raise sgtk.TankError(
-                "Only top-level graph items can be made persistent.")
+                "Only top-level tree items can be made persistent.")
 
         self._persistent = is_persistent
 
@@ -382,7 +447,8 @@ class PublishItem(object):
 
     @property
     def tasks(self):
-        return self._graph.get_tasks(self)
+        """Returns a list of all tasks attached to this item."""
+        return self._tasks
 
     @property
     def type_spec(self):
@@ -410,6 +476,8 @@ class PublishItem(object):
         If this is called more than one level deep in this class, expect issues.
         """
 
+        # TODO: walk up the stack to see if this is called by a hook
+
         # try to determine the current publish plugin
         calling_object = inspect.stack()[2][0].f_locals.get("self")
 
@@ -418,6 +486,13 @@ class PublishItem(object):
                 "Could not determine the current publish plugin when accessing "
                 "an item's local properties. Item: %s" % (self,))
 
+        if not hasattr(calling_object, 'id'):
+            raise AttributeError(
+                "Could not determine the id for this publish plugin. This is"
+                "required for storing local properties. Plugin: %s" %
+                (calling_object,)
+            )
+
         plugin_id = calling_object.id
 
         if plugin_id not in self._local_properties:
@@ -425,7 +500,25 @@ class PublishItem(object):
 
         return self._local_properties[plugin_id]
 
-    # TODO: consider
+    def _traverse_item(self, item):
+        """
+        A recursive method for generating all items in the tree, depth-first.
+        """
+
+        # yield each child item
+        for child_item in item.children:
+            yield child_item
+
+            # now recurse over the each child's children. the recursion will
+            # yield  the grand children back to this method. we need to yield
+            # these back to the calling method. in later versions of python, the
+            # `yield from` could be used to make this cleaner/clearer
+            for grandchild_item in self._traverse_item(child_item):
+                yield grandchild_item
+
+    # TODO: consider these when we get to the UI portion. we can't remove them
+    # because we don't want to break the API, but we need to figure how how they
+    # make sense without a UI in play.
     def set_icon_from_path(self, path):
         pass
 
@@ -434,3 +527,5 @@ class PublishItem(object):
 
     def get_thumbnail_as_path(self):
         return None
+
+
