@@ -42,23 +42,16 @@ class PublishManager(object):
     ############################################################################
     # instance methods
 
-    def __init__(self, publish_logger=None):
+    def __init__(self):
         """
         Initialize the manager.
-
-        :param publish_logger: A logger object that the collector and publish
-            plugins can send logging information to. If not supplied, the app's
-            logger will be used.
         """
 
         # the current bundle (the publisher instance)
         self._bundle = sgtk.platform.current_bundle()
 
-        if not publish_logger:
-            publish_logger = logger
-
         # a logger to be used by the various collector/publish plugins
-        self.publish_logger = publish_logger
+        self.logger = logger
 
         # the underlying tree representation of the items to publish
         self._tree = PublishTree()
@@ -70,11 +63,11 @@ class PublishManager(object):
         self._processed_contexts = {}
 
         # initialize the collector plugin
-        self.publish_logger.debug("Loading collector configuration...")
+        self.logger.debug("Loading collector configuration...")
         self._load_collector()
 
         # go ahead and load the plugins for the current context for efficiency
-        self.publish_logger.debug("Loading plugins for the current context...")
+        self.logger.debug("Loading plugins for the current context...")
         self._load_publish_plugins(self._bundle.context)
 
     def clear(self):
@@ -101,12 +94,12 @@ class PublishManager(object):
             items_before = self._tree.items
 
             if self._path_already_collected(file_path):
-                self.publish_logger.debug(
+                self.logger.debug(
                     "Skipping previously collected file path: '%s'" %
                     (file_path,)
                 )
             else:
-                self.publish_logger.debug(
+                self.logger.debug(
                     "Collecting file path: %s" % (file_path,))
 
                 # we supply the root item of the tree for parenting of items
@@ -123,7 +116,7 @@ class PublishManager(object):
             new_file_items = list(set(items_after) - set(items_before))
 
             if not new_file_items:
-                self.publish_logger.debug(
+                self.logger.debug(
                     "No items collected for path: %s" % (file_path,))
                 continue
 
@@ -177,7 +170,7 @@ class PublishManager(object):
 
         return new_items
 
-    def load(self, path, publish_logger=None):
+    def load(self, path):
         """
         Load a publish tree that was saved to disk.
         """
@@ -203,30 +196,30 @@ class PublishManager(object):
 
         all_valid = True
 
-        self.publish_logger.info("Running validation pass...")
+        self.logger.info("Running validation pass...")
         for item in self._tree:
             if not item.active:
-                self.publish_logger.debug(
+                self.logger.debug(
                     "Skipping item '%s' because it is inactive" % (item,))
                 continue
 
             if not item.tasks:
-                self.publish_logger.debug(
+                self.logger.debug(
                     "Skipping item '%s' because it has no tasks attached." %
                     (item,)
                 )
                 continue
 
-            self.publish_logger.debug("Validating: %s" % (item,))
+            self.logger.debug("Validating: %s" % (item,))
 
             for task in item.tasks:
 
                 if not task.active:
-                    self.publish_logger.debug(
+                    self.logger.debug(
                         "Skipping inactive task: %s" % (task,))
                     continue
 
-                self.publish_logger.debug(
+                self.logger.debug(
                     "Running validation for task: %s" % (task,))
                 if not task.validate():
                     all_valid = False
@@ -241,31 +234,31 @@ class PublishManager(object):
         payload. Items are processed in depth first order.
         """
 
-        self.publish_logger.info("Executing publish pass...")
+        self.logger.info("Executing publish pass...")
 
         for item in self._tree:
             if not item.active:
-                self.publish_logger.debug(
+                self.logger.debug(
                     "Skipping item '%s' because it is inactive" % (item,))
                 continue
 
             if not item.tasks:
-                self.publish_logger.debug(
+                self.logger.debug(
                     "Skipping item '%s' because it has no tasks attached." %
                     (item,)
                 )
                 continue
 
-            self.publish_logger.debug("Publishing: %s" % (item,))
+            self.logger.debug("Publishing: %s" % (item,))
 
             for task in item.tasks:
 
                 if not task.active:
-                    self.publish_logger.debug(
+                    self.logger.debug(
                         "Skipping inactive task: %s" % (task,))
                     continue
 
-                self.publish_logger.debug(
+                self.logger.debug(
                     "Executing publish for task: %s" % (task,))
                 task.publish()
 
@@ -281,18 +274,30 @@ class PublishManager(object):
             yield item
 
     @property
-    def publish_logger(self):
+    def logger(self):
         """Returns the logger used during publish execution."""
         return self._logger
 
-    @publish_logger.setter
-    def publish_logger(self, publish_logger):
+    @logger.setter
+    def logger(self, logger):
         """Set the logger to be used during publish execution."""
-        self._logger = publish_logger
+        self._logger = logger
+
+    @property
+    def root_item(self):
+        """
+        Returns the special root item of the tree. This is the parent item to
+        all items to be published.
+        :return:
+        """
+        return self._tree.root_item
 
     @property
     def top_level_items(self):
-        """Returns a list of top-level items to be published."""
+        """
+        Returns a list of top-level items to be published. These are the
+        immediate children of the root item.
+        """
         return self._tree.root_item.children
 
     ############################################################################
@@ -308,37 +313,37 @@ class PublishManager(object):
             # clear existing tasks for this item
             item.clear_tasks()
 
-            self.publish_logger.debug("Processing item: %s" % (item,))
+            self.logger.debug("Processing item: %s" % (item,))
 
             item_context = item.context
 
             context_plugins = self._load_publish_plugins(item_context)
-            self.publish_logger.debug(
+            self.logger.debug(
                 "Offering %s plugins for context: %s" %
                 (len(context_plugins), item_context)
             )
 
             for context_plugin in context_plugins:
 
-                self.publish_logger.debug(
+                self.logger.debug(
                     "Checking plugin: %s" % (context_plugin,))
 
                 if not self._item_filters_match(item, context_plugin):
                     continue
 
-                self.publish_logger.debug("Running plugin acceptance method...")
+                self.logger.debug("Running plugin acceptance method...")
 
                 # item/filters matched. now see if the plugin accepts
                 accept_data = context_plugin.run_accept(item)
 
                 if accept_data.get("accepted"):
-                    self.publish_logger.debug("Plugin accepted the item.")
+                    self.logger.debug("Plugin accepted the item.")
                     task = item.add_task(context_plugin)
                     task.visible = accept_data.get("visible", True)
                     task.active = accept_data.get("checked", True)
                     task.enabled = accept_data.get("enabled", True)
                 else:
-                    self.publish_logger.debug("Plugin did not accept the item.")
+                    self.logger.debug("Plugin did not accept the item.")
 
     def _item_filters_match(self, item, publish_plugin):
         """
@@ -352,14 +357,14 @@ class PublishManager(object):
         for item_filter in publish_plugin.item_filters:
             if fnmatch.fnmatch(item.type_spec, item_filter):
                 # there is a match!
-                self.publish_logger.debug(
+                self.logger.debug(
                     "Item %s with spec '%s' matches plugin filters: '%s'" %
                     (item, item.type_spec, item_filter)
                 )
                 return True
 
         # no filters match the item's type
-        self.publish_logger.debug(
+        self.logger.debug(
             "Item %s with spec '%s' does not match any plugin filters: '%s'" %
             (item, item.type_spec, publish_plugin.item_filters)
         )
@@ -378,7 +383,7 @@ class PublishManager(object):
         self._collector_instance = CollectorPluginInstance(
             collector_hook_path,
             collector_settings,
-            self.publish_logger
+            self.logger
         )
 
     def _load_publish_plugins(self, context):
@@ -393,7 +398,7 @@ class PublishManager(object):
 
         engine = self._bundle.engine
 
-        self.publish_logger.debug(
+        self.logger.debug(
             "Finding publish plugin settings for context: %s" % (context,))
 
         if context == self._bundle.context:
@@ -429,7 +434,7 @@ class PublishManager(object):
             if app_settings:
                 plugin_settings = app_settings[self.CONFIG_PLUGIN_DEFINITIONS]
             else:
-                self.publish_logger.debug(
+                self.logger.debug(
                     "Could not find publish plugin settings for context: %s" %
                     (context,)
                 )
@@ -441,7 +446,7 @@ class PublishManager(object):
         # create plugin instances for configured plugins
         for plugin_def in plugin_settings:
 
-            self.publish_logger.debug(
+            self.logger.debug(
                 "Found publish plugin config: %s" % (plugin_def,))
 
             publish_plugin_instance_name = plugin_def["name"]
@@ -452,10 +457,10 @@ class PublishManager(object):
                 publish_plugin_instance_name,
                 publish_plugin_hook_path,
                 publish_plugin_settings,
-                self.publish_logger
+                self.logger
             )
             plugins.append(plugin_instance)
-            self.publish_logger.debug(
+            self.logger.debug(
                 "Created publish plugin: %s" % (plugin_instance,))
 
         # ensure the plugins are cached
