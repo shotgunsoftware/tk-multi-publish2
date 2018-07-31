@@ -27,7 +27,7 @@ class PublishData(collections.MutableMapping):
         Returns a new :class:`~.PublishData`` instance with a deep copy of the
         data for the supplied object.
         """
-        return PublishData(**pub_data_obj.to_dict())
+        return cls(**pub_data_obj.to_dict())
 
     def __init__(self, **kwargs):
         """

@@ -230,6 +230,8 @@ class PublishManager(object):
         """
         Publish the collected items.
 
+        The ``validate()`` method should be called first
+
         Each task assigned to collected items will execute their publish
         payload. Items are processed in depth first order.
         """

@@ -164,6 +164,12 @@ class PublishTree(object):
         Returns a dictionary representation of the publish tree. Typically used
         during serialization of the publish tree.
         """
+
+        # TODO: we need to serialize with a version number of some sort in case
+        # we change the serialization method/structure in the future. we
+        # should probably pass that version number down through the root_item
+        # and all of it's children. we'll need to account for this on the
+        # deserialization side as well
         return {"root_item": self.root_item.to_dict()}
 
     @property
