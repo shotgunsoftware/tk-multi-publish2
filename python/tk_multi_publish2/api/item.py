@@ -113,6 +113,11 @@ class PublishItem(object):
         during serialization.
         """
 
+        # TODO: for the global and local properties, we need to be more careful
+        # about how we serialize. clients can add anything they want to these
+        # dictionaries so we either need to set some expectations via the API/
+        # docs or we need to serialize via pickle here (which still may not
+        # work in all cases).
         converted_local_properties = {}
         for (k, prop) in self._local_properties.iteritems():
             converted_local_properties[k] = prop.to_dict()
@@ -121,6 +126,8 @@ class PublishItem(object):
         # check _context here to avoid traversing parent. if no context manually
         # assigned to the item, it will inherit it from the parent or current
         # bundle context on deserialize.
+        # TODO: implement dict from context and context from dict methods in core
+        #       see internal ticket: SG-7690
         if self._context:
             context_value = {
                 "project": self._context.project,
@@ -476,7 +483,8 @@ class PublishItem(object):
         If this is called more than one level deep in this class, expect issues.
         """
 
-        # TODO: walk up the stack to see if this is called by a hook
+        # TODO: walk up the stack to see if this is called by a hook. Perhaps
+        #       there is a method in core to do this for us?
 
         # try to determine the current publish plugin
         calling_object = inspect.stack()[2][0].f_locals.get("self")
@@ -494,9 +502,6 @@ class PublishItem(object):
             )
 
         plugin_id = calling_object.id
-
-        if plugin_id not in self._local_properties:
-            self._local_properties[plugin_id] = PublishData()
 
         return self._local_properties[plugin_id]
 
