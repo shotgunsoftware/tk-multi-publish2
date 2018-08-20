@@ -10,6 +10,7 @@
 
 import sgtk
 
+from .api import PublishManager
 from . import base_hooks
 from . import util
 
