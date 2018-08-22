@@ -91,7 +91,7 @@ class PublishManager(object):
         for file_path in file_paths:
 
             # get a list of all items in the tree prior to collection
-            items_before = self._tree.items
+            items_before = list(self._tree.items)
 
             if self._path_already_collected(file_path):
                 self.logger.debug(
@@ -110,7 +110,7 @@ class PublishManager(object):
                 )
 
             # get a list of all items in the tree after collection
-            items_after = self._tree.items
+            items_after = list(self._tree.items)
 
             # calculate which items are new
             new_file_items = list(set(items_after) - set(items_before))
@@ -151,7 +151,7 @@ class PublishManager(object):
 
         # get a list of all items in the tree prior to collection (this should
         # be only the persistent items)
-        items_before = self._tree.items
+        items_before = list(self._tree.items)
 
         # we supply the root item of the tree for parenting of items that
         # are collected.
@@ -159,7 +159,7 @@ class PublishManager(object):
             self._tree.root_item)
 
         # get a list of all items in the tree after collection
-        items_after = self._tree.items
+        items_after = list(self._tree.items)
 
         # calculate which items are new
         new_items = list(set(items_after) - set(items_before))

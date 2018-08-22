@@ -8,6 +8,8 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import copy
+
 import sgtk
 from .plugins import Setting, PublishPluginInstance
 
@@ -87,7 +89,7 @@ class PublishTask(object):
         # need to make a deep copy of the settings
         self._settings = {}
         for (setting_name, setting) in plugin.settings.items():
-            self._settings[setting_name] = setting.clone()
+            self._settings[setting_name] = copy.deepcopy(setting)
 
         self._active = True
         self._visible = True
