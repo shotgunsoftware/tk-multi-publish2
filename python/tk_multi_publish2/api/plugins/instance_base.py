@@ -112,6 +112,10 @@ class PluginInstanceBase(object):
             self._settings[setting_name] = setting
 
     @property
+    def configured_settings(self):
+        return self._configured_settings
+
+    @property
     def logger(self):
         return self._logger
 

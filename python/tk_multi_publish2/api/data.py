@@ -10,6 +10,11 @@
 
 import collections
 
+try:
+    import cPickle as pickle
+except:
+    import pickle
+
 
 class PublishData(collections.MutableMapping):
     """
@@ -21,6 +26,21 @@ class PublishData(collections.MutableMapping):
     by the UI) and publish item properties.
     """
 
+    @classmethod
+    def from_dict(cls, data):
+
+        deserialized_dict = {}
+
+        for (k, v) in data.iteritems():
+            try:
+                v = pickle.loads(v)
+            except:
+                pass
+
+            deserialized_dict[k] = v
+
+        return cls(**deserialized_dict)
+
     def __init__(self, **kwargs):
         """
         Initialize the data. This allows an instance to be created with supplied
@@ -28,15 +48,19 @@ class PublishData(collections.MutableMapping):
         """
         self.__dict__.update(**kwargs)
 
-    def clone(self):
-        """
-        Returns a new :class:`~.PublishData`` instance with a deep copy of the
-        data for the supplied object.
-        """
-        return self.__class__(**self.to_dict())
-
     def to_dict(self):
-        return self.__dict__
+
+        serialized_dict = {}
+
+        for (k, v) in self.__dict__.iteritems():
+            try:
+                v = pickle.dumps(v)
+            except:
+                pass
+
+            serialized_dict[k] = v
+
+        return serialized_dict
 
     def __setitem__(self, key, value):
         self.__dict__[key] = value

@@ -180,7 +180,7 @@ class PublishTree(object):
     @property
     def items(self):
         """A depth-first generator of all items to be published."""
-        for item in self._tree.root_item:
+        for item in self._root_item:
             yield item
 
     @property

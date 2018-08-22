@@ -11,11 +11,6 @@
 from collections import defaultdict
 import inspect
 
-try:
-    import cPickle
-except:
-    import pickle
-
 import sgtk
 
 from .data import PublishData
@@ -77,17 +72,15 @@ class PublishItem(object):
                 )
             )
 
-        # ---- properties. these were serialized by pickle to try to
-        # handle generic objects that may have been added by the client.
+        # ---- properties
 
         # global
-        global_properties_dict = pickle.loads(item_dict["global_properties"])
-        new_item._global_properties = PublishData( **global_properties_dict)
+        new_item._global_properties = PublishData.from_dict(
+            item_dict["global_properties"])
 
         # local
-        for (k, serialized_dict) in item_dict["local_properties"].iteritems():
-            local_properties_dict = pickle.loads(serialized_dict)
-            new_item._local_properties[k] = PublishData(**local_properties_dict)
+        for (k, prop_dict) in item_dict["local_properties"].iteritems():
+            new_item._local_properties[k] = PublishData.from_dict(prop_dict)
 
         new_item._parent = parent
         new_item._persistent = item_dict["persistent"]
@@ -152,20 +145,20 @@ class PublishItem(object):
         during serialization.
         """
 
-        # clients can add anything they want to these dictionaries so we need to
-        # set some expectations via the API docs. we need to serialize via
-        # pickle here (which still may not work in all cases).
-        converted_global_properties = pickle.dumps(self._global_properties)
+        # For the global and local properties, we are't doing anything fancy
+        # with respect to serialization. clients can add anything they want to
+        # these dictionaries. we document this for them so it's up to them to
+        # be conscious of what goes in there.
         converted_local_properties = {}
         for (k, prop) in self._local_properties.iteritems():
-            converted_local_properties[k] = pickle.dumps(prop)
+            converted_local_properties[k] = prop.to_dict()
 
         context_value = None
         # check _context here to avoid traversing parent. if no context manually
         # assigned to the item, it will inherit it from the parent or current
         # bundle context on deserialize.
-        # TODO: implement dict from context and context from dict methods in core
-        #       see internal ticket: SG-7690
+        # TODO: implement dict from context and context from dict methods in
+        # core. see internal ticket: SG-7690
         if self._context:
             context_value = {
                 "project": self._context.project,
@@ -182,14 +175,13 @@ class PublishItem(object):
             "children": [c.to_dict() for c in self._children],
             "context": context_value,
             "description": self.description,
-            "global_properties": converted_global_properties,
+            "global_properties": self._global_properties.to_dict(),
             "local_properties": converted_local_properties,
             "name": self.name,
             "persistent": self.persistent,
             "tasks": [t.to_dict() for t in self._tasks],
             "type_display": self.type_display,
             "type_spec": self.type_spec,
-            "serialization_version": version
         }
 
     def __repr__(self):
@@ -429,8 +421,8 @@ class PublishItem(object):
             item.properties.publish_name = "Gorilla"
             item.properties.publish_version = "0003"
 
-            # set specific properties in subclasses of the base file publish (this
-            # class). first publish plugin...
+            # set specific properties in subclasses of the base file publish
+            # (this class). first publish plugin...
             item.local_properties.publish_template = "asset_fbx_template"
             item.local_properties.publish_type = "FBX File"
 
