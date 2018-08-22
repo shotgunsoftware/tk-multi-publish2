@@ -159,7 +159,13 @@ class PublishTree(object):
         """
 
         try:
-            json.dump(self, file_obj, indent=2, cls=_PublishTreeEncoder)
+            json.dump(
+                self,
+                file_obj,
+                indent=2,
+                ensure_ascii=True,
+                cls=_PublishTreeEncoder
+            )
         except Exception, e:
             logger.error(
                 "Error saving publish tree: %s\n%s" %
