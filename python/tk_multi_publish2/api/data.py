@@ -32,11 +32,8 @@ class PublishData(collections.MutableMapping):
         deserialized_dict = {}
 
         for (k, v) in data.iteritems():
-            try:
-                v = pickle.loads(v)
-            except:
-                pass
-
+            # ensure the serialized value is a string, not unicode
+            v = pickle.loads(str(v))
             deserialized_dict[k] = v
 
         return cls(**deserialized_dict)
@@ -53,11 +50,7 @@ class PublishData(collections.MutableMapping):
         serialized_dict = {}
 
         for (k, v) in self.__dict__.iteritems():
-            try:
-                v = pickle.dumps(v)
-            except:
-                pass
-
+            v = pickle.dumps(v)
             serialized_dict[k] = v
 
         return serialized_dict
