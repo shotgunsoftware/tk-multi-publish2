@@ -8,8 +8,6 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-import uuid
-
 import sgtk
 from .plugins import Setting, PublishPluginInstance
 
@@ -24,7 +22,30 @@ class PublishTask(object):
     """
 
     @classmethod
-    def from_dict(cls, task_dict, item=None):
+    def from_dict(cls, task_dict, serialization_version, item=None):
+        """
+        Returns an instance of a PublishTask from serialized data.
+
+        :param task_dict: A dictionary of deserialized task data
+        :param serialization_version: The version of serialization logic used to
+            serialize this data.
+        :param item: Optional item to associate with this task
+        """
+
+        # import here to avoid cyclic imports
+        from .tree import PublishTree
+
+        # This check is valid until we need to alter the way serialization is
+        # handled after initial release. Once that happens, this should be
+        # altered to handle the various versions separately with this as the
+        # fallback when the serialization version is not recognized.
+        if serialization_version != PublishTree.SERIALIZATION_VERSION:
+            raise (
+                "Unrecognized serialization version for serlialized publish "
+                "task. It is unclear how this could have happened. Perhaps the "
+                "serialized file was hand edited? Please consult your pipeline "
+                "TD/developer/admin."
+            )
 
         # create the plugin instance here...
         plugin = PublishPluginInstance.from_dict(task_dict["plugin"])
@@ -61,7 +82,7 @@ class PublishTask(object):
         # need to make a deep copy of the settings
         self._settings = {}
         for (setting_name, setting) in plugin.settings.items():
-            self._settings[setting_name] = Setting.clone(setting)
+            self._settings[setting_name] = setting.clone()
 
         self._active = True
         self._visible = True
@@ -76,6 +97,12 @@ class PublishTask(object):
             converted_settings[k] = setting.to_dict()
 
         return {
+            # TODO: how do we avoid serializing the whole plugin here. this
+            # creates a bunch of duplication in the serialized publish tree
+            # as it's common for multiple items to have the same plugin
+            # attached. We should serialize the plugin name, path to the plugin,
+            # and the settings configured for this item's context. that should
+            # reduce it to the minimum amount required.
             "plugin": self.plugin.to_dict(),
             "name": self._name,
             "description": self._description,

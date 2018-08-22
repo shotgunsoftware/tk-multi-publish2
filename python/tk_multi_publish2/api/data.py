@@ -21,20 +21,19 @@ class PublishData(collections.MutableMapping):
     by the UI) and publish item properties.
     """
 
-    @classmethod
-    def clone(cls, pub_data_obj):
-        """
-        Returns a new :class:`~.PublishData`` instance with a deep copy of the
-        data for the supplied object.
-        """
-        return cls(**pub_data_obj.to_dict())
-
     def __init__(self, **kwargs):
         """
         Initialize the data. This allows an instance to be created with supplied
         key/value pairs.
         """
         self.__dict__.update(**kwargs)
+
+    def clone(self):
+        """
+        Returns a new :class:`~.PublishData`` instance with a deep copy of the
+        data for the supplied object.
+        """
+        return self.__class__(**self.to_dict())
 
     def to_dict(self):
         return self.__dict__
