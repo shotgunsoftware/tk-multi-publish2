@@ -24,41 +24,6 @@ class PublishPluginInstance(PluginInstanceBase):
     Each plugin object reflects an instance in the app configuration.
     """
 
-    @classmethod
-    def from_dict(cls, instance_dict, serialization_version):
-        """
-        Returns an instance of a PublishPluginInstance from serialized data.
-
-        :param instance_dict: A dictionary of deserialzied publish plugin data.
-        :param serialization_version: The version of serialization logic used
-            to serialize this data.
-        """
-
-        # import here to avoid cyclic imports
-        from ..tree import PublishTree
-
-        # This check is valid until we need to alter the way serialization is
-        # handled after initial release. Once that happens, this should be
-        # altered to handle the various versions separately with this as the
-        # fallback when the serialization version is not recognized.
-        if serialization_version != PublishTree.SERIALIZATION_VERSION:
-            raise (
-                "Unrecognized serialization version for serlialized publish "
-                "plugin. It is unclear how this could have happened. Perhaps "
-                "the serialized file was hand edited? Please consult your "
-                "pipeline TD/developer/admin."
-            )
-
-        instance = cls(
-            instance_dict["name"],
-            instance_dict["path"],
-            instance_dict["settings"],
-            logger  # TODO
-        )
-        instance._configured_settings = instance_dict["configured_settings"]
-
-        return instance
-
     def __init__(self, name, path, settings, logger):
         """
         :param name: Name to be used for this plugin instance
@@ -74,17 +39,6 @@ class PublishPluginInstance(PluginInstanceBase):
         # serialize. Breaking API: (property `tasks`, method `add_task`)
 
         super(PublishPluginInstance, self).__init__(path, settings, logger)
-
-    def to_dict(self):
-        """
-        This method is used during serialization to return the state of the
-        plugin instance as a dictionary.
-        """
-
-        state = super(PublishPluginInstance, self).to_dict()
-        state["name"] = self._name
-
-        return state
 
     def _create_hook_instance(self, path):
         """

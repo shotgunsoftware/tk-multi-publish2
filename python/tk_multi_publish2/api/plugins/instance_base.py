@@ -61,23 +61,6 @@ class PluginInstanceBase(object):
         bundle = sgtk.platform.current_bundle()
         return bundle.create_hook_instance(path)
 
-    def to_dict(self):
-        """
-        This method is used during serialization to return the state of the
-        plugin instance as a dictionary.
-        """
-
-        converted_settings = {}
-        for (k, setting) in self._settings.iteritems():
-            converted_settings[k] = setting.to_dict()
-
-        return {
-            "path": self._path,
-            "configured_settings": self._configured_settings,
-            "logger": self.logger.name,
-            "settings": converted_settings
-        }
-
     def __repr__(self):
         """
         String representation

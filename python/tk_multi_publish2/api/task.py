@@ -47,8 +47,13 @@ class PublishTask(object):
                 "TD/developer/admin."
             )
 
-        # create the plugin instance here...
-        plugin = PublishPluginInstance.from_dict(task_dict["plugin"])
+        # create the plugin instance
+        plugin = PublishPluginInstance(
+            task_dict["plugin_name"],
+            task_dict["plugin_path"],
+            task_dict["plugin_settings"],
+            logger  # TODO
+        )
 
         new_task = PublishTask(plugin, item)
         new_task._name = task_dict["name"]
@@ -97,13 +102,10 @@ class PublishTask(object):
             converted_settings[k] = setting.to_dict()
 
         return {
-            # TODO: how do we avoid serializing the whole plugin here. this
-            # creates a bunch of duplication in the serialized publish tree
-            # as it's common for multiple items to have the same plugin
-            # attached. We should serialize the plugin name, path to the plugin,
-            # and the settings configured for this item's context. that should
-            # reduce it to the minimum amount required.
-            "plugin": self.plugin.to_dict(),
+            "plugin_name": self.plugin.name,
+            "plugin_path": self.plugin.path,
+            "plugin_settings": self.plugin.configured_settings,
+            # TODO: plugin logger
             "name": self._name,
             "description": self._description,
             "settings": converted_settings,
