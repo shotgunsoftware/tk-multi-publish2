@@ -11,6 +11,11 @@
 from collections import defaultdict
 import inspect
 
+try:
+    import cPickle
+except:
+    import pickle
+
 import sgtk
 
 from .data import PublishData
@@ -26,12 +31,33 @@ class PublishItem(object):
     """
 
     @classmethod
-    def from_dict(cls, item_dict, parent=None):
+    def from_dict(cls, item_dict, serialization_version, parent=None):
         """
         Create a publish item instance given the supplied dictionary. The
         supplied dictionary is typically the result of calling ``to_dict`` on
         a publish item instance during serialization.
+
+        :param dict item_dict: A dictionary with the deserialized contents of
+            a publish item.
+        :param int serialization_version: The version of publish item
+            serialization used for this item.
+        :param parent: An optional parent to assign to this deserialized item.
         """
+
+        # import here to avoid cyclic imports
+        from .tree import PublishTree
+
+        # This check is valid until we need to alter the way serialization is
+        # handled after initial release. Once that happens, this should be
+        # altered to handle the various versions separately with this as the
+        # fallback when the serialization version is not recognized.
+        if serialization_version != PublishTree.SERIALIZATION_VERSION:
+            raise(
+                "Unrecognized serialization version for serlialized publish "
+                "item. It is unclear how this could have happened. Perhaps the "
+                "serialized file was hand edited? Please consult your pipeline "
+                "TD/developer/admin."
+            )
 
         new_item = PublishItem(
             item_dict["name"],
@@ -44,17 +70,26 @@ class PublishItem(object):
 
         for child_dict in item_dict["children"]:
             new_item._children.append(
-                PublishItem.from_dict(child_dict, parent=new_item)
+                PublishItem.from_dict(
+                    child_dict,
+                    serialization_version,
+                    parent=new_item
+                )
             )
 
-        new_item._global_properties = PublishData(
-            **item_dict["global_properties"])
+        # ---- properties. these were serialized by pickle to try to
+        # handle generic objects that may have been added by the client.
 
-        for (k, prop_dict) in item_dict["local_properties"].iteritems():
-            new_item._local_properties[k] = PublishData(**prop_dict)
+        # global
+        global_properties_dict = pickle.loads(item_dict["global_properties"])
+        new_item._global_properties = PublishData( **global_properties_dict)
+
+        # local
+        for (k, serialized_dict) in item_dict["local_properties"].iteritems():
+            local_properties_dict = pickle.loads(serialized_dict)
+            new_item._local_properties[k] = PublishData(**local_properties_dict)
 
         new_item._parent = parent
-
         new_item._persistent = item_dict["persistent"]
 
         if item_dict["context"]:
@@ -65,7 +100,11 @@ class PublishItem(object):
 
         for task_dict in item_dict["tasks"]:
             new_item._tasks.append(
-                PublishTask.from_dict(task_dict, item=new_item)
+                PublishTask.from_dict(
+                    task_dict,
+                    serialization_version,
+                    item=new_item
+                )
             )
 
         return new_item
@@ -113,14 +152,13 @@ class PublishItem(object):
         during serialization.
         """
 
-        # TODO: for the global and local properties, we need to be more careful
-        # about how we serialize. clients can add anything they want to these
-        # dictionaries so we either need to set some expectations via the API/
-        # docs or we need to serialize via pickle here (which still may not
-        # work in all cases).
+        # clients can add anything they want to these dictionaries so we need to
+        # set some expectations via the API docs. we need to serialize via
+        # pickle here (which still may not work in all cases).
+        converted_global_properties = pickle.dumps(self._global_properties)
         converted_local_properties = {}
         for (k, prop) in self._local_properties.iteritems():
-            converted_local_properties[k] = prop.to_dict()
+            converted_local_properties[k] = pickle.dumps(prop)
 
         context_value = None
         # check _context here to avoid traversing parent. if no context manually
@@ -144,13 +182,14 @@ class PublishItem(object):
             "children": [c.to_dict() for c in self._children],
             "context": context_value,
             "description": self.description,
-            "global_properties": self._global_properties.to_dict(),
+            "global_properties": converted_global_properties,
             "local_properties": converted_local_properties,
             "name": self.name,
             "persistent": self.persistent,
             "tasks": [t.to_dict() for t in self._tasks],
             "type_display": self.type_display,
             "type_spec": self.type_spec,
+            "serialization_version": version
         }
 
     def __repr__(self):
@@ -308,8 +347,9 @@ class PublishItem(object):
 
     @property
     def children(self):
-        """Return the children of this item."""
-        return self._children
+        """Yields the children of this item."""
+        for child in self._children:
+            yield child
 
     @property
     def context(self):
@@ -397,6 +437,10 @@ class PublishItem(object):
             # in another publish plugin...
             item.local_properties.publish_template = "asset_abc_template"
             item.local_properties.publish_type = "Alembic Cache"
+
+        .. note:: If you plan to serialize your publish tree, you may run into
+          issues if you add complex or non-serializable objects to the
+          properties dictionary.
         """
         return self._get_local_properties()
 
@@ -449,6 +493,10 @@ class PublishItem(object):
 
         This property can also be used to store data on an items that may then
         be accessed by plugins attached to the item's children.
+
+        .. note:: If you plan to serialize your publish tree, you may run into
+          issues if you add complex or non-serializable objects to the
+          properties dictionary.
         """
         return self._global_properties
 
@@ -483,25 +531,28 @@ class PublishItem(object):
         If this is called more than one level deep in this class, expect issues.
         """
 
-        # TODO: walk up the stack to see if this is called by a hook. Perhaps
-        #       there is a method in core to do this for us?
+        hook_object = None
 
-        # try to determine the current publish plugin
-        calling_object = inspect.stack()[2][0].f_locals.get("self")
+        for frame_record in inspect.stack():
+            frame_object = frame_record[0]
+            if frame_object:
+                calling_object = frame_object.f_locals.get("self")
+                if calling_object and isinstance(calling_object, sgtk.hook.Hook):
+                    hook_object = calling_object
 
-        if not calling_object or not isinstance(calling_object, sgtk.hook.Hook):
+        if not hook_object:
             raise AttributeError(
                 "Could not determine the current publish plugin when accessing "
                 "an item's local properties. Item: %s" % (self,))
 
-        if not hasattr(calling_object, 'id'):
+        if not hasattr(hook_object, 'id'):
             raise AttributeError(
                 "Could not determine the id for this publish plugin. This is"
                 "required for storing local properties. Plugin: %s" %
-                (calling_object,)
+                (hook_object,)
             )
 
-        plugin_id = calling_object.id
+        plugin_id = hook_object.id
 
         return self._local_properties[plugin_id]
 

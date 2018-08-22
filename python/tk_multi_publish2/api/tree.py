@@ -39,6 +39,10 @@ class PublishTree(object):
     of tree instances.
     """
 
+    # define a serialization version to allow backward compatibility if the
+    # serialization method changes
+    SERIALIZATION_VERSION = 1
+
     @classmethod
     def from_dict(cls, tree_dict):
         """
@@ -47,7 +51,10 @@ class PublishTree(object):
         a publish tree instance during serialization.
         """
         new_tree = cls()
-        new_tree._root_item = PublishItem.from_dict(tree_dict["root_item"])
+        new_tree._root_item = PublishItem.from_dict(
+            tree_dict["root_item"],
+            tree_dict["serialization_version"]
+        )
         return new_tree
 
     @staticmethod
@@ -150,6 +157,7 @@ class PublishTree(object):
         Write a json-serialized representation of the publish tree to the
         supplied file-like object.
         """
+
         try:
             json.dump(self, file_obj, indent=2, cls=_PublishTreeEncoder)
         except Exception, e:
@@ -164,13 +172,10 @@ class PublishTree(object):
         Returns a dictionary representation of the publish tree. Typically used
         during serialization of the publish tree.
         """
-
-        # TODO: we need to serialize with a version number of some sort in case
-        # we change the serialization method/structure in the future. we
-        # should probably pass that version number down through the root_item
-        # and all of it's children. we'll need to account for this on the
-        # deserialization side as well
-        return {"root_item": self.root_item.to_dict()}
+        return {
+            "root_item": self.root_item.to_dict(),
+            "serialization_version": PublishTree.SERIALIZATION_VERSION
+        }
 
     @property
     def items(self):

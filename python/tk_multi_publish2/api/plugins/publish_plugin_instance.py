@@ -25,7 +25,29 @@ class PublishPluginInstance(PluginInstanceBase):
     """
 
     @classmethod
-    def from_dict(cls, instance_dict):
+    def from_dict(cls, instance_dict, serialization_version):
+        """
+        Returns an instance of a PublishPluginInstance from serialized data.
+
+        :param instance_dict: A dictionary of deserialzied publish plugin data.
+        :param serialization_version: The version of serialization logic used
+            to serialize this data.
+        """
+
+        # import here to avoid cyclic imports
+        from ..tree import PublishTree
+
+        # This check is valid until we need to alter the way serialization is
+        # handled after initial release. Once that happens, this should be
+        # altered to handle the various versions separately with this as the
+        # fallback when the serialization version is not recognized.
+        if serialization_version != PublishTree.SERIALIZATION_VERSION:
+            raise (
+                "Unrecognized serialization version for serlialized publish "
+                "plugin. It is unclear how this could have happened. Perhaps "
+                "the serialized file was hand edited? Please consult your "
+                "pipeline TD/developer/admin."
+            )
 
         instance = cls(
             instance_dict["name"],

@@ -133,6 +133,10 @@ class PluginInstanceBase(object):
         return self._logger
 
     @property
+    def path(self):
+        return self._path
+
+    @property
     def settings(self):
         """
         Returns a dict of resolved raw settings given the current state
