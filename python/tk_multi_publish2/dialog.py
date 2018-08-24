@@ -13,8 +13,8 @@ import traceback
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
 
+from .api import PublishManager
 from .ui.dialog import Ui_Dialog
-from .processing import PluginManager, Task, Item
 from .progress import ProgressHandler
 from .summary_overlay import SummaryOverlay
 from .publish_tree_widget import TreeNodeItem, TopLevelTreeNodeItem
@@ -25,7 +25,6 @@ help_screen = sgtk.platform.import_framework("tk-framework-qtwidgets", "help_scr
 task_manager = sgtk.platform.import_framework("tk-framework-shotgunutils", "task_manager")
 shotgun_model = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_model")
 shotgun_globals = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_globals")
-
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -69,23 +68,28 @@ class AppDialog(QtGui.QWidget):
         self.ui.setupUi(self)
 
         self.ui.context_widget.set_up(self._task_manager)
-        self.ui.context_widget.restrict_entity_types_by_link("PublishedFile", "entity")
 
+        # only allow entities that can be linked to PublishedFile entities
+        self.ui.context_widget.restrict_entity_types_by_link(
+            "PublishedFile", "entity")
+
+        # tooltips for the task and link inputs
         self.ui.context_widget.set_task_tooltip(
             "<p>The task that the selected item will be associated with "
             "in Shotgun after publishing. It is recommended to always "
             "fill out the Task field when publishing. The menu button "
             "to the right will provide suggestions for Tasks to publish "
-            "to including the Tasks assigned to you, recently used Tasks, "
-            "and Tasks related to the entity Link populated in the field below.</p>"
+            "including the Tasks assigned to you, recently used Tasks, "
+            "and Tasks related to the entity Link populated in the field "
+            "below.</p>"
         )
         self.ui.context_widget.set_link_tooltip(
             "<p>The entity that the selected item will be associated with "
             "in Shotgun after publishing. By selecting a Task in the field "
-            "above, the Link will automatically be populated. It is recommended "
-            "that you always populate the Task field when publishing. "
-            "The Task menu above will display any tasks associated with "
-            "the entity populated in this field.</p>"
+            "above, the Link will automatically be populated. It is "
+            "recommended that you always populate the Task field when "
+            "publishing. The Task menu above will display any tasks associated "
+            "with the entity populated in this field.</p>"
         )
 
         self.ui.context_widget.context_changed.connect(self._on_item_context_change)
@@ -102,6 +106,8 @@ class AppDialog(QtGui.QWidget):
         # drag and drop
         self.ui.frame.something_dropped.connect(self._on_drop)
         self.ui.large_drop_area.something_dropped.connect(self._on_drop)
+
+        # TODO: revisit
         self.ui.items_tree.tree_reordered.connect(self._synchronize_tree)
 
         # hide the drag screen progress button by default
@@ -117,15 +123,18 @@ class AppDialog(QtGui.QWidget):
         self._overlay = SummaryOverlay(self.ui.main_frame)
         self._overlay.publish_again_clicked.connect(self._publish_again_clicked)
 
+        # TODO: revisit
         # settings
         self.ui.items_tree.status_clicked.connect(self._on_publish_status_clicked)
 
         # when the description is updated
         self.ui.item_comments.textChanged.connect(self._on_item_comment_change)
 
+        # TODO: revisit
         # selection in tree view
         self.ui.items_tree.itemSelectionChanged.connect(self._update_details_from_selection)
 
+        # TODO: revisit
         # clicking in the tree view
         self.ui.items_tree.checked.connect(self._update_details_from_selection)
 
@@ -190,19 +199,21 @@ class AppDialog(QtGui.QWidget):
         self.ui.drop_area_browse_seq.clicked.connect(
             lambda: self._on_browse(folders=True))
 
+        # TODO: revisit
         # currently displayed item
         self._current_item = None
 
-        # Currently selected tasks. If a selection is created in the GUI that contains multiple
-        # task types or even other tree item types, then, _current_tasks will be set to an empty
-        # selection, regardless of the number of the items actually selected in the UI.
+        # TODO: revisit
+        # Currently selected tasks. If a selection is created in the GUI that
+        # contains multiple task types or even other tree item types, then,
+        # _current_tasks will be set to an empty selection, regardless of the
+        # number of the items actually selected in the UI.
         self._current_tasks = _TaskSelection()
 
-        # start up our plugin manager
-        self._plugin_manager = None
-
         self._summary_comment = ""
-        # this boolean indicates that at least one child has a description that is different than the summary.
+
+        # this boolean indicates that at least one child has a description that
+        # is different than the summary.
         self._summary_comment_multiple_values = False
 
         # set up progress reporting
@@ -224,8 +235,9 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_settings_label.hide()
         self.ui.item_settings.hide()
 
-        # create a plugin manager
-        self._plugin_manager = PluginManager(self._progress_handler.logger)
+        # create a publish manager
+        self._publish_manager = PublishManager(self._progress_handler.logger)
+        # TODO: revisit
         self.ui.items_tree.set_plugin_manager(self._plugin_manager)
 
         # this is the pixmap in the summary thumbnail
@@ -705,17 +717,32 @@ class AppDialog(QtGui.QWidget):
         self._progress_handler.set_phase(self._progress_handler.PHASE_LOAD)
         self._progress_handler.push("Collecting information")
 
-        num_items_created = self._plugin_manager.run_collectors()
+        self._publish_manager.clear()
 
+        logger.debug("Refresh: Running collection on current session...")
+        new_session_items = self._publish_manager.collect_session()
+
+        logger.debug(
+            "Refresh: Running collection on all previously collected external "
+            "files"
+        )
+        new_file_items = self._publish_manager.collect_files(
+            self._publish_manager.collected_files)
+
+        num_items_created = len(new_session_items) + len(new_file_items)
         num_errors = self._progress_handler.pop()
 
         if num_errors == 0 and num_items_created == 1:
-            self._progress_handler.logger.info("One item discovered by publisher.")
+            self._progress_handler.logger.info(
+                "One item discovered by publisher.")
         elif num_errors == 0 and num_items_created > 1:
-            self._progress_handler.logger.info("%d items discovered by publisher." % num_items_created)
+            self._progress_handler.logger.info(
+                "%d items discovered by publisher." % num_items_created)
         elif num_errors > 0:
-            self._progress_handler.logger.error("Errors reported. See log for details.")
+            self._progress_handler.logger.error(
+                "Errors reported. See log for details.")
 
+        # TODO: revisit
         # make sure the ui is up to date
         self._synchronize_tree()
 
@@ -822,6 +849,8 @@ class AppDialog(QtGui.QWidget):
             # main frame of the publish ui
             self._progress_handler.progress_details.set_parent(
                 self.ui.main_frame)
+
+            # TODO: revisit
             self.ui.items_tree.build_tree()
 
     def _set_tree_items_expanded(self, expanded):

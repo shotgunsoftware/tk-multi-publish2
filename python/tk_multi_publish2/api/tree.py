@@ -55,6 +55,9 @@ class PublishTree(object):
             tree_dict["root_item"],
             tree_dict["serialization_version"]
         )
+
+        # TODO: set the root item context so that it can be inherited?
+
         return new_tree
 
     @staticmethod
