@@ -42,7 +42,7 @@ class PublishManager(object):
     ############################################################################
     # instance methods
 
-    def __init__(self):
+    def __init__(self, publish_logger=None):
         """
         Initialize the manager.
         """
@@ -51,7 +51,7 @@ class PublishManager(object):
         self._bundle = sgtk.platform.current_bundle()
 
         # a logger to be used by the various collector/publish plugins
-        self.logger = logger
+        self._logger = publish_logger or logger
 
         # the underlying tree representation of the items to publish
         self._tree = PublishTree()
@@ -302,6 +302,25 @@ class PublishManager(object):
         """
         return self._tree.root_item.children
 
+    @property
+    def persistent_items(self):
+        """Returns a list of """
+        return self._tree.persistent_items
+
+    @property
+    def collected_files(self):
+        """
+        Returns a list of file paths for all items collected via the
+        collect_files method.
+        """
+        collected_paths = []
+        for item in self.persistent_items:
+            if self.PROPERTY_KEY_COLLECTED_FILE_PATH in item.properties:
+                collected_paths.append(
+                    item.properties[self.PROPERTY_KEY_COLLECTED_FILE_PATH])
+
+        return collected_paths
+
     ############################################################################
     # protected methods
 
@@ -478,7 +497,7 @@ class PublishManager(object):
 
         # check each persistent item for a collected file path. if it matches
         # the supplied path, then the path has already been collected.
-        for item in self._tree.persistent_items:
+        for item in self.persistent_items:
             if self.PROPERTY_KEY_COLLECTED_FILE_PATH in item.properties:
                 collected_path = \
                     item.properties[self.PROPERTY_KEY_COLLECTED_FILE_PATH]
