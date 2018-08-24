@@ -133,6 +133,15 @@ class PublishItem(object):
         self._type_display = type_display
         self._type_spec = type_spec
 
+        # TODO: figure out serialization for these
+        self._enabled = True
+        self._expanded = True
+        self._checked = True
+        self._allows_context_change = True
+        self._thumbnail_enabled = True
+        self._thumbnail_explicit = True
+        self._thumb_pixmap = None
+
     def __iter__(self):
         """Iterates over the item's descendents, depth first."""
 
@@ -207,7 +216,7 @@ class PublishItem(object):
 
         self._children = [i for i in self._children if i != child_item]
 
-    def create_item(self, item_type, display_type, name):
+    def create_item(self, item_type, type_display, name):
         """
         Factory method for generating new items.
 
@@ -241,7 +250,7 @@ class PublishItem(object):
         of the publish plugins shipped with the publisher and housed in each of
         the toolkit engines to see what item types are supported by default.
 
-        The ``display_type`` argument corresponds to the item type, but is used
+        The ``type_display`` argument corresponds to the item type, but is used
         for display purposes only.
 
         Examples include: ``Image File``, ``Movie File``, and ``Maya Scene``.
@@ -258,7 +267,7 @@ class PublishItem(object):
 
         :param str item_type: Item type, typically following a hierarchical dot
             notation.
-        :param str display_type: Equivalent to the type, but for display
+        :param str type_display: Equivalent to the type, but for display
             purposes.
         :param str name: The name to represent the item in a UI. This can be a
             item name in a DCC or a file name.
@@ -267,7 +276,7 @@ class PublishItem(object):
         child_item = PublishItem(
             name,
             item_type,
-            display_type,
+            type_display,
             parent=self
         )
         self._children.append(child_item)
@@ -507,12 +516,47 @@ class PublishItem(object):
         """
         return self._type_spec
 
+    @type_spec.setter
+    def type_spec(self, new_type_spec):
+        """Sets the type spec for this object."""
+        self._type_spec = new_type_spec
+
+    def _get_type(self):
+        """
+        DEPRECATED: use ``type_spec`` instead
+        """
+        return self.type_spec
+
+    def _set_type(self, new_type_spec):
+        self.type_spec = new_type_spec
+
+    # leaving this for backward compatibility
+    type = property(_get_type, _set_type)
+
     @property
     def type_display(self):
         """
         The display string for this item's type.
         """
         return self._type_display
+
+    @type_display.setter
+    def type_display(self, new_type_display):
+        """Set the type display for this object."""
+        self._type_display = new_type_display
+
+    def _get_display_type(self):
+        """
+        DEPRECATED: use ``type_display`` instead
+        """
+        return self.type_display
+
+    # leaving this for backward compatibility
+    def _set_display_type(self, new_type_display):
+        self.type_display = new_type_display
+
+    # leaving this for backward compatibility
+    display_type = property(_get_display_type, _set_display_type)
 
     def _get_local_properties(self):
         """
@@ -576,4 +620,124 @@ class PublishItem(object):
     def get_thumbnail_as_path(self):
         return None
 
+    @property
+    def icon(self):
+        return None
 
+    @property
+    def expanded(self):
+        return self._expanded
+
+    @expanded.setter
+    def expanded(self, is_expanded):
+        self._expanded = is_expanded
+
+    @property
+    def context_change_allowed(self):
+        """
+        True if item allows context change, False otherwise. Default is True
+        """
+        return self._allows_context_change
+
+    @context_change_allowed.setter
+    def context_change_allowed(self, allow):
+        """
+        Enable/disable context change for this item.
+        """
+        self._allows_context_change = allow
+
+
+    def _get_thumbnail_enabled(self):
+        """
+        Flag to indicate that thumbnails can be interacted with.
+
+        * If ``True``, thumbnails will be visible and editable in the publish UI
+          (via screen capture).
+        * If ``False`` and a thumbnail has been set via the :meth:`thumbnail`
+          property, the thumbnail will be visible but screen capture will be
+          disabled.
+        * If ``False`` and no thumbnail has been specified, no thumbnail will
+          appear in the UI.
+        """
+        return self._thumbnail_enabled
+
+    def _set_thumbnail_enabled(self, enabled):
+        # setter for thumbnail_enabled
+        self._thumbnail_enabled = enabled
+
+    thumbnail_enabled = property(_get_thumbnail_enabled, _set_thumbnail_enabled)
+
+    def _get_thumbnail_explicit(self):
+        """
+        Flag to indicate that thumbnail has been explicitly set.
+        When this flag is on, the summary thumbnail should be ignored
+        For this this specific item.
+        """
+        return self._thumbnail_explicit
+
+    def _set_thumbnail_explicit(self, enabled):
+        """
+        Setter for _thumbnail_explicit
+        """
+        self._thumbnail_explicit = enabled
+
+    thumbnail_explicit = property(_get_thumbnail_explicit,_set_thumbnail_explicit)
+
+    def _get_thumbnail(self):
+        """
+        The associated thumbnail, as a :class:`QtGui.QPixmap`.
+
+        The thumbnail is an image to represent the item visually such as a
+        thumbnail of an image or a screenshot of a scene.
+
+        If no thumbnail has been defined for this node, the parent thumbnail is
+        returned, or None if no thumbnail exists.
+        """
+        if self._thumb_pixmap:
+            return self._thumb_pixmap
+        elif self.parent:
+            return self.parent.thumbnail
+        else:
+            return None
+
+    def _set_thumbnail(self, pixmap):
+        self._thumb_pixmap = pixmap
+
+    thumbnail = property(_get_thumbnail, _set_thumbnail)
+
+    # TODO: figure out active vs. checked
+    def _get_checked(self):
+        """
+        Flag to indicate that this item should be checked by default.
+
+        Please note that the final state of the node is also affected by
+        the child tasks. Below are some examples of how this interaction
+        plays out in practice:
+
+        - If all child tasks/items return ``checked: False`` in their accept
+          method, the parent item will be unchecked, regardless
+          of the state of this property.
+
+        - If one or more child tasks return ``checked: True`` and the item
+          checked state is False, the item and all its sub-items will be
+          unchecked.
+        """
+        return self._checked
+
+    def _set_checked(self, check_state):
+        # setter for checked
+        self._checked = check_state
+
+    checked = property(_get_checked, _set_checked)
+
+    def _get_enabled(self):
+        """
+        Flag to indicate that this item and its children should be enabled.
+        """
+        return self._enabled
+
+    def _set_enabled(self, enabled):
+        # setter for enabled
+        self._enabled = enabled
+
+    enabled = property(_get_enabled, _set_enabled)

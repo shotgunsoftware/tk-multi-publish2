@@ -44,7 +44,7 @@ class TreeNodeItem(TreeNodeBase):
         # create an item widget and associate it with this QTreeWidgetItem
         widget = CustomTreeWidgetItem(self, parent)
         # update with any saved state
-        widget.set_header("<b>%s</b><br>%s" % (self._item.name, self._item.display_type))
+        widget.set_header("<b>%s</b><br>%s" % (self._item.name, self._item.type_display))
         widget.set_icon(self._item.icon)
         widget.set_checkbox_value(self.data(0, self.CHECKBOX_ROLE))
 
@@ -58,7 +58,7 @@ class TreeNodeItem(TreeNodeBase):
         return "<TreeNodeItem %s>" % str(self)
 
     def __str__(self):
-        return "%s %s" % (self._item.display_type, self._item.name)
+        return "%s %s" % (self._item.type_display, self._item.name)
 
     def create_summary(self):
         """
