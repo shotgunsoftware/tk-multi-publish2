@@ -97,6 +97,9 @@ class PublishTask(object):
 
         logger.debug("Created publish tree task: %s" % (self,))
 
+        # TODO: consider
+        self._checked = True
+
     def to_dict(self):
 
         converted_settings = {}
@@ -203,3 +206,13 @@ class PublishTask(object):
         """The settings associated with this task."""
         return self._settings
 
+    # TODO: consider these when we get to the UI portion. we can't remove them
+    # because we don't want to break the API, but we need to figure how how they
+    # make sense without a UI in play.o
+
+    @property
+    def checked(self):
+        """
+        Returns if this task should be turned on or off by default
+        """
+        return self._checked

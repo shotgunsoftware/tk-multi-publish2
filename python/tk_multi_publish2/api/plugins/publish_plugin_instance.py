@@ -201,3 +201,7 @@ class PublishPluginInstance(PluginInstanceBase):
         else:
             if success_msg:
                 self.logger.info(success_msg)
+
+    @property
+    def icon(self):
+        return None

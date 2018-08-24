@@ -14,6 +14,9 @@ import sgtk
 from sgtk.platform.qt import QtCore, QtGui
 
 from .api import PublishManager
+from .api.item import PublishItem
+from .api.task import PublishTask
+
 from .ui.dialog import Ui_Dialog
 from .progress import ProgressHandler
 from .summary_overlay import SummaryOverlay
@@ -107,7 +110,6 @@ class AppDialog(QtGui.QWidget):
         self.ui.frame.something_dropped.connect(self._on_drop)
         self.ui.large_drop_area.something_dropped.connect(self._on_drop)
 
-        # TODO: revisit
         self.ui.items_tree.tree_reordered.connect(self._synchronize_tree)
 
         # hide the drag screen progress button by default
@@ -123,18 +125,15 @@ class AppDialog(QtGui.QWidget):
         self._overlay = SummaryOverlay(self.ui.main_frame)
         self._overlay.publish_again_clicked.connect(self._publish_again_clicked)
 
-        # TODO: revisit
         # settings
         self.ui.items_tree.status_clicked.connect(self._on_publish_status_clicked)
 
         # when the description is updated
         self.ui.item_comments.textChanged.connect(self._on_item_comment_change)
 
-        # TODO: revisit
         # selection in tree view
         self.ui.items_tree.itemSelectionChanged.connect(self._update_details_from_selection)
 
-        # TODO: revisit
         # clicking in the tree view
         self.ui.items_tree.checked.connect(self._update_details_from_selection)
 
@@ -199,11 +198,9 @@ class AppDialog(QtGui.QWidget):
         self.ui.drop_area_browse_seq.clicked.connect(
             lambda: self._on_browse(folders=True))
 
-        # TODO: revisit
         # currently displayed item
         self._current_item = None
 
-        # TODO: revisit
         # Currently selected tasks. If a selection is created in the GUI that
         # contains multiple task types or even other tree item types, then,
         # _current_tasks will be set to an empty selection, regardless of the
@@ -237,8 +234,7 @@ class AppDialog(QtGui.QWidget):
 
         # create a publish manager
         self._publish_manager = PublishManager(self._progress_handler.logger)
-        # TODO: revisit
-        self.ui.items_tree.set_plugin_manager(self._plugin_manager)
+        self.ui.items_tree.set_publish_manager(self._publish_manager)
 
         # this is the pixmap in the summary thumbnail
         self._summary_thumbnail = None 
@@ -340,7 +336,7 @@ class AppDialog(QtGui.QWidget):
             # 1 item selected
             tree_item = items[0]
             publish_object = tree_item.get_publish_instance()
-            if isinstance(publish_object, Item):
+            if isinstance(publish_object, PublishItem):
                 self._update_task_details_ui()
                 self._create_item_details(tree_item)
             elif publish_object is None:
@@ -369,7 +365,7 @@ class AppDialog(QtGui.QWidget):
 
             publish_instance = item.get_publish_instance()
             # User has mixed different types of publish instances, it's not just a task list.
-            if not isinstance(publish_instance, Task):
+            if not isinstance(publish_instance, PublishTask):
                 return False
 
             # There's a task that's not of the same type as the others, we're done!
@@ -502,7 +498,7 @@ class AppDialog(QtGui.QWidget):
                 self._summary_comment = comments
 
                 # this is the summary item - so update all top level items and their children!
-                for top_level_item in self._plugin_manager.top_level_items:
+                for top_level_item in self._publish_manager.top_level_items:
                     top_level_item.description = self._summary_comment
                     top_level_item._propagate_description_to_children()
 
@@ -533,7 +529,7 @@ class AppDialog(QtGui.QWidget):
             self._summary_thumbnail = pixmap
             if pixmap:
                 # update all items with the summary thumbnail
-                for top_level_item in self._plugin_manager.top_level_items:
+                for top_level_item in self._publish_manager.top_level_items:
                     top_level_item.thumbnail = self._summary_thumbnail
                     top_level_item.thumbnail_explicit = False
                     top_level_item._propagate_thumbnail_to_children()
@@ -554,7 +550,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_icon.setPixmap(item.icon)
 
         self.ui.item_name.setText(item.name)
-        self.ui.item_type.setText(item.display_type)
+        self.ui.item_type.setText(item.type_display)
 
         # check the state of screenshot
         if item.thumbnail_enabled:
@@ -589,7 +585,7 @@ class AppDialog(QtGui.QWidget):
         # Items with default thumbnails should still be able to have override thumbnails set by the user
         self.ui.item_thumbnail.setEnabled(True)
 
-        if item.parent.is_root():
+        if item.parent.is_root:
             self.ui.context_widget.show()
 
             if item.context_change_allowed:
@@ -647,7 +643,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_thumbnail.show()
 
         thumbnail_is_multiple_values = False
-        for top_level_item in self._plugin_manager.top_level_items:
+        for top_level_item in self._publish_manager.top_level_items:
            if top_level_item._get_thumbnail_explicit_recursive():
                thumbnail_is_multiple_values = True
                break
@@ -677,7 +673,7 @@ class AppDialog(QtGui.QWidget):
         for it in QtGui.QTreeWidgetItemIterator(self.ui.items_tree):
             item = it.value()
             publish_instance = item.get_publish_instance()
-            if isinstance(publish_instance, Item):
+            if isinstance(publish_instance, PublishItem):
                 context = publish_instance.context
                 context_key = str(context)
                 current_contexts[context_key] = context
@@ -742,7 +738,6 @@ class AppDialog(QtGui.QWidget):
             self._progress_handler.logger.error(
                 "Errors reported. See log for details.")
 
-        # TODO: revisit
         # make sure the ui is up to date
         self._synchronize_tree()
 
@@ -784,7 +779,7 @@ class AppDialog(QtGui.QWidget):
 
             self._overlay.show_loading()
             self.ui.button_container.hide()
-            num_items_created = self._plugin_manager.add_external_files(str_files)
+            num_items_created = self._publish_manager.collect_files(str_files)
             num_errors = self._progress_handler.pop()
 
             if num_errors == 0 and num_items_created == 0:
@@ -805,7 +800,7 @@ class AppDialog(QtGui.QWidget):
             self._overlay.hide()
             self.ui.button_container.show()
 
-        if (len(self._plugin_manager.top_level_items) == 0 and
+        if (len(list(self._publish_manager.top_level_items)) == 0 and
             self.ui.main_stack.currentIndex() == self.DRAG_SCREEN):
             # there are no top-level items and we're still on the drag screen.
             # something not good happened. show a button to open the progress
@@ -829,7 +824,7 @@ class AppDialog(QtGui.QWidget):
         Redraws the ui and rebuilds data based on
         the low level plugin representation
         """
-        if len(self._plugin_manager.top_level_items) == 0:
+        if len(list(self._publish_manager.top_level_items)) == 0:
             if not self.manual_load_enabled:
                 # No items collected and 'enable_manual_load' application option
                 # false, display that special error overlay.
@@ -850,7 +845,6 @@ class AppDialog(QtGui.QWidget):
             self._progress_handler.progress_details.set_parent(
                 self.ui.main_frame)
 
-            # TODO: revisit
             self.ui.items_tree.build_tree()
 
     def _set_tree_items_expanded(self, expanded):
@@ -898,7 +892,7 @@ class AppDialog(QtGui.QWidget):
                 processing_items.append(tree_item.item)
 
         for item in processing_items:
-            self._plugin_manager.remove_top_level_item(item)
+            self._publish_manager.remove_item(item)
 
         self._synchronize_tree()
 
@@ -1146,8 +1140,11 @@ class AppDialog(QtGui.QWidget):
         """
         Slot that should be called when summary overlay close button is clicked.
         """
-        # clear dropped files
-        self._plugin_manager.clear_external_files()
+
+        # clear the tree and recollect the session
+        self._publish_manager.clear()
+        self._publish_manager.collect_session()
+
         self._synchronize_tree()
 
         # show publish and validate buttons
@@ -1219,9 +1216,11 @@ class AppDialog(QtGui.QWidget):
         # are on context change lockdown.
         sync_required = False
 
+        # TODO: rerun the plugin attachment logic for the items whose context changed
+
         if self._current_item is None:
             # this is the summary item - so update all items!
-            for top_level_item in self._plugin_manager.top_level_items:
+            for top_level_item in self._publish_manager.top_level_items:
                 if top_level_item.context_change_allowed:
                     top_level_item.context = context
                     sync_required = True
