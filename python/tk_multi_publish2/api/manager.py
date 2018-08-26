@@ -70,6 +70,50 @@ class PublishManager(object):
         self.logger.debug("Loading plugins for the current context...")
         self._load_publish_plugins(self._bundle.context)
 
+
+    def attach_plugins(self, items):
+        """
+        For each item supplied, given it's context, load the appropriate plugins
+        and add any matching tasks. If any tasks exist on the supplied items,
+        they will be removed.
+        """
+        for item in items:
+
+            # clear existing tasks for this item
+            item.clear_tasks()
+
+            self.logger.debug("Processing item: %s" % (item,))
+
+            item_context = item.context
+
+            context_plugins = self._load_publish_plugins(item_context)
+            self.logger.debug(
+                "Offering %s plugins for context: %s" %
+                (len(context_plugins), item_context)
+            )
+
+            for context_plugin in context_plugins:
+
+                self.logger.debug(
+                    "Checking plugin: %s" % (context_plugin,))
+
+                if not self._item_filters_match(item, context_plugin):
+                    continue
+
+                self.logger.debug("Running plugin acceptance method...")
+
+                # item/filters matched. now see if the plugin accepts
+                accept_data = context_plugin.run_accept(item)
+
+                if accept_data.get("accepted"):
+                    self.logger.debug("Plugin accepted the item.")
+                    task = item.add_task(context_plugin)
+                    task.visible = accept_data.get("visible", True)
+                    task.active = accept_data.get("checked", True)
+                    task.enabled = accept_data.get("enabled", True)
+                else:
+                    self.logger.debug("Plugin did not accept the item.")
+
     def clear(self):
         """
         Clear all items to be published.
@@ -130,7 +174,7 @@ class PublishManager(object):
                     file_path
 
             # attach the appropriate plugins to the new items
-            self._attach_plugins(new_file_items)
+            self.attach_plugins(new_file_items)
 
             new_items.extend(new_file_items)
 
@@ -166,7 +210,7 @@ class PublishManager(object):
 
         # attach the appropriate plugins to the new items
         if new_items:
-            self._attach_plugins(new_items)
+            self.attach_plugins(new_items)
 
         return new_items
 
@@ -323,48 +367,6 @@ class PublishManager(object):
 
     ############################################################################
     # protected methods
-
-    def _attach_plugins(self, items):
-        """
-        For each item supplied, load the appropriate plugins and add matching
-        tasks.
-        """
-        for item in items:
-
-            # clear existing tasks for this item
-            item.clear_tasks()
-
-            self.logger.debug("Processing item: %s" % (item,))
-
-            item_context = item.context
-
-            context_plugins = self._load_publish_plugins(item_context)
-            self.logger.debug(
-                "Offering %s plugins for context: %s" %
-                (len(context_plugins), item_context)
-            )
-
-            for context_plugin in context_plugins:
-
-                self.logger.debug(
-                    "Checking plugin: %s" % (context_plugin,))
-
-                if not self._item_filters_match(item, context_plugin):
-                    continue
-
-                self.logger.debug("Running plugin acceptance method...")
-
-                # item/filters matched. now see if the plugin accepts
-                accept_data = context_plugin.run_accept(item)
-
-                if accept_data.get("accepted"):
-                    self.logger.debug("Plugin accepted the item.")
-                    task = item.add_task(context_plugin)
-                    task.visible = accept_data.get("visible", True)
-                    task.active = accept_data.get("checked", True)
-                    task.enabled = accept_data.get("enabled", True)
-                else:
-                    self.logger.debug("Plugin did not accept the item.")
 
     def _item_filters_match(self, item, publish_plugin):
         """

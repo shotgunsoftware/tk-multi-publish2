@@ -76,7 +76,7 @@ class PublishTask(object):
 
         return new_task
 
-    def __init__(self, plugin, item):
+    def __init__(self, plugin, item, visible, enabled, checked):
         """
         Initialize the task.
         """
@@ -91,9 +91,9 @@ class PublishTask(object):
         for (setting_name, setting) in plugin.settings.items():
             self._settings[setting_name] = copy.deepcopy(setting)
 
-        self._active = True
-        self._visible = True
-        self._enabled = True
+        self._active = checked
+        self._visible = visible
+        self._enabled = enabled
 
         logger.debug("Created publish tree task: %s" % (self,))
 
@@ -127,13 +127,15 @@ class PublishTask(object):
         """Human readable representation of the task."""
         return self.name
 
-    def validate(self):
+    def is_same_task_type(self, other_task):
         """
-        Validate this Task
+        Indicates if this task represents the same plugin type as the supplied
+        publish task.
 
-        :returns: True if validation succeeded, False otherwise.
+        :param other_task: The other plugin to test against.
+        :type other_task: :class:`PublishTask`
         """
-        return self.plugin.run_validate(self.settings, self.item)
+        return self._plugin == other_task._plugin
 
     def publish(self):
         """
@@ -147,11 +149,23 @@ class PublishTask(object):
         """
         self.plugin.run_finalize(self.settings, self.item)
 
+    def validate(self):
+        """
+        Validate this Task
+
+        :returns: True if validation succeeded, False otherwise.
+        """
+        return self.plugin.run_validate(self.settings, self.item)
+
     @property
     def active(self):
         """
         Returns the item's active state if it has been explicitly set, `None``
-        otherwise
+        otherwise.
+
+        .. note:: This property is shared with ``checked`` and can be used
+            interchangeably to make code more readable depending on the context
+            (with/without the UI).
         """
         return self._active
 
@@ -167,6 +181,18 @@ class PublishTask(object):
         * ``None``: Clear the item's state, rely on inheritance within the tree
         """
         self._active = active_state
+
+    @property
+    def checked(self):
+        """
+        Boolean property to indicate that this task should be checked by
+        default when displayed in a publish UI.
+
+        .. note:: This property is shared with ``active`` and can be used
+            interchangeably to make code more readable depending on the context
+            (with/without the UI).
+        """
+        return self._checked
 
     @property
     def description(self):
@@ -198,21 +224,10 @@ class PublishTask(object):
 
     @property
     def plugin(self):
-        """Returns the plugin associated with this task"""
+        """Returns the publish plugin instance associated with this task"""
         return self._plugin
 
     @property
     def settings(self):
         """The settings associated with this task."""
         return self._settings
-
-    # TODO: consider these when we get to the UI portion. we can't remove them
-    # because we don't want to break the API, but we need to figure how how they
-    # make sense without a UI in play.o
-
-    @property
-    def checked(self):
-        """
-        Returns if this task should be turned on or off by default
-        """
-        return self._checked
