@@ -9,7 +9,10 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 from collections import defaultdict
+
 import inspect
+import os
+import tempfile
 
 import sgtk
 
@@ -61,7 +64,14 @@ class PublishItem(object):
         )
 
         new_item._active = item_dict["active"]
+        new_item._allows_context_change = item_dict["allows_context_change"]
         new_item._description = item_dict["description"]
+        new_item._enabled = item_dict["enabled"]
+        new_item._expanded = item_dict["expanded"]
+        new_item._icon_path = item_dict["icon_path"]
+        new_item._thumbnail_enabled = item_dict["thumbnail_enabled"]
+        new_item._thumbnail_explict = item_dict["thumbnail_explicit"]
+        new_item._thumbnail_path = item_dict["thumbnail_path"]
 
         for child_dict in item_dict["children"]:
             new_item._children.append(
@@ -119,34 +129,51 @@ class PublishItem(object):
         # NOTE: since this object is serializable, any members added should be
         # simple python types or serializable objects.
 
-        # These members are common to all tree items.
+        # serializable members
         self._active = True
+        self._allows_context_change = True
         self._children = []
         self._context = None
+        self._created_temp_files = []
         self._description = None
+        self._enabled = True
+        self._expanded = True
         self._global_properties = PublishData()
+        self._icon_path = None
+        self._icon_pixmap = None
         self._local_properties = defaultdict(PublishData)
         self._name = name
         self._parent = parent
         self._persistent = False
         self._tasks = []
-        self._type_display = type_display
-        self._type_spec = type_spec
-
-        # TODO: figure out serialization for these
-        self._enabled = True
-        self._expanded = True
-        self._checked = True
-        self._allows_context_change = True
         self._thumbnail_enabled = True
         self._thumbnail_explicit = True
-        self._thumb_pixmap = None
+        self._thumbnail_path = None
+        self._thumbnail_pixmap = None
+        self._type_display = type_display
+        self._type_spec = type_spec
 
     def __iter__(self):
         """Iterates over the item's descendents, depth first."""
 
         for item in self._traverse_item(self):
             yield item
+
+    def __del__(self):
+        """
+        Destructor
+        """
+        # clean up temp files created
+        for temp_file in self._created_temp_files:
+            if os.path.exists(temp_file):
+                try:
+                    os.remove(temp_file)
+                except Exception, e:
+                    logger.warning(
+                        "Could not remove temporary file '%s': %s" % (temp_file, e)
+                    )
+                else:
+                    logger.debug("Removed temp file '%s'" % temp_file)
 
     def to_dict(self):
         """
@@ -181,14 +208,21 @@ class PublishItem(object):
 
         return {
             "active": self.active,
+            "allows_context_change": self._allows_context_change,
             "children": [c.to_dict() for c in self._children],
             "context": context_value,
             "description": self.description,
+            "enabled": self.enabled,
+            "expanded": self.expanded,
             "global_properties": self._global_properties.to_dict(),
+            "icon_path": self._icon_path,
             "local_properties": converted_local_properties,
             "name": self.name,
             "persistent": self.persistent,
             "tasks": [t.to_dict() for t in self._tasks],
+            "thumbnail_enabled": self._thumbnail_enabled,
+            "thumbnail_explicit": self._thumbnail_explicit,
+            "thumbnail_path": self._thumbnail_path,
             "type_display": self.type_display,
             "type_spec": self.type_spec,
         }
@@ -201,20 +235,24 @@ class PublishItem(object):
         """Human readable string representation of the item"""
         return "%s (%s)" % (self._name, self._type_display)
 
-    def remove_child(self, child_item):
+    def add_task(self, plugin):
         """
-        Remove the supplied child of this item.
+        Create a new publish task and attach it to this item.
 
-        :param child_item: The child item to remove from the current item.
+        :param plugin: The plugin instance this task will represent/execute.
         """
 
-        if child_item not in self.children:
-            raise sgtk.TankError(
-                "Unable to remove child item. Item %s is not a child of %s in "
-                "the publish tree." % (child_item, self)
-            )
+        # create the task item and add it to the tree
+        child_task = PublishTask(plugin, self)
+        self._tasks.append(child_task)
 
-        self._children = [i for i in self._children if i != child_item]
+        return child_task
+
+    def clear_tasks(self):
+        """
+        Clear all tasks for this item.
+        """
+        self._tasks = []
 
     def create_item(self, item_type, type_display, name):
         """
@@ -283,25 +321,6 @@ class PublishItem(object):
 
         return child_item
 
-    def add_task(self, plugin):
-        """
-        Create a new publish task and attach it to this item.
-
-        :param plugin: The plugin instance this task will represent/execute.
-        """
-
-        # create the task item and add it to the tree
-        child_task = PublishTask(plugin, self)
-        self._tasks.append(child_task)
-
-        return child_task
-
-    def clear_tasks(self):
-        """
-        Clear all tasks for this item.
-        """
-        self._tasks = []
-
     def get_property(self, name, default_value=None):
         """
         This is a convenience method that will retrieve a property set on the
@@ -325,11 +344,111 @@ class PublishItem(object):
         return local_properties.get(name) or self.properties.get(name) or \
             default_value
 
+    def get_thumbnail_as_path(self):
+        """
+        Returns the item's thumbnail as a path to a file on disk. If the
+        thumbnail was originally supplied as a file path, that path will be
+        returned. If the thumbnail was created via screen grab or set directly
+        via ``QtGui.QPixmap``, this method will generate an image as a temp file
+        on disk and return its path.
+
+        .. warning:: This property may return ``None`` if run without a UI
+            present and no thumbnail path as been set on the item.
+
+        :returns: Path to a file on disk or None if no thumbnail set
+        """
+
+        # nothing to do if running without a UI
+        if not sgtk.platform.current_engine().has_ui:
+            return None
+
+        # the thumbnail path was explicitly provided
+        if self._thumbnail_path:
+            return self._thumbnail_path
+
+        if self.thumbnail is None:
+            return None
+
+        temp_path = tempfile.NamedTemporaryFile(
+            suffix=".jpg",
+            prefix="sgtk_thumb",
+            delete=False
+        ).name
+        success = self.thumbnail.save(temp_path)
+
+        if success:
+            if os.path.getsize(temp_path) > 0:
+                self._created_temp_files.append(temp_path)
+            else:
+                logger.debug(
+                    "A zero-size thumbnail was written for %s, "
+                    "no thumbnail will be returned." % self.name
+                )
+                return None
+            return temp_path
+        else:
+            logger.warning(
+                "Thumbnail save to disk failed. No thumbnail will be returned "
+                "for %s." % self.name
+            )
+            return None
+
+    def remove_item(self, child_item):
+        """
+        Remove the supplied child of this item.
+
+        :param child_item: The child item to remove from the current item.
+        """
+
+        if child_item not in self.children:
+            raise sgtk.TankError(
+                "Unable to remove child item. Item %s is not a child of %s in "
+                "the publish tree." % (child_item, self)
+            )
+
+        self._children = [i for i in self._children if i != child_item]
+
+    def set_icon_from_path(self, path):
+        """
+        Sets the icon for the item given a path to an image on disk. This path
+        will be converted to a ``QtGui.QPixmap`` when the item is displayed.
+
+        .. note:: The ``icon`` is for use only in the publisher UI and
+            represents the type of item being published. The icon should not be
+            confused with the item's thumbnail which is typically associated
+            with the resulting published item in Shotgun and is meant to
+            represent it visually.
+
+        :param str path: Path to a file on disk
+        """
+        self._icon_path = path
+
+    def set_thumbnail_from_path(self, path):
+        """
+        Sets the thumbnail for the item given a path to an image on disk. This
+        path will be converted to a ``QtGui.QPixmap`` when the item is
+        displayed.
+
+        .. note:: The ``thumbnail`` is typically associated with the resulting
+            published item in Shotgun and is meant to represent it visually. The
+            ``thumbnail`` should not be confused with the item's ``icon`` which
+            is for use only in the publisher UI and represents the type of item
+            being published.
+
+        :param str path: Path to a file on disk
+        """
+        self._thumbnail_path = path
+
     @property
     def active(self):
         """
         Returns the item's active state if it has been explicitly set, `None``
-        otherwise
+        otherwise.
+
+        .. note:: This property is shared with ``checked`` and can be used
+            interchangeably to make code more readable depending on the context
+            (with/without the UI).
+
         """
         return self._active
 
@@ -345,6 +464,35 @@ class PublishItem(object):
         * ``None``: Clear the item's state, rely on inheritance within the tree
         """
         self._active = active_state
+
+    @property
+    def checked(self):
+        """
+        Boolean property to indicate that this item should be checked by
+        default when displayed in a publish UI.
+
+        .. note:: This property is shared with ``active`` and can be used
+            interchangeably to make code more readable depending on the context
+            (with/without the UI).
+
+        Please note that the final state of the node is also affected by
+        the child tasks. Below are some examples of how this interaction
+        plays out in practice:
+
+        - If all child tasks/items return ``checked: False`` in their accept
+          method, the parent item will be unchecked, regardless
+          of the state of this property.
+
+        - If one or more child tasks return ``checked: True`` and the item
+          checked state is False, the item and all its sub-items will be
+          unchecked.
+        """
+        return self._active
+
+    @checked.setter
+    def checked(self, check_state):
+        # setter for checked
+        self._active = check_state
 
     @property
     def children(self):
@@ -377,6 +525,20 @@ class PublishItem(object):
         self._context = item_context
 
     @property
+    def context_change_allowed(self):
+        """
+        True if item allows context change, False otherwise. Default is True
+        """
+        return self._allows_context_change
+
+    @context_change_allowed.setter
+    def context_change_allowed(self, allow):
+        """
+        Enable/disable context change for this item.
+        """
+        self._allows_context_change = allow
+
+    @property
     def description(self):
         """
         The description of the item if it has been explicitly set,
@@ -388,6 +550,84 @@ class PublishItem(object):
     def description(self, new_description):
         """Sets a new description for the item with the given string."""
         self._description = new_description
+
+    @property
+    def enabled(self):
+        """
+        Boolean property which indicates whether this item and its children
+        should be enabled within a publish UI.
+        """
+        return self._enabled
+
+    @enabled.setter
+    def enabled(self, enabled):
+        # setter for enabled
+        self._enabled = enabled
+
+    @property
+    def expanded(self):
+        """
+        Boolean property which indicates whether this item should be expanded to
+        show its children when shown in a publish UI.
+        """
+        return self._expanded
+
+    @expanded.setter
+    def expanded(self, is_expanded):
+        """Setter for the expanded property."""
+        self._expanded = is_expanded
+
+    @property
+    def icon(self):
+        """
+        The associated icon, as a QPixmap.
+        The icon is a small square image used to represent the item visually
+
+        .. image:: ./resources/item_icon.png
+
+        |
+
+        If no icon has been defined for this node, the parent icon is returned,
+        or a default one if not defined
+
+        .. warning:: This property will return ``None`` when run without a UI
+            present
+
+        .. note:: The ``icon`` is for use only in the publisher UI and
+            represents the type of item being published. The icon should not be
+            confused with the item's thumbnail which is typically associated
+            with the resulting published item in Shotgun and is meant to
+            represent it visually.
+        """
+        # nothing to do if running without a UI
+        if not sgtk.platform.current_engine().has_ui:
+            return None
+
+        # defer import until needed and to avoid issues when running without UI
+        from sgtk.platform.qt import QtGui
+
+        if self._icon_path and not self._icon_pixmap:
+            # we have a path but haven't yet created the pixmap. create it
+            try:
+                self._icon_pixmap = QtGui.QPixmap(self._icon_path)
+            except Exception, e:
+                logger.warning(
+                    "%r: Could not load icon '%s': %s" %
+                    (self, self._icon_path, e)
+                )
+
+        if self._icon_pixmap:
+            return self._icon_pixmap
+        elif self.parent:
+            return self.parent.icon
+        else:
+            # return default
+            return QtGui.QPixmap(":/tk_multi_publish2/item.png")
+
+    @icon.setter
+    def icon(self, pixmap):
+        """Sets the icon."""
+        self._icon_pixmap = pixmap
 
     @property
     def is_root(self):
@@ -507,6 +747,91 @@ class PublishItem(object):
         return self._tasks
 
     @property
+    def thumbnail(self):
+        """
+        The associated thumbnail, as a :class:`QtGui.QPixmap`.
+
+        The thumbnail is an image to represent the item visually such as a
+        thumbnail of an image or a screenshot of a scene.
+
+        If no thumbnail has been defined for this node, the parent thumbnail is
+        returned, or None if no thumbnail exists.
+
+        .. warning:: This will property return ``None`` when run without a UI
+            present
+
+        .. note:: The ``thumbnail`` is typically associated with the resulting
+            published item in Shotgun and is meant to represent it visually. The
+            ``thumbnail`` should not be confused with the item's ``icon`` which
+            is for use only in the publisher UI and represents the type of item
+            being published.
+        """
+
+        # nothing to do if running without a UI
+        if not sgtk.platform.current_engine().has_ui:
+            return None
+
+        # defer import until needed and to avoid issues when running without UI
+        from sgtk.platform.qt import QtGui
+
+        if self._thumbnail_path and not self._thumbnail_pixmap:
+            # we have a path but haven't yet created the pixmap. create it
+            try:
+                self._thumbnail_pixmap = QtGui.QPixmap(self._thumbnail_path)
+            except Exception, e:
+                logger.warning(
+                    "%r: Could not load icon '%s': %s" %
+                    (self, self._icon_path, e)
+                )
+
+        if self._thumbnail_pixmap:
+            return self._thumbnail_pixmap
+        elif self.parent:
+            return self.parent.thumbnail
+        else:
+            return None
+
+    @thumbnail.setter
+    def thumbnail(self, pixmap):
+        """Sets the thumbnail """
+        self._thumbnail_pixmap = pixmap
+
+    @property
+    def thumbnail_enabled(self):
+        """
+        Boolean property to indicate whether thumbnails can be interacted with
+        for items displayed in a publish UI.
+
+        * If ``True``, thumbnails will be visible and editable in the publish UI
+          (via screen capture).
+        * If ``False`` and a thumbnail has been set via the :meth:`thumbnail`
+          property, the thumbnail will be visible but screen capture will be
+          disabled.
+        * If ``False`` and no thumbnail has been specified, no thumbnail will
+          appear in the UI.
+        """
+        return self._thumbnail_enabled
+
+    @thumbnail_enabled.setter
+    def thumbnail_enabled(self, enabled):
+        # setter for thumbnail_enabled
+        self._thumbnail_enabled = enabled
+
+    @property
+    def thumbnail_explicit(self):
+        """
+        Boolean property to indicate that thumbnail has been explicitly set.
+        When this flag is on, the summary thumbnail should be ignored for this
+        this specific item.
+        """
+        return self._thumbnail_explicit
+
+    @thumbnail_explicit.setter
+    def thumbnail_explicit(self, enabled):
+        """Setter for _thumbnail_explicit."""
+        self._thumbnail_explicit = enabled
+
+    @property
     def type_spec(self):
         """
         The type specification for this item. This specification follows a
@@ -521,6 +846,8 @@ class PublishItem(object):
         """Sets the type spec for this object."""
         self._type_spec = new_type_spec
 
+    # leaving this as a property() definition because it is called 'type'.
+    # don't want to risk bad mojo with python
     def _get_type(self):
         """
         DEPRECATED: use ``type_spec`` instead
@@ -545,18 +872,20 @@ class PublishItem(object):
         """Set the type display for this object."""
         self._type_display = new_type_display
 
-    def _get_display_type(self):
+    @property
+    def display_type(self):
         """
         DEPRECATED: use ``type_display`` instead
         """
         return self.type_display
 
-    # leaving this for backward compatibility
-    def _set_display_type(self, new_type_display):
+    @display_type.setter
+    def display_type(self, new_type_display):
+        """DEPRECATED setter."""
         self.type_display = new_type_display
 
-    # leaving this for backward compatibility
-    display_type = property(_get_display_type, _set_display_type)
+    ############################################################################
+    # internal methods
 
     def _get_local_properties(self):
         """
@@ -607,137 +936,3 @@ class PublishItem(object):
             # `yield from` could be used to make this cleaner/clearer
             for grandchild_item in self._traverse_item(child_item):
                 yield grandchild_item
-
-    # TODO: consider these when we get to the UI portion. we can't remove them
-    # because we don't want to break the API, but we need to figure how how they
-    # make sense without a UI in play.
-    def set_icon_from_path(self, path):
-        pass
-
-    def set_thumbnail_from_path(self, path):
-        pass
-
-    def get_thumbnail_as_path(self):
-        return None
-
-    @property
-    def icon(self):
-        return None
-
-    @property
-    def expanded(self):
-        return self._expanded
-
-    @expanded.setter
-    def expanded(self, is_expanded):
-        self._expanded = is_expanded
-
-    @property
-    def context_change_allowed(self):
-        """
-        True if item allows context change, False otherwise. Default is True
-        """
-        return self._allows_context_change
-
-    @context_change_allowed.setter
-    def context_change_allowed(self, allow):
-        """
-        Enable/disable context change for this item.
-        """
-        self._allows_context_change = allow
-
-
-    def _get_thumbnail_enabled(self):
-        """
-        Flag to indicate that thumbnails can be interacted with.
-
-        * If ``True``, thumbnails will be visible and editable in the publish UI
-          (via screen capture).
-        * If ``False`` and a thumbnail has been set via the :meth:`thumbnail`
-          property, the thumbnail will be visible but screen capture will be
-          disabled.
-        * If ``False`` and no thumbnail has been specified, no thumbnail will
-          appear in the UI.
-        """
-        return self._thumbnail_enabled
-
-    def _set_thumbnail_enabled(self, enabled):
-        # setter for thumbnail_enabled
-        self._thumbnail_enabled = enabled
-
-    thumbnail_enabled = property(_get_thumbnail_enabled, _set_thumbnail_enabled)
-
-    def _get_thumbnail_explicit(self):
-        """
-        Flag to indicate that thumbnail has been explicitly set.
-        When this flag is on, the summary thumbnail should be ignored
-        For this this specific item.
-        """
-        return self._thumbnail_explicit
-
-    def _set_thumbnail_explicit(self, enabled):
-        """
-        Setter for _thumbnail_explicit
-        """
-        self._thumbnail_explicit = enabled
-
-    thumbnail_explicit = property(_get_thumbnail_explicit,_set_thumbnail_explicit)
-
-    def _get_thumbnail(self):
-        """
-        The associated thumbnail, as a :class:`QtGui.QPixmap`.
-
-        The thumbnail is an image to represent the item visually such as a
-        thumbnail of an image or a screenshot of a scene.
-
-        If no thumbnail has been defined for this node, the parent thumbnail is
-        returned, or None if no thumbnail exists.
-        """
-        if self._thumb_pixmap:
-            return self._thumb_pixmap
-        elif self.parent:
-            return self.parent.thumbnail
-        else:
-            return None
-
-    def _set_thumbnail(self, pixmap):
-        self._thumb_pixmap = pixmap
-
-    thumbnail = property(_get_thumbnail, _set_thumbnail)
-
-    # TODO: figure out active vs. checked
-    def _get_checked(self):
-        """
-        Flag to indicate that this item should be checked by default.
-
-        Please note that the final state of the node is also affected by
-        the child tasks. Below are some examples of how this interaction
-        plays out in practice:
-
-        - If all child tasks/items return ``checked: False`` in their accept
-          method, the parent item will be unchecked, regardless
-          of the state of this property.
-
-        - If one or more child tasks return ``checked: True`` and the item
-          checked state is False, the item and all its sub-items will be
-          unchecked.
-        """
-        return self._checked
-
-    def _set_checked(self, check_state):
-        # setter for checked
-        self._checked = check_state
-
-    checked = property(_get_checked, _set_checked)
-
-    def _get_enabled(self):
-        """
-        Flag to indicate that this item and its children should be enabled.
-        """
-        return self._enabled
-
-    def _set_enabled(self, enabled):
-        # setter for enabled
-        self._enabled = enabled
-
-    enabled = property(_get_enabled, _set_enabled)

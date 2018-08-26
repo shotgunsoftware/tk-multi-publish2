@@ -141,7 +141,7 @@ class PublishTree(object):
             raise sgtk.TankError("Removing the root item is not allowed.")
 
         # all other items should have a parent
-        item.parent.remove_child(item)
+        item.parent.remove_item(item)
 
     def save_file(self, file_path):
         """Save the tree to disk at the supplied path."""

@@ -532,10 +532,15 @@ class AppDialog(QtGui.QWidget):
                 for top_level_item in self._publish_manager.top_level_items:
                     top_level_item.thumbnail = self._summary_thumbnail
                     top_level_item.thumbnail_explicit = False
-                    top_level_item._propagate_thumbnail_to_children()
-        else: 
+
+                    # propagate the thumbnail to all descendant items
+                    for item in top_level_item:
+                        item.thumbnail = self._summary_thumbnail
+                        item.thumbnail_explicit = False
+        else:
             self._current_item.thumbnail = pixmap
-            # specify that the new thumbnail overrides the one inherited from summary
+            # specify that the new thumbnail overrides the one inherited from
+            # summary
             self._current_item.thumbnail_explicit = True 
 
 
@@ -642,13 +647,25 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_thumbnail_label.show()
         self.ui.item_thumbnail.show()
 
-        thumbnail_is_multiple_values = False
+        thumbnail_has_multiple_values = False
         for top_level_item in self._publish_manager.top_level_items:
-           if top_level_item._get_thumbnail_explicit_recursive():
-               thumbnail_is_multiple_values = True
-               break
-      
-        self.ui.item_thumbnail._set_multiple_values_indicator(thumbnail_is_multiple_values)
+            if top_level_item.thumbnail_explicit:
+                thumbnail_has_multiple_values = True
+                break
+
+            for descendant in top_level_item:
+                if descendant.thumbnail_explicit:
+                    # shortcut if one descendant has an explicit thumbnail
+                    thumbnail_has_multiple_values = True
+                    break
+
+            # break out of this loop if an explicit thumbnail was found for
+            # this top level item
+            if thumbnail_has_multiple_values:
+                break
+
+        self.ui.item_thumbnail._set_multiple_values_indicator(
+            thumbnail_has_multiple_values)
         self.ui.item_thumbnail.set_thumbnail(self._summary_thumbnail)
 
         # setting enabled to true to be able to take a snapshot to define the thumbnail 
@@ -1221,17 +1238,29 @@ class AppDialog(QtGui.QWidget):
         # are on context change lockdown.
         sync_required = False
 
-        # TODO: rerun the plugin attachment logic for the items whose context changed
+        items_with_new_context = []
 
         if self._current_item is None:
             # this is the summary item - so update all items!
             for top_level_item in self._publish_manager.top_level_items:
                 if top_level_item.context_change_allowed:
                     top_level_item.context = context
+
+                    # this item and all of its descendents in the tree need to
+                    # have their plugins reattached given the new context
+                    items_with_new_context.append(top_level_item)
+                    items_with_new_context.extend([i for i in top_level_item])
+
                     sync_required = True
         else:
             if self._current_item.context_change_allowed:
                 self._current_item.context = context
+
+                # this item and all of its descendents in the tree need to have
+                # their plugins reattached given the new context
+                items_with_new_context.append(self._current_item)
+                items_with_new_context.extend([i for i in self._current_item])
+
                 sync_required = True
 
         if sync_required:
