@@ -70,7 +70,6 @@ class PublishManager(object):
         self.logger.debug("Loading plugins for the current context...")
         self._load_publish_plugins(self._bundle.context)
 
-
     def attach_plugins(self, items):
         """
         For each item supplied, given it's context, load the appropriate plugins
