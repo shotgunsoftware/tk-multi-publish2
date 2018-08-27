@@ -11,7 +11,7 @@
 from ..data import PublishData
 
 
-class Setting(PublishData):
+class PluginSetting(PublishData):
     """
     Holds configured settings for a task in a publish tree.
     """
@@ -25,7 +25,7 @@ class Setting(PublishData):
         :param description:
         """
 
-        super(Setting, self).__init__()
+        super(PluginSetting, self).__init__()
 
         self.default_value = default_value
         self.description = description

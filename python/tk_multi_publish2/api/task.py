@@ -11,7 +11,7 @@
 import copy
 
 import sgtk
-from .plugins import Setting, PublishPluginInstance
+from .plugins import PluginSetting, PublishPluginInstance
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -65,7 +65,7 @@ class PublishTask(object):
         new_task._enabled = task_dict["enabled"]
 
         for (k, setting) in task_dict["settings"].iteritems():
-            new_setting = Setting(
+            new_setting = PluginSetting(
                 setting["name"],
                 setting["type"],
                 setting["default_value"],
@@ -76,7 +76,7 @@ class PublishTask(object):
 
         return new_task
 
-    def __init__(self, plugin, item, visible, enabled, checked):
+    def __init__(self, plugin, item, visible=True, enabled=True, checked=True):
         """
         Initialize the task.
         """
@@ -96,9 +96,6 @@ class PublishTask(object):
         self._enabled = enabled
 
         logger.debug("Created publish tree task: %s" % (self,))
-
-        # TODO: consider
-        self._checked = True
 
     def to_dict(self):
 
@@ -192,7 +189,7 @@ class PublishTask(object):
             interchangeably to make code more readable depending on the context
             (with/without the UI).
         """
-        return self._checked
+        return self._active
 
     @property
     def description(self):

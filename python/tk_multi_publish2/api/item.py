@@ -453,7 +453,7 @@ class PublishItem(object):
         return self._active
 
     @active.setter
-    def active(self, active_state):
+    def active(self, is_active):
         """
         Explicitly set the active state.
 
@@ -463,7 +463,7 @@ class PublishItem(object):
         * ``False``: Set the item to be inactive
         * ``None``: Clear the item's state, rely on inheritance within the tree
         """
-        self._active = active_state
+        self._active = is_active
 
     @property
     def checked(self):
@@ -490,9 +490,9 @@ class PublishItem(object):
         return self._active
 
     @checked.setter
-    def checked(self, check_state):
+    def checked(self, is_checked):
         # setter for checked
-        self._active = check_state
+        self._active = is_checked
 
     @property
     def children(self):

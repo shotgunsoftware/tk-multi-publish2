@@ -9,7 +9,7 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import sgtk
-from .setting import Setting
+from .setting import PluginSetting
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -71,7 +71,7 @@ class PluginInstanceBase(object):
         """
         Init helper method.
 
-        Validates plugin settings and creates Setting objects
+        Validates plugin settings and creates PluginSetting objects
         that can be accessed from the settings property.
         """
         try:
@@ -101,7 +101,7 @@ class PluginInstanceBase(object):
 
             # TODO: validate and resolve the configured setting
 
-            setting = Setting(
+            setting = PluginSetting(
                 setting_name,
                 data_type=setting_schema.get("type"),
                 default_value=setting_schema.get("default"),
