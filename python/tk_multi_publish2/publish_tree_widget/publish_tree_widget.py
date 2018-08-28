@@ -174,9 +174,15 @@ class PublishTreeWidget(QtGui.QTreeWidget):
                         (item, state) = self.__take_item(top_level_item, item_index)
                         items_to_move.append((item, state))
 
-        # now put all the moved items in
+        # now put all the moved items back in the tree.
         for item, state in items_to_move:
             self.__insert_item(item, state)
+
+            # TODO: because the context has changed for these items, the attached
+            # tasks for the underlying item will be different. make sure the old
+            # ones are replaced with the new
+            #self.__rebuild_tasks_r(item)
+            #_init_item_r(item)
 
         # pass 2 - check that there aren't any dangling contexts
         # process backwards so that when we take things out we don't
@@ -283,6 +289,37 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         # if the item is selected, scroll to it after the move
         if widget_item.isSelected():
             widget_item.treeWidget().scrollToItem(widget_item)
+
+    # TODO: this was written to handle item's changing context either via drag/
+    # drop or manual context widget change. this will clear existing tasks and
+    # create new ones based on the underlying api item representation
+    def __rebuild_tasks_r(self, widget_item):
+        """
+        Recursively rebuild the tasks for the supplied widget item and its
+        descendants.
+
+        :param widget_item: The top most widget item to rebuild tasks for.
+        """
+
+        child_items = []
+
+        for child_index in reversed(xrange(widget_item.childCount())):
+            child = widget_item.child(child_index)
+            widget_item.takeChild(child_index)
+            if not isinstance(child, TreeNodeTask):
+                # this is a child item. we'll add it to the list of items to
+                # add back once the tasks have been rebuilt
+                child_items.append(child)
+
+        # add all the new tasks for this item
+        for task in widget_item.item.tasks:
+            ui_task = TreeNodeTask(task, widget_item)
+            self.__created_items.append(ui_task)
+
+        # add the child items back and process their tasks
+        for child_item in reversed(child_items):
+            widget_item.addChild(child_item)
+            self.__rebuild_tasks_r(child_item)
 
     def __add_item(self, publish_item):
         """
@@ -412,17 +449,17 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         # run default implementation
         super(PublishTreeWidget, self).dropEvent(event)
 
-        for item, state in self._selected_items_state:
+        for ui_item, state in self._selected_items_state:
 
             # make sure that the item picks up the new context
-            if isinstance(item, TopLevelTreeNodeItem):
-                item.synchronize_context()
+            if isinstance(ui_item, TopLevelTreeNodeItem):
+                ui_item.synchronize_context()
 
             # re-initialize the item recursively
-            _init_item_r(item)
+            _init_item_r(ui_item)
 
             # restore state after drop
-            self.__set_item_state(item, state)
+            self.__set_item_state(ui_item, state)
 
         self.tree_reordered.emit()
 

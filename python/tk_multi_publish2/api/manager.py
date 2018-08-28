@@ -452,7 +452,6 @@ class PublishManager(object):
             elif len(context_settings) == 1:
                 app_settings = context_settings[0]["settings"]
 
-
             if app_settings:
                 plugin_settings = app_settings[self.CONFIG_PLUGIN_DEFINITIONS]
             else:
