@@ -796,7 +796,8 @@ class AppDialog(QtGui.QWidget):
 
             self._overlay.show_loading()
             self.ui.button_container.hide()
-            num_items_created = self._publish_manager.collect_files(str_files)
+            new_items = self._publish_manager.collect_files(str_files)
+            num_items_created = len(new_items)
             num_errors = self._progress_handler.pop()
 
             if num_errors == 0 and num_items_created == 0:
@@ -1257,6 +1258,15 @@ class AppDialog(QtGui.QWidget):
                 items_with_new_context.extend([i for i in self._current_item])
 
                 sync_required = True
+
+        # TODO: attach plugins for the destination context. this is commented
+        # out for now as it is a change in behavior and likely implies some
+        # additional things to consider. also, the drag/drop of items within
+        # the tree (which changes context) will need to be updated
+        # ...
+        # for any items that have a new context, rerun plugin attachment so that
+        # they are published using the destination context's plugins
+        #self._publish_manager.attach_plugins(items_with_new_context)
 
         if sync_required:
             self._synchronize_tree()

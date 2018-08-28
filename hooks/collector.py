@@ -221,7 +221,7 @@ class BasicSceneCollector(HookBaseClass):
             item_type, type_display, display_name)
         file_item.set_icon_from_path(item_info["icon_path"])
 
-        # if the supplied path is an image, use the path as # the thumbnail.
+        # if the supplied path is an image, use the path as the thumbnail.
         if (item_type.startswith("file.image") or
             item_type.startswith("file.texture")):
             file_item.set_thumbnail_from_path(path)

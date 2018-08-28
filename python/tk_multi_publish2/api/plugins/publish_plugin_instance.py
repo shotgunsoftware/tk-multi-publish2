@@ -34,6 +34,8 @@ class PublishPluginInstance(PluginInstanceBase):
         # all plugins need a hook and a name
         self._name = name
 
+        self._icon_pixmap = None
+
         # TODO: existing code stores task instances on the plugin. Need to
         # determine if this is required. If it is, consider how best to
         # serialize. Breaking API: (property `tasks`, method `add_task`)
@@ -87,6 +89,24 @@ class PublishPluginInstance(PluginInstanceBase):
             pass
 
         return value or "No detailed description provided."
+
+    @property
+    def icon(self):
+        """
+        Returns the icon for this plugin instance.
+
+        .. warning:: This property will return ``None`` when run without a UI
+            present
+        """
+
+        # nothing to do if running without a UI
+        if not sgtk.platform.current_engine().has_ui:
+            return None
+
+        if not self._icon_pixmap:
+            self._icon_pixmap = self._load_plugin_icon()
+
+        return self._icon_pixmap
 
     @property
     def item_filters(self):
@@ -177,6 +197,64 @@ class PublishPluginInstance(PluginInstanceBase):
         with self._handle_plugin_error("Finalize complete!", "Error finalizing: %s"):
             self._hook_instance.finalize(settings, item)
 
+    ############################################################################
+    # ui methods
+
+    def run_create_settings_widget(self, parent):
+        """
+        Creates a custom widget to edit a plugin's settings.
+
+        .. note:: This method is a no-op if running without a UI present
+
+        :param parent: Parent widget
+        :type parent: :class:`QtGui.QWidget`
+        """
+
+        # nothing to do if running without a UI
+        if not sgtk.platform.current_engine().has_ui:
+            return None
+
+        with self._handle_plugin_error(None, "Error laying out widgets: %s"):
+            return self._hook_instance.create_settings_widget(parent)
+
+    def run_get_ui_settings(self, parent):
+        """
+        Retrieves the settings from the custom UI.
+
+        .. note:: This method is a no-op if running without a UI present
+
+        :param parent: Parent widget
+        :type parent: :class:`QtGui.QWidget`
+        """
+
+        # nothing to do if running without a UI
+        if not sgtk.platform.current_engine().has_ui:
+            return None
+
+        with self._handle_plugin_error(None, "Error reading settings from UI: %s"):
+            return self._hook_instance.get_ui_settings(parent)
+
+    def run_set_ui_settings(self, parent, settings):
+        """
+        Provides a list of settings from the custom UI. It is the responsibility of the UI
+        handle different values for the same setting.
+
+        .. note:: This method is a no-op if running without a UI present
+
+        :param parent: Parent widget
+        :type parent: :class:`QtGui.QWidget`
+        :param settings: List of dictionary of settings as python literals.
+        """
+
+        # nothing to do if running without a UI
+        if not sgtk.platform.current_engine().has_ui:
+            return None
+
+        with self._handle_plugin_error(None, "Error writing settings to UI: %s"):
+            self._hook_instance.set_ui_settings(parent, settings)
+
+
+
     @contextmanager
     def _handle_plugin_error(self, success_msg, error_msg):
         """
@@ -202,6 +280,34 @@ class PublishPluginInstance(PluginInstanceBase):
             if success_msg:
                 self.logger.info(success_msg)
 
-    @property
-    def icon(self):
-        return None
+    def _load_plugin_icon(self):
+        """
+        Loads the icon defined by the plugin's hook.
+
+        :returns: QPixmap or None if not found
+        """
+
+        # defer import until needed and to avoid issues when running without UI
+        from sgtk.platform.qt import QtGui
+
+        # load plugin icon
+        pixmap = None
+        try:
+            icon_path = self._hook_instance.icon
+            if icon_path:
+                try:
+                    pixmap = QtGui.QPixmap(icon_path)
+                except Exception, e:
+                    self._logger.warning(
+                        "%r: Could not load icon '%s': %s" % (
+                        self, icon_path, e)
+                    )
+        except AttributeError:
+            # plugin does not have an icon
+            pass
+
+        # load default pixmap if hook doesn't define one
+        if pixmap is None:
+            pixmap = QtGui.QPixmap(":/tk_multi_publish2/task.png")
+
+        return pixmap
