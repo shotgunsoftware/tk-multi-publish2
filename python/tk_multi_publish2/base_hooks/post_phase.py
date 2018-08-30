@@ -18,9 +18,9 @@ class PostPhaseHook(HookBaseClass):
     This hook defines methods that are executed after each phase of a publish:
     validation, publish, and finalization. Each method receives the publish
     tree instance being used by the publisher, giving full control to further
-    curate the publish tree including the items to be published and the tasks
-    attached to them. See the :class:`PublishTree` documentation for
-    additional details on how to traverse the publish tree and manipulate it.
+    curate the publish tree including the publish items and the tasks attached
+    to them. See the :class:`PublishTree` documentation for additional details
+    on how to traverse the tree and manipulate it.
     """
 
     def post_validate(self, publish_tree, failed_to_validate):
@@ -58,22 +58,47 @@ class PostPhaseHook(HookBaseClass):
 
         :param publish_tree: The :class:`~PublishTree` instance representing
             the items to be published.
-
-        :param bool validation_successful: ``True`` if all items in the tree
-            successfully validated. ``False`` otherwise.
+        :param list failed_to_validate: A list of :class:`~PublishItem`
+            instances representing all items that failed to validate.
 
         :return: ``True`` if validation was successful, ``False`` otherwise.
         """
+        self.logger.debug("Executing post validate hook method...")
+
         # by default, return True if all items validated
-        return len(failed_to_validate) == 0
+        return not failed_to_validate
 
     def post_publish(self, publish_tree):
         """
+        This method is executed after the publish pass has completed for each
+        item in the tree, before the finalize pass.
 
-        :param publish_tree:
-        :return:
+        A :class:`~PublishTree` instance representing the items that were
+        published is supplied as an argument. The tree can be traversed in this
+        method to inspect the items and process them collectively.
+
+        Studios can override this method to process the publishes collectively
+        prior to any cleanup that happens in the finalize pass.
+
+        :param publish_tree: The :class:`~PublishTree` instance representing
+            the items to be published.
         """
-
-
+        self.logger.debug("Executing post publish hook method...")
 
     def post_finalize(self, publish_tree):
+        """
+        This method is executed after the finalize pass has completed for each
+        item in the tree.
+
+        A :class:`~PublishTree` instance representing the items that were
+        published and finalized is supplied as an argument. The tree can be
+        traversed in this method to inspect the items and process them
+        collectively.
+
+        Studios can override this method to process the publishes collectively
+        after any cleanup that happens in the finalize pass.
+
+        :param publish_tree: The :class:`~PublishTree` instance representing
+            the items to be published.
+        """
+        self.logger.debug("Executing post finalize hook method...")

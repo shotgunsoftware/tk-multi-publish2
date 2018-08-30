@@ -733,7 +733,8 @@ class AppDialog(QtGui.QWidget):
             (self._display_action_name)
         )
 
-        self._publish_manager.clear()
+        previously_collected_files = self._publish_manager.collected_files
+        self._publish_manager.tree.clear()
 
         logger.debug("Refresh: Running collection on current session...")
         new_session_items = self._publish_manager.collect_session()
@@ -743,7 +744,7 @@ class AppDialog(QtGui.QWidget):
             "files"
         )
         new_file_items = self._publish_manager.collect_files(
-            self._publish_manager.collected_files)
+            previously_collected_files)
 
         num_items_created = len(new_session_items) + len(new_file_items)
         num_errors = self._progress_handler.pop()
@@ -1002,7 +1003,8 @@ class AppDialog(QtGui.QWidget):
         num_issues = 0
         self.ui.stop_processing.show()
         try:
-            num_issues = self._visit_tree_r(parent, lambda child: child.validate(is_standalone), "Validating")
+            self._publish_manager.validate()
+            #num_issues = self._visit_tree_r(parent, lambda child: child.validate(is_standalone), "Validating")
         finally:
             self._progress_handler.pop()
             if self._stop_processing_flagged:
@@ -1045,7 +1047,7 @@ class AppDialog(QtGui.QWidget):
             # is triggered?
             if self._bundle.get_setting("validate_on_publish"):
                 # do_validate returns the number of issues encountered
-                if self.do_validate(standalone=False) > 0:
+                if self.do_validate(is_standalone=False) > 0:
                     self._progress_handler.logger.error(
                         "Validation errors detected. "
                         "Not proceeding with publish."
@@ -1092,7 +1094,8 @@ class AppDialog(QtGui.QWidget):
             self._reset_tree_icon_r(parent)
 
             try:
-                self._visit_tree_r(parent, lambda child: child.publish(), "Publishing")
+                self._publish_manager.publish()
+                #self._visit_tree_r(parent, lambda child: child.publish(), "Publishing")
             except Exception, e:
                 # ensure the full error shows up in the log file
                 logger.error("Publish error stack:\n%s" % (traceback.format_exc(),))
@@ -1110,7 +1113,8 @@ class AppDialog(QtGui.QWidget):
 
                 self._progress_handler.push("Running finalizing pass")
                 try:
-                    self._visit_tree_r(parent, lambda child: child.finalize(), "Finalizing")
+                    self._publish_manager.finalize()
+                    #self._visit_tree_r(parent, lambda child: child.finalize(), "Finalizing")
                 except Exception, e:
                     # ensure the full error shows up in the log file
                     logger.error("Finalize error stack:\n%s" % (traceback.format_exc(),))
@@ -1162,7 +1166,7 @@ class AppDialog(QtGui.QWidget):
         """
 
         # clear the tree and recollect the session
-        self._publish_manager.clear()
+        self._publish_manager.tree.clear()
         self._publish_manager.collect_session()
 
         self._synchronize_tree()
