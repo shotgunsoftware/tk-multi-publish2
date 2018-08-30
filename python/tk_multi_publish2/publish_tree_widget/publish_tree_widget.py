@@ -158,7 +158,8 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             for item_index in reversed(range(top_level_item.childCount())):
                 item = top_level_item.child(item_index)
 
-                if item.item not in self._publish_manager.top_level_items:
+                top_level_items = list(self._publish_manager.tree.root_item.children)
+                if item.item not in top_level_items:
                     # no longer in the publish mgr. remove from tree
                     top_level_item.takeChild(item_index)
                 else:
@@ -194,12 +195,14 @@ class PublishTreeWidget(QtGui.QTreeWidget):
                 self.takeTopLevelItem(top_level_index)
 
         # pass 3 - see if anything needs adding
-        for item in self._publish_manager.top_level_items:
+        top_level_items = list(self._publish_manager.tree.root_item.children)
+        for item in top_level_items:
             if item not in top_level_items_in_tree:
                 self.__add_item(item)
 
         # finally, see if we should show the summary widget or not
-        if len(list(self._publish_manager.top_level_items)) < 2:
+        top_level_items = list(self._publish_manager.tree.root_item.children)
+        if len(top_level_items) < 2:
             self._summary_node.setHidden(True)
         else:
             self._summary_node.setHidden(False)

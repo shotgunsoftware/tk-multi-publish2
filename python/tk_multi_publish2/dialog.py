@@ -498,7 +498,8 @@ class AppDialog(QtGui.QWidget):
                 self._summary_comment = comments
 
                 # this is the summary item - so update all top level items and their children!
-                for top_level_item in self._publish_manager.top_level_items:
+                top_level_items = list(self._publish_manager.tree.root_item.children)
+                for top_level_item in top_level_items:
                     top_level_item.description = self._summary_comment
                     top_level_item._propagate_description_to_children()
 
@@ -529,7 +530,8 @@ class AppDialog(QtGui.QWidget):
             self._summary_thumbnail = pixmap
             if pixmap:
                 # update all items with the summary thumbnail
-                for top_level_item in self._publish_manager.top_level_items:
+                top_level_items = list(self._publish_manager.tree.root_item.children)
+                for top_level_item in top_level_items:
                     top_level_item.thumbnail = self._summary_thumbnail
                     top_level_item.thumbnail_explicit = False
 
@@ -648,7 +650,8 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_thumbnail.show()
 
         thumbnail_has_multiple_values = False
-        for top_level_item in self._publish_manager.top_level_items:
+        top_level_items = list(self._publish_manager.tree.root_item.children)
+        for top_level_item in top_level_items:
             if top_level_item.thumbnail_explicit:
                 thumbnail_has_multiple_values = True
                 break
@@ -822,7 +825,8 @@ class AppDialog(QtGui.QWidget):
             self._overlay.hide()
             self.ui.button_container.show()
 
-        if (len(list(self._publish_manager.top_level_items)) == 0 and
+        top_level_items = list(self._publish_manager.tree.root_item.children)
+        if (len(list(top_level_items)) == 0 and
             self.ui.main_stack.currentIndex() == self.DRAG_SCREEN):
             # there are no top-level items and we're still on the drag screen.
             # something not good happened. show a button to open the progress
@@ -846,7 +850,8 @@ class AppDialog(QtGui.QWidget):
         Redraws the ui and rebuilds data based on
         the low level plugin representation
         """
-        if len(list(self._publish_manager.top_level_items)) == 0:
+        top_level_items = list(self._publish_manager.tree.root_item.children)
+        if len(list(top_level_items)) == 0:
             if not self.manual_load_enabled:
                 # No items collected and 'enable_manual_load' application option
                 # false, display that special error overlay.
@@ -914,7 +919,7 @@ class AppDialog(QtGui.QWidget):
                 processing_items.append(tree_item.item)
 
         for item in processing_items:
-            self._publish_manager.remove_item(item)
+            self._publish_manager.tree.remove_item(item)
 
         self._synchronize_tree()
 
@@ -1246,7 +1251,8 @@ class AppDialog(QtGui.QWidget):
 
         if self._current_item is None:
             # this is the summary item - so update all items!
-            for top_level_item in self._publish_manager.top_level_items:
+            top_level_items = list(self._publish_manager.tree.root_item.children)
+            for top_level_item in top_level_items:
                 if top_level_item.context_change_allowed:
                     top_level_item.context = context
 
