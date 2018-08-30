@@ -113,11 +113,11 @@ class PublishTree(object):
         for item in self._root_item:
             yield item
 
-    def clear(self, clear_persistent=False):
-        """Clears the tree of all non-persistent items.
+    def clear(self, clear_persistent=True):
+        """Clears the tree of items.
 
         :param bool clear_persistent: If ``True``, all items will be cleared
-            from the tree, including persistent items.
+            from the tree, including persistent items. Default is ``True``.
         """
 
         for item in self._root_item.children:

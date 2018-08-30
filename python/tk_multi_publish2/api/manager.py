@@ -229,10 +229,13 @@ class PublishManager(object):
 
         failed_to_validate = []
 
-        # method to keep a list of tasks that failed to validate
+        # method to handle the publish of individual tasks
         def validate_action(task):
-            if not task.validate():
 
+            # run the actual validation
+            is_valid = task.validate()
+
+            if not is_valid:
                 # store this task's parent item in the list of items that failed
                 # to validate (if it's not already there).
                 if task.item not in failed_to_validate:
@@ -261,6 +264,16 @@ class PublishManager(object):
 
         # execute the post validate method of the phose phase hook
         self._post_phase_hook.post_validate(self.tree)
+
+    def finalize(self):
+        """
+        Finalize the published items.
+
+        The ``publish()`` method should be called first
+
+        Each task assigned to collected items will execute their finalize
+        payload. Items are processed in depth first order.
+        """
 
         finalize_action = lambda task: task.finalize()
         self._execute_tasks("finalize", finalize_action)
