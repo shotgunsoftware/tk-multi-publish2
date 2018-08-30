@@ -87,12 +87,12 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         """
         self._publish_manager = publish_manager
 
-    def _build_item_tree_r(self, item, enabled, level, tree_parent):
+    def _build_item_tree_r(self, item, checked, level, tree_parent):
         """
         Build a subtree of items, recursively, for the given item
 
         :param item: Low level publish api item instance
-        :param bool enabled: flag to indicate that the item is enabled
+        :param bool checked: flag to indicate that the item is checked
         :param int level: recursion depth
         :param QTreeWidgetItem tree_parent: parent node in tree
         """
@@ -110,8 +110,8 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         # set expand state for item
         ui_item.setExpanded(item.expanded)
 
-        # see if the node is enabled. This setting propagates down
-        enabled &= item.enabled
+        # see if the node is checked. This setting propagates down
+        checked &= item.checked
 
         # create children
         for task in item.tasks:
@@ -119,7 +119,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             self.__created_items.append(task)
 
         for child in item.children:
-            self._build_item_tree_r(child, enabled, level+1, ui_item)
+            self._build_item_tree_r(child, checked, level+1, ui_item)
 
         # lastly, handle the item level check state.
         # if the item has been marked as checked=False
@@ -328,7 +328,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         # now add the new node
         self._build_item_tree_r(
             publish_item,
-            enabled=True,
+            checked=True,
             level=0,
             tree_parent=context_tree_node
         )
@@ -375,7 +375,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         tasks = defaultdict(int)
         for child_index in xrange(node.childCount()):
             child = node.child(child_index)
-            if isinstance(child, TreeNodeTask) and child.enabled:
+            if isinstance(child, TreeNodeTask) and child.checked:
                 task_obj = child.task
                 tasks[task_obj.plugin.name] += 1
             else:

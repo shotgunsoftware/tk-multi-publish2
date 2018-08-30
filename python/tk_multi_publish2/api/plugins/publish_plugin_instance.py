@@ -24,12 +24,12 @@ class PublishPluginInstance(PluginInstanceBase):
     Each plugin object reflects an instance in the app configuration.
     """
 
-    def __init__(self, name, path, settings, logger):
+    def __init__(self, name, path, settings, publish_logger=None):
         """
         :param name: Name to be used for this plugin instance
         :param path: Path to publish plugin hook
         :param settings: Dictionary of plugin-specific settings
-        :param logger: a logger object that will be used by the hook
+        :param publish_logger: a logger object that will be used by the hook
         """
         # all plugins need a hook and a name
         self._name = name
@@ -40,7 +40,11 @@ class PublishPluginInstance(PluginInstanceBase):
         # determine if this is required. If it is, consider how best to
         # serialize. Breaking API: (property `tasks`, method `add_task`)
 
-        super(PublishPluginInstance, self).__init__(path, settings, logger)
+        super(PublishPluginInstance, self).__init__(
+            path,
+            settings,
+            publish_logger
+        )
 
     def _create_hook_instance(self, path):
         """
@@ -146,12 +150,20 @@ class PublishPluginInstance(PluginInstanceBase):
         :param item: Item to analyze
         :returns: dictionary with boolean keys accepted/visible/enabled/checked
         """
+
         try:
             return self._hook_instance.accept(self.settings, item)
         except Exception:
             error_msg = traceback.format_exc()
-            self.logger.error("Error running accept for %s" % (self,))
+            self._logger.error(
+                "Error running accept for %s" % self,
+                extra=_get_error_extra_info(error_msg)
+            )
             return {"accepted": False}
+        finally:
+            if not sgtk.platform.current_engine().has_ui:
+                from sgtk.platform.qt import QtCore
+                QtCore.QCoreApplication.processEvents()
 
     def run_validate(self, settings, item):
         """
@@ -253,8 +265,6 @@ class PublishPluginInstance(PluginInstanceBase):
         with self._handle_plugin_error(None, "Error writing settings to UI: %s"):
             self._hook_instance.set_ui_settings(parent, settings)
 
-
-
     @contextmanager
     def _handle_plugin_error(self, success_msg, error_msg):
         """
@@ -274,11 +284,18 @@ class PublishPluginInstance(PluginInstanceBase):
             yield
         except Exception as e:
             exception_msg = traceback.format_exc()
-            self.logger.error(error_msg % (e,))
+            self._logger.error(
+                error_msg % (e,),
+                extra=_get_error_extra_info(exception_msg)
+            )
             raise
         else:
             if success_msg:
-                self.logger.info(success_msg)
+                self._logger.info(success_msg)
+        finally:
+            if not sgtk.platform.current_engine().has_ui:
+                from sgtk.platform.qt import QtCore
+                QtCore.QCoreApplication.processEvents()
 
     def _load_plugin_icon(self):
         """
@@ -311,3 +328,20 @@ class PublishPluginInstance(PluginInstanceBase):
             pixmap = QtGui.QPixmap(":/tk_multi_publish2/task.png")
 
         return pixmap
+
+
+def _get_error_extra_info(error_msg):
+    """
+    A little wrapper to return a dictionary of data to show a button in the
+    publisher with the supplied error message.
+    :param error_msg: The error message to display.
+    :return: An logging "extra" dictionary to show the error message.
+    """
+
+    return {
+        "action_show_more_info": {
+            "label": "Error Details",
+            "tooltip": "Show the full error tack trace",
+            "text": "<pre>%s</pre>" % (error_msg,)
+        }
+    }

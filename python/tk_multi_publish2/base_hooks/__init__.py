@@ -9,4 +9,5 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 from .collector import CollectorPlugin
+from .post_phase import PostPhaseHook
 from .publish_plugin import PublishPlugin

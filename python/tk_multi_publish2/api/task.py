@@ -54,7 +54,6 @@ class PublishTask(object):
             task_dict["plugin_name"],
             task_dict["plugin_path"],
             task_dict["plugin_settings"],
-            logger  # TODO
         )
 
         new_task = PublishTask(plugin, item)
@@ -107,7 +106,6 @@ class PublishTask(object):
             "plugin_name": self.plugin.name,
             "plugin_path": self.plugin.path,
             "plugin_settings": self.plugin.configured_settings,
-            # TODO: plugin logger
             "name": self._name,
             "description": self._description,
             "settings": converted_settings,

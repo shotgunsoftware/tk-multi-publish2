@@ -90,7 +90,7 @@ class TreeNodeTask(TreeNodeBase):
 
         :returns: List of strings
         """
-        if self.enabled:
+        if self.checked:
             return [self._task.plugin.name]
         else:
             return []
@@ -99,7 +99,7 @@ class TreeNodeTask(TreeNodeBase):
         """
         Perform validation
         """
-        if not self.enabled:
+        if not self.checked:
             # nothing to do!
             return True
 
@@ -130,7 +130,7 @@ class TreeNodeTask(TreeNodeBase):
         """
         Perform publish
         """
-        if not self.enabled:
+        if not self.checked:
             # nothing to do!
             return True
 
@@ -150,7 +150,7 @@ class TreeNodeTask(TreeNodeBase):
         """
         Perform finalize
         """
-        if not self.enabled:
+        if not self.checked:
             # nothing to do!
             return True
 
