@@ -307,7 +307,7 @@ class AppDialog(QtGui.QWidget):
             context_item = self.ui.items_tree.topLevelItem(context_index)
             for child_index in xrange(context_item.childCount()):
                 child_item = context_item.child(child_index)
-                if child_item.enabled:
+                if child_item.checked:
                     checked_top_items += 1
 
         if checked_top_items == 0:
@@ -728,7 +728,10 @@ class AppDialog(QtGui.QWidget):
         Full rebuild of the plugin state. Everything is recollected.
         """
         self._progress_handler.set_phase(self._progress_handler.PHASE_LOAD)
-        self._progress_handler.push("Collecting information")
+        self._progress_handler.push(
+            "Collecting items to %s..." %
+            (self._display_action_name)
+        )
 
         self._publish_manager.clear()
 
@@ -776,7 +779,7 @@ class AppDialog(QtGui.QWidget):
 
         # add files and rebuild tree
         self._progress_handler.set_phase(self._progress_handler.PHASE_LOAD)
-        self._progress_handler.push("Processing dropped files")
+        self._progress_handler.push("Processing external files...")
 
         # pyside gives us back unicode. Make sure we convert it to strings
         str_files = []
@@ -965,7 +968,7 @@ class AppDialog(QtGui.QWidget):
             total_number_nodes = 0
             for child_index in xrange(parent.childCount()):
                 child = parent.child(child_index)
-                if child.enabled:
+                if child.checked:
                     # child is ticked
                     total_number_nodes += 1
                 total_number_nodes += _begin_process_r(child)
@@ -975,12 +978,11 @@ class AppDialog(QtGui.QWidget):
         # reset progress bar
         self._progress_handler.reset_progress(total_number_nodes * number_phases)
 
-
-    def do_validate(self, standalone=True):
+    def do_validate(self, is_standalone=True):
         """
         Perform a full validation
 
-        :param bool standalone: Indicates that the validation runs on its own,
+        :param bool is_standalone: Indicates that the validation runs on its own,
             not part of a publish workflow.
         :returns: number of issues reported
         """
@@ -989,7 +991,7 @@ class AppDialog(QtGui.QWidget):
         # back on the tasks.
         self._pull_settings_from_ui(self._current_tasks)
 
-        if standalone:
+        if is_standalone:
             self._prepare_tree(number_phases=1)
 
         # inform the progress system of the current mode
@@ -999,8 +1001,7 @@ class AppDialog(QtGui.QWidget):
         num_issues = 0
         self.ui.stop_processing.show()
         try:
-            parent = self.ui.items_tree.invisibleRootItem()
-            num_issues = self._visit_tree_r(parent, lambda child: child.validate(standalone), "Validating")
+            num_issues = self._visit_tree_r(parent, lambda child: child.validate(is_standalone), "Validating")
         finally:
             self._progress_handler.pop()
             if self._stop_processing_flagged:
@@ -1010,7 +1011,7 @@ class AppDialog(QtGui.QWidget):
             else:
                 self._progress_handler.logger.info("Validation Complete. All checks passed.")
 
-            if standalone:
+            if is_standalone:
                 # reset process aborted flag
                 self._stop_processing_flagged = False
                 self.ui.stop_processing.hide()
@@ -1192,15 +1193,16 @@ class AppDialog(QtGui.QWidget):
         Checks the stop processing flag and in case it is triggered,
         aborts the recursion
         """
-        number_true_return_values = 0
+        bad_status_count = 0
 
         for child_index in xrange(parent.childCount()):
 
             if self._stop_processing_flagged:
-                return number_true_return_values
+                return bad_status_count
 
             child = parent.child(child_index)
-            if child.enabled:
+            if child.checked:
+
                 if action_name:
                     self._progress_handler.push(
                         "%s - %s" % (action_name, child),
@@ -1209,23 +1211,24 @@ class AppDialog(QtGui.QWidget):
                     )
                 try:
                     # process this node
-                    status = action(child)  # eg. child.validate(), child.publish() etc.
-                    if not status:
-                        number_true_return_values += 1
+                    if not action(child):  # eg. child.validate(), child.publish() etc.
+                        bad_status_count += 1
 
                     # kick progress bar
                     self._progress_handler.increment_progress()
 
                     # now process all children
-                    number_true_return_values += self._visit_tree_r(
+                    bad_status_count += self._visit_tree_r(
                         child,
                         action,
                         action_name
                     )
+
                 finally:
                     if action_name:
                         self._progress_handler.pop()
-        return number_true_return_values
+
+        return bad_status_count
 
     def _on_item_context_change(self, context):
         """
@@ -1266,8 +1269,11 @@ class AppDialog(QtGui.QWidget):
 
         # TODO: attach plugins for the destination context. this is commented
         # out for now as it is a change in behavior and likely implies some
-        # additional things to consider. also, the drag/drop of items within
-        # the tree (which changes context) will need to be updated
+        # additional things to consider. for example: the drag/drop of items
+        # within the tree (which changes context) will need to be updated. will
+        # need to. also, will need to transfer task settings as the context
+        # changes, where appropriate.
+        #
         # ...
         # for any items that have a new context, rerun plugin attachment so that
         # they are published using the destination context's plugins

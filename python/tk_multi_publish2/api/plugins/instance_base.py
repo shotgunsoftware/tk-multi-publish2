@@ -24,9 +24,11 @@ class PluginInstanceBase(object):
 
     def __init__(self, path, settings, publish_logger):
         """
+        Initialize a plugin instance.
+
         :param path: Path to the collector hook
         :param settings: Dictionary of collector-specific settings
-        :param logger: a logger object that will be used by the hook
+        :param publish_logger: a logger object that will be used by the hook
         """
 
         super(PluginInstanceBase, self).__init__()
@@ -47,8 +49,6 @@ class PluginInstanceBase(object):
 
         # kick things off
         self._validate_and_resolve_config()
-
-        self.logger.debug("Created: %s" % (self,))
 
     def _create_hook_instance(self, path):
         """
@@ -118,6 +118,10 @@ class PluginInstanceBase(object):
     @property
     def logger(self):
         return self._logger
+
+    @logger.setter
+    def logger(self, new_logger):
+        self._logger = new_logger
 
     @property
     def path(self):

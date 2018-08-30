@@ -68,7 +68,7 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         return self.data(0, self.CHECKBOX_ROLE)
 
     @property
-    def enabled(self):
+    def checked(self):
         return self.check_state != QtCore.Qt.Unchecked
 
     def set_check_state(self, state):

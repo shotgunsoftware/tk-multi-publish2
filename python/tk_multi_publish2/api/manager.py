@@ -29,6 +29,7 @@ class PublishManager(object):
     CONFIG_COLLECTOR_HOOK_PATH = "collector"
     CONFIG_COLLECTOR_SETTINGS = "collector_settings"
     CONFIG_PLUGIN_DEFINITIONS = "publish_plugins"
+    CONFIG_POST_PHASE_HOOK_PATH = "post_phase"
 
     ############################################################################
     # special item property keys
@@ -63,12 +64,21 @@ class PublishManager(object):
         self._processed_contexts = {}
 
         # initialize the collector plugin
-        self.logger.debug("Loading collector configuration...")
+        logger.debug("Loading collector plugin...")
         self._load_collector()
 
         # go ahead and load the plugins for the current context for efficiency
-        self.logger.debug("Loading plugins for the current context...")
+        logger.debug("Loading plugins for the current context...")
         self._load_publish_plugins(self._bundle.context)
+
+        # load the phose phase hook
+        logger.debug("Loading post phase hook...")
+        post_phase_hook_path = self._bundle.get_setting(
+            self.CONFIG_POST_PHASE_HOOK_PATH)
+        self._post_phase_hook = self._bundle.create_hook_instance(
+            post_phase_hook_path,
+            base_class=self._bundle.base_hooks.PostPhaseHook
+        )
 
     def attach_plugins(self, items):
         """
@@ -81,44 +91,36 @@ class PublishManager(object):
             # clear existing tasks for this item
             item.clear_tasks()
 
-            self.logger.debug("Processing item: %s" % (item,))
+            logger.debug("Processing item: %s" % (item,))
 
             item_context = item.context
 
             context_plugins = self._load_publish_plugins(item_context)
-            self.logger.debug(
+            logger.debug(
                 "Offering %s plugins for context: %s" %
                 (len(context_plugins), item_context)
             )
 
             for context_plugin in context_plugins:
 
-                self.logger.debug(
-                    "Checking plugin: %s" % (context_plugin,))
+                logger.debug("Checking plugin: %s" % (context_plugin,))
 
                 if not self._item_filters_match(item, context_plugin):
                     continue
 
-                self.logger.debug("Running plugin acceptance method...")
+                logger.debug("Running plugin acceptance method...")
 
                 # item/filters matched. now see if the plugin accepts
                 accept_data = context_plugin.run_accept(item)
 
                 if accept_data.get("accepted"):
-                    self.logger.debug("Plugin accepted the item.")
+                    logger.debug("Plugin accepted the item.")
                     task = item.add_task(context_plugin)
                     task.visible = accept_data.get("visible", True)
                     task.active = accept_data.get("checked", True)
                     task.enabled = accept_data.get("enabled", True)
                 else:
-                    self.logger.debug("Plugin did not accept the item.")
-
-    def clear(self):
-        """
-        Clear all items to be published.
-        :return:
-        """
-        self._tree.clear(clear_persistent=True)
+                    logger.debug("Plugin did not accept the item.")
 
     def collect_files(self, file_paths):
         """
@@ -134,39 +136,37 @@ class PublishManager(object):
         for file_path in file_paths:
 
             # get a list of all items in the tree prior to collection
-            items_before = list(self._tree.items)
+            items_before = list(self.tree.items)
 
             if self._path_already_collected(file_path):
-                self.logger.debug(
+                logger.debug(
                     "Skipping previously collected file path: '%s'" %
                     (file_path,)
                 )
             else:
-                self.logger.debug(
-                    "Collecting file path: %s" % (file_path,))
+                logger.debug("Collecting file path: %s" % (file_path,))
 
                 # we supply the root item of the tree for parenting of items
                 # that are collected.
                 self._collector_instance.run_process_file(
-                    self._tree.root_item,
+                    self.tree.root_item,
                     file_path
                 )
 
             # get a list of all items in the tree after collection
-            items_after = list(self._tree.items)
+            items_after = list(self.tree.items)
 
             # calculate which items are new
             new_file_items = list(set(items_after) - set(items_before))
 
             if not new_file_items:
-                self.logger.debug(
-                    "No items collected for path: %s" % (file_path,))
+                logger.debug("No items collected for path: %s" % (file_path,))
                 continue
 
             # Mark new items as persistent and include the file path that was
             # used for collection as part of the item properties
             for file_item in new_file_items:
-                if file_item.parent == self._tree.root_item:
+                if file_item.parent == self.tree.root_item:
                     # only top-level items can be marked as persistent
                     file_item.persistent = True
                 file_item.properties[self.PROPERTY_KEY_COLLECTED_FILE_PATH] = \
@@ -190,19 +190,19 @@ class PublishManager(object):
         """
 
         # this will clear the tree of all non-persistent items.
-        self._tree.clear()
+        self.tree.clear()
 
         # get a list of all items in the tree prior to collection (this should
         # be only the persistent items)
-        items_before = list(self._tree.items)
+        items_before = list(self.tree.items)
 
         # we supply the root item of the tree for parenting of items that
         # are collected.
         self._collector_instance.run_process_current_session(
-            self._tree.root_item)
+            self.tree.root_item)
 
         # get a list of all items in the tree after collection
-        items_after = list(self._tree.items)
+        items_after = list(self.tree.items)
 
         # calculate which items are new
         new_items = list(set(items_after) - set(items_before))
@@ -219,16 +219,6 @@ class PublishManager(object):
         """
         self._tree = PublishTree.load_file(path)
 
-    def remove_item(self, item):
-        """
-        Remove the supplied item from the items to be published.
-        """
-        self._tree.remove_item(item)
-
-    def save(self, path):
-        """Serialize and save the underlying publish tree to disk."""
-        self._tree.save_file(path)
-
     def validate(self):
         """
         Validate the items in the publish tree.
@@ -237,37 +227,24 @@ class PublishManager(object):
         state of the item in preparation for publishing.
         """
 
-        all_valid = True
+        failed_to_validate = []
 
-        self.logger.info("Running validation pass...")
-        for item in self._tree:
-            if not item.active:
-                self.logger.debug(
-                    "Skipping item '%s' because it is inactive" % (item,))
-                continue
+        # method to keep a list of tasks that failed to validate
+        def validate_action(task):
+            if not task.validate():
 
-            if not item.tasks:
-                self.logger.debug(
-                    "Skipping item '%s' because it has no tasks attached." %
-                    (item,)
-                )
-                continue
+                # store this task's parent item in the list of items that failed
+                # to validate (if it's not already there).
+                if task.item not in failed_to_validate:
+                    failed_to_validate.append(task.item)
 
-            self.logger.debug("Validating: %s" % (item,))
+        self._execute_tasks("validate", validate_action)
 
-            for task in item.tasks:
-
-                if not task.active:
-                    self.logger.debug(
-                        "Skipping inactive task: %s" % (task,))
-                    continue
-
-                self.logger.debug(
-                    "Running validation for task: %s" % (task,))
-                if not task.validate():
-                    all_valid = False
-
-        return all_valid
+        # execute the post validate method of the phose phase hook
+        return self._post_phase_hook.post_validate(
+            self.tree,
+            failed_to_validate
+        )
 
     def publish(self):
         """
@@ -279,33 +256,17 @@ class PublishManager(object):
         payload. Items are processed in depth first order.
         """
 
-        self.logger.info("Executing publish pass...")
+        publish_action = lambda task: task.publish()
+        self._execute_tasks("publish", publish_action)
 
-        for item in self._tree:
-            if not item.active:
-                self.logger.debug(
-                    "Skipping item '%s' because it is inactive" % (item,))
-                continue
+        # execute the post validate method of the phose phase hook
+        self._post_phase_hook.post_validate(self.tree)
 
-            if not item.tasks:
-                self.logger.debug(
-                    "Skipping item '%s' because it has no tasks attached." %
-                    (item,)
-                )
-                continue
+        finalize_action = lambda task: task.finalize()
+        self._execute_tasks("finalize", finalize_action)
 
-            self.logger.debug("Publishing: %s" % (item,))
-
-            for task in item.tasks:
-
-                if not task.active:
-                    self.logger.debug(
-                        "Skipping inactive task: %s" % (task,))
-                    continue
-
-                self.logger.debug(
-                    "Executing publish for task: %s" % (task,))
-                task.publish()
+        # execute the post validate method of the phose phase hook
+        self._post_phase_hook.post_finalize(self.tree)
 
     @property
     def context(self):
@@ -313,42 +274,9 @@ class PublishManager(object):
         return self._bundle.context
 
     @property
-    def items(self):
-        """A depth-first generator of all items to be published."""
-        for item in self._tree.items:
-            yield item
-
-    @property
     def logger(self):
         """Returns the logger used during publish execution."""
         return self._logger
-
-    @logger.setter
-    def logger(self, logger):
-        """Set the logger to be used during publish execution."""
-        self._logger = logger
-
-    @property
-    def root_item(self):
-        """
-        Returns the special root item of the tree. This is the parent item to
-        all items to be published.
-        :return:
-        """
-        return self._tree.root_item
-
-    @property
-    def top_level_items(self):
-        """
-        Returns a list of top-level items to be published. These are the
-        immediate children of the root item.
-        """
-        return self._tree.root_item.children
-
-    @property
-    def persistent_items(self):
-        """Returns a list of """
-        return self._tree.persistent_items
 
     @property
     def collected_files(self):
@@ -357,12 +285,20 @@ class PublishManager(object):
         collect_files method.
         """
         collected_paths = []
-        for item in self.persistent_items:
+        for item in self.tree.persistent_items:
             if self.PROPERTY_KEY_COLLECTED_FILE_PATH in item.properties:
                 collected_paths.append(
                     item.properties[self.PROPERTY_KEY_COLLECTED_FILE_PATH])
 
         return collected_paths
+
+    @property
+    def tree(self):
+        """
+        Returns the underlying tree instance.
+        :return:
+        """
+        return self._tree
 
     ############################################################################
     # protected methods
@@ -379,14 +315,14 @@ class PublishManager(object):
         for item_filter in publish_plugin.item_filters:
             if fnmatch.fnmatch(item.type_spec, item_filter):
                 # there is a match!
-                self.logger.debug(
+                logger.debug(
                     "Item %s with spec '%s' matches plugin filters: '%s'" %
                     (item, item.type_spec, item_filter)
                 )
                 return True
 
         # no filters match the item's type
-        self.logger.debug(
+        logger.debug(
             "Item %s with spec '%s' does not match any plugin filters: '%s'" %
             (item, item.type_spec, publish_plugin.item_filters)
         )
@@ -420,7 +356,7 @@ class PublishManager(object):
 
         engine = self._bundle.engine
 
-        self.logger.debug(
+        logger.debug(
             "Finding publish plugin settings for context: %s" % (context,))
 
         if context == self._bundle.context:
@@ -455,7 +391,7 @@ class PublishManager(object):
             if app_settings:
                 plugin_settings = app_settings[self.CONFIG_PLUGIN_DEFINITIONS]
             else:
-                self.logger.debug(
+                logger.debug(
                     "Could not find publish plugin settings for context: %s" %
                     (context,)
                 )
@@ -467,8 +403,7 @@ class PublishManager(object):
         # create plugin instances for configured plugins
         for plugin_def in plugin_settings:
 
-            self.logger.debug(
-                "Found publish plugin config: %s" % (plugin_def,))
+            logger.debug("Found publish plugin config: %s" % (plugin_def,))
 
             publish_plugin_instance_name = plugin_def["name"]
             publish_plugin_hook_path = plugin_def["hook"]
@@ -481,8 +416,7 @@ class PublishManager(object):
                 self.logger
             )
             plugins.append(plugin_instance)
-            self.logger.debug(
-                "Created publish plugin: %s" % (plugin_instance,))
+            logger.debug("Created publish plugin: %s" % (plugin_instance,))
 
         # ensure the plugins are cached
         self._processed_contexts[context] = plugins
@@ -497,7 +431,7 @@ class PublishManager(object):
 
         # check each persistent item for a collected file path. if it matches
         # the supplied path, then the path has already been collected.
-        for item in self.persistent_items:
+        for item in self.tree.persistent_items:
             if self.PROPERTY_KEY_COLLECTED_FILE_PATH in item.properties:
                 collected_path = \
                     item.properties[self.PROPERTY_KEY_COLLECTED_FILE_PATH]
@@ -506,3 +440,46 @@ class PublishManager(object):
 
         # no existing, persistent item was collected with this path
         return False
+
+    def _execute_tasks(self, action_name, action):
+        """
+        This method iterates over all active items in the publish tree and
+        executes the supplied callable on each of the item's active tasks.
+
+        :param action_name: The name of the action being performed.
+        :param action: A callable with a single argument of the task to execute
+
+        :returns: A ``list`` of results for each task executed, in the order
+            they were executed.
+        """
+
+        results = []
+
+        self.logger.info("Executing %s..." % (action_name,))
+        for item in self.tree:
+
+            if not item.active:
+                logger.debug(
+                    "Skipping item '%s' because it is inactive" % (item,))
+                continue
+
+            if not item.tasks:
+                logger.debug(
+                    "Skipping item '%s' because it has no tasks attached." %
+                    (item,)
+                )
+                continue
+
+            logger.debug("Executing %s for item: %s" % (action_name, item))
+
+            for task in item.tasks:
+
+                if not task.active:
+                    logger.debug("Skipping inactive task: %s" % (task,))
+                    continue
+
+                logger.debug("Executing %s for task: %s" % (action_name, task))
+
+                results.append(callable(task))
+
+        return results

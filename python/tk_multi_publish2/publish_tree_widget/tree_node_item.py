@@ -66,7 +66,7 @@ class TreeNodeItem(TreeNodeBase):
 
         :returns: List of strings
         """
-        if self.enabled:
+        if self.checked:
 
             items_summaries = []
             task_summaries = []
