@@ -45,7 +45,6 @@ class CollectorPluginInstance(PluginInstanceBase):
 
         :returns: None (item creation handles parenting)
         """
-        self.logger.debug("HOOK WRAPPER LOGGER: " + str(self.logger.name))
         try:
             if hasattr(self._hook_instance.__class__, "settings"):
                 # this hook has a 'settings' property defined. it is expecting

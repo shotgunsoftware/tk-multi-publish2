@@ -20,7 +20,11 @@ from .api.task import PublishTask
 from .ui.dialog import Ui_Dialog
 from .progress import ProgressHandler
 from .summary_overlay import SummaryOverlay
-from .publish_tree_widget import TreeNodeItem, TopLevelTreeNodeItem
+from .publish_tree_widget import (
+    TreeNodeItem,
+    TreeNodeTask,
+    TopLevelTreeNodeItem
+)
 
 # import frameworks
 settings = sgtk.platform.import_framework("tk-framework-shotgunutils", "settings")
@@ -1008,8 +1012,9 @@ class AppDialog(QtGui.QWidget):
         num_issues = 0
         self.ui.stop_processing.show()
         try:
-            self._publish_manager.validate()
-            #num_issues = self._visit_tree_r(parent, lambda child: child.validate(is_standalone), "Validating")
+            failed_to_validate = self._publish_manager.validate(
+                task_generator=self._validate_task_generator(is_standalone))
+            num_issues = len(failed_to_validate)
         finally:
             self._progress_handler.pop()
             if self._stop_processing_flagged:
@@ -1099,8 +1104,8 @@ class AppDialog(QtGui.QWidget):
             self._reset_tree_icon_r(parent)
 
             try:
-                self._publish_manager.publish()
-                #self._visit_tree_r(parent, lambda child: child.publish(), "Publishing")
+                self._publish_manager.publish(
+                    task_generator=self._publish_task_generator())
             except Exception, e:
                 # ensure the full error shows up in the log file
                 logger.error("Publish error stack:\n%s" % (traceback.format_exc(),))
@@ -1118,8 +1123,8 @@ class AppDialog(QtGui.QWidget):
 
                 self._progress_handler.push("Running finalizing pass")
                 try:
-                    self._publish_manager.finalize()
-                    #self._visit_tree_r(parent, lambda child: child.finalize(), "Finalizing")
+                    self._publish_manager.finalize(
+                        task_generator=self._finalize_task_generator())
                 except Exception, e:
                     # ensure the full error shows up in the log file
                     logger.error("Finalize error stack:\n%s" % (traceback.format_exc(),))
@@ -1192,48 +1197,154 @@ class AppDialog(QtGui.QWidget):
         # reset the validation flag
         self._validation_run = False
 
-    def _visit_tree_r(self, parent, action, action_name):
-        """
-        Recursive visitor helper function that descends the tree.
-        Checks the stop processing flag and in case it is triggered,
-        aborts the recursion
-        """
-        bad_status_count = 0
+    def _validate_task_generator(self, is_standalone):
 
-        for child_index in xrange(parent.childCount()):
+        tree_iterator = QtGui.QTreeWidgetItemIterator(self.ui.items_tree)
+        while tree_iterator.value():
 
             if self._stop_processing_flagged:
-                return bad_status_count
+                # jump out of the iteration
+                break
 
-            child = parent.child(child_index)
-            if child.checked:
+            ui_item = tree_iterator.value()
 
-                if action_name:
-                    self._progress_handler.push(
-                        "%s - %s" % (action_name, child),
-                        child.icon,
-                        child.get_publish_instance()
+            if not ui_item.checked:
+                continue
+
+            self._progress_handler.push(
+                "Validating: %s" % (ui_item,),
+                ui_item.icon,
+                ui_item.get_publish_instance()
+            )
+
+            try:
+                # yield each child item to be acted on by the publish api
+                if isinstance(ui_item, TreeNodeTask):
+                    (is_successful, error_msg) = yield ui_item.task
+
+                # all other nodes are UI-only and can handle their own
+                # validation
+                else:
+                    is_successful = ui_item.validate(is_standalone)
+                    error_msg = "Unknown validation error!"
+            except Exception, e:
+                ui_item.set_status_upwards(
+                    ui_item.STATUS_VALIDATION_ERROR,
+                    str(e)
+                )
+            else:
+                if is_successful:
+                    if is_standalone:
+                        ui_item.set_status(ui_item.STATUS_VALIDATION_STANDALONE)
+                    else:
+                        ui_item.set_status(ui_item.STATUS_VALIDATION)
+                else:
+                    ui_item.set_status_upwards(
+                        ui_item.STATUS_VALIDATION_ERROR,
+                        error_msg
                     )
-                try:
-                    # process this node
-                    if not action(child):  # eg. child.validate(), child.publish() etc.
-                        bad_status_count += 1
+            finally:
+                self._progress_handler.increment_progress()
+                self._progress_handler.pop()
+                tree_iterator += 1
 
-                    # kick progress bar
-                    self._progress_handler.increment_progress()
+    def _publish_task_generator(self):
 
-                    # now process all children
-                    bad_status_count += self._visit_tree_r(
-                        child,
-                        action,
-                        action_name
+        tree_iterator = QtGui.QTreeWidgetItemIterator(self.ui.items_tree)
+        while tree_iterator.value():
+
+            if self._stop_processing_flagged:
+                # jump out of the iteration
+                break
+
+            ui_item = tree_iterator.value()
+
+            if not ui_item.checked:
+                continue
+
+            self._progress_handler.push(
+                "Publishing: %s" % (ui_item,),
+                ui_item.icon,
+                ui_item.get_publish_instance()
+            )
+
+            try:
+                # yield each child item to be acted on by the publish api
+                if isinstance(ui_item, TreeNodeTask):
+                    pub_exception = yield ui_item.task
+
+                # all other nodes are UI-only and can handle their own
+                # publishing
+                else:
+                    ui_item.publish()
+                    pub_exception = None
+            except Exception, e:
+                ui_item.set_status_upwards(
+                    ui_item.STATUS_PUBLISH_ERROR,
+                    str(e)
+                )
+                raise
+            else:
+                if pub_exception:
+                    ui_item.set_status_upwards(
+                        ui_item.STATUS_PUBLISH_ERROR,
+                        str(pub_exception)
                     )
+                else:
+                    ui_item.set_status(ui_item.STATUS_PUBLISH)
+            finally:
+                self._progress_handler.increment_progress()
+                self._progress_handler.pop()
+                tree_iterator += 1
 
-                finally:
-                    if action_name:
-                        self._progress_handler.pop()
+    def _finalize_task_generator(self):
 
-        return bad_status_count
+        tree_iterator = QtGui.QTreeWidgetItemIterator(self.ui.items_tree)
+        while tree_iterator.value():
+
+            if self._stop_processing_flagged:
+                # jump out of the iteration
+                break
+
+            ui_item = tree_iterator.value()
+
+            if not ui_item.checked:
+                continue
+
+            self._progress_handler.push(
+                "Finalizing: %s" % (ui_item,),
+                ui_item.icon,
+                ui_item.get_publish_instance()
+            )
+
+            try:
+                # yield each child item to be acted on by the publish api
+                if isinstance(ui_item, TreeNodeTask):
+                    finalize_exception = yield ui_item.task
+
+                # all other nodes are UI-only and can handle their own
+                # finalize
+                else:
+                    ui_item.finalize()
+                    finalize_exception = None
+            except Exception, e:
+                ui_item.set_status_upwards(
+                    ui_item.STATUS_FINALIZE_ERROR,
+                    str(e)
+                )
+                raise
+            else:
+                if finalize_exception:
+                    ui_item.set_status_upwards(
+                        ui_item.STATUS_FINALIZE_ERROR,
+                        str(finalize_exception)
+                    )
+                else:
+                    ui_item.set_status(ui_item.STATUS_FINALIZE)
+            finally:
+                self._progress_handler.increment_progress()
+                self._progress_handler.pop()
+                tree_iterator += 1
 
     def _on_item_context_change(self, context):
         """

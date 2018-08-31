@@ -50,23 +50,13 @@ class PostPhaseHook(HookBaseClass):
             for item in failed_to_validate:
                 reason = item.properties.validation_failed_because
 
-        The return value of this method can be used to override the results of
-        the individual item validations. By returning ``True``, the method will
-        indicate that validation was successful (even if some items failed to
-        validate). Conversely, by returning ``False``, the method will indicate
-        to the publisher that validation has failed and halt further execution.
-
         :param publish_tree: The :class:`~PublishTree` instance representing
             the items to be published.
         :param list failed_to_validate: A list of :class:`~PublishItem`
             instances representing all items that failed to validate.
 
-        :return: ``True`` if validation was successful, ``False`` otherwise.
         """
         self.logger.debug("Executing post validate hook method...")
-
-        # by default, return True if all items validated
-        return not failed_to_validate
 
     def post_publish(self, publish_tree):
         """
