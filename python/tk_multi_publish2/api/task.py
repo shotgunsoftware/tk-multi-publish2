@@ -56,6 +56,7 @@ class PublishTask(object):
             task_dict["plugin_settings"],
         )
 
+        # create the instance and assign all the internal members
         new_task = PublishTask(plugin, item)
         new_task._name = task_dict["name"]
         new_task._description = task_dict["description"]
@@ -63,6 +64,7 @@ class PublishTask(object):
         new_task._visible = task_dict["visible"]
         new_task._enabled = task_dict["enabled"]
 
+        # create all the setting instances from the data
         for (k, setting) in task_dict["settings"].iteritems():
             new_setting = PluginSetting(
                 setting["name"],
@@ -85,7 +87,7 @@ class PublishTask(object):
         self._name = None # task name override of plugin name
         self._description = None # task description override of plugin desc.
 
-        # need to make a deep copy of the settings
+        # need to make a deep copy of the settings as they may be modified
         self._settings = {}
         for (setting_name, setting) in plugin.settings.items():
             self._settings[setting_name] = copy.deepcopy(setting)
@@ -97,11 +99,17 @@ class PublishTask(object):
         logger.debug("Created publish tree task: %s" % (self,))
 
     def to_dict(self):
+        """
+        Returns a dictionary representation of a :class:`~PublishTask` instance.
+        Typically used during serialization.
+        """
 
+        # Convert each of the settings to a dictionary.
         converted_settings = {}
         for (k, setting) in self._settings.iteritems():
             converted_settings[k] = setting.to_dict()
 
+        # build the full dictionary representation of this task
         return {
             "plugin_name": self.plugin.name,
             "plugin_path": self.plugin.path,

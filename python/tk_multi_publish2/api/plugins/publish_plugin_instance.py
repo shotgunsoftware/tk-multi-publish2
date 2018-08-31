@@ -36,10 +36,6 @@ class PublishPluginInstance(PluginInstanceBase):
 
         self._icon_pixmap = None
 
-        # TODO: existing code stores task instances on the plugin. Need to
-        # determine if this is required. If it is, consider how best to
-        # serialize. Breaking API: (property `tasks`, method `add_task`)
-
         super(PublishPluginInstance, self).__init__(
             path,
             settings,

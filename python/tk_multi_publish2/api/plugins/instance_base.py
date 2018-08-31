@@ -113,23 +113,32 @@ class PluginInstanceBase(object):
 
     @property
     def configured_settings(self):
+        """
+        A dictionary of settings data as originally specified for this plugin
+        instance in the pipeline configuration.
+        """
         return self._configured_settings
 
     @property
     def logger(self):
+        """
+        The logger used by this plugin instance.
+        """
         return self._logger
 
     @logger.setter
     def logger(self, new_logger):
+        # set the plugin's logger instance
         self._logger = new_logger
 
     @property
     def path(self):
+        """The path to this plugin as specified in the pipeline config."""
         return self._path
 
     @property
     def settings(self):
         """
-        Returns a dict of resolved raw settings given the current state
+        A dict of resolved raw settings given the current state
         """
         return self._settings

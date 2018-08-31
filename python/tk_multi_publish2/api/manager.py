@@ -232,7 +232,18 @@ class PublishManager(object):
         different way (different order or different criteria) you can provide
         a custom ``task_generator`` that yields :class:`~PublishTask` instances.
 
-        # TODO: example
+        For example, to validate all items in the tree, without worrying about
+        their active state:
+
+        .. code-block:: python
+
+            def all_tasks_generator(publish_tree):
+
+                for item in publish_tree:
+                    for task in item.tasks:
+                        yield task
+
+            publish_manager.validate(task_generator=all_tasks_generator)
 
         :param task_generator: A generator of :class:`~PublishTask` instances.
 
@@ -296,7 +307,20 @@ class PublishManager(object):
         different way (different order or different criteria) you can provide
         a custom ``task_generator`` that yields :class:`~PublishTask` instances.
 
-        # TODO: example
+        For example, to publish all items in the tree that have a
+        ``local_publish`` flag set in their properties dictionary, you could do
+        the following:
+
+        .. code-block:: python
+
+            def local_tasks_generator(publish_tree):
+
+                for item in publish_tree:
+                    if item.properties.get("local_publish"):
+                        for task in item.tasks:
+                            yield task
+
+            publish_manager.validate(task_generator=local_tasks_generator)
 
         :param task_generator: A generator of :class:`~PublishTask` instances.
         """
@@ -345,7 +369,20 @@ class PublishManager(object):
         different way (different order or different criteria) you can provide
         a custom ``task_generator`` that yields :class:`~PublishTask` instances.
 
-        # TODO: example
+        For example, to finalize all items in the tree that have a
+        ``generate_report`` flag set in their properties dictionary, you could
+        do the following:
+
+        .. code-block:: python
+
+            def report_tasks_generator(publish_tree):
+
+                for item in publish_tree:
+                    if item.properties.get("generate_report"):
+                        for task in item.tasks:
+                            yield task
+
+            publish_manager.validate(task_generator=report_tasks_generator)
 
         :param task_generator: A generator of :class:`~PublishTask` instances.
         """
@@ -557,8 +594,11 @@ class PublishManager(object):
 
     def _task_generator(self):
         """
-        This method iterates over all active items in the publish tree and
-        yields them to the caller.
+        This method generates all active tasks for all active items in the
+        publish tree and yields them to the caller.
+
+        This is the default task generator used by validate, publish, and
+        finalize if no custom task generator is supplied.
         """
 
         self.logger.info("Iterating over tasks...")

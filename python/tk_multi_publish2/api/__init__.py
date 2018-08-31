@@ -9,3 +9,6 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 from .manager import PublishManager
+from .item import PublishItem
+from .task import PublishTask
+from .tree import PublishTree
