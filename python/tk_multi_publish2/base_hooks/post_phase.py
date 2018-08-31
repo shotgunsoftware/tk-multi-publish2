@@ -23,10 +23,10 @@ class PostPhaseHook(HookBaseClass):
     on how to traverse the tree and manipulate it.
     """
 
-    def post_validate(self, publish_tree, failed_to_validate):
+    def post_validate(self, publish_tree):
         """
         This method is executed after the validation pass has completed for each
-        item in the tree.
+        item in the tree, before the publish pass.
 
         A :class:`~PublishTree` instance representing the items to publish, and
         their associated tasks, is supplied as an argument. The tree can be
@@ -34,27 +34,37 @@ class PostPhaseHook(HookBaseClass):
         collectively. The instance can also be used to save the state of the
         tree to disk for execution later or on another machine.
 
-        A list of items that failed to validate is also supplied. For additional
-        details on why validation failed for an item, you can customize the
-        publish plugins to store information in the item's properties and then
-        access that information here.
-
-        For example:
+        To glean information about the validation of particular items, you can
+        iterate over the items in the tree and introspect their ``properties``
+        dictionary. This requires customizing the your publish plugins to
+        populate any specific validation information (failure/success) as well.
+        You might, for example, set a ``validation_failed`` boolean in the item
+        properties, indicating if any of the item's tasks failed. You could then
+        include validation error messages in a ``validation_errors`` list on the
+        item, appending error messages during task execution. Then, this method
+        might look something like this:
 
         .. code-block:: python
 
-            # in the publish plugin...
-            item.properties.validation_failed_because = "File is empty."
+            def post_validate(self, publish_tree):
 
-            # in post_validate...
-            for item in failed_to_validate:
-                reason = item.properties.validation_failed_because
+                # the publish tree is an iterator, so you can easily loop over
+                # all items in the tree
+                for item in publish_tree:
+
+                    # access properties set on the item during the execution of
+                    # the attached publish plugins
+                    if item.properties.validation_failed:
+                        errors = item.properties.validation_errors
+
+                # process all validation issues here...
+
+        .. note:: You will not be able to use the item's ``local_properties``
+            in this hook since ``local_properties`` are only accessible during
+            the execution of a publish plugin.
 
         :param publish_tree: The :class:`~PublishTree` instance representing
             the items to be published.
-        :param list failed_to_validate: A list of :class:`~PublishItem`
-            instances representing all items that failed to validate.
-
         """
         self.logger.debug("Executing post validate hook method...")
 
@@ -67,8 +77,15 @@ class PostPhaseHook(HookBaseClass):
         published is supplied as an argument. The tree can be traversed in this
         method to inspect the items and process them collectively.
 
-        Studios can override this method to process the publishes collectively
-        prior to any cleanup that happens in the finalize pass.
+        To glean information about the publish state of particular items, you
+        can iterate over the items in the tree and introspect their
+        ``properties`` dictionary. This requires customizing the your publish
+        plugins to populate any specific publish information that you want to
+        process collectively here.
+
+        .. note:: You will not be able to use the item's ``local_properties``
+            in this hook since ``local_properties`` are only accessible during
+            the execution of a publish plugin.
 
         :param publish_tree: The :class:`~PublishTree` instance representing
             the items to be published.
@@ -85,8 +102,15 @@ class PostPhaseHook(HookBaseClass):
         traversed in this method to inspect the items and process them
         collectively.
 
-        Studios can override this method to process the publishes collectively
-        after any cleanup that happens in the finalize pass.
+        To glean information about the finalize state of particular items, you
+        can iterate over the items in the tree and introspect their
+        ``properties`` dictionary. This requires customizing the your publish
+        plugins to populate any specific finalize information that you want to
+        process collectively here.
+
+        .. note:: You will not be able to use the item's ``local_properties``
+            in this hook since ``local_properties`` are only accessible during
+            the execution of a publish plugin.
 
         :param publish_tree: The :class:`~PublishTree` instance representing
             the items to be published.

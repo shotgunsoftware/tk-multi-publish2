@@ -35,8 +35,47 @@ class PublishTree(object):
 
     Each item in the tree (excluding the root) can have associated tasks.
 
+    Instances of this class are iterable, making traversal very easy:
+
+    .. code-block: python
+
+        for item in publish_tree:
+            # process the item...
+
+    The special, ``root_item`` is exposed as a property on publish tree
+    instances. The root item is not typically processed as part of the
+    validation, publish, or finalize execution phases, but it can be used to
+    house properties that are global to the publish tree itself. All top-level
+    publish items have the ``root_item`` as their parent and can store
+    information there.
+
+    For example, to collect a list of files to process after all publish tasks
+    have completed (within the ``post_finalize`` method of the ``post_phase``
+    hook), you could do something like this:
+
+    .. code-block:: python
+
+        # in your publish plugin...
+
+        def publish(self, settings, item):
+
+            # do your publish...
+
+            # remember the file to process later
+            if item.parent.is_root:
+                files = item.properties.setdefault("process_later", [])
+                files.append(my_publish_file)
+
+        # then, in your post_finalize...
+
+        def post_finalize(publish_tree):
+
+            # process files that were stored for later
+            files = publish_tree.root_item.properties.get("process_later", [])
+
     The class also provides an interface for serialization and deserialization
-    of tree instances.
+    of tree instances. See the :meth:`~PublishTree.save` and
+    :meth:`~PublishTree.load` methods.
     """
 
     # define a serialization version to allow backward compatibility if the

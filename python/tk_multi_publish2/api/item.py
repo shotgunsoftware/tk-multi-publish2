@@ -57,12 +57,14 @@ class PublishItem(object):
                 "TD/developer/admin."
             )
 
+        # create the instance
         new_item = PublishItem(
             item_dict["name"],
             item_dict["type_spec"],
             item_dict["type_display"]
         )
 
+        # populate all the instance data from the dictionary
         new_item._active = item_dict["active"]
         new_item._allows_context_change = item_dict["allows_context_change"]
         new_item._description = item_dict["description"]
@@ -73,6 +75,7 @@ class PublishItem(object):
         new_item._thumbnail_explict = item_dict["thumbnail_explicit"]
         new_item._thumbnail_path = item_dict["thumbnail_path"]
 
+        # create the children of this item
         for child_dict in item_dict["children"]:
             new_item._children.append(
                 PublishItem.from_dict(
@@ -82,7 +85,7 @@ class PublishItem(object):
                 )
             )
 
-        # ---- properties
+        # ---- handle the properties
 
         # global
         new_item._global_properties = PublishData.from_dict(
@@ -95,12 +98,17 @@ class PublishItem(object):
         new_item._parent = parent
         new_item._persistent = item_dict["persistent"]
 
+        # set the context
+        # TODO: would be nice to have a method in core to get a context from
+        # see internal ticket: SG-7690
+        # a dictionary.
         if item_dict["context"]:
             new_item._context = sgtk.Context(
                 sgtk.platform.current_bundle().sgtk,
                 **item_dict["context"]
             )
 
+        # finally, create any tasks for this item
         for task_dict in item_dict["tasks"]:
             new_item._tasks.append(
                 PublishTask.from_dict(
@@ -119,17 +127,13 @@ class PublishItem(object):
         :param name: The display name of the item to create.
         :param type_spec: The type specification for this item.
         :param type_display: The type display string.
-
-        NOTE: Items store an explicit state that may not represent its actual
-        state within the overall publish tree. For example, if no ``context``
-        has been set on the item, it will be inherited from its parent in the
-        publish tree.
+        :param parent: The parent item for this instance.
         """
 
-        # NOTE: since this object is serializable, any members added should be
-        # simple python types or serializable objects.
+        # NOTE: since this object is serializable, care should be taken to
+        # ensure data is maintained between the `to_dict` and `from_dict`
+        # methods.
 
-        # serializable members
         self._active = True
         self._allows_context_change = True
         self._children = []
@@ -154,16 +158,21 @@ class PublishItem(object):
         self._type_spec = type_spec
 
     def __iter__(self):
-        """Iterates over the item's descendents, depth first."""
+        """
+        Iteration implementation for this item.
 
+        Allows for traversal of all subitems. Yields each of the item's
+        descendants in depth-first order.
+        """
         for item in self._traverse_item(self):
             yield item
 
     def __del__(self):
         """
-        Destructor
+        Destructor.
         """
-        # clean up temp files created
+
+        # clean up temp files created by this item
         for temp_file in self._created_temp_files:
             if os.path.exists(temp_file):
                 try:
@@ -181,18 +190,20 @@ class PublishItem(object):
         during serialization.
         """
 
-        # For the global and local properties, we are't doing anything fancy
-        # with respect to serialization. clients can add anything they want to
-        # these dictionaries. we document this for them so it's up to them to
-        # be conscious of what goes in there.
+        # For the global and local properties, the values are pickled allowing
+        # more flexibility with respect to what is stored there. Clients can add
+        # anything they want to these dictionaries. We document that this isn't
+        # guaranteed to work if non-picklable objects are stored in items
+        # properties, so it's up to them to be conscious of what goes in there.
         converted_local_properties = {}
         for (k, prop) in self._local_properties.iteritems():
             converted_local_properties[k] = prop.to_dict()
 
         context_value = None
+
         # check _context here to avoid traversing parent. if no context manually
         # assigned to the item, it will inherit it from the parent or current
-        # bundle context on deserialize.
+        # bundle context on the other side of deserialization.
         # TODO: implement dict from context and context from dict methods in
         # core. see internal ticket: SG-7690
         if self._context:
@@ -206,6 +217,7 @@ class PublishItem(object):
                 "source_entity": self._context.source_entity,
             }
 
+        # build the full dictionary representation of this item
         return {
             "active": self.active,
             "allows_context_change": self._allows_context_change,
@@ -847,7 +859,7 @@ class PublishItem(object):
         self._type_spec = new_type_spec
 
     # leaving this as a property() definition because it is called 'type'.
-    # don't want to risk bad mojo with python
+    # don't want to risk bad mojo with python trying to define `def type`.
     def _get_type(self):
         """
         DEPRECATED: use ``type_spec`` instead

@@ -13,10 +13,7 @@ import traceback
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
 
-from .api import PublishManager
-from .api.item import PublishItem
-from .api.task import PublishTask
-
+from .api import PublishManager, PublishItem, PublishTask
 from .ui.dialog import Ui_Dialog
 from .progress import ProgressHandler
 from .summary_overlay import SummaryOverlay
@@ -1198,6 +1195,11 @@ class AppDialog(QtGui.QWidget):
         self._validation_run = False
 
     def _validate_task_generator(self, is_standalone):
+        """
+        This method generates tasks for the validation phase. It handles
+        processing the tasks in the proper order and updating the task's UI
+        representation in the dialog.
+        """
 
         tree_iterator = QtGui.QTreeWidgetItemIterator(self.ui.items_tree)
         while tree_iterator.value():
@@ -1249,6 +1251,11 @@ class AppDialog(QtGui.QWidget):
                 tree_iterator += 1
 
     def _publish_task_generator(self):
+        """
+        This method generates tasks for the publish phase. It handles
+        processing the tasks in the proper order and updating the task's UI
+        representation in the dialog.
+        """
 
         tree_iterator = QtGui.QTreeWidgetItemIterator(self.ui.items_tree)
         while tree_iterator.value():
@@ -1298,6 +1305,11 @@ class AppDialog(QtGui.QWidget):
                 tree_iterator += 1
 
     def _finalize_task_generator(self):
+        """
+        This method generates tasks for the publish phase. It handles
+        processing the tasks in the proper order and updating the task's UI
+        representation in the dialog.
+        """
 
         tree_iterator = QtGui.QTreeWidgetItemIterator(self.ui.items_tree)
         while tree_iterator.value():
@@ -1358,7 +1370,8 @@ class AppDialog(QtGui.QWidget):
         # are on context change lockdown.
         sync_required = False
 
-        items_with_new_context = []
+        # TODO: see todo below...
+        #items_with_new_context = []
 
         if self._current_item is None:
             # this is the summary item - so update all items!
@@ -1367,20 +1380,22 @@ class AppDialog(QtGui.QWidget):
                 if top_level_item.context_change_allowed:
                     top_level_item.context = context
 
+                    # TODO: see todo below...
                     # this item and all of its descendents in the tree need to
                     # have their plugins reattached given the new context
-                    items_with_new_context.append(top_level_item)
-                    items_with_new_context.extend([i for i in top_level_item])
+                    #items_with_new_context.append(top_level_item)
+                    #items_with_new_context.extend([i for i in top_level_item])
 
                     sync_required = True
         else:
             if self._current_item.context_change_allowed:
                 self._current_item.context = context
 
+                # TODO: see todo below...
                 # this item and all of its descendents in the tree need to have
                 # their plugins reattached given the new context
-                items_with_new_context.append(self._current_item)
-                items_with_new_context.extend([i for i in self._current_item])
+                #items_with_new_context.append(self._current_item)
+                #items_with_new_context.extend([i for i in self._current_item])
 
                 sync_required = True
 
