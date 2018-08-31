@@ -1,4 +1,4 @@
-# Copyright (c) 2017 Shotgun Software Inc.
+# Copyright (c) 2018 Shotgun Software Inc.
 # 
 # CONFIDENTIAL AND PROPRIETARY
 # 
@@ -7,6 +7,8 @@
 # By accessing, using, copying or modifying this work you indicate your 
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
 # not expressly granted therein are reserved by Shotgun Software Inc.
+
+import uuid
 
 import sgtk
 
@@ -23,6 +25,15 @@ class CollectorPlugin(HookBaseClass):
 
     ############################################################################
     # Collector properties
+
+    def __init__(self, *args, **kwargs):
+
+        super(CollectorPlugin, self).__init__(*args, **kwargs)
+        self._id = uuid.uuid4().hex
+
+    @property
+    def id(self):
+        return self._id
 
     @property
     def settings(self):

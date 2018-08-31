@@ -30,6 +30,16 @@ configuration:
         description: "Collector-specific configuration settings."
         default_value: {}
 
+    post_phase:
+        type: hook
+        description:
+          "A hook that defines logic to be executed after each phase of publish
+          execution including validation, publish, and finalization. This allows
+          for very specific curation and customization of the publish tree
+          during a publish session. Serializing the publish tree to disk after
+          validation, for example is possible via this hook."
+        default_value: "{self}/post_phase.py"
+
     path_info:
         type: hook
         description:

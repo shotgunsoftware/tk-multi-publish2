@@ -13,11 +13,15 @@ import traceback
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
 
+from .api import PublishManager, PublishItem, PublishTask
 from .ui.dialog import Ui_Dialog
-from .processing import PluginManager, Task, Item
 from .progress import ProgressHandler
 from .summary_overlay import SummaryOverlay
-from .publish_tree_widget import TreeNodeItem, TopLevelTreeNodeItem
+from .publish_tree_widget import (
+    TreeNodeItem,
+    TreeNodeTask,
+    TopLevelTreeNodeItem
+)
 
 # import frameworks
 settings = sgtk.platform.import_framework("tk-framework-shotgunutils", "settings")
@@ -25,7 +29,6 @@ help_screen = sgtk.platform.import_framework("tk-framework-qtwidgets", "help_scr
 task_manager = sgtk.platform.import_framework("tk-framework-shotgunutils", "task_manager")
 shotgun_model = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_model")
 shotgun_globals = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_globals")
-
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -69,23 +72,28 @@ class AppDialog(QtGui.QWidget):
         self.ui.setupUi(self)
 
         self.ui.context_widget.set_up(self._task_manager)
-        self.ui.context_widget.restrict_entity_types_by_link("PublishedFile", "entity")
 
+        # only allow entities that can be linked to PublishedFile entities
+        self.ui.context_widget.restrict_entity_types_by_link(
+            "PublishedFile", "entity")
+
+        # tooltips for the task and link inputs
         self.ui.context_widget.set_task_tooltip(
             "<p>The task that the selected item will be associated with "
             "in Shotgun after publishing. It is recommended to always "
             "fill out the Task field when publishing. The menu button "
             "to the right will provide suggestions for Tasks to publish "
-            "to including the Tasks assigned to you, recently used Tasks, "
-            "and Tasks related to the entity Link populated in the field below.</p>"
+            "including the Tasks assigned to you, recently used Tasks, "
+            "and Tasks related to the entity Link populated in the field "
+            "below.</p>"
         )
         self.ui.context_widget.set_link_tooltip(
             "<p>The entity that the selected item will be associated with "
             "in Shotgun after publishing. By selecting a Task in the field "
-            "above, the Link will automatically be populated. It is recommended "
-            "that you always populate the Task field when publishing. "
-            "The Task menu above will display any tasks associated with "
-            "the entity populated in this field.</p>"
+            "above, the Link will automatically be populated. It is "
+            "recommended that you always populate the Task field when "
+            "publishing. The Task menu above will display any tasks associated "
+            "with the entity populated in this field.</p>"
         )
 
         self.ui.context_widget.context_changed.connect(self._on_item_context_change)
@@ -102,6 +110,7 @@ class AppDialog(QtGui.QWidget):
         # drag and drop
         self.ui.frame.something_dropped.connect(self._on_drop)
         self.ui.large_drop_area.something_dropped.connect(self._on_drop)
+
         self.ui.items_tree.tree_reordered.connect(self._synchronize_tree)
 
         # hide the drag screen progress button by default
@@ -193,16 +202,16 @@ class AppDialog(QtGui.QWidget):
         # currently displayed item
         self._current_item = None
 
-        # Currently selected tasks. If a selection is created in the GUI that contains multiple
-        # task types or even other tree item types, then, _current_tasks will be set to an empty
-        # selection, regardless of the number of the items actually selected in the UI.
+        # Currently selected tasks. If a selection is created in the GUI that
+        # contains multiple task types or even other tree item types, then,
+        # _current_tasks will be set to an empty selection, regardless of the
+        # number of the items actually selected in the UI.
         self._current_tasks = _TaskSelection()
 
-        # start up our plugin manager
-        self._plugin_manager = None
-
         self._summary_comment = ""
-        # this boolean indicates that at least one child has a description that is different than the summary.
+
+        # this boolean indicates that at least one child has a description that
+        # is different than the summary.
         self._summary_comment_multiple_values = False
 
         # set up progress reporting
@@ -224,9 +233,9 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_settings_label.hide()
         self.ui.item_settings.hide()
 
-        # create a plugin manager
-        self._plugin_manager = PluginManager(self._progress_handler.logger)
-        self.ui.items_tree.set_plugin_manager(self._plugin_manager)
+        # create a publish manager
+        self._publish_manager = PublishManager(self._progress_handler.logger)
+        self.ui.items_tree.set_publish_manager(self._publish_manager)
 
         # this is the pixmap in the summary thumbnail
         self._summary_thumbnail = None 
@@ -299,7 +308,7 @@ class AppDialog(QtGui.QWidget):
             context_item = self.ui.items_tree.topLevelItem(context_index)
             for child_index in xrange(context_item.childCount()):
                 child_item = context_item.child(child_index)
-                if child_item.enabled:
+                if child_item.checked:
                     checked_top_items += 1
 
         if checked_top_items == 0:
@@ -328,7 +337,7 @@ class AppDialog(QtGui.QWidget):
             # 1 item selected
             tree_item = items[0]
             publish_object = tree_item.get_publish_instance()
-            if isinstance(publish_object, Item):
+            if isinstance(publish_object, PublishItem):
                 self._update_task_details_ui()
                 self._create_item_details(tree_item)
             elif publish_object is None:
@@ -357,7 +366,7 @@ class AppDialog(QtGui.QWidget):
 
             publish_instance = item.get_publish_instance()
             # User has mixed different types of publish instances, it's not just a task list.
-            if not isinstance(publish_instance, Task):
+            if not isinstance(publish_instance, PublishTask):
                 return False
 
             # There's a task that's not of the same type as the others, we're done!
@@ -490,7 +499,8 @@ class AppDialog(QtGui.QWidget):
                 self._summary_comment = comments
 
                 # this is the summary item - so update all top level items and their children!
-                for top_level_item in self._plugin_manager.top_level_items:
+                top_level_items = list(self._publish_manager.tree.root_item.children)
+                for top_level_item in top_level_items:
                     top_level_item.description = self._summary_comment
                     top_level_item._propagate_description_to_children()
 
@@ -521,13 +531,19 @@ class AppDialog(QtGui.QWidget):
             self._summary_thumbnail = pixmap
             if pixmap:
                 # update all items with the summary thumbnail
-                for top_level_item in self._plugin_manager.top_level_items:
+                top_level_items = list(self._publish_manager.tree.root_item.children)
+                for top_level_item in top_level_items:
                     top_level_item.thumbnail = self._summary_thumbnail
                     top_level_item.thumbnail_explicit = False
-                    top_level_item._propagate_thumbnail_to_children()
-        else: 
+
+                    # propagate the thumbnail to all descendant items
+                    for item in top_level_item:
+                        item.thumbnail = self._summary_thumbnail
+                        item.thumbnail_explicit = False
+        else:
             self._current_item.thumbnail = pixmap
-            # specify that the new thumbnail overrides the one inherited from summary
+            # specify that the new thumbnail overrides the one inherited from
+            # summary
             self._current_item.thumbnail_explicit = True 
 
 
@@ -542,7 +558,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_icon.setPixmap(item.icon)
 
         self.ui.item_name.setText(item.name)
-        self.ui.item_type.setText(item.display_type)
+        self.ui.item_type.setText(item.type_display)
 
         # check the state of screenshot
         if item.thumbnail_enabled:
@@ -577,7 +593,7 @@ class AppDialog(QtGui.QWidget):
         # Items with default thumbnails should still be able to have override thumbnails set by the user
         self.ui.item_thumbnail.setEnabled(True)
 
-        if item.parent.is_root():
+        if item.parent.is_root:
             self.ui.context_widget.show()
 
             if item.context_change_allowed:
@@ -634,13 +650,26 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_thumbnail_label.show()
         self.ui.item_thumbnail.show()
 
-        thumbnail_is_multiple_values = False
-        for top_level_item in self._plugin_manager.top_level_items:
-           if top_level_item._get_thumbnail_explicit_recursive():
-               thumbnail_is_multiple_values = True
-               break
-      
-        self.ui.item_thumbnail._set_multiple_values_indicator(thumbnail_is_multiple_values)
+        thumbnail_has_multiple_values = False
+        top_level_items = list(self._publish_manager.tree.root_item.children)
+        for top_level_item in top_level_items:
+            if top_level_item.thumbnail_explicit:
+                thumbnail_has_multiple_values = True
+                break
+
+            for descendant in top_level_item:
+                if descendant.thumbnail_explicit:
+                    # shortcut if one descendant has an explicit thumbnail
+                    thumbnail_has_multiple_values = True
+                    break
+
+            # break out of this loop if an explicit thumbnail was found for
+            # this top level item
+            if thumbnail_has_multiple_values:
+                break
+
+        self.ui.item_thumbnail._set_multiple_values_indicator(
+            thumbnail_has_multiple_values)
         self.ui.item_thumbnail.set_thumbnail(self._summary_thumbnail)
 
         # setting enabled to true to be able to take a snapshot to define the thumbnail 
@@ -665,7 +694,7 @@ class AppDialog(QtGui.QWidget):
         for it in QtGui.QTreeWidgetItemIterator(self.ui.items_tree):
             item = it.value()
             publish_instance = item.get_publish_instance()
-            if isinstance(publish_instance, Item):
+            if isinstance(publish_instance, PublishItem):
                 context = publish_instance.context
                 context_key = str(context)
                 current_contexts[context_key] = context
@@ -703,18 +732,36 @@ class AppDialog(QtGui.QWidget):
         Full rebuild of the plugin state. Everything is recollected.
         """
         self._progress_handler.set_phase(self._progress_handler.PHASE_LOAD)
-        self._progress_handler.push("Collecting information")
+        self._progress_handler.push(
+            "Collecting items to %s..." %
+            (self._display_action_name)
+        )
 
-        num_items_created = self._plugin_manager.run_collectors()
+        previously_collected_files = self._publish_manager.collected_files
+        self._publish_manager.tree.clear()
 
+        logger.debug("Refresh: Running collection on current session...")
+        new_session_items = self._publish_manager.collect_session()
+
+        logger.debug(
+            "Refresh: Running collection on all previously collected external "
+            "files"
+        )
+        new_file_items = self._publish_manager.collect_files(
+            previously_collected_files)
+
+        num_items_created = len(new_session_items) + len(new_file_items)
         num_errors = self._progress_handler.pop()
 
         if num_errors == 0 and num_items_created == 1:
-            self._progress_handler.logger.info("One item discovered by publisher.")
+            self._progress_handler.logger.info(
+                "One item discovered by publisher.")
         elif num_errors == 0 and num_items_created > 1:
-            self._progress_handler.logger.info("%d items discovered by publisher." % num_items_created)
+            self._progress_handler.logger.info(
+                "%d items discovered by publisher." % num_items_created)
         elif num_errors > 0:
-            self._progress_handler.logger.error("Errors reported. See log for details.")
+            self._progress_handler.logger.error(
+                "Errors reported. See log for details.")
 
         # make sure the ui is up to date
         self._synchronize_tree()
@@ -737,7 +784,7 @@ class AppDialog(QtGui.QWidget):
 
         # add files and rebuild tree
         self._progress_handler.set_phase(self._progress_handler.PHASE_LOAD)
-        self._progress_handler.push("Processing dropped files")
+        self._progress_handler.push("Processing external files...")
 
         # pyside gives us back unicode. Make sure we convert it to strings
         str_files = []
@@ -757,7 +804,8 @@ class AppDialog(QtGui.QWidget):
 
             self._overlay.show_loading()
             self.ui.button_container.hide()
-            num_items_created = self._plugin_manager.add_external_files(str_files)
+            new_items = self._publish_manager.collect_files(str_files)
+            num_items_created = len(new_items)
             num_errors = self._progress_handler.pop()
 
             if num_errors == 0 and num_items_created == 0:
@@ -778,7 +826,8 @@ class AppDialog(QtGui.QWidget):
             self._overlay.hide()
             self.ui.button_container.show()
 
-        if (len(self._plugin_manager.top_level_items) == 0 and
+        top_level_items = list(self._publish_manager.tree.root_item.children)
+        if (len(list(top_level_items)) == 0 and
             self.ui.main_stack.currentIndex() == self.DRAG_SCREEN):
             # there are no top-level items and we're still on the drag screen.
             # something not good happened. show a button to open the progress
@@ -802,7 +851,8 @@ class AppDialog(QtGui.QWidget):
         Redraws the ui and rebuilds data based on
         the low level plugin representation
         """
-        if len(self._plugin_manager.top_level_items) == 0:
+        top_level_items = list(self._publish_manager.tree.root_item.children)
+        if len(list(top_level_items)) == 0:
             if not self.manual_load_enabled:
                 # No items collected and 'enable_manual_load' application option
                 # false, display that special error overlay.
@@ -822,6 +872,7 @@ class AppDialog(QtGui.QWidget):
             # main frame of the publish ui
             self._progress_handler.progress_details.set_parent(
                 self.ui.main_frame)
+
             self.ui.items_tree.build_tree()
 
     def _set_tree_items_expanded(self, expanded):
@@ -869,7 +920,7 @@ class AppDialog(QtGui.QWidget):
                 processing_items.append(tree_item.item)
 
         for item in processing_items:
-            self._plugin_manager.remove_top_level_item(item)
+            self._publish_manager.tree.remove_item(item)
 
         self._synchronize_tree()
 
@@ -924,7 +975,7 @@ class AppDialog(QtGui.QWidget):
             total_number_nodes = 0
             for child_index in xrange(parent.childCount()):
                 child = parent.child(child_index)
-                if child.enabled:
+                if child.checked:
                     # child is ticked
                     total_number_nodes += 1
                 total_number_nodes += _begin_process_r(child)
@@ -934,12 +985,11 @@ class AppDialog(QtGui.QWidget):
         # reset progress bar
         self._progress_handler.reset_progress(total_number_nodes * number_phases)
 
-
-    def do_validate(self, standalone=True):
+    def do_validate(self, is_standalone=True):
         """
         Perform a full validation
 
-        :param bool standalone: Indicates that the validation runs on its own,
+        :param bool is_standalone: Indicates that the validation runs on its own,
             not part of a publish workflow.
         :returns: number of issues reported
         """
@@ -948,7 +998,7 @@ class AppDialog(QtGui.QWidget):
         # back on the tasks.
         self._pull_settings_from_ui(self._current_tasks)
 
-        if standalone:
+        if is_standalone:
             self._prepare_tree(number_phases=1)
 
         # inform the progress system of the current mode
@@ -958,8 +1008,9 @@ class AppDialog(QtGui.QWidget):
         num_issues = 0
         self.ui.stop_processing.show()
         try:
-            parent = self.ui.items_tree.invisibleRootItem()
-            num_issues = self._visit_tree_r(parent, lambda child: child.validate(standalone), "Validating")
+            failed_to_validate = self._publish_manager.validate(
+                task_generator=self._validate_task_generator(is_standalone))
+            num_issues = len(failed_to_validate)
         finally:
             self._progress_handler.pop()
             if self._stop_processing_flagged:
@@ -969,7 +1020,7 @@ class AppDialog(QtGui.QWidget):
             else:
                 self._progress_handler.logger.info("Validation Complete. All checks passed.")
 
-            if standalone:
+            if is_standalone:
                 # reset process aborted flag
                 self._stop_processing_flagged = False
                 self.ui.stop_processing.hide()
@@ -1002,7 +1053,7 @@ class AppDialog(QtGui.QWidget):
             # is triggered?
             if self._bundle.get_setting("validate_on_publish"):
                 # do_validate returns the number of issues encountered
-                if self.do_validate(standalone=False) > 0:
+                if self.do_validate(is_standalone=False) > 0:
                     self._progress_handler.logger.error(
                         "Validation errors detected. "
                         "Not proceeding with publish."
@@ -1048,7 +1099,8 @@ class AppDialog(QtGui.QWidget):
             self._reset_tree_icon_r(parent)
 
             try:
-                self._visit_tree_r(parent, lambda child: child.publish(), "Publishing")
+                self._publish_manager.publish(
+                    task_generator=self._publish_task_generator())
             except Exception, e:
                 # ensure the full error shows up in the log file
                 logger.error("Publish error stack:\n%s" % (traceback.format_exc(),))
@@ -1066,13 +1118,8 @@ class AppDialog(QtGui.QWidget):
                 self._progress_handler.push("Running finalizing pass")
 
                 try:
-                    # note: Bugfix SG-4584: Re-acquire the parent pointer as we are iterating.
-                    # If publishing is long running, it's seems the root item pointer for some
-                    # reason gets GCed. By getting a fresh handle, we ensure that we won't run
-                    # into issues where the python object exists but the underlying C++ object
-                    # has been deleted.
-                    parent = self.ui.items_tree.invisibleRootItem()
-                    self._visit_tree_r(parent, lambda child: child.finalize(), "Finalizing")
+                    self._publish_manager.finalize(
+                        task_generator=self._finalize_task_generator())
                 except Exception, e:
                     # ensure the full error shows up in the log file
                     logger.error("Finalize error stack:\n%s" % (traceback.format_exc(),))
@@ -1122,8 +1169,11 @@ class AppDialog(QtGui.QWidget):
         """
         Slot that should be called when summary overlay close button is clicked.
         """
-        # clear dropped files
-        self._plugin_manager.clear_external_files()
+
+        # clear the tree and recollect the session
+        self._publish_manager.tree.clear()
+        self._publish_manager.collect_session()
+
         self._synchronize_tree()
 
         # show publish and validate buttons
@@ -1142,46 +1192,169 @@ class AppDialog(QtGui.QWidget):
         # reset the validation flag
         self._validation_run = False
 
-    def _visit_tree_r(self, parent, action, action_name):
+    def _validate_task_generator(self, is_standalone):
         """
-        Recursive visitor helper function that descends the tree.
-        Checks the stop processing flag and in case it is triggered,
-        aborts the recursion
+        This method generates tasks for the validation phase. It handles
+        processing the tasks in the proper order and updating the task's UI
+        representation in the dialog.
         """
-        number_true_return_values = 0
 
-        for child_index in xrange(parent.childCount()):
+        tree_iterator = QtGui.QTreeWidgetItemIterator(self.ui.items_tree)
+        while tree_iterator.value():
 
             if self._stop_processing_flagged:
-                return number_true_return_values
+                # jump out of the iteration
+                break
 
-            child = parent.child(child_index)
-            if child.enabled:
-                if action_name:
-                    self._progress_handler.push(
-                        "%s - %s" % (action_name, child),
-                        child.icon,
-                        child.get_publish_instance()
+            ui_item = tree_iterator.value()
+
+            if not ui_item.checked:
+                continue
+
+            self._progress_handler.push(
+                "Validating: %s" % (ui_item,),
+                ui_item.icon,
+                ui_item.get_publish_instance()
+            )
+
+            try:
+                # yield each child item to be acted on by the publish api
+                if isinstance(ui_item, TreeNodeTask):
+                    (is_successful, error_msg) = yield ui_item.task
+
+                # all other nodes are UI-only and can handle their own
+                # validation
+                else:
+                    is_successful = ui_item.validate(is_standalone)
+                    error_msg = "Unknown validation error!"
+            except Exception, e:
+                ui_item.set_status_upwards(
+                    ui_item.STATUS_VALIDATION_ERROR,
+                    str(e)
+                )
+            else:
+                if is_successful:
+                    if is_standalone:
+                        ui_item.set_status(ui_item.STATUS_VALIDATION_STANDALONE)
+                    else:
+                        ui_item.set_status(ui_item.STATUS_VALIDATION)
+                else:
+                    ui_item.set_status_upwards(
+                        ui_item.STATUS_VALIDATION_ERROR,
+                        error_msg
                     )
-                try:
-                    # process this node
-                    status = action(child)  # eg. child.validate(), child.publish() etc.
-                    if not status:
-                        number_true_return_values += 1
+            finally:
+                self._progress_handler.increment_progress()
+                self._progress_handler.pop()
+                tree_iterator += 1
 
-                    # kick progress bar
-                    self._progress_handler.increment_progress()
+    def _publish_task_generator(self):
+        """
+        This method generates tasks for the publish phase. It handles
+        processing the tasks in the proper order and updating the task's UI
+        representation in the dialog.
+        """
 
-                    # now process all children
-                    number_true_return_values += self._visit_tree_r(
-                        child,
-                        action,
-                        action_name
+        tree_iterator = QtGui.QTreeWidgetItemIterator(self.ui.items_tree)
+        while tree_iterator.value():
+
+            if self._stop_processing_flagged:
+                # jump out of the iteration
+                break
+
+            ui_item = tree_iterator.value()
+
+            if not ui_item.checked:
+                continue
+
+            self._progress_handler.push(
+                "Publishing: %s" % (ui_item,),
+                ui_item.icon,
+                ui_item.get_publish_instance()
+            )
+
+            try:
+                # yield each child item to be acted on by the publish api
+                if isinstance(ui_item, TreeNodeTask):
+                    pub_exception = yield ui_item.task
+
+                # all other nodes are UI-only and can handle their own
+                # publishing
+                else:
+                    ui_item.publish()
+                    pub_exception = None
+            except Exception, e:
+                ui_item.set_status_upwards(
+                    ui_item.STATUS_PUBLISH_ERROR,
+                    str(e)
+                )
+                raise
+            else:
+                if pub_exception:
+                    ui_item.set_status_upwards(
+                        ui_item.STATUS_PUBLISH_ERROR,
+                        str(pub_exception)
                     )
-                finally:
-                    if action_name:
-                        self._progress_handler.pop()
-        return number_true_return_values
+                else:
+                    ui_item.set_status(ui_item.STATUS_PUBLISH)
+            finally:
+                self._progress_handler.increment_progress()
+                self._progress_handler.pop()
+                tree_iterator += 1
+
+    def _finalize_task_generator(self):
+        """
+        This method generates tasks for the publish phase. It handles
+        processing the tasks in the proper order and updating the task's UI
+        representation in the dialog.
+        """
+
+        tree_iterator = QtGui.QTreeWidgetItemIterator(self.ui.items_tree)
+        while tree_iterator.value():
+
+            if self._stop_processing_flagged:
+                # jump out of the iteration
+                break
+
+            ui_item = tree_iterator.value()
+
+            if not ui_item.checked:
+                continue
+
+            self._progress_handler.push(
+                "Finalizing: %s" % (ui_item,),
+                ui_item.icon,
+                ui_item.get_publish_instance()
+            )
+
+            try:
+                # yield each child item to be acted on by the publish api
+                if isinstance(ui_item, TreeNodeTask):
+                    finalize_exception = yield ui_item.task
+
+                # all other nodes are UI-only and can handle their own
+                # finalize
+                else:
+                    ui_item.finalize()
+                    finalize_exception = None
+            except Exception, e:
+                ui_item.set_status_upwards(
+                    ui_item.STATUS_FINALIZE_ERROR,
+                    str(e)
+                )
+                raise
+            else:
+                if finalize_exception:
+                    ui_item.set_status_upwards(
+                        ui_item.STATUS_FINALIZE_ERROR,
+                        str(finalize_exception)
+                    )
+                else:
+                    ui_item.set_status(ui_item.STATUS_FINALIZE)
+            finally:
+                self._progress_handler.increment_progress()
+                self._progress_handler.pop()
+                tree_iterator += 1
 
     def _on_item_context_change(self, context):
         """
@@ -1195,16 +1368,46 @@ class AppDialog(QtGui.QWidget):
         # are on context change lockdown.
         sync_required = False
 
+        # TODO: see todo below...
+        #items_with_new_context = []
+
         if self._current_item is None:
             # this is the summary item - so update all items!
-            for top_level_item in self._plugin_manager.top_level_items:
+            top_level_items = list(self._publish_manager.tree.root_item.children)
+            for top_level_item in top_level_items:
                 if top_level_item.context_change_allowed:
                     top_level_item.context = context
+
+                    # TODO: see todo below...
+                    # this item and all of its descendents in the tree need to
+                    # have their plugins reattached given the new context
+                    #items_with_new_context.append(top_level_item)
+                    #items_with_new_context.extend([i for i in top_level_item])
+
                     sync_required = True
         else:
             if self._current_item.context_change_allowed:
                 self._current_item.context = context
+
+                # TODO: see todo below...
+                # this item and all of its descendents in the tree need to have
+                # their plugins reattached given the new context
+                #items_with_new_context.append(self._current_item)
+                #items_with_new_context.extend([i for i in self._current_item])
+
                 sync_required = True
+
+        # TODO: attach plugins for the destination context. this is commented
+        # out for now as it is a change in behavior and likely implies some
+        # additional things to consider. for example: the drag/drop of items
+        # within the tree (which changes context) will need to be updated. will
+        # need to. also, will need to transfer task settings as the context
+        # changes, where appropriate.
+        #
+        # ...
+        # for any items that have a new context, rerun plugin attachment so that
+        # they are published using the destination context's plugins
+        #self._publish_manager.attach_plugins(items_with_new_context)
 
         if sync_required:
             self._synchronize_tree()
