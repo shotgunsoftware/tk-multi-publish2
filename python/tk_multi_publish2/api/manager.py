@@ -219,66 +219,167 @@ class PublishManager(object):
         """
         self._tree = PublishTree.load_file(path)
 
-    def validate(self):
+    def validate(self, task_generator=None):
         """
-        Validate the items in the publish tree.
+        Validate items to be published.
 
-        Each collected item with attached publish plugins will validate the
-        state of the item in preparation for publishing.
+        This is done by running the ``validate()`` method on each task in the
+        publish tree. A list of items with tasks that fail to validate will be
+        returned.
+
+        By default, the method will iterate over the manager's publish tree,
+        validating all active tasks on all active items. To process tasks in a
+        different way (different order or different criteria) you can provide
+        a custom ``task_generator`` that yields :class:`~PublishTask` instances.
+
+        # TODO: example
+
+        :param task_generator: A generator of :class:`~PublishTask` instances.
+
+        :returns: A list of items with tasks that failed to validate.
         """
 
+        # we'll use this to build a list of tasks that failed to validate
         failed_to_validate = []
 
-        # method to handle the publish of individual tasks
-        def validate_action(task):
+        # calling code can supply its own generator for tasks to process. if not
+        # supplied, we'll use our own generator.
+        if not task_generator:
+            task_generator = self._task_generator()
 
-            # run the actual validation
-            is_valid = task.validate()
+        task = task_generator.next()
 
-            if not is_valid:
-                # store this task's parent item in the list of items that failed
-                # to validate (if it's not already there).
-                if task.item not in failed_to_validate:
-                    failed_to_validate.append(task.item)
+        # now begin iterating over tasks supplied by the generator
+        while task:
 
-        self._execute_tasks("validate", validate_action)
+            error_msg = None
 
-        # execute the post validate method of the phose phase hook
-        return self._post_phase_hook.post_validate(
+            # do the actual validation and send the status back to the generator
+            # so that it can react to the results. This is used, for example, by
+            # the UI's generator to update the display of the task as it is
+            # being processed.
+            try:
+                is_valid = task.validate()
+            except Exception, e:
+                error_msg = str(e)
+
+            # if the task didn't validate, add it to the list of items that
+            # failed (if it's not already there).
+            if not is_valid and task.item not in failed_to_validate:
+                failed_to_validate.append(task.item)
+
+            # send the valid state and get the next task. this is a bit annoying
+            # since send() returns the next value of the generator. which is why
+            # we're using `while` instead of a for loop with the generator.
+            try:
+                task = task_generator.send((is_valid, error_msg))
+            except StopIteration:
+                break
+
+        # execute the post validate method of the phase phase hook
+        self._post_phase_hook.post_validate(
             self.tree,
             failed_to_validate
         )
 
-    def publish(self):
+        return failed_to_validate
+
+    def publish(self, task_generator=None):
         """
-        Publish the collected items.
+        Publish items in the tree.
 
-        The ``validate()`` method should be called first
+        This is done by running the ``publish()`` method on each task in the
+        publish tree.
 
-        Each task assigned to collected items will execute their publish
-        payload. Items are processed in depth first order.
-        """
+        By default, the method will iterate over the manager's publish tree,
+        publishing all active tasks on all active items. To process tasks in a
+        different way (different order or different criteria) you can provide
+        a custom ``task_generator`` that yields :class:`~PublishTask` instances.
 
-        publish_action = lambda task: task.publish()
-        self._execute_tasks("publish", publish_action)
+        # TODO: example
 
-        # execute the post validate method of the phose phase hook
-        self._post_phase_hook.post_validate(self.tree)
-
-    def finalize(self):
-        """
-        Finalize the published items.
-
-        The ``publish()`` method should be called first
-
-        Each task assigned to collected items will execute their finalize
-        payload. Items are processed in depth first order.
+        :param task_generator: A generator of :class:`~PublishTask` instances.
         """
 
-        finalize_action = lambda task: task.finalize()
-        self._execute_tasks("finalize", finalize_action)
+        # calling code can supply its own generator for tasks to process. if not
+        # supplied, we'll use our own generator.
+        if not task_generator:
+            task_generator = self._task_generator()
 
-        # execute the post validate method of the phose phase hook
+        task = task_generator.next()
+
+        # now begin iterating over tasks supplied by the generator
+        while task:
+
+            pub_exception = None
+
+            # do the actual publish
+            # the UI's generator to update the display of the task as it is
+            # being processed.
+            try:
+                task.publish()
+            except Exception, e:
+                pub_exception = e
+
+            # send the the exception (or None) back to the generator and get the
+            # next task. this is a bit annoying since send() returns the next
+            # value of the generator. which is why we're using `while` instead
+            # of a for loop with the generator.
+            try:
+                task = task_generator.send(pub_exception)
+            except StopIteration:
+                break
+
+        # execute the post publish method of the phase phase hook
+        self._post_phase_hook.post_publish(self.tree)
+
+    def finalize(self, task_generator=None):
+        """
+        Finalize items in the tree.
+
+        This is done by running the ``finalize()`` method on each task in the
+        publish tree.
+
+        By default, the method will iterate over the manager's publish tree,
+        finalizing all active tasks on all active items. To process tasks in a
+        different way (different order or different criteria) you can provide
+        a custom ``task_generator`` that yields :class:`~PublishTask` instances.
+
+        # TODO: example
+
+        :param task_generator: A generator of :class:`~PublishTask` instances.
+        """
+
+        # calling code can supply its own generator for tasks to process. if not
+        # supplied, we'll use our own generator.
+        if not task_generator:
+            task_generator = self._task_generator()
+
+        task = task_generator.next()
+
+        # now begin iterating over tasks supplied by the generator
+        while task:
+
+            finalize_exception = None
+
+            # do the actual finalize
+            # the UI's generator to update the display of the task as it is
+            # being processed.
+            try:
+                task.finalize()
+            except Exception, e:
+                finalize_exception = e
+
+            # send the the exception (or None) back to the generator and get the
+            # next task. this is a bit annoying since send() returns the next
+            # value of the generator. which is why we're using `while` instead
+            # of a for loop with the generator.
+            try:
+                task = task_generator.send(finalize_exception)
+            except StopIteration:
+                break
+
+        # execute the post finalize method of the phase phase hook
         self._post_phase_hook.post_finalize(self.tree)
 
     @property
@@ -454,21 +555,13 @@ class PublishManager(object):
         # no existing, persistent item was collected with this path
         return False
 
-    def _execute_tasks(self, action_name, action):
+    def _task_generator(self):
         """
         This method iterates over all active items in the publish tree and
-        executes the supplied callable on each of the item's active tasks.
-
-        :param action_name: The name of the action being performed.
-        :param action: A callable with a single argument of the task to execute
-
-        :returns: A ``list`` of results for each task executed, in the order
-            they were executed.
+        yields them to the caller.
         """
 
-        results = []
-
-        self.logger.info("Executing %s..." % (action_name,))
+        self.logger.info("Iterating over tasks...")
         for item in self.tree:
 
             if not item.active:
@@ -483,16 +576,12 @@ class PublishManager(object):
                 )
                 continue
 
-            logger.debug("Executing %s for item: %s" % (action_name, item))
-
+            logger.debug("Processing item: %s" % (item,))
             for task in item.tasks:
 
                 if not task.active:
                     logger.debug("Skipping inactive task: %s" % (task,))
                     continue
 
-                logger.debug("Executing %s for task: %s" % (action_name, task))
-
-                results.append(callable(task))
-
-        return results
+                status = (yield task)
+                logger.debug("Task %s status: %s" % (task, status))
