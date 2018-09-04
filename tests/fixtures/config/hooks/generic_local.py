@@ -34,10 +34,6 @@ class GenericLocalPlugin(HookBaseClass):
     def item_filters(self):
         return ["generic.item"]
 
-    @property
-    def run_on_farm(self):
-        return False
-
     def accept(self, settings, item):
         return {"accepted": True}
 

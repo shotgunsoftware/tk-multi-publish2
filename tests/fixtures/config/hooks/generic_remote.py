@@ -40,10 +40,6 @@ class GenericRemotePlugin(HookBaseClass):
     def item_filters(self):
         return ["generic.item"]
 
-    @property
-    def run_on_farm(self):
-        return True
-
     def accept(self, settings, item):
         # inidicate that this plugin should only run remotely
         return {"accepted": True}
