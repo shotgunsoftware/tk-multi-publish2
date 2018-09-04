@@ -70,9 +70,7 @@ engines:
           - name: Vitor's Plugin
             hook: "{config}/vitor_test.py"
             settings: {}
-
-
-            
+        post_phase: "{config}/post_phase_test.py"
 
 frameworks:
   tk-framework-qtwidgets_v2.x.x:

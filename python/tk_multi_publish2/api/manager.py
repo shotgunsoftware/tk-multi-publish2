@@ -258,7 +258,11 @@ class PublishManager(object):
         if not task_generator:
             task_generator = self._task_generator()
 
-        task = task_generator.next()
+        task = None
+        try:
+            task = task_generator.next()
+        except StopIteration:
+            pass
 
         # now begin iterating over tasks supplied by the generator
         while task:
@@ -329,7 +333,11 @@ class PublishManager(object):
         if not task_generator:
             task_generator = self._task_generator()
 
-        task = task_generator.next()
+        task = None
+        try:
+            task = task_generator.next()
+        except StopIteration:
+            pass
 
         # now begin iterating over tasks supplied by the generator
         while task:
@@ -391,7 +399,11 @@ class PublishManager(object):
         if not task_generator:
             task_generator = self._task_generator()
 
-        task = task_generator.next()
+        task = None
+        try:
+            task = task_generator.next()
+        except StopIteration:
+            pass
 
         # now begin iterating over tasks supplied by the generator
         while task:

@@ -179,7 +179,7 @@ class PublishPluginInstance(PluginInstanceBase):
             self.logger.error("Please link '%s' to a Shotgun object and task!" % item.name)
 
         if status:
-            self.logger.info("Validation successful!")
+            self.logger.debug("Validation successful!")
         else:
             self.logger.error("Validation failed.")
 
@@ -287,7 +287,7 @@ class PublishPluginInstance(PluginInstanceBase):
             raise
         else:
             if success_msg:
-                self._logger.info(success_msg)
+                self._logger.debug(success_msg)
         finally:
             if not sgtk.platform.current_engine().has_ui:
                 from sgtk.platform.qt import QtCore

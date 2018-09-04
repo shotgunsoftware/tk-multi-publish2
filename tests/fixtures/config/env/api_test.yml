@@ -1,0 +1,46 @@
+# Copyright (c) 2017 Shotgun Software Inc.
+#
+# CONFIDENTIAL AND PROPRIETARY
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
+# Source Code License included in this distribution package. See LICENSE.
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
+# not expressly granted therein are reserved by Shotgun Software Inc.
+#
+
+# All the bundles are relative to this repo, except for tk-shell, as there
+# is little chance it will need to be edited. All other repos are common
+# on dev machines.
+
+engines:
+  tk-shell:
+    location:
+      type: app_store
+      name: tk-shell
+      version: v0.5.0
+    apps:
+      tk-multi-publish2:
+        location:
+          type: path
+          path: $REPO_ROOT
+        help_url: https://support.shotgunsoftware.com/hc/en-us/articles/115000068574-Integrations-User-Guide#The%20Publisher
+        collector: "{config}/api_collector.py"
+        publish_plugins:
+          - name: Local Publish
+            hook: "{config}/generic_local.py"
+            settings: {}
+          - name: Remote Publish
+            hook: "{config}/generic_remote.py"
+            settings: {}
+        post_phase: "{config}/post_phase_test2.py"
+
+frameworks:
+  tk-framework-qtwidgets_v2.x.x:
+    location:
+      type: path
+      path: $REPO_ROOT/../tk-framework-qtwidgets
+  tk-framework-shotgunutils_v5.x.x:
+    location:
+      type: path
+      path: $REPO_ROOT/../tk-framework-shotgunutils

@@ -96,7 +96,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         :param int level: recursion depth
         :param QTreeWidgetItem tree_parent: parent node in tree
         """
-        if len(item.tasks) == 0 and len(item.children) == 0:
+        if len(list(item.tasks)) == 0 and len(list(item.children)) == 0:
             # orphan. Don't create it
             return None
 
