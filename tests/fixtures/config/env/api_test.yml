@@ -33,7 +33,7 @@ engines:
           - name: Remote Publish
             hook: "{config}/generic_remote.py"
             settings: {}
-        post_phase: "{config}/post_phase_test2.py"
+        post_phase: "{config}/post_phase_test.py"
 
 frameworks:
   tk-framework-qtwidgets_v2.x.x:
