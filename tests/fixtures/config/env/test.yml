@@ -67,6 +67,10 @@ engines:
           - name: Plugin 3 of 3 (#2 should be HIDDEN)
             hook: "{self}/publish_file.py:{config}/visible_plugin3.py"
             settings: {}
+          - name: Vitor's Plugin
+            hook: "{config}/vitor_test.py"
+            settings: {}
+
 
             
 

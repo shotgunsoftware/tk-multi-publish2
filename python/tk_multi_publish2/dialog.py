@@ -1209,6 +1209,7 @@ class AppDialog(QtGui.QWidget):
             ui_item = tree_iterator.value()
 
             if not ui_item.checked:
+                tree_iterator += 1
                 continue
 
             self._progress_handler.push(
@@ -1265,6 +1266,7 @@ class AppDialog(QtGui.QWidget):
             ui_item = tree_iterator.value()
 
             if not ui_item.checked:
+                tree_iterator += 1
                 continue
 
             self._progress_handler.push(
@@ -1319,6 +1321,7 @@ class AppDialog(QtGui.QWidget):
             ui_item = tree_iterator.value()
 
             if not ui_item.checked:
+                tree_iterator += 1
                 continue
 
             self._progress_handler.push(

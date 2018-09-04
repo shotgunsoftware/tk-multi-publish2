@@ -290,7 +290,6 @@ class PublishManager(object):
         # execute the post validate method of the phase phase hook
         self._post_phase_hook.post_validate(
             self.tree,
-            failed_to_validate
         )
 
         return failed_to_validate

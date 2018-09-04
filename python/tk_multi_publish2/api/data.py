@@ -9,6 +9,7 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import collections
+import sgtk
 
 # here we import cPickle, if possible, otherwise pickle.
 # see https://pymotw.com/2/pickle/#importing for more info
