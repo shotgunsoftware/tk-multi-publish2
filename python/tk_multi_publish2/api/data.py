@@ -48,8 +48,14 @@ class PublishData(collections.MutableMapping):
 
         # iterate over the data and deserialize the values
         for (k, v) in data.iteritems():
-            # ensure the serialized value is a string
-            v = pickle.loads(str(v))
+            try:
+                # ensure the serialized value is a string
+                v = pickle.loads(str(v))
+            except Exception, e:
+                logger.error(
+                    "Unable to deserialize value for data key: '%s'." % (k,)
+                )
+                raise
             deserialized_dict[k] = v
 
         return cls(**deserialized_dict)

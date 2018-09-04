@@ -903,9 +903,8 @@ class PublishItem(object):
         """
         Return properties local to the currently executing publish plugin.
 
-        This is done in a separate method to allow access to any method in this
-        class. We look 2 levels up in the stack to get the calling plugin class.
-        If this is called more than one level deep in this class, expect issues.
+        This is done by walking up the call stack to find a caller that is a
+        Hook. This method will raise if no caller in the stack is a hook.
         """
 
         hook_object = None

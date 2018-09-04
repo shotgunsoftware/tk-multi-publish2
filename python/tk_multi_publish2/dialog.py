@@ -738,7 +738,7 @@ class AppDialog(QtGui.QWidget):
         )
 
         previously_collected_files = self._publish_manager.collected_files
-        self._publish_manager.tree.clear()
+        self._publish_manager.tree.clear(clear_persistent=True)
 
         logger.debug("Refresh: Running collection on current session...")
         new_session_items = self._publish_manager.collect_session()
@@ -1171,7 +1171,7 @@ class AppDialog(QtGui.QWidget):
         """
 
         # clear the tree and recollect the session
-        self._publish_manager.tree.clear()
+        self._publish_manager.tree.clear(clear_persistent=True)
         self._publish_manager.collect_session()
 
         self._synchronize_tree()
