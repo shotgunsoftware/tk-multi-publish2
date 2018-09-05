@@ -615,7 +615,7 @@ class PublishManager(object):
         finalize if no custom task generator is supplied.
         """
 
-        self.logger.info("Iterating over tasks...")
+        self.logger.debug("Iterating over tasks...")
         for item in self.tree:
 
             if not item.active:

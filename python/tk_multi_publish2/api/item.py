@@ -24,8 +24,7 @@ logger = sgtk.platform.get_logger(__name__)
 
 class PublishItem(object):
     """
-    Items represent a "thing" to be operated on. This can be a file on disk
-    or an object of some type in an artist's session.
+    The ``PublishItem`` class is used to represent something to be published.
     """
 
     @classmethod
@@ -122,7 +121,9 @@ class PublishItem(object):
 
     def __init__(self, name, type_spec, type_display, parent=None):
         """
-        Initialize an item in the tree.
+        .. warning:: You should not create item instances directly. Instead, use
+            the :meth:`~PublishItem.create_item` method of the parent you wish
+            to create the item under.
 
         :param name: The display name of the item to create.
         :param type_spec: The type specification for this item.
@@ -266,11 +267,11 @@ class PublishItem(object):
         """
         self._tasks = []
 
-    def create_item(self, item_type, type_display, name):
+    def create_item(self, type_spec, type_display, name):
         """
         Factory method for generating new items.
 
-        The ``item_type`` is a string that represents the type of the item. This
+        The ``type_spec`` is a string that represents the type of the item. This
         can be any string, but is typically defined by studio convention. This
         value is used by the publish plugins to identify which items to act
         upon.
@@ -315,7 +316,7 @@ class PublishItem(object):
 
         |
 
-        :param str item_type: Item type, typically following a hierarchical dot
+        :param str type_spec: Item type, typically following a hierarchical dot
             notation.
         :param str type_display: Equivalent to the type, but for display
             purposes.
@@ -325,7 +326,7 @@ class PublishItem(object):
 
         child_item = PublishItem(
             name,
-            item_type,
+            type_spec,
             type_display,
             parent=self
         )
@@ -338,7 +339,7 @@ class PublishItem(object):
         This is a convenience method that will retrieve a property set on the
         item.
 
-        If the property was set via :meth:`PublishItem.local_properties`, then
+        If the property was set via :py:attr:`~PublishItem.local_properties`, then
         that will be returned. Otherwise, the value set via
         :meth:`Item.properties` will be returned. If the property is not set on
         the item, then the supplied ``default_value`` will be returned (default
@@ -508,15 +509,17 @@ class PublishItem(object):
 
     @property
     def children(self):
-        """Yields the children of this item."""
+        """A generator that yields the children of this item."""
         for child in self._children:
             yield child
 
     @property
     def context(self):
         """
-        Returns the context of the item if it has been explicitly set, ``None``
-        otherwise.
+        The :class:`sgtk.Context` associated with this item. If no context has
+        been explicitly set for this item, the context will be inherited from
+        the item's parent. If none of this item's parents have had a context set
+        explicitly, the publisher's launch context will be returned.
         """
 
         if self._context:

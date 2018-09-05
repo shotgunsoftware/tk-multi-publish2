@@ -112,11 +112,12 @@ class CollectorPlugin(HookBaseClass):
         A typical implementation of this method would create an item that
         represents the current session (e.g. the current Maya file) or all open
         documents in a multi-document scenario (such as Photoshop). Top level
-        items area created as children of the supplied ``parent_item``.
+        items area created as children of the supplied ``parent_item`` which is.
 
         Any additional items, specific to the current session, can then be
         created as children of the session item. This is not a requirement
-        however.
+        however. You could, for example, create a flat list of items, all
+        sharing the same parent.
 
         The image below shows a maya scene item with a child item that
         represents a playblast to be published. Each of these items has one or
@@ -128,8 +129,8 @@ class CollectorPlugin(HookBaseClass):
 
         The ``settings`` argument is a dictionary where the keys are the names
         of the settings defined by the :func:`settings` property and the values
-        are :class:`~.processing.Setting` instances as
-        configured for this instance of the publish app.
+        are :class:`tk_multi_publish2.api.PluginSetting` instances as configured for this
+        instance of the publish app.
 
         To create items within this method, use the
         :meth:`~.processing.Item.create_item` method available on the supplied
