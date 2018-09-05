@@ -41,7 +41,12 @@ class GenericRemotePlugin(HookBaseClass):
         return ["generic.item"]
 
     def accept(self, settings, item):
-        # inidicate that this plugin should only run remotely
+
+        # force 'run_on_farm' if there is no UI
+        publisher = self.parent
+        if not publisher.engine.has_ui:
+            settings["run_on_farm"].value = True
+
         return {"accepted": True}
 
     def validate(self, settings, item):
@@ -49,7 +54,25 @@ class GenericRemotePlugin(HookBaseClass):
         return True
 
     def publish(self, settings, item):
+
+        publisher = self.parent
+        run_on_farm = settings["run_on_farm"].value
+
+        # don't do anything if "run_on_farm" is True and the engine has a UI
+        if publisher.engine.has_ui and run_on_farm:
+            self.logger.debug("Skipping remote plugin execution.")
+            return
+
         self.logger.debug("Executing remote plugin publish.")
 
     def finalize(self, settings, item):
+
+        publisher = self.parent
+        run_on_farm = settings["run_on_farm"].value
+
+        # don't do anything if "run_on_farm" is True and the engine has a UI
+        if publisher.engine.has_ui and run_on_farm:
+            self.logger.debug("Skipping remote plugin execution.")
+            return
+
         self.logger.debug("Executing remote plugin finalize.")

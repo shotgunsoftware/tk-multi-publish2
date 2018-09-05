@@ -68,18 +68,36 @@ def api_tests(engine):
     # be run on the artist's machine. We process the validation locally (e.g.
     # the user is making sure the settings are set they way they'd like). The
     # publish/validate is then executed by supplying task generators that only
-    # deal with the local tasks (by inspecting the plugin settings). The publish
-    # tree is then serialized to disk and loaded in a separate manager. The new
-    # manager executes the publish/finalize using a task generator that only
-    # yields plugins with the remote execution setting set to True. This is a
-    # simple pattern to test/demonstrate how this could be done.
+    # deal with the local tasks (by inspecting the plugin settings).
+    #
+    # NOTE: This is running without a UI, so we can supply custom task
+    # generators via the api. When combining UI validation with remote
+    # publish/finalize, you'll need to defer the execution in the plugin itself
+    # (since the UI will always operate on all active/checked items/tasks. The
+    # generic_remote plugin used here has an example of how this could be done
+    # by simply checking if the publisher is running with a UI and skipping
+    # execution if the run_on_farm setting is set to True.
+    #
+    # After validation below, the publish tree is then serialized to disk and
+    # loaded by a separate manager instance. The new manager executes the
+    # publish/finalize using a task generator that only yields plugins with the
+    # remote execution setting set to True. This is a simple pattern to
+    # test/demonstrate how this could be done.
+    #
+    # NOTE: The below does not accurately test remote publishing of a serialized
+    # tree. That requires a completely separate process with a separate
+    # `sys.modules` to load from (due to Tk's unique import namespacing).
+    # Context matching is also something that is trivialized here. In a real
+    # test, there'd need to be assurance that the publish is executing in the
+    # same context. That's ignored/assumed here since the test app is only using
+    # the first project context returned from SG.
 
     # simulate processing tasks locally
     print "\nSimulate validate/publish/finalize on local machine..."
     print "\n--------------------------------------------------"
     print "Local Validation: all should validate successfully."
     print "---------------------------------------------------"
-    manager.validate(task_generator=all_tasks_generator(manager.tree))
+    manager.validate()
     print "\n----------------------------------------------------"
     print "Local Publish: Only local plugins should be executed."
     print "-----------------------------------------------------"
@@ -112,22 +130,6 @@ def api_tests(engine):
     print "Remote Finalize: Only remote plugins should be executed."
     print "-------------------------------------------------------"
     manager2.finalize(task_generator=farm_tasks_generator(manager2.tree))
-
-    # NOTE: The above does not accurately test remote publishing of a
-    # serialized tree. That requires a completely separate process with a
-    # separate `sys.modules` to load from (due to Tk's unique import
-    # namespacing). Context matching is also something that is trivialized here.
-    # In a real test, there'd need to be assurance that the publish is executing
-    # in the same context. That's ignored/assumed here since the test app is
-    # only using the first project context returned from SG.
-
-def all_tasks_generator(tree):
-
-    for item in tree.items:
-        print "%s" % (item,)
-        for task in item.tasks:
-            print "  %s: EXECUTING" % (task,)
-            result = yield task
 
 
 def local_tasks_generator(tree):

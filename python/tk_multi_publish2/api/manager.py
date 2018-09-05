@@ -258,6 +258,7 @@ class PublishManager(object):
         if not task_generator:
             task_generator = self._task_generator()
 
+        # get the first task
         task = None
         try:
             task = task_generator.next()
@@ -333,6 +334,7 @@ class PublishManager(object):
         if not task_generator:
             task_generator = self._task_generator()
 
+        # get the first task
         task = None
         try:
             task = task_generator.next()
@@ -399,6 +401,7 @@ class PublishManager(object):
         if not task_generator:
             task_generator = self._task_generator()
 
+        # get the first task
         task = None
         try:
             task = task_generator.next()
