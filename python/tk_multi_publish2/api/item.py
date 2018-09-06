@@ -849,10 +849,14 @@ class PublishItem(object):
     @property
     def type_spec(self):
         """
-        The type specification for this item. This specification follows a
-        hierarchical dot notation. For example, 'file', 'file.image',
-        'file.quicktime' or 'maya_scene'. This specification is up to the client
-        code to define in terms of formatting and meaning.
+        The type specification for this item. This specification typically
+        follows a hierarchical dot notation. For example, 'file', 'file.image',
+        or 'file.movie'. This allows for a system whereby some publish plugins
+        act on 'file.*' items (publish to SG for example) while other plugins
+        may perform actions on a more specific set of items (for example
+        uploading the media represented by 'file.image' or 'file.movie' items to
+        SG as Versions). This is how the default integrations use this property
+        on collected items.
         """
         return self._type_spec
 
