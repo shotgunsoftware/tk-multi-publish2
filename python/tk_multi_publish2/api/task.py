@@ -18,9 +18,13 @@ logger = sgtk.platform.get_logger(__name__)
 
 class PublishTask(object):
     """
-    A task is a particular unit of work which can to be carried by the
-    publishing process. A task can be thought of as a 'plugin instance', or a
-    particular publishing plugin operating on a collected item.
+    Publish tasks represent the operations to be performed on
+    a :ref:`publish-api-item` in the :ref:`publish-api-tree`. Each item has a
+    list of associated tasks that will be executed when a publish is initiated.
+
+    Each task wraps a configured publish plugin instance, storing the
+    settings defined by that plugin that are specific to the item it is
+    associated with.
     """
 
     @classmethod
@@ -212,7 +216,7 @@ class PublishTask(object):
 
     @property
     def item(self):
-        """The item this task is associated with"""
+        """The :ref:`publish-api-item` this task is associated with"""
         return self._item
 
     @property
@@ -232,5 +236,10 @@ class PublishTask(object):
 
     @property
     def settings(self):
-        """The settings associated with this task."""
+        """
+        A :py:attr:`dict` of settings associated with this task.
+
+        The keys of this dictionary are the setting names and the values are
+        :ref:`publish-api-setting` instances.
+        """
         return self._settings

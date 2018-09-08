@@ -339,11 +339,10 @@ class PublishItem(object):
         This is a convenience method that will retrieve a property set on the
         item.
 
-        If the property was set via :py:attr:`~PublishItem.local_properties`, then
-        that will be returned. Otherwise, the value set via
-        :meth:`Item.properties` will be returned. If the property is not set on
-        the item, then the supplied ``default_value`` will be returned (default
-        is ``None``).
+        If the property was set via :py:attr:`~local_properties`, then that will
+        be returned. Otherwise, the value set via :py:attr:`~properties` will be
+        returned. If the property is not set on the item, then the supplied
+        ``default_value`` will be returned (default is ``None``).
 
         :param name: The property to retrieve.
         :param default_value: The value to return if the property is not set on
@@ -408,9 +407,9 @@ class PublishItem(object):
 
     def remove_item(self, child_item):
         """
-        Remove the supplied child of this item.
+        Remove the supplied child :ref:`publish-api-item` of this item.
 
-        :param child_item: The child item to remove from the current item.
+        :param child_item: The child :ref:`publish-api-item` to remove.
         """
 
         if child_item not in self.children:
@@ -426,11 +425,10 @@ class PublishItem(object):
         Sets the icon for the item given a path to an image on disk. This path
         will be converted to a ``QtGui.QPixmap`` when the item is displayed.
 
-        .. note:: The ``icon`` is for use only in the publisher UI and
-            represents the type of item being published. The icon should not be
-            confused with the item's thumbnail which is typically associated
-            with the resulting published item in Shotgun and is meant to
-            represent it visually.
+        .. note:: The :py:attr:`~icon` is for use only in the publisher UI and
+            is a small representation of item being published. The icon should
+            not be confused with the item's :py:attr:`~thumbnail` which is
+            typically associated with the resulting published item in Shotgun.
 
         :param str path: Path to a file on disk
         """
@@ -442,11 +440,11 @@ class PublishItem(object):
         path will be converted to a ``QtGui.QPixmap`` when the item is
         displayed.
 
-        .. note:: The ``thumbnail`` is typically associated with the resulting
-            published item in Shotgun and is meant to represent it visually. The
-            ``thumbnail`` should not be confused with the item's ``icon`` which
-            is for use only in the publisher UI and represents the type of item
-            being published.
+        .. note:: The :py:attr:`~thumbnail` is typically associated with the
+            resulting published item in Shotgun. The :py:attr:`~thumbnail`
+            should not be confused with the item's :py:attr:`~icon` which is for
+            use only in the publisher UI and is a small representation of the
+            item.
 
         :param str path: Path to a file on disk
         """
@@ -458,9 +456,9 @@ class PublishItem(object):
         Returns the item's active state if it has been explicitly set, `None``
         otherwise.
 
-        .. note:: This property is shared with ``checked`` and can be used
-            interchangeably to make code more readable depending on the context
-            (with/without the UI).
+        .. note:: This property is shared with :py:attr:`~checked` and can be
+            used interchangeably to make code more readable depending on the
+            context (with/without the UI).
 
         """
         return self._active
@@ -484,9 +482,9 @@ class PublishItem(object):
         Boolean property to indicate that this item should be checked by
         default when displayed in a publish UI.
 
-        .. note:: This property is shared with ``active`` and can be used
-            interchangeably to make code more readable depending on the context
-            (with/without the UI).
+        .. note:: This property is shared with :py:attr:`~active` and can be
+            used interchangeably to make code more readable depending on the
+            context (with/without the UI).
 
         Please note that the final state of the node is also affected by
         the child tasks. Below are some examples of how this interaction
@@ -509,17 +507,30 @@ class PublishItem(object):
 
     @property
     def children(self):
-        """A generator that yields the children of this item."""
+        """
+        A generator that yields the immediate :ref:`publish-api-item` children of
+        this item.
+
+        .. note:: :ref:`publish-api-item` instances are iterators so if you need
+            to traverse all descendant items, you can do this:
+
+            .. code-block:: python
+
+                for descendant in item:
+                    # process descendant item
+        """
         for child in self._children:
             yield child
 
     @property
     def context(self):
         """
-        The :class:`sgtk.Context` associated with this item. If no context has
-        been explicitly set for this item, the context will be inherited from
-        the item's parent. If none of this item's parents have had a context set
-        explicitly, the publisher's launch context will be returned.
+        The :class:`sgtk.Context` associated with this item.
+
+        If no context has been explicitly set for this item, the context will be
+        inherited from the item's parent. If none of this item's parents have
+        had a context set explicitly, the publisher's launch context will be
+        returned.
         """
 
         if self._context:
@@ -542,7 +553,9 @@ class PublishItem(object):
     @property
     def context_change_allowed(self):
         """
-        True if item allows context change, False otherwise. Default is True
+        ``True`` if item allows context change, False otherwise.
+
+        Default is ``True``
         """
         return self._allows_context_change
 
@@ -556,8 +569,8 @@ class PublishItem(object):
     @property
     def description(self):
         """
-        The description of the item if it has been explicitly set,
-        ``None`` otherwise.
+        The description of the item if it has been explicitly set, ``None``
+        otherwise.
         """
         return self._description
 
@@ -596,6 +609,7 @@ class PublishItem(object):
     def icon(self):
         """
         The associated icon, as a QPixmap.
+
         The icon is a small square image used to represent the item visually
 
         .. image:: ./resources/item_icon.png
@@ -608,11 +622,10 @@ class PublishItem(object):
         .. warning:: This property will return ``None`` when run without a UI
             present
 
-        .. note:: The ``icon`` is for use only in the publisher UI and
-            represents the type of item being published. The icon should not be
-            confused with the item's thumbnail which is typically associated
-            with the resulting published item in Shotgun and is meant to
-            represent it visually.
+        .. note:: The :py:attr:`~icon` is for use only in the publisher UI and
+            is a small representation of item being published. The icon should
+            not be confused with the item's :py:attr:`~thumbnail` which is
+            typically associated with the resulting published item in Shotgun.
         """
         # nothing to do if running without a UI
         if not sgtk.platform.current_engine().has_ui:
@@ -646,17 +659,20 @@ class PublishItem(object):
 
     @property
     def is_root(self):
-        """Returns ``True`` if this item is the root, ``False`` otherwise."""
+        """
+        Returns ``True`` if this the root :ref:`publish-api-item` in the tree,
+        ``False`` otherwise.
+        """
         return self.parent is None and self.name == "__root__"
 
     @property
     def local_properties(self):
         """
-        A :class:`PublishData` instance that houses item properties local to
-        the current publish plugin instance. As such, it is expected that this
-        property is only accessed from within a publish plugin. Attempts to
-        access this property outside of a publish plugin will raise an
-        ``AttributeError``.
+        A :class:`~.api.PublishData` instance that houses item properties local
+        to the current :class:`~.base_hooks.PublishPlugin` instance. As such, it
+        is expected that this property is only accessed from within a publish
+        plugin. Attempts to access this property outside of a publish plugin
+        will raise an ``AttributeError``.
 
         This property behaves like the local storage in python's threading
         module, except here, the data is local to the current publish plugin.
@@ -665,19 +681,20 @@ class PublishItem(object):
         notation or via dot notation.
 
         It is important to consider when to set a value via
-        :meth:`Item.properties`` and when to use :meth:`Item.local_properties`.
-        Setting the values on ``item.properties`` is a way to globally share
+        :py:attr:`~properties`` and when to use :py:attr:`~local_properties`.
+
+        Setting the values on :py:attr:`~properties` is a way to globally share
         information between publish plugins. Values set via
-        ``item.local_properties`` will only be applied during the execution of
-        the current plugin (similar to python's ``threading.local`` storage).
+        :py:attr:`~local_properties` will only be applied during the execution
+        of the current plugin (similar to python's ``threading.local`` storage).
 
         A common scenario to consider is when you have multiple publish plugins
         acting on the same item. You may, for example, want the ``publish_name``
-        and ``publish_version`` to be shared by each plugin, while setting the
-        remaining properties on each plugin instance since they will be specific
-        to that plugin's output.
+        and ``publish_version`` properties to be shared by each plugin, while
+        setting the remaining properties on each plugin instance since they will
+        be specific to that plugin's output. Example:
 
-        Example::
+        .. code-block:: python
 
             # set shared properties on the item (potentially in the collector or
             # the first publish plugin). these values will be available to all
@@ -695,8 +712,8 @@ class PublishItem(object):
             item.local_properties.publish_type = "Alembic Cache"
 
         .. note:: If you plan to serialize your publish tree, you may run into
-          issues if you add complex or non-serializable objects to the
-          properties dictionary.
+            issues if you add complex or non-serializable objects to the
+            properties dictionary.
         """
         return self._get_local_properties()
 
@@ -712,12 +729,15 @@ class PublishItem(object):
 
     @property
     def parent(self):
-        """The item's parent item."""
+        """The item's parent :ref:`publish-api-item`."""
         return self._parent
 
     @property
     def persistent(self):
-        """Indicates if the item should be removed when the tree is cleared."""
+        """
+        Boolean indicator that the item should not be removed when the tree is
+        cleared.
+        """
         return self._persistent
 
     @persistent.setter
@@ -738,14 +758,14 @@ class PublishItem(object):
         """
         A :class:`PublishData` instance where arbitrary data can be stored on
         the item. The property itself is read-only (you can't assign a different
-        ``PublishData`` instance.
+        :class:`PublishData` instance.
 
         This property provides a way to store data that is global across all
         attached publish plugins. It is also useful for accessing data stored
         on parent items that may be useful to plugin attached to child items.
 
         For properties that are local to the current plugin, see
-        ``local_properties``.
+        :py:attr:`~local_properties`.
 
         This property can also be used to store data on an items that may then
         be accessed by plugins attached to the item's children.
@@ -758,7 +778,10 @@ class PublishItem(object):
 
     @property
     def tasks(self):
-        """Returns a list of all tasks attached to this item."""
+        """
+        Returns a list of all :ref:`publish-api-task` instances attached to
+        this item.
+        """
         return self._tasks
 
     @property
@@ -775,11 +798,10 @@ class PublishItem(object):
         .. warning:: This will property return ``None`` when run without a UI
             present
 
-        .. note:: The ``thumbnail`` is typically associated with the resulting
-            published item in Shotgun and is meant to represent it visually. The
-            ``thumbnail`` should not be confused with the item's ``icon`` which
-            is for use only in the publisher UI and represents the type of item
-            being published.
+        .. note:: The :py:attr:`~thumbnail` is typically associated with the
+            resulting published item in Shotgun. The :py:attr:`~thumbnail`
+            should not be confused with the item's :py:attr:`~icon` which is for
+            use only in the publisher UI and is a small representation of the
         """
 
         # nothing to do if running without a UI
@@ -819,9 +841,9 @@ class PublishItem(object):
 
         * If ``True``, thumbnails will be visible and editable in the publish UI
           (via screen capture).
-        * If ``False`` and a thumbnail has been set via the :meth:`thumbnail`
-          property, the thumbnail will be visible but screen capture will be
-          disabled.
+        * If ``False`` and a thumbnail has been set via the
+          :py:attr:`~thumbnail` property, the thumbnail will be visible but
+          screen capture will be disabled.
         * If ``False`` and no thumbnail has been specified, no thumbnail will
           appear in the UI.
         """
@@ -869,7 +891,7 @@ class PublishItem(object):
     # don't want to risk bad mojo with python trying to define `def type`.
     def _get_type(self):
         """
-        DEPRECATED: use ``type_spec`` instead
+        .. warning:: **DEPRECATED**.  Use :py:attr:`~type_spec` instead
         """
         return self.type_spec
 
@@ -894,7 +916,7 @@ class PublishItem(object):
     @property
     def display_type(self):
         """
-        DEPRECATED: use ``type_display`` instead
+        .. warning:: **DEPRECATED**.  Use :py:attr:`~type_display` instead
         """
         return self.type_display
 

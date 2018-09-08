@@ -13,16 +13,25 @@ from ..data import PublishData
 
 class PluginSetting(PublishData):
     """
-    Holds configured settings for a task in a publish tree.
+    This class provides an interface to settings defined for a given
+    :ref:`publish-api-task`.
     """
 
     def __init__(self, name, data_type, default_value, description=None):
         """
+        This class derives from :ref:`publish-api-data`.  A few special keys
+        are set by default and are accessible after initialization. Those keys
+        are:
 
-        :param name:
-        :param data_type:
-        :param default_value:
-        :param description:
+        * ``default_value``: The default value as configured for this setting.
+        * ``description``: Any description provided for this setting in the config.
+        * ``name``: The display name for this setting.
+        * ``type``: The type for this setting (:py:attr:`bool`, :py:attr:`str`, etc).
+        * ``value``: The current value of this setting.
+
+        .. note:: There is typically no need to create instances of this class
+            manually. Each :ref:`publish-api-task` will expose a dictionary of
+            configured ``PluginSettings``.
         """
 
         super(PluginSetting, self).__init__()

@@ -16,11 +16,12 @@ HookBaseClass = sgtk.get_hook_baseclass()
 class PostPhaseHook(HookBaseClass):
     """
     This hook defines methods that are executed after each phase of a publish:
-    validation, publish, and finalization. Each method receives the publish
-    tree instance being used by the publisher, giving full control to further
-    curate the publish tree including the publish items and the tasks attached
-    to them. See the :class:`PublishTree` documentation for additional details
-    on how to traverse the tree and manipulate it.
+    validation, publish, and finalization. Each method receives the
+    :ref:`publish-api-tree` tree instance being used by the publisher, giving
+    full control to further curate the publish tree including the publish items
+    and the tasks attached to them. See the :ref:`publish-api-tree`
+    documentation for additional details on how to traverse the tree and
+    manipulate it.
     """
 
     def post_validate(self, publish_tree):
@@ -28,25 +29,28 @@ class PostPhaseHook(HookBaseClass):
         This method is executed after the validation pass has completed for each
         item in the tree, before the publish pass.
 
-        A :class:`~PublishTree` instance representing the items to publish, and
-        their associated tasks, is supplied as an argument. The tree can be
+        A :ref:`publish-api-tree` instance representing the items to publish,
+        and their associated tasks, is supplied as an argument. The tree can be
         traversed in this method to inspect the items and tasks and process them
         collectively. The instance can also be used to save the state of the
         tree to disk for execution later or on another machine.
 
         To glean information about the validation of particular items, you can
-        iterate over the items in the tree and introspect their ``properties``
-        dictionary. This requires customizing the your publish plugins to
-        populate any specific validation information (failure/success) as well.
-        You might, for example, set a ``validation_failed`` boolean in the item
-        properties, indicating if any of the item's tasks failed. You could then
-        include validation error messages in a ``validation_errors`` list on the
-        item, appending error messages during task execution. Then, this method
-        might look something like this:
+        iterate over the items in the tree and introspect their
+        :py:attr:`~.api.PublishItem.properties` dictionary. This requires
+        customizing the your publish plugins to populate any specific validation
+        information (failure/success) as well. You might, for example, set a
+        ``validation_failed`` boolean in the item properties, indicating if any
+        of the item's tasks failed. You could then include validation error
+        messages in a ``validation_errors`` list on the item, appending error
+        messages during task execution. Then, this method might look something
+        like this:
 
         .. code-block:: python
 
             def post_validate(self, publish_tree):
+
+                all_errors = []
 
                 # the publish tree is an iterator, so you can easily loop over
                 # all items in the tree
@@ -55,15 +59,16 @@ class PostPhaseHook(HookBaseClass):
                     # access properties set on the item during the execution of
                     # the attached publish plugins
                     if item.properties.validation_failed:
-                        errors = item.properties.validation_errors
+                        all_errors.extend(item.properties.validation_errors)
 
                 # process all validation issues here...
 
-        .. note:: You will not be able to use the item's ``local_properties``
-            in this hook since ``local_properties`` are only accessible during
-            the execution of a publish plugin.
+        .. warning:: You will not be able to use the item's
+            :py:attr:`~.api.PublishItem.local_properties` in this hook since
+            :py:attr:`~.api.PublishItem.local_properties` are only accessible
+            during the execution of a publish plugin.
 
-        :param publish_tree: The :class:`~PublishTree` instance representing
+        :param publish_tree: The :ref:`publish-api-tree` instance representing
             the items to be published.
         """
         self.logger.debug("Executing post validate hook method...")
@@ -73,21 +78,22 @@ class PostPhaseHook(HookBaseClass):
         This method is executed after the publish pass has completed for each
         item in the tree, before the finalize pass.
 
-        A :class:`~PublishTree` instance representing the items that were
+        A :ref:`publish-api-tree` instance representing the items that were
         published is supplied as an argument. The tree can be traversed in this
         method to inspect the items and process them collectively.
 
         To glean information about the publish state of particular items, you
         can iterate over the items in the tree and introspect their
-        ``properties`` dictionary. This requires customizing the your publish
-        plugins to populate any specific publish information that you want to
-        process collectively here.
+        :py:attr:`~.api.PublishItem.properties` dictionary. This requires
+        customizing the your publish plugins to populate any specific publish
+        information that you want to process collectively here.
 
-        .. note:: You will not be able to use the item's ``local_properties``
-            in this hook since ``local_properties`` are only accessible during
-            the execution of a publish plugin.
+        .. warning:: You will not be able to use the item's
+            :py:attr:`~.api.PublishItem.local_properties` in this hook since
+            :py:attr:`~.api.PublishItem.local_properties` are only accessible
+            during the execution of a publish plugin.
 
-        :param publish_tree: The :class:`~PublishTree` instance representing
+        :param publish_tree: The :ref:`publish-api-tree` instance representing
             the items to be published.
         """
         self.logger.debug("Executing post publish hook method...")
@@ -97,22 +103,23 @@ class PostPhaseHook(HookBaseClass):
         This method is executed after the finalize pass has completed for each
         item in the tree.
 
-        A :class:`~PublishTree` instance representing the items that were
+        A :ref:`publish-api-tree` instance representing the items that were
         published and finalized is supplied as an argument. The tree can be
         traversed in this method to inspect the items and process them
         collectively.
 
         To glean information about the finalize state of particular items, you
         can iterate over the items in the tree and introspect their
-        ``properties`` dictionary. This requires customizing the your publish
-        plugins to populate any specific finalize information that you want to
-        process collectively here.
+        :py:attr:`~.api.PublishItem.properties` dictionary. This requires
+        customizing the your publish plugins to populate any specific finalize
+        information that you want to process collectively here.
 
-        .. note:: You will not be able to use the item's ``local_properties``
-            in this hook since ``local_properties`` are only accessible during
-            the execution of a publish plugin.
+        .. warning:: You will not be able to use the item's
+            :py:attr:`~.api.PublishItem.local_properties` in this hook since
+            :py:attr:`~.api.PublishItem.local_properties` are only accessible
+            during the execution of a publish plugin.
 
-        :param publish_tree: The :class:`~PublishTree` instance representing
+        :param publish_tree: The :ref:`publish-api-tree` instance representing
             the items to be published.
         """
         self.logger.debug("Executing post finalize hook method...")

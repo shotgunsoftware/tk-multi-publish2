@@ -46,6 +46,11 @@ class PublishManager(object):
     def __init__(self, publish_logger=None):
         """
         Initialize the manager.
+
+        :param publish_logger: This is a standard python logger to use during
+            publishing. A default logger will be provided if not supplied. This
+            can be useful when implementing a custom UI, for example, with a
+            specialized log handler (as is the case with the Publisher)
         """
 
         # the current bundle (the publisher instance)
@@ -85,8 +90,14 @@ class PublishManager(object):
         Run the collection logic to populate the publish tree with items for
         each supplied path.
 
-        :param file_paths: A list of file paths to collect as items to publish.
-        :returns: A list of the items created.
+        Each path supplied to this method will be processed by the configured
+        collector hook for the current context. The collector will create
+        :ref:`publish-api-item` instances accordingly, each of which will be
+        marked as :py:attr:`~.api.PublishItem.persistent`.
+
+        :param list file_paths: A list of file paths to collect as items to
+            publish.
+        :returns: A list of the created :ref:`publish-api-item` instances.
         """
 
         new_items = []
@@ -141,10 +152,14 @@ class PublishManager(object):
         """
         Run the collection logic to populate the tree with items to publish.
 
-        This will reestablish the state of the publish tree, recomputing
-        everything. Any externally added file paths will be retained.
+        This method will collect all session :ref:`publish-api-item` instances
+        as defined by the configured collector hook for the current context.
 
-        :returns: A list of the items created.
+        This will reestablish the state of the publish tree, recomputing
+        everything. Any externally added file path items, or other items, marked
+        as :py:attr:`~.api.PublishItem.persistent` will be retained.
+
+        :returns: A list of the created :ref:`publish-api-item` instances.
         """
 
         # this will clear the tree of all non-persistent items.
@@ -173,7 +188,11 @@ class PublishManager(object):
 
     def load(self, path):
         """
-        Load a publish tree that was saved to disk.
+        Load a publish tree that was serialized and saved to disk.
+
+        This is a convenience method that replaces the manager's underlying
+        :ref:`publish-api-tree` with the deserialized contents stored in the
+        supplied file.
         """
         self._tree = PublishTree.load_file(path)
 
@@ -181,9 +200,10 @@ class PublishManager(object):
         """
         Validate items to be published.
 
-        This is done by running the ``validate()`` method on each task in the
-        publish tree. A list of items with tasks that fail to validate will be
-        returned.
+        This is done by running the :meth:`~.base_hooks.PublishPlugin.validate`
+        method on each task in the publish tree. A list of
+        :ref:`publish-api-item` instances with attached tasks that fail to
+        validate will be returned.
 
         By default, the method will iterate over the manager's publish tree,
         validating all active tasks on all active items. To process tasks in a
@@ -261,8 +281,8 @@ class PublishManager(object):
         """
         Publish items in the tree.
 
-        This is done by running the ``publish()`` method on each task in the
-        publish tree.
+        This is done by running the :meth:`~.base_hooks.PublishPlugin.publish`
+        method on each task in the publish tree.
 
         By default, the method will iterate over the manager's publish tree,
         publishing all active tasks on all active items. To process tasks in a
@@ -328,8 +348,8 @@ class PublishManager(object):
         """
         Finalize items in the tree.
 
-        This is done by running the ``finalize()`` method on each task in the
-        publish tree.
+        This is done by running the :meth:`~.base_hooks.PublishPlugin.finalize`
+        method on each task in the publish tree.
 
         By default, the method will iterate over the manager's publish tree,
         finalizing all active tasks on all active items. To process tasks in a
@@ -398,14 +418,16 @@ class PublishManager(object):
 
     @property
     def logger(self):
-        """Returns the logger used during publish execution."""
+        """
+        Returns the manager's logger which is used during publish execution.
+        """
         return self._logger
 
     @property
     def collected_files(self):
         """
         Returns a list of file paths for all items collected via the
-        collect_files method.
+        :meth:`~collect_files` method.
         """
         collected_paths = []
         for item in self.tree.persistent_items:
@@ -418,7 +440,7 @@ class PublishManager(object):
     @property
     def tree(self):
         """
-        Returns the underlying tree instance.
+        Returns the underlying :ref:`publish-api-tree` instance.
         :return:
         """
         return self._tree

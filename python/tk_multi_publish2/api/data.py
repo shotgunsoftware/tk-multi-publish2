@@ -63,9 +63,9 @@ class PublishData(collections.MutableMapping):
 
     def __init__(self, **kwargs):
         """
-        Initialize the data.
-
-        This allows an instance to be created with supplied key/value pairs.
+        .. note:: Developers should not create instances of this class. Instances
+            of ``PublishData`` are exposed via properties and settings of other
+            classes.
         """
         self.__dict__.update(**kwargs)
 

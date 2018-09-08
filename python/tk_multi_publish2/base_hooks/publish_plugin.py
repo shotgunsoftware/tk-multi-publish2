@@ -203,7 +203,7 @@ class PublishPlugin(HookBaseClass):
         plugin is interested in.
 
         As items are collected by the collector hook, they are given an item
-        type string (see :meth:`~.processing.Item.create_item`). The strings
+        type string (see :meth:`~.api.PublishItem.create_item`). The strings
         provided by this property will be compared to each collected item's
         type.
 
@@ -281,8 +281,8 @@ class PublishPlugin(HookBaseClass):
 
         :param dict settings: The keys are strings, matching the keys returned
             in the :data:`settings` property. The values are
-            :class:`~.processing.Setting` instances.
-        :param item: The :class:`~.processing.Item` instance to process for
+            :ref:`publish-api-setting` instances.
+        :param item: The :ref:`publish-api-item` instance to process for
             acceptance.
 
         :returns: dictionary with boolean keys accepted, required and enabled
@@ -318,8 +318,8 @@ class PublishPlugin(HookBaseClass):
 
         :param dict settings: The keys are strings, matching the keys returned
             in the :data:`settings` property. The values are
-            :class:`~.processing.Setting` instances.
-        :param item: The :class:`~.processing.Item` instance to validate.
+            :ref:`publish-api-setting` instances.
+        :param item: The :ref:`publish-api-item` instance to validate.
 
         :returns: True if item is valid, False otherwise.
         """
@@ -367,8 +367,8 @@ class PublishPlugin(HookBaseClass):
 
         :param dict settings: The keys are strings, matching the keys returned
             in the :data:`settings` property. The values are
-            :class:`~.processing.Setting` instances.
-        :param item: The :class:`~.processing.Item` instance to validate.
+            :ref:`publish-api-setting` instances.
+        :param item: The :ref:`publish-api-item` instance to publish.
         """
         raise NotImplementedError
 
@@ -399,8 +399,8 @@ class PublishPlugin(HookBaseClass):
 
         :param dict settings: The keys are strings, matching the keys returned
             in the :data:`settings` property. The values are
-            :class:`~.processing.Setting` instances.
-        :param item: The :class:`~.processing.Item` instance to validate.
+            :ref:`publish-api-setting` instances.
+        :param item: The :ref:`publish-api-item` instance to finalize.
         """
         raise NotImplementedError
 
@@ -505,7 +505,7 @@ class PublishPlugin(HookBaseClass):
         When invoked with multiple settings dictionaries, it is the
         responsibility of the custom UI to decide how to display the
         information. If you do not wish to implement the editing of multiple
-        tasks at the same time, you can raise a `NotImplementedError` when
+        tasks at the same time, you can raise a ``NotImplementedError`` when
         there is more than one item in the list and the publisher will inform
         the user than only one task of that type can be edited at a time.
 

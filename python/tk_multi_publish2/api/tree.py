@@ -21,37 +21,47 @@ logger = sgtk.platform.get_logger(__name__)
 class PublishTree(object):
     """
     This class provides an interface for operating on a tree of items to be
-    published. At a high level, a publish tree might be structured like this::
+    published. At a high level, the publish tree is structured like this:
 
-        * root
-            * item1
-                * itemA
-                * itemB
-            * item2
-                * itemC
-            * item3
-                * itemD
-            ...
+    .. code-block:: text
 
-    Each item in the tree (excluding the root) can have associated tasks.
+        [root]
+          [item] Item 1 (A Publish Item)
+            [task] Publish to Shotgun
+            [task] Upload Media
+          [item] Item 2 (A Publish Item)
+            [task] Publish to Shotgun
+            [task] Upload Media
+          [item] Item 3 (A Publish Item)
+            [task] Publish to Shotgun
+            [task] Upload Media
+            [item] Item 4 (A Child Item)
+              [task] Re-rez
+              [task] Alternate Transcode
+
+    The tree is composed of a hierarchy of items. Each item in the tree
+    (excluding the root) can have associated tasks.
 
     Instances of this class are iterable, making traversal very easy:
 
-    .. code-block: python
+    .. code-block:: python
 
         for item in publish_tree:
             # process the item...
+            for task in item.tasks:
+                # process the task
 
-    The special, ``root_item`` is exposed as a property on publish tree
-    instances. The root item is not typically processed as part of the
-    validation, publish, or finalize execution phases, but it can be used to
-    house properties that are global to the publish tree itself. All top-level
-    publish items have the ``root_item`` as their parent and can store
-    information there.
+    The special, :py:attr:`~root_item` is exposed as a property on publish tree
+    instances. The root item is not processed as part of the validation,
+    publish, or finalize execution phases, but it can be used to house
+    :py:attr:`~.api.PublishItem.properties` that are global to the publish tree
+    itself. All top-level publish items have the :py:attr:`~root_item` as their
+    parent and can store information there.
 
     For example, to collect a list of files to process after all publish tasks
-    have completed (within the ``post_finalize`` method of the ``post_phase``
-    hook), you could do something like this:
+    have completed (within the :meth:`~.base_hooks.PostPhaseHook.post_finalize`
+    method of the :class:`~.base_hooks.PostPhaseHook`), you could do something
+    like this:
 
     .. code-block:: python
 
@@ -74,8 +84,8 @@ class PublishTree(object):
             files = publish_tree.root_item.properties.get("process_later", [])
 
     The class also provides an interface for serialization and deserialization
-    of tree instances. See the :meth:`~PublishTree.save` and
-    :meth:`~PublishTree.load` methods.
+    of tree instances. See the :meth:`~save_file` and
+    :meth:`~load_file` methods.
     """
 
     # define a serialization version to allow backward compatibility if the
@@ -103,8 +113,8 @@ class PublishTree(object):
         This method returns a new :class:`~.PublishTree` instance by reading
         a serialized tree file from disk.
 
-        :param file_path: The path to a serialized publish tree.
-        :return: A :class:`~.PublishTRee` instance
+        :param str file_path: The path to a serialized publish tree.
+        :return: A :class:`~.PublishTree` instance
         """
 
         with open(file_path, "rb") as tree_file_obj:
@@ -120,6 +130,10 @@ class PublishTree(object):
     def load(file_obj):
         """
         Load a publish tree from a supplied file-like object.
+
+        :param file file_obj: A file-like object
+        :return: A :class:`~.PublishTree` instance
+
         """
 
         try:
@@ -153,7 +167,8 @@ class PublishTree(object):
             yield item
 
     def clear(self, clear_persistent=False):
-        """Clears the tree of items.
+        """
+        Clears the tree of all items.
 
         :param bool clear_persistent: If ``True``, all items will be cleared
             from the tree, including persistent items. Default is ``True``.
@@ -164,15 +179,49 @@ class PublishTree(object):
                 self.remove_item(item)
 
     def pformat(self):
-        """Returns a human-readable string representation of the tree"""
+        """
+        Returns a human-readable string representation of the tree, useful for
+        debugging.
+
+        This is the string printed by the :meth:`~pprint` method.
+        """
         return self._format_tree(self._root_item)
 
     def pprint(self):
-        """Prints a human-readable string representation of the tree."""
+        """
+        Prints a human-readable string representation of the tree, useful for
+        debugging.
+
+        Example:
+
+        .. code-block:: python
+
+            manager = publish_app.create_publish_manager()
+            manager.collect_session()
+
+            # print the collected tree to the shell
+            manager.tree.pprint()
+
+            [item] Item 1 (A Publish Item)
+              [task] Publish to Shotgun
+              [task] Upload Media
+            [item] Item 2 (A Publish Item)
+              [task] Publish to Shotgun
+              [task] Upload Media
+            [item] Item 3 (A Publish Item)
+              [task] Publish to Shotgun
+              [task] Upload Media
+        """
+
         print self.pformat()
 
     def remove_item(self, item):
-        """Remove the supplied item from the tree."""
+        """
+        Remove the supplied item from the tree.
+
+        :param item: The :ref:`publish-api-item` instance to remove from the
+            tree.
+        """
 
         if item == self.root_item:
             raise sgtk.TankError("Removing the root item is not allowed.")
@@ -181,7 +230,9 @@ class PublishTree(object):
         item.parent.remove_item(item)
 
     def save_file(self, file_path):
-        """Save the tree to disk at the supplied path."""
+        """
+        Save the serialized tree instance to disk at the supplied path.
+        """
 
         with open(file_path, "w") as file_obj:
             try:
@@ -225,19 +276,27 @@ class PublishTree(object):
 
     @property
     def items(self):
-        """A depth-first generator of all items to be published."""
+        """
+        A depth-first generator of all :ref:`publish-api-item` instances in the
+        tree.
+        """
         for item in self._root_item:
             yield item
 
     @property
     def persistent_items(self):
-        """Returns a list of persistent items in the tree."""
-        return [i for i in self.root_item.children if i.persistent]
+        """A generator of all persistent items in the tree."""
+        for item in self.root_item.children:
+            if item.persistent:
+                yield item
 
     @property
     def root_item(self):
         """Returns the root item of this tree."""
         return self._root_item
+
+    ############################################################################
+    # protected methods
 
     def _format_tree(self, parent_item, depth=0):
         """

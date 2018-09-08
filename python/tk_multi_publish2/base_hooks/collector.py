@@ -112,7 +112,8 @@ class CollectorPlugin(HookBaseClass):
         A typical implementation of this method would create an item that
         represents the current session (e.g. the current Maya file) or all open
         documents in a multi-document scenario (such as Photoshop). Top level
-        items area created as children of the supplied ``parent_item`` which is.
+        items area created as children of the supplied ``parent_item``
+        (a :ref:`publish-api-item` instance).
 
         Any additional items, specific to the current session, can then be
         created as children of the session item. This is not a requirement
@@ -129,11 +130,11 @@ class CollectorPlugin(HookBaseClass):
 
         The ``settings`` argument is a dictionary where the keys are the names
         of the settings defined by the :func:`settings` property and the values
-        are :class:`tk_multi_publish2.api.PluginSetting` instances as configured for this
+        are :ref:`publish-api-setting` instances as configured for this
         instance of the publish app.
 
         To create items within this method, use the
-        :meth:`~.processing.Item.create_item` method available on the supplied
+        :meth:`~.api.PublishItem.create_item` method available on the supplied
         ``parent_item``.
 
         Example Maya implementation:
@@ -161,9 +162,8 @@ class CollectorPlugin(HookBaseClass):
            for additional example implementations.
 
         :param dict settings: A dictionary of configured
-            :class:`~.processing.Setting` objects for this
-            collector.
-        :param parent_item: The root :class:`~.processing.Item` instance to
+            :ref:`publish-api-setting` objects for this collector.
+        :param parent_item: The root :ref:`publish-api-item` instance to
             collect child items for.
         """
         raise NotImplementedError
@@ -185,11 +185,11 @@ class CollectorPlugin(HookBaseClass):
 
         The ``settings`` argument is a dictionary where the keys are the names
         of the settings defined by the :func:`settings` property and the values
-        are :class:`~.processing.Setting` instances as
+        are :ref:`publish-api-setting` instances as
         configured for this instance of the publish app.
 
         To create items within this method, use the
-        :meth:`~.processing.Item.create_item` method available on the supplied
+        :meth:`~.api.PublishItem.create_item` method available on the supplied
         ``parent_item``.
 
         Example implementation:
@@ -222,9 +222,8 @@ class CollectorPlugin(HookBaseClass):
            for additional example implementations.
 
         :param dict settings: A dictionary of configured
-            :class:`~.processing.Setting` objects for this
-            collector.
-        :param parent_item: The root :class:`~.processing.Item` instance to
+            :ref:`publish-api-setting` objects for this collector.
+        :param parent_item: The root :ref:`publish-api-item` instance to
             collect child items for.
         """
         raise NotImplementedError

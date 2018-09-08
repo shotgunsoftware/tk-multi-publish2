@@ -97,7 +97,7 @@ def api_tests(engine):
     print "\n--------------------------------------------------"
     print "Local Validation: all should validate successfully."
     print "---------------------------------------------------"
-    manager.validate()
+    manager.validate(task_generator=all_tasks_generator(manager.tree))
     print "\n----------------------------------------------------"
     print "Local Publish: Only local plugins should be executed."
     print "-----------------------------------------------------"
@@ -132,9 +132,17 @@ def api_tests(engine):
     manager2.finalize(task_generator=farm_tasks_generator(manager2.tree))
 
 
+def all_tasks_generator(tree):
+    for item in tree:
+        print "%s" % (item,)
+        for task in item.tasks:
+            print "  %s: EXECUTING" % (task,)
+            result = yield task
+
+
 def local_tasks_generator(tree):
 
-    for item in tree.items:
+    for item in tree:
         print "%s" % (item,)
         for task in item.tasks:
             # if the plugin doesn't have a setting to "run on farm" that is True...
@@ -146,7 +154,7 @@ def local_tasks_generator(tree):
 
 def farm_tasks_generator(tree):
 
-    for item in tree.items:
+    for item in tree:
         print "%s" % (item,)
         for task in item.tasks:
             # if the plugin has a setting to "run on farm" that is True...
