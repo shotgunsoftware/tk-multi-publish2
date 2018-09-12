@@ -1,4 +1,4 @@
-# Copyright (c) 2016 Shotgun Software Inc.
+# Copyright (c) 2018 Shotgun Software Inc.
 #
 # CONFIDENTIAL AND PROPRIETARY
 #
@@ -8,9 +8,8 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-# this configuration file defines which version of the toolkit
-# core API that should be used at runtime.
+# This file enumerates various third-parties required for continuous integration.
 
-location:
-  type: path
-  path: $SHOTGUN_EXTERNAL_REPOS_ROOT/tk-core
+# This is required by coveralls.io, which is used to upload our test coverage
+# results.
+coveralls==1.1

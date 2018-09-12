@@ -16,9 +16,8 @@
 engines:
   tk-shell:
     location:
-      type: app_store
-      name: tk-shell
-      version: v0.5.0
+      type: path
+      path: $SHOTGUN_EXTERNAL_REPOS_ROOT/tk-shell
     apps:
       tk-multi-publish2:
         location:
@@ -76,8 +75,8 @@ frameworks:
   tk-framework-qtwidgets_v2.x.x:
     location:
       type: path
-      path: $REPO_ROOT/../tk-framework-qtwidgets
+      path: $SHOTGUN_EXTERNAL_REPOS_ROOT/tk-framework-qtwidgets
   tk-framework-shotgunutils_v5.x.x:
     location:
       type: path
-      path: $REPO_ROOT/../tk-framework-shotgunutils
+      path: $SHOTGUN_EXTERNAL_REPOS_ROOT/tk-framework-shotgunutils

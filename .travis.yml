@@ -1,0 +1,21 @@
+language: python
+python:
+  - "2.7"
+
+# command to install dependencies
+# Ideally we would be pip installing tk-core, but we need the testing framework from core,
+# so we will clone the repo install to a known location and run the tests there.
+install:
+    - pip install -r tests/ci_requirements.txt
+    - git clone --depth 1 --branch master https://github.com/shotgunsoftware/tk-core /tmp/tk-core
+    - git clone --depth 1 --branch master https://github.com/shotgunsoftware/tk-framework-qtwidgets /tmp/tk-framework-qtwidgets
+    - git clone --depth 1 --branch master https://github.com/shotgunsoftware/tk-framework-shotgunutils /tmp/tk-framework-shotgunutils
+    # install pyside - from https://stackoverflow.com/questions/24489588
+    - sudo apt-get install libqt4-dev
+    - pip install PySide --no-index --find-links https://parkin.github.io/python-wheelhouse/;
+    # Travis CI servers use virtualenvs, so we need to finish the install by the following
+    - python ~/virtualenv/python${TRAVIS_PYTHON_VERSION}/bin/pyside_postinstall.py -install
+
+# command to run tests
+script: cd tests && ./run_tests.sh --with-coverage
+after_success: coveralls
