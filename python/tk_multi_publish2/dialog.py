@@ -1192,11 +1192,12 @@ class AppDialog(QtGui.QWidget):
         # reset the validation flag
         self._validation_run = False
 
-    def _validate_task_generator(self, is_standalone):
+    def _task_generator(self, stage_name):
         """
-        This method generates tasks for the validation phase. It handles
-        processing the tasks in the proper order and updating the task's UI
-        representation in the dialog.
+        This method yields tree items for our various stages. It will update the UI
+        progress handler as items are visited.
+
+        :param stage_name: Name of the current stage.
         """
 
         tree_iterator = QtGui.QTreeWidgetItemIterator(self.ui.items_tree)
@@ -1213,11 +1214,25 @@ class AppDialog(QtGui.QWidget):
                 continue
 
             self._progress_handler.push(
-                "Validating: %s" % (ui_item,),
+                "%s: %s" % (stage_name, ui_item,),
                 ui_item.icon,
                 ui_item.get_publish_instance()
             )
 
+            try:
+                yield ui_item
+            finally:
+                self._progress_handler.increment_progress()
+                self._progress_handler.pop()
+                tree_iterator += 1
+
+    def _validate_task_generator(self, is_standalone):
+        """
+        This method generates tasks for the validation phase. It handles
+        processing the tasks in the proper order and updating the task's UI
+        representation in the dialog.
+        """
+        for ui_item in self._task_generator("Validating"):
             try:
                 # yield each child item to be acted on by the publish api
                 if isinstance(ui_item, TreeNodeTask):
@@ -1244,10 +1259,6 @@ class AppDialog(QtGui.QWidget):
                         ui_item.STATUS_VALIDATION_ERROR,
                         error_msg
                     )
-            finally:
-                self._progress_handler.increment_progress()
-                self._progress_handler.pop()
-                tree_iterator += 1
 
     def _publish_task_generator(self):
         """
@@ -1256,25 +1267,7 @@ class AppDialog(QtGui.QWidget):
         representation in the dialog.
         """
 
-        tree_iterator = QtGui.QTreeWidgetItemIterator(self.ui.items_tree)
-        while tree_iterator.value():
-
-            if self._stop_processing_flagged:
-                # jump out of the iteration
-                break
-
-            ui_item = tree_iterator.value()
-
-            if not ui_item.checked:
-                tree_iterator += 1
-                continue
-
-            self._progress_handler.push(
-                "Publishing: %s" % (ui_item,),
-                ui_item.icon,
-                ui_item.get_publish_instance()
-            )
-
+        for ui_item in self._task_generator("Publishing"):
             try:
                 # yield each child item to be acted on by the publish api
                 if isinstance(ui_item, TreeNodeTask):
@@ -1299,10 +1292,6 @@ class AppDialog(QtGui.QWidget):
                     )
                 else:
                     ui_item.set_status(ui_item.STATUS_PUBLISH)
-            finally:
-                self._progress_handler.increment_progress()
-                self._progress_handler.pop()
-                tree_iterator += 1
 
     def _finalize_task_generator(self):
         """
@@ -1310,26 +1299,7 @@ class AppDialog(QtGui.QWidget):
         processing the tasks in the proper order and updating the task's UI
         representation in the dialog.
         """
-
-        tree_iterator = QtGui.QTreeWidgetItemIterator(self.ui.items_tree)
-        while tree_iterator.value():
-
-            if self._stop_processing_flagged:
-                # jump out of the iteration
-                break
-
-            ui_item = tree_iterator.value()
-
-            if not ui_item.checked:
-                tree_iterator += 1
-                continue
-
-            self._progress_handler.push(
-                "Finalizing: %s" % (ui_item,),
-                ui_item.icon,
-                ui_item.get_publish_instance()
-            )
-
+        for ui_item in self._task_generator("Publishing"):
             try:
                 # yield each child item to be acted on by the publish api
                 if isinstance(ui_item, TreeNodeTask):
@@ -1354,10 +1324,6 @@ class AppDialog(QtGui.QWidget):
                     )
                 else:
                     ui_item.set_status(ui_item.STATUS_FINALIZE)
-            finally:
-                self._progress_handler.increment_progress()
-                self._progress_handler.pop()
-                tree_iterator += 1
 
     def _on_item_context_change(self, context):
         """

@@ -196,6 +196,43 @@ class PublishManager(object):
         """
         self._tree = PublishTree.load_file(path)
 
+    def _process_tasks(self, task_generator, task_cb):
+        """
+        Processes tasks returned by the generator and invokes the passed in
+        callback on each. The result of the task callback will be forwarded back
+        to the generator.
+
+        :param task_genrator: Iterator on task to process.
+        :param task_cb: Callable that will process a task.
+            The signature is
+            def task_cb(task):
+                ...
+        """
+        # calling code can supply its own generator for tasks to process. if not
+        # supplied, we'll use our own generator.
+        if not task_generator:
+            task_generator = self._task_generator()
+
+        # get the first task
+        task = None
+        try:
+            task = task_generator.next()
+        except StopIteration:
+            pass
+
+        # now begin iterating over tasks supplied by the generator
+        while task:
+
+            return_value = task_cb(task)
+
+            # send the return_value and get the next task. this is a bit annoying
+            # since send() returns the next value of the generator. which is why
+            # we're using `while` instead of a for loop with the generator.
+            try:
+                task = task_generator.send(return_value)
+            except StopIteration:
+                break
+
     def validate(self, task_generator=None):
         """
         Validate items to be published.
@@ -231,23 +268,8 @@ class PublishManager(object):
         # we'll use this to build a list of tasks that failed to validate
         failed_to_validate = []
 
-        # calling code can supply its own generator for tasks to process. if not
-        # supplied, we'll use our own generator.
-        if not task_generator:
-            task_generator = self._task_generator()
-
-        # get the first task
-        task = None
-        try:
-            task = task_generator.next()
-        except StopIteration:
-            pass
-
-        # now begin iterating over tasks supplied by the generator
-        while task:
-
+        def task_cb(task):
             error_msg = None
-
             # do the actual validation and send the status back to the generator
             # so that it can react to the results. This is used, for example, by
             # the UI's generator to update the display of the task as it is
@@ -262,13 +284,9 @@ class PublishManager(object):
             if not is_valid and task.item not in failed_to_validate:
                 failed_to_validate.append(task.item)
 
-            # send the valid state and get the next task. this is a bit annoying
-            # since send() returns the next value of the generator. which is why
-            # we're using `while` instead of a for loop with the generator.
-            try:
-                task = task_generator.send((is_valid, error_msg))
-            except StopIteration:
-                break
+            return (is_valid, error_msg)
+
+        self._process_tasks(task_generator, task_cb)
 
         # execute the post validate method of the phase phase hook
         self._post_phase_hook.post_validate(
@@ -307,21 +325,7 @@ class PublishManager(object):
         :param task_generator: A generator of :class:`~PublishTask` instances.
         """
 
-        # calling code can supply its own generator for tasks to process. if not
-        # supplied, we'll use our own generator.
-        if not task_generator:
-            task_generator = self._task_generator()
-
-        # get the first task
-        task = None
-        try:
-            task = task_generator.next()
-        except StopIteration:
-            pass
-
-        # now begin iterating over tasks supplied by the generator
-        while task:
-
+        def task_cb(task):
             pub_exception = None
 
             # do the actual publish
@@ -332,14 +336,9 @@ class PublishManager(object):
             except Exception, e:
                 pub_exception = e
 
-            # send the the exception (or None) back to the generator and get the
-            # next task. this is a bit annoying since send() returns the next
-            # value of the generator. which is why we're using `while` instead
-            # of a for loop with the generator.
-            try:
-                task = task_generator.send(pub_exception)
-            except StopIteration:
-                break
+            return pub_exception
+
+        self._process_tasks(task_generator, task_cb)
 
         # execute the post publish method of the phase phase hook
         self._post_phase_hook.post_publish(self.tree)
@@ -373,22 +372,7 @@ class PublishManager(object):
 
         :param task_generator: A generator of :class:`~PublishTask` instances.
         """
-
-        # calling code can supply its own generator for tasks to process. if not
-        # supplied, we'll use our own generator.
-        if not task_generator:
-            task_generator = self._task_generator()
-
-        # get the first task
-        task = None
-        try:
-            task = task_generator.next()
-        except StopIteration:
-            pass
-
-        # now begin iterating over tasks supplied by the generator
-        while task:
-
+        def task_cb(task):
             finalize_exception = None
 
             # do the actual finalize
@@ -399,14 +383,9 @@ class PublishManager(object):
             except Exception, e:
                 finalize_exception = e
 
-            # send the the exception (or None) back to the generator and get the
-            # next task. this is a bit annoying since send() returns the next
-            # value of the generator. which is why we're using `while` instead
-            # of a for loop with the generator.
-            try:
-                task = task_generator.send(finalize_exception)
-            except StopIteration:
-                break
+            return finalize_exception
+
+        self._process_tasks(task_generator, task_cb)
 
         # execute the post finalize method of the phase phase hook
         self._post_phase_hook.post_finalize(self.tree)
