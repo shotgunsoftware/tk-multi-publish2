@@ -12,7 +12,7 @@
 #
 #
 [run]
-source=python/tk_multi_publish2
+source=python/tk_multi_publish2/api
 
 [report]
 exclude_lines =
