@@ -13,6 +13,7 @@ install:
     - git clone --depth 1 --branch master https://github.com/shotgunsoftware/tk-core /tmp/tk-core
     - git clone --depth 1 --branch master https://github.com/shotgunsoftware/tk-framework-qtwidgets /tmp/tk-framework-qtwidgets
     - git clone --depth 1 --branch master https://github.com/shotgunsoftware/tk-framework-shotgunutils /tmp/tk-framework-shotgunutils
+    - git clone --depth 1 --branch master https://github.com/shotgunsoftware/tk-framework-shotgunutils /tmp/tk-shell
     # install pyside - from https://stackoverflow.com/questions/24489588
     - sudo apt-get install libqt4-dev
     - pip install PySide --no-index --find-links https://parkin.github.io/python-wheelhouse/;
