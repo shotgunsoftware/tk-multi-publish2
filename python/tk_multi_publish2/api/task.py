@@ -27,6 +27,17 @@ class PublishTask(object):
     associated with.
     """
 
+    __slots__ = [
+        "_item",
+        "_plugin",
+        "_name",
+        "_description",
+        "_settings",
+        "_active",
+        "_visible",
+        "_enabled"
+    ]
+
     @classmethod
     def from_dict(cls, task_dict, serialization_version, item=None):
         """

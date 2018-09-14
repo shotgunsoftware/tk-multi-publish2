@@ -88,6 +88,8 @@ class PublishTree(object):
     :meth:`~load_file` methods.
     """
 
+    __slots__ = ["_root_item"]
+
     # define a serialization version to allow backward compatibility if the
     # serialization method changes
     SERIALIZATION_VERSION = 1
@@ -320,7 +322,7 @@ class PublishTree(object):
                     ((depth * 2) + 2) * " ", str(task))
 
             # process the children as well
-            tree_str += "%s" % (self._format_tree(item, depth=depth+1),)
+            tree_str += "%s" % (self._format_tree(item, depth=depth + 1),)
 
         return tree_str
 

@@ -22,6 +22,14 @@ class PublishManager(object):
     """
     This class is used for managing and executing publishes.
     """
+    __slots__ = [
+        "_bundle",
+        "_logger",
+        "_tree",
+        "_collector_instance",
+        "_processed_contexts",
+        "_post_phase_hook"
+    ]
 
     ############################################################################
     # setting names

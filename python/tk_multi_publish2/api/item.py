@@ -27,6 +27,31 @@ class PublishItem(object):
     The ``PublishItem`` class is used to represent something to be published.
     """
 
+    __slots__ = [
+        "_active",
+        "_allows_context_change",
+        "_children",
+        "_context",
+        "_created_temp_files",
+        "_description",
+        "_enabled",
+        "_expanded",
+        "_global_properties",
+        "_icon_path",
+        "_icon_pixmap",
+        "_local_properties",
+        "_name",
+        "_parent",
+        "_persistent",
+        "_tasks",
+        "_thumbnail_enabled",
+        "_thumbnail_explicit",
+        "_thumbnail_path",
+        "_thumbnail_pixmap",
+        "_type_display",
+        "_type_spec"
+    ]
+
     @classmethod
     def from_dict(cls, item_dict, serialization_version, parent=None):
         """
@@ -71,7 +96,7 @@ class PublishItem(object):
         new_item._expanded = item_dict["expanded"]
         new_item._icon_path = item_dict["icon_path"]
         new_item._thumbnail_enabled = item_dict["thumbnail_enabled"]
-        new_item._thumbnail_explict = item_dict["thumbnail_explicit"]
+        new_item._thumbnail_explicit = item_dict["thumbnail_explicit"]
         new_item._thumbnail_path = item_dict["thumbnail_path"]
 
         # create the children of this item
@@ -782,7 +807,7 @@ class PublishItem(object):
         Returns a list of all :ref:`publish-api-task` instances attached to
         this item.
         """
-        return self._tasks
+        return iter(self._tasks)
 
     @property
     def thumbnail(self):

@@ -10,13 +10,7 @@
 
 import collections
 import sgtk
-
-# here we import cPickle, if possible, otherwise pickle.
-# see https://pymotw.com/2/pickle/#importing for more info
-try:
-    import cPickle as pickle
-except:
-    import pickle
+import copy
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -44,22 +38,7 @@ class PublishData(collections.MutableMapping):
 
         :return: A :class:`~PublishData` instance.
         """
-
-        deserialized_dict = {}
-
-        # iterate over the data and deserialize the values
-        for (k, v) in data.iteritems():
-            try:
-                # ensure the serialized value is a string
-                v = pickle.loads(str(v))
-            except Exception, e:
-                logger.error(
-                    "Unable to deserialize value for data key: '%s'." % (k,)
-                )
-                raise
-            deserialized_dict[k] = v
-
-        return cls(**deserialized_dict)
+        return cls(**data)
 
     def __init__(self, **kwargs):
         """
@@ -78,22 +57,7 @@ class PublishData(collections.MutableMapping):
 
         :return: A dictionary representing the data stored on the instance.
         """
-
-        serialized_dict = {}
-
-        # iterate over all data stored in the object and serialize it
-        for (k, v) in self.__dict__.iteritems():
-            try:
-                v = pickle.dumps(v)
-            except Exception, e:
-                logger.error(
-                    "Unable to serialize value for %s. key '%s', value '%s'." %
-                    (self, k, v)
-                )
-                raise
-            serialized_dict[k] = v
-
-        return serialized_dict
+        return copy.deepcopy(self.__dict__)
 
     def __setitem__(self, key, value):
         self.__dict__[key] = value
