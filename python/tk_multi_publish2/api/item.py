@@ -443,7 +443,7 @@ class PublishItem(object):
                 "the publish tree." % (child_item, self)
             )
 
-        self._children = [i for i in self._children if i != child_item]
+        self._children.remove(child_item)
 
     def set_icon_from_path(self, path):
         """
@@ -807,7 +807,7 @@ class PublishItem(object):
         Returns a list of all :ref:`publish-api-task` instances attached to
         this item.
         """
-        return iter(self._tasks)
+        return list(self._tasks)
 
     @property
     def thumbnail(self):
@@ -977,7 +977,7 @@ class PublishItem(object):
 
         if not hasattr(hook_object, 'id'):
             raise AttributeError(
-                "Could not determine the id for this publish plugin. This is"
+                "Could not determine the id for this publish plugin. This is "
                 "required for storing local properties. Plugin: %s" %
                 (hook_object,)
             )

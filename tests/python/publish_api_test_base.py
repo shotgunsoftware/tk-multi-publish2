@@ -36,12 +36,14 @@ class PublishApiTestBase(TankTestBase):
         Fixtures setup
         """
         os.environ["PUBLISH2_API_TEST"] = "1"
-        os.environ["REPO_ROOT"] = os.path.normpath(
+        repo_root = os.path.normpath(
             os.path.join(
                 os.path.dirname(__file__),
                 "..", ".."
             )
         )
+
+        os.environ["REPO_ROOT"] = repo_root
 
         super(PublishApiTestBase, self).setUp()
         self.setup_fixtures()
@@ -74,6 +76,17 @@ class PublishApiTestBase(TankTestBase):
         obj = self.manager.tree.root_item
         self.assertEqual(obj.__class__.__name__, "PublishItem")
         self.PublishItem = obj.__class__
+
+        self.icon_path = os.path.join(repo_root, "icon_256.png")
+
+        # Local import since the QtGui module is set only after engine startup.
+        from sgtk.platform.qt import QtGui
+
+        # Instantiate the QApplication singleton if missing.
+        if QtGui.QApplication.instance() is None:
+            QtGui.QApplication([])
+
+        self.icon = QtGui.QPixmap(self.icon_path)
 
     def tearDown(self):
         """
