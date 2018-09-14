@@ -15,19 +15,8 @@ import sgtk
 
 from mock import MagicMock
 
+
 class TestPublishItem(PublishApiTestBase):
-
-    class ItemHelper(object):
-
-        def __init__(self, path_setter, image_getter):
-            self._path_setter = path_setter
-            self._image_getter = image_getter
-
-        def image(self, item):
-            return getattr(item, self._image_getter)
-
-        def set_path(self, item, path):
-            getattr(item, self._path_setter)(path)
 
     def test_depth_first_iteration(self):
 
@@ -148,16 +137,20 @@ class TestPublishItem(PublishApiTestBase):
         self.assertEqual(len(list(item.children)), 0)
 
     def test_icon_from_file(self):
+        # The behaviour for both is pretty much the same, so pass in the methods
+        # we need to use to test the images.
         self._test_image_from_file(
-            self.ItemHelper("set_icon_from_path", "icon"),
+            self.PublishItem.set_icon_from_path,
+            self.PublishItem.icon.__get__,
             has_default_image=True
         )
         self._test_image_from_file(
-            self.ItemHelper("set_thumbnail_from_path", "thumbnail"),
+            self.PublishItem.set_thumbnail_from_path,
+            self.PublishItem.thumbnail.__get__,
             has_default_image=False
         )
 
-    def _test_image_from_file(self, ih, has_default_image):
+    def _test_image_from_file(self, set_path, get_image, has_default_image):
         """
         Ensures images are handled properly whether they
         are loaded from disk or memory.
@@ -173,30 +166,30 @@ class TestPublishItem(PublishApiTestBase):
         child = item.create_item("child", "child", "child")
 
         # Make sure there is always an icon, even when none has been set.
-        default_icon = ih.image(item)
+        default_icon = get_image(item)
         if has_default_image:
             self.assertIsNotNone(default_icon)
 
             # If the icon can't be loaded, we should still have one. In this case,
             # the default icon.
-            ih.set_path(item, "does_not_exist.png")
-            self.assertEqual(default_icon.cacheKey(), ih.image(item).cacheKey())
+            set_path(item, "does_not_exist.png")
+            self.assertEqual(default_icon.cacheKey(), get_image(item).cacheKey())
         else:
             self.assertIsNone(default_icon)
 
             # If the icon can't be loaded, we should have none.
-            ih.set_path(item, "does_not_exist.png")
-            self.assertIsNone(ih.image(item))
+            set_path(item, "does_not_exist.png")
+            self.assertIsNone(get_image(item))
 
         # Now load an actual icon. We shouldn't be getting the default one anymore.
-        ih.set_path(item, self.icon_path)
+        set_path(item, self.icon_path)
         if has_default_image:
-            self.assertNotEqual(default_icon.cacheKey(), ih.image(item).cacheKey())
+            self.assertNotEqual(default_icon.cacheKey(), get_image(item).cacheKey())
         else:
-            self.assertIsNotNone(ih.image(item))
+            self.assertIsNotNone(get_image(item))
         # Make sure we're getting the right icon.
-        self.assertEqual(ih.image(item).cacheKey(), self.icon.cacheKey())
-        self.assertEqual(ih.image(item).cacheKey(), self.icon.cacheKey())
+        self.assertEqual(get_image(item).cacheKey(), self.icon.cacheKey())
+        self.assertEqual(get_image(item).cacheKey(), self.icon.cacheKey())
 
         # When the child doesn't have an icon, it should return its parent's.
-        self.assertEqual(ih.image(child).cacheKey(), ih.image(item).cacheKey())
+        self.assertEqual(get_image(child).cacheKey(), get_image(item).cacheKey())

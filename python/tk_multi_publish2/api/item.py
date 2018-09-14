@@ -652,6 +652,20 @@ class PublishItem(object):
             not be confused with the item's :py:attr:`~thumbnail` which is
             typically associated with the resulting published item in Shotgun.
         """
+
+        def assign_pixmap(pixmap):
+            self._icon_pixmap = pixmap
+
+        return self._get_image(
+            lambda: self._icon_path,
+            lambda: self._icon_pixmap,
+            assign_pixmap,
+            lambda: self.parent.icon,
+            ":/tk_multi_publish2/item.png"
+        )
+
+    def _get_image(self, get_img_path, get_pixmap, set_pixmap, get_parent_pixmap, default_pixmap):
+
         # nothing to do if running without a UI
         if not sgtk.platform.current_engine().has_ui:
             return None
@@ -659,23 +673,26 @@ class PublishItem(object):
         # defer import until needed and to avoid issues when running without UI
         from sgtk.platform.qt import QtGui
 
-        if self._icon_path and not self._icon_pixmap:
+        if get_img_path() and not get_pixmap():
             # we have a path but haven't yet created the pixmap. create it
             try:
-                self._icon_pixmap = QtGui.QPixmap(self._icon_path)
+                set_pixmap(QtGui.QPixmap(get_img_path()))
             except Exception, e:
                 logger.warning(
                     "%r: Could not load icon '%s': %s" %
-                    (self, self._icon_path, e)
+                    (self, get_img_path(), e)
                 )
 
-        if self._icon_pixmap:
-            return self._icon_pixmap
+        if get_pixmap():
+            return get_pixmap()
         elif self.parent:
-            return self.parent.icon
+            return get_parent_pixmap()
         else:
-            # return default
-            return QtGui.QPixmap(":/tk_multi_publish2/item.png")
+            if default_pixmap:
+                # return default
+                return QtGui.QPixmap(default_pixmap)
+            else:
+                return None
 
     @icon.setter
     def icon(self, pixmap):
@@ -829,29 +846,16 @@ class PublishItem(object):
             use only in the publisher UI and is a small representation of the
         """
 
-        # nothing to do if running without a UI
-        if not sgtk.platform.current_engine().has_ui:
-            return None
+        def assign_thumbnail(pixmap):
+            self._thumbnail_pixmap = pixmap
 
-        # defer import until needed and to avoid issues when running without UI
-        from sgtk.platform.qt import QtGui
-
-        if self._thumbnail_path and not self._thumbnail_pixmap:
-            # we have a path but haven't yet created the pixmap. create it
-            try:
-                self._thumbnail_pixmap = QtGui.QPixmap(self._thumbnail_path)
-            except Exception, e:
-                logger.warning(
-                    "%r: Could not load icon '%s': %s" %
-                    (self, self._icon_path, e)
-                )
-
-        if self._thumbnail_pixmap:
-            return self._thumbnail_pixmap
-        elif self.parent:
-            return self.parent.thumbnail
-        else:
-            return None
+        return self._get_image(
+            lambda: self._thumbnail_path,
+            lambda: self._thumbnail_pixmap,
+            assign_thumbnail,
+            lambda: self.parent.thumbnail,
+            None
+        )
 
     @thumbnail.setter
     def thumbnail(self, pixmap):
