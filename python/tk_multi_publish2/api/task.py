@@ -213,6 +213,30 @@ class PublishTask(object):
         return self._active
 
     @property
+    def visible(self):
+        """
+        Boolean property to indicate that this task should be visible in a
+        publish UI.
+
+        .. note:: This property is shared with ``active`` and can be used
+            interchangeably to make code more readable depending on the context
+            (with/without the UI).
+        """
+        return self._visible
+
+    @visible.setter
+    def visible(self, is_visible):
+        self._visible = is_visible
+
+    @property
+    def enabled(self):
+        return self._enabled
+
+    @enabled.setter
+    def enabled(self, is_enabled):
+        self._enabled = is_enabled
+
+    @property
     def description(self):
         """
         The description of the item if it has been explicitly set,

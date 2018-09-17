@@ -24,9 +24,19 @@ class TestPublishItem(PublishApiTestBase):
         """
         Make sure that persistence doesn't lose information
         """
-        item = self.manager.tree.root_item.create_item("item.a", "Item A", "Item A")
+
+        # Population of the tree is made easier through the manager class, so use that
+
+        # Indirectly create tasks, since we can't create them directly without a
+        # PublishPluginInstance object.
+        self.manager.collect_session()
+
+        # Create some items that will modify
+        tree = self.manager.tree
+        item = tree.root_item.create_item("item.a", "Item A", "Item A")
         child = item.create_item("item.b", "Item B", "Item B")
 
+        # Touch every property of an item.
         self._set_item(
             item, True, "Description 1", "/a/b/c.png", "/d/e/f.png", "local", "global"
         )
@@ -38,7 +48,7 @@ class TestPublishItem(PublishApiTestBase):
         self.manager.tree.save(saved_tree_buff)
         saved_tree_str = saved_tree_buff.getvalue()
 
-        reloaded_tree = self.manager.tree.load(StringIO(saved_tree_str))
+        reloaded_tree = tree.load(StringIO(saved_tree_str))
         resaved_tree_buff = StringIO()
         reloaded_tree.save(resaved_tree_buff)
 

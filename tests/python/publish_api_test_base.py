@@ -77,16 +77,20 @@ class PublishApiTestBase(TankTestBase):
         self.assertEqual(obj.__class__.__name__, "PublishItem")
         self.PublishItem = obj.__class__
 
-        self.icon_path = os.path.join(repo_root, "icon_256.png")
+        self.image_path = os.path.join(repo_root, "icon_256.png")
+        self.dark_image_path = os.path.join(repo_root, "icon_256_dark.png")
 
         # Local import since the QtGui module is set only after engine startup.
-        from sgtk.platform.qt import QtGui
+        from sgtk.platform.qt import QtCore, QtGui
+
+        self.QtGui = QtGui
+        self.QtCore = QtCore
 
         # Instantiate the QApplication singleton if missing.
         if QtGui.QApplication.instance() is None:
             QtGui.QApplication([])
 
-        self.icon = QtGui.QPixmap(self.icon_path)
+        self.image = QtGui.QPixmap(self.image_path)
 
     def tearDown(self):
         """

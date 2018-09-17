@@ -8,6 +8,8 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import os
+
 from publish_api_test_base import PublishApiTestBase
 from tank_test.tank_test_base import setUpModule # noqa
 
@@ -120,6 +122,11 @@ class TestPublishItem(PublishApiTestBase):
         item2 = item.create_item("test2", "test2", "test2")
         item3 = item.create_item("test3", "test3", "test3")
         item4 = item.create_item("test4", "test4", "test4")
+        item5 = item2.create_item("test5", "test5", "test5")
+
+        # Ensure removing an item that is not a children raises an error.
+        with self.assertRaisesRegexp(sgtk.TankError, "Unable to remove child item"):
+            item.remove_item(item5)
 
         children = [c.name for c in item.children]
         self.assertEqual(["test2", "test3", "test4"], children)
@@ -137,6 +144,9 @@ class TestPublishItem(PublishApiTestBase):
         self.assertEqual(len(list(item.children)), 0)
 
     def test_icon_from_file(self):
+        """
+        Ensures icon is loadable from file and cached.
+        """
         # The behaviour for both is pretty much the same, so pass in the methods
         # we need to use to test the images.
         self._test_image_from_file(
@@ -144,11 +154,64 @@ class TestPublishItem(PublishApiTestBase):
             self.PublishItem.icon.__get__,
             has_default_image=True
         )
-        self._test_image_from_file(
+
+    def test_thumbnail_from_file(self):
+        """
+        Ensures thumbnail is loadable from file and cached.
+        """
+        item = self._test_image_from_file(
             self.PublishItem.set_thumbnail_from_path,
             self.PublishItem.thumbnail.__get__,
             has_default_image=False
         )
+        self.assertIsNotNone(item.get_thumbnail_as_path())
+
+    def test_thumbnail_from_pixmap(self):
+        """
+        Ensures thumbnail can be loaded from memory and can be persisted on disk.
+        """
+
+        item = self.PublishItem("test", "test", "test")
+
+        # No thumbnail set, no nothing can be retrieved.
+        self.assertIsNone(item.thumbnail)
+        self.assertIsNone(item.get_thumbnail_as_path())
+
+        # If we set the thumbnail to something that can't be saved...
+        mocknail = MagicMock()
+        mocknail.save = lambda unused: False
+        # ... we shouldn't be getting a path to disk back.
+        item.thumbnail = mocknail
+        self.assertIsNone(item.get_thumbnail_as_path())
+
+        # Set the thumbnail to valid, we should be getting a path back.
+        item.thumbnail = self.image
+        self.assertEqual(item.thumbnail, self.image)
+
+        # We should also be getting a temporary path on disk for that image
+        # if a path is requested
+        temporary_path = item.get_thumbnail_as_path()
+        self.assertIsNotNone(temporary_path)
+
+        # As long as we don't change the thumbnail, we should be getting the
+        # same path.
+        self.assertEqual(item.get_thumbnail_as_path(), item.get_thumbnail_as_path())
+
+        # Now let's change the thumbnail.
+        another_icon = self.QtGui.QPixmap(self.dark_image_path)
+        item.thumbnail = another_icon
+        # we should still be getting a path
+        self.assertIsNotNone(item.get_thumbnail_as_path())
+        # But it shouldn't be the same as before.
+        another_temporary_path = item.get_thumbnail_as_path()
+        self.assertNotEqual(another_temporary_path, temporary_path)
+
+        del item
+        import gc
+        gc.collect()
+
+        self.assertFalse(os.path.exists(temporary_path))
+        self.assertFalse(os.path.exists(another_temporary_path))
 
     def _test_image_from_file(self, set_path, get_image, has_default_image):
         """
@@ -182,14 +245,53 @@ class TestPublishItem(PublishApiTestBase):
             self.assertIsNone(get_image(item))
 
         # Now load an actual icon. We shouldn't be getting the default one anymore.
-        set_path(item, self.icon_path)
+        set_path(item, self.image_path)
         if has_default_image:
             self.assertNotEqual(default_icon.cacheKey(), get_image(item).cacheKey())
         else:
             self.assertIsNotNone(get_image(item))
         # Make sure we're getting the right icon.
-        self.assertEqual(get_image(item).cacheKey(), self.icon.cacheKey())
-        self.assertEqual(get_image(item).cacheKey(), self.icon.cacheKey())
+        self.assertEqual(get_image(item).cacheKey(), self.image.cacheKey())
+        self.assertEqual(get_image(item).cacheKey(), self.image.cacheKey())
 
         # When the child doesn't have an icon, it should return its parent's.
         self.assertEqual(get_image(child).cacheKey(), get_image(item).cacheKey())
+        return item
+
+    def test_root(self):
+        """
+        Ensures a node without a parent is considered the root node.
+        """
+        root = self.PublishItem("some node", "some node", "some node")
+        self.assertIsNone(root.parent)
+        self.assertTrue(root.is_root)
+
+    def test_persistence_flag(self):
+        """
+        Ensures persistence works only on nodes just under the root.
+        """
+        root = self.PublishItem("__root__", "__root__", "__root__")
+        child = root.create_item("child", "child", "child")
+        grand_child = child.create_item("grand_child", "grand_child", "grand_child")
+
+        # Make only the items directly under the root can be persisted.
+        child.persistent = True
+        self.assertTrue(child.persistent)
+        child.persistent = False
+        self.assertFalse(child.persistent)
+
+        # Root and grand children of the root can't be made persistent.
+        self.assertFalse(grand_child.persistent)
+        with self.assertRaisesRegexp(sgtk.TankError, "Only top-level tree items"):
+            grand_child.persistent = True
+        self.assertFalse(grand_child.persistent)
+
+        self.assertFalse(root.persistent)
+        with self.assertRaisesRegexp(sgtk.TankError, "Only top-level tree items"):
+            root.persistent = True
+        self.assertFalse(root.persistent)
+
+        # Persistence can be turned off anytime.
+        root.persistent = False
+        child.persistent = False
+        grand_child.persistent = False

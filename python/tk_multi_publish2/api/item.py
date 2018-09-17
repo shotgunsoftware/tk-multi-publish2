@@ -33,6 +33,7 @@ class PublishItem(object):
         "_children",
         "_context",
         "_created_temp_files",
+        "_current_temp_file_path",
         "_description",
         "_enabled",
         "_expanded",
@@ -165,6 +166,7 @@ class PublishItem(object):
         self._children = []
         self._context = None
         self._created_temp_files = []
+        self._current_temp_file_path = None
         self._description = None
         self._enabled = True
         self._expanded = True
@@ -403,6 +405,9 @@ class PublishItem(object):
         if self._thumbnail_path:
             return self._thumbnail_path
 
+        if self._current_temp_file_path:
+            return self._current_temp_file_path
+
         if self.thumbnail is None:
             return None
 
@@ -414,7 +419,9 @@ class PublishItem(object):
         success = self.thumbnail.save(temp_path)
 
         if success:
+
             if os.path.getsize(temp_path) > 0:
+                self._current_temp_file_path = temp_path
                 self._created_temp_files.append(temp_path)
             else:
                 logger.debug(
@@ -652,19 +659,30 @@ class PublishItem(object):
             not be confused with the item's :py:attr:`~thumbnail` which is
             typically associated with the resulting published item in Shotgun.
         """
-
-        def assign_pixmap(pixmap):
-            self._icon_pixmap = pixmap
-
         return self._get_image(
-            lambda: self._icon_path,
-            lambda: self._icon_pixmap,
-            assign_pixmap,
-            lambda: self.parent.icon,
-            ":/tk_multi_publish2/item.png"
+            get_img_path=lambda: self._icon_path,
+            get_pixmap=lambda: self._icon_pixmap,
+            set_pixmap=lambda pixmap: setattr(self, "_icon_pixmap", pixmap),
+            get_parent_pixmap=lambda: self.parent.icon,
+            default_pixmap_path=":/tk_multi_publish2/item.png"
         )
 
-    def _get_image(self, get_img_path, get_pixmap, set_pixmap, get_parent_pixmap, default_pixmap):
+    def _get_image(self, get_img_path, get_pixmap, set_pixmap, get_parent_pixmap, default_pixmap_path):
+        """
+        Retrieves the image for the icon or thumbnail of this item.
+
+        This method is written in a generic fashion in order to avoid complex logic duplicated
+        inside the class.
+
+        It takes a series of getter and setter methods that allow to update the
+        thumbnail or the icon of this item.
+
+        :param function get_img_path: Function returning the path to an image on disk.
+        :param function get_pixmap: Function returning the pixmap for the image.
+        :param function set_pixmap: Function allowing to set the in-memory pixmap for the image.
+        :param function get_parent_pixmap: Function allowing to get the pixmap of the parent item.
+        :param str default_pixmap_path: Path to the default pixmap.
+        """
 
         # nothing to do if running without a UI
         if not sgtk.platform.current_engine().has_ui:
@@ -688,9 +706,9 @@ class PublishItem(object):
         elif self.parent:
             return get_parent_pixmap()
         else:
-            if default_pixmap:
+            if default_pixmap_path:
                 # return default
-                return QtGui.QPixmap(default_pixmap)
+                return QtGui.QPixmap(default_pixmap_path)
             else:
                 return None
 
@@ -705,7 +723,7 @@ class PublishItem(object):
         Returns ``True`` if this the root :ref:`publish-api-item` in the tree,
         ``False`` otherwise.
         """
-        return self.parent is None and self.name == "__root__"
+        return self.parent is None
 
     @property
     def local_properties(self):
@@ -788,8 +806,9 @@ class PublishItem(object):
 
         Only top-level items can be set to persistent.
         """
-
-        if not self.parent or not self.parent.is_root:
+        # It's not a crime to turn persistence off, so raise an error when
+        # actually trying it on an invalid item.
+        if is_persistent and (not self.parent or not self.parent.is_root):
             raise sgtk.TankError(
                 "Only top-level tree items can be made persistent.")
 
@@ -845,21 +864,20 @@ class PublishItem(object):
             should not be confused with the item's :py:attr:`~icon` which is for
             use only in the publisher UI and is a small representation of the
         """
-
-        def assign_thumbnail(pixmap):
-            self._thumbnail_pixmap = pixmap
-
         return self._get_image(
-            lambda: self._thumbnail_path,
-            lambda: self._thumbnail_pixmap,
-            assign_thumbnail,
-            lambda: self.parent.thumbnail,
-            None
+            get_img_path=lambda: self._thumbnail_path,
+            get_pixmap=lambda: self._thumbnail_pixmap,
+            set_pixmap=lambda pixmap: setattr(self, "_thumbnail_pixmap", pixmap),
+            get_parent_pixmap=lambda: self.parent.thumbnail,
+            default_pixmap_path=None
         )
 
     @thumbnail.setter
     def thumbnail(self, pixmap):
         """Sets the thumbnail """
+        # If we're changing the thumbnail, the cached path is no longer valid.
+        if self._thumbnail_pixmap != pixmap:
+            self._current_temp_file_path = None
         self._thumbnail_pixmap = pixmap
 
     @property

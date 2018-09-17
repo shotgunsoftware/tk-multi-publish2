@@ -285,6 +285,7 @@ class PublishManager(object):
             try:
                 is_valid = task.validate()
             except Exception, e:
+                is_valid = False
                 error_msg = str(e)
 
             # if the task didn't validate, add it to the list of items that
