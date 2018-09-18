@@ -206,6 +206,9 @@ class TestPublishItem(PublishApiTestBase):
         another_temporary_path = item.get_thumbnail_as_path()
         self.assertNotEqual(another_temporary_path, temporary_path)
 
+        self.assertTrue(os.path.exists(temporary_path))
+        self.assertTrue(os.path.exists(another_temporary_path))
+
         del item
         import gc
         gc.collect()
