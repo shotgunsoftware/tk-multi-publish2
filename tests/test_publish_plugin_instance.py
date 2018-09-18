@@ -31,7 +31,9 @@ def mock_publish_plugin_instance_hook_creation(func):
 
 # We're going to put a logging handler that listens for a particular string.
 # When the string is detected during the emit, the found flag will be raised.
-class Handler(logging.Handler):
+# It's very important to derive from object here, because Python 2.6's
+# implementation of the handler class doesn't, which breaks property setters.
+class Handler(logging.Handler, object):
 
     def __init__(self):
         logging.Handler.__init__(self)
@@ -49,7 +51,7 @@ class Handler(logging.Handler):
 
     def emit(self, record):
         if self.keyword:
-            self.found |= self.keyword in record.msg
+            self.found |= (self.keyword in record.msg)
 
 # Set up the testing logger.
 handler = Handler()
@@ -129,7 +131,7 @@ class TestPublishPluginInstance(PublishApiTestBase):
 
         handler.keyword = "Error running accept for"
         self.assertEqual(ppi.run_accept(None), {"accepted": False})
-        self.assertTrue(handler.found)
+        self.assertFalse(handler.found)
 
     @mock_publish_plugin_instance_hook_creation
     def test_accept_with_accepted_item(self, create_hook_instance):
