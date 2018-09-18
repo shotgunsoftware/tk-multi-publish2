@@ -171,7 +171,7 @@ class PublishManager(object):
         """
 
         # this will clear the tree of all non-persistent items.
-        self.tree.clear()
+        self.tree.clear(clear_persistent=False)
 
         # get a list of all items in the tree prior to collection (this should
         # be only the persistent items)
@@ -203,6 +203,12 @@ class PublishManager(object):
         supplied file.
         """
         self._tree = PublishTree.load_file(path)
+
+    def save(self, path):
+        """
+        Saves a publish tree to disk.
+        """
+        self._tree.save_file(path)
 
     def _process_tasks(self, task_generator, task_cb):
         """

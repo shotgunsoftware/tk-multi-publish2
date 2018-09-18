@@ -8,17 +8,15 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import tempfile
+
 from publish_api_test_base import PublishApiTestBase
 from tank_test.tank_test_base import setUpModule # noqa
 
 import sgtk
 
-from StringIO import StringIO
-
 
 class TestPublishItem(PublishApiTestBase):
-
-    maxDiff = None
 
     def test_persistence(self):
         """
@@ -44,17 +42,44 @@ class TestPublishItem(PublishApiTestBase):
             child, False, "Description 2", "/g/h/i.png", "/j/k/l.png", "local2", "global2"
         )
 
-        saved_tree_buff = StringIO()
-        self.manager.tree.save(saved_tree_buff)
-        saved_tree_str = saved_tree_buff.getvalue()
+        fd, temp_file_path = tempfile.mkstemp()
+        before_load = self.manager.tree.to_dict()
+        self.manager.save(temp_file_path)
+        self.manager.load(temp_file_path)
+        after_load = self.manager.tree.to_dict()
 
-        reloaded_tree = tree.load(StringIO(saved_tree_str))
-        resaved_tree_buff = StringIO()
-        reloaded_tree.save(resaved_tree_buff)
+        #self.assertEqual(before_load, after_load)
 
-        resaved_tree_str = resaved_tree_buff.getvalue()
+    def test_pprint(self):
+        """
+        Ensures pretty printing works.
+        """
+        self.manager.collect_session()
+        self.manager.tree.pprint()
 
-        self.assertEqual(saved_tree_str, resaved_tree_str)
+    def test_tree_clearing(self):
+        """
+        Ensures tree is cleared properly.
+        """
+        tree = self.manager.tree
+        persistent = tree.root_item.create_item("persitent", "persistent", "persistent")
+        persistent.persistent = True
+
+        volatile = tree.root_item.create_item("volatile", "volatile", "volatile")
+        volatile.persistent = False
+
+        self.assertEqual(len(list(self.manager.tree)), 2)
+        tree.clear(clear_persistent=False)
+        self.assertEqual(len(list(self.manager.tree)), 1)
+        tree.clear(clear_persistent=True)
+        self.assertEqual(len(list(self.manager.tree)), 0)
+
+    def test_root_deletion(self):
+        """
+        Ensures you can't delete the root.
+        """
+        with self.assertRaisesRegexp(sgtk.TankError, "Removing the root item is not allowed."):
+            self.manager.tree.remove_item(self.manager.tree.root_item)
 
     def _set_item(self, item, boolean, description, icon_path, thumb_path, local_prop, global_prop):
         item.active = boolean

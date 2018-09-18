@@ -67,15 +67,10 @@ class PublishApiTestBase(TankTestBase):
 
         self.manager = self.app.create_publish_manager()
 
-        # We can't import PublishData, so instead we'll instantiate one
-        # from its class attribute.
-        obj = self.manager.tree.root_item.properties
-        self.assertEqual(obj.__class__.__name__, "PublishData")
-        self.PublishData = obj.__class__
-
-        obj = self.manager.tree.root_item
-        self.assertEqual(obj.__class__.__name__, "PublishItem")
-        self.PublishItem = obj.__class__
+        api = self.app.import_module("tk_multi_publish2").api
+        self.PublishData = api.PublishData
+        self.PublishItem = api.PublishItem
+        self.PublishPluginInstance = api.plugins.PublishPluginInstance
 
         self.image_path = os.path.join(repo_root, "icon_256.png")
         self.dark_image_path = os.path.join(repo_root, "icon_256_dark.png")

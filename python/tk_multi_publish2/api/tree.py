@@ -139,7 +139,7 @@ class PublishTree(object):
         """
 
         try:
-            return json.load(file_obj, cls=_PublishTreeDecoder)
+            return sgtk.util.json.load(file_obj, cls=_PublishTreeDecoder)
         except Exception, e:
             logger.error(
                 "Error loading publish tree: %s\n%s" %
@@ -341,5 +341,5 @@ class _PublishTreeDecoder(json.JSONDecoder):
     deserialization.
     """
     def decode(self, json_str):
-        tree_dict = json.loads(json_str)
+        tree_dict = sgtk.util.json.loads(json_str)
         return PublishTree.from_dict(tree_dict)

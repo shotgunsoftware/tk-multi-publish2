@@ -124,13 +124,10 @@ class PublishItem(object):
         new_item._persistent = item_dict["persistent"]
 
         # set the context
-        # TODO: would be nice to have a method in core to get a context from
-        # see internal ticket: SG-7690
-        # a dictionary.
         if item_dict["context"]:
-            new_item._context = sgtk.Context(
+            new_item._context = sgtk.Context.from_dict(
                 sgtk.platform.current_bundle().sgtk,
-                **item_dict["context"]
+                item_dict["context"]
             )
 
         # finally, create any tasks for this item
@@ -232,18 +229,8 @@ class PublishItem(object):
         # check _context here to avoid traversing parent. if no context manually
         # assigned to the item, it will inherit it from the parent or current
         # bundle context on the other side of deserialization.
-        # TODO: implement dict from context and context from dict methods in
-        # core. see internal ticket: SG-7690
         if self._context:
-            context_value = {
-                "project": self._context.project,
-                "entity": self._context.entity,
-                "step": self._context.step,
-                "task": self._context.task,
-                "user": self._context.user,
-                "additional_entities": self._context.additional_entities,
-                "source_entity": self._context.source_entity,
-            }
+            context_value = self._context.to_dict()
 
         # build the full dictionary representation of this item
         return {
