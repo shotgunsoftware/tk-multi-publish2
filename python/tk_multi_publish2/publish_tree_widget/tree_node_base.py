@@ -17,7 +17,6 @@ from .custom_widget_base import CustomTreeWidgetBase
 logger = sgtk.platform.get_logger(__name__)
 
 
-
 class TreeNodeBase(QtGui.QTreeWidgetItem):
     """
     Base class for all tree widgets.
@@ -157,7 +156,7 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
 
     # message is for the status icon tooltip. The status is propagated to
     # parents, but the message is not.
-    def set_status_upwards(self, status, message, info_below = False):
+    def set_status_upwards(self, status, message, info_below=False):
         """
         Traverse all parents and set them to be a certain status
         """
@@ -209,5 +208,3 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         :param int column: The column that was double clicked
         """
         pass
-
-

@@ -226,14 +226,30 @@ class PublishTask(object):
 
     @visible.setter
     def visible(self, is_visible):
+        """
+        Sets the visibility state.
+
+        :param bool is_enabled: If ``True``, the task will be visible in
+            the publish UI. If ``False``, it won't be visible.
+        """
         self._visible = is_visible
 
     @property
     def enabled(self):
+        """
+        Boolean property to indicate that this task should be editable in a
+        publish UI.
+        """
         return self._enabled
 
     @enabled.setter
     def enabled(self, is_enabled):
+        """
+        Sets the enabled state.
+
+        :param bool is_enabled: If ``True``, the task will be editable in
+            the publish UI. If ``False``, it won't be editable.
+        """
         self._enabled = is_enabled
 
     @property

@@ -11,7 +11,7 @@
 import pprint
 import sgtk
 
-from sgtk.platform.qt import QtCore, QtGui
+from sgtk.platform.qt import QtGui
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -72,17 +72,17 @@ class VitorPlugin(HookBaseClass):
 
     def validate(self, settings, item):
         print item, "was validated! The settings were:"
-        pprint.pprint({k: v.value for k, v in settings.iteritems()})
+        pprint.pprint(dict(list((k, v.value) for k, v in settings.iteritems())))
         return True
 
     def publish(self, settings, item):
         print item, "was published! The settings were:"
-        pprint.pprint({k: v.value for k, v in settings.iteritems()})
+        pprint.pprint(dict(list((k, v.value) for k, v in settings.iteritems())))
         pass
 
     def finalize(self, settings, item):
         print item, "was finalized! The settings were:"
-        pprint.pprint({k: v.value for k, v in settings.iteritems()})
+        pprint.pprint(dict(list((k, v.value) for k, v in settings.iteritems())))
         pass
 
 
@@ -93,15 +93,15 @@ class CustomNameWidget(QtGui.QWidget):
 
         layout = QtGui.QVBoxLayout(self)
 
-        ## Label
+        # Label
         self.label = QtGui.QLabel(self)
         self.label.setText("Export Name")
         layout.addWidget(self.label)
 
-        ## Line edit
+        # Line edit
         self.editLine = QtGui.QLineEdit(self)
 
-        ## Layout
+        # Layout
         layout.addWidget(self.editLine)
 
         self.setLayout(layout)

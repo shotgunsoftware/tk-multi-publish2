@@ -10,14 +10,16 @@ import tempfile
 
 sys.path.insert(0, "../../tk-core/python")
 
-import sgtk
-
 
 def progress_callback(value, message):
     print "[%s] %s" % (value, message)
 
 
 def launch_engine():
+
+    # Imported locally to avoid use after bootstrap.
+    import sgtk
+
     # Installs a StreamHandler so we see the server output in the console.
     sgtk.LogManager().initialize_base_file_handler("tk-multi-publish2.test")
 
@@ -28,6 +30,7 @@ def launch_engine():
     )
     repo_root = os.path.normpath(repo_root)
     os.environ["REPO_ROOT"] = repo_root
+    os.environ["SHOTGUN_EXTERNAL_REPOS_ROOT"] = os.path.dirname(repo_root)
 
     # when running the tests, if "api" agument comes after the script, only run
     # the API tests, non-ui
@@ -48,6 +51,7 @@ def launch_engine():
         "tk-shell",
         sg.find_one("Project", [])
     )
+
 
 def api_tests(engine):
 
@@ -137,7 +141,7 @@ def all_tasks_generator(tree):
         print "%s" % (item,)
         for task in item.tasks:
             print "  %s: EXECUTING" % (task,)
-            result = yield task
+            yield task
 
 
 def local_tasks_generator(tree):
@@ -148,9 +152,10 @@ def local_tasks_generator(tree):
             # if the plugin doesn't have a setting to "run on farm" that is True...
             if not task.plugin.settings.get("run_on_farm"):
                 print "  %s: EXECUTING" % (task,)
-                result = yield task
+                yield task
             else:
                 print "  %s: NOT EXECUTING" % (task,)
+
 
 def farm_tasks_generator(tree):
 
@@ -160,7 +165,7 @@ def farm_tasks_generator(tree):
             # if the plugin has a setting to "run on farm" that is True...
             if task.plugin.settings.get("run_on_farm"):
                 print "  %s: EXECUTING" % (task,)
-                result = yield task
+                yield task
             else:
                 print "  %s: NOT EXECUTING" % (task,)
 

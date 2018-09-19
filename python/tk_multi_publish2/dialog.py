@@ -499,8 +499,7 @@ class AppDialog(QtGui.QWidget):
                 self._summary_comment = comments
 
                 # this is the summary item - so update all top level items and their children!
-                top_level_items = list(self._publish_manager.tree.root_item.children)
-                for top_level_item in top_level_items:
+                for top_level_item in self._publish_manager.tree.root_item.children:
                     top_level_item.description = self._summary_comment
                     top_level_item._propagate_description_to_children()
 
@@ -531,8 +530,7 @@ class AppDialog(QtGui.QWidget):
             self._summary_thumbnail = pixmap
             if pixmap:
                 # update all items with the summary thumbnail
-                top_level_items = list(self._publish_manager.tree.root_item.children)
-                for top_level_item in top_level_items:
+                for top_level_item in self._publish_manager.tree.root_item.children:
                     top_level_item.thumbnail = self._summary_thumbnail
                     top_level_item.thumbnail_explicit = False
 
@@ -651,8 +649,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_thumbnail.show()
 
         thumbnail_has_multiple_values = False
-        top_level_items = list(self._publish_manager.tree.root_item.children)
-        for top_level_item in top_level_items:
+        for top_level_item in self._publish_manager.tree.root_item.children:
             if top_level_item.thumbnail_explicit:
                 thumbnail_has_multiple_values = True
                 break
@@ -827,8 +824,10 @@ class AppDialog(QtGui.QWidget):
             self.ui.button_container.show()
 
         top_level_items = list(self._publish_manager.tree.root_item.children)
-        if (len(list(top_level_items)) == 0 and
-            self.ui.main_stack.currentIndex() == self.DRAG_SCREEN):
+        if (
+            len(top_level_items) == 0 and
+            self.ui.main_stack.currentIndex() == self.DRAG_SCREEN
+        ):
             # there are no top-level items and we're still on the drag screen.
             # something not good happened. show a button to open the progress
             # details with additional info.
@@ -852,7 +851,7 @@ class AppDialog(QtGui.QWidget):
         the low level plugin representation
         """
         top_level_items = list(self._publish_manager.tree.root_item.children)
-        if len(list(top_level_items)) == 0:
+        if len(top_level_items) == 0:
             if not self.manual_load_enabled:
                 # No items collected and 'enable_manual_load' application option
                 # false, display that special error overlay.
@@ -1338,20 +1337,19 @@ class AppDialog(QtGui.QWidget):
         sync_required = False
 
         # TODO: see todo below...
-        #items_with_new_context = []
+        # items_with_new_context = []
 
         if self._current_item is None:
             # this is the summary item - so update all items!
-            top_level_items = list(self._publish_manager.tree.root_item.children)
-            for top_level_item in top_level_items:
+            for top_level_item in self._publish_manager.tree.root_item.children:
                 if top_level_item.context_change_allowed:
                     top_level_item.context = context
 
                     # TODO: see todo below...
                     # this item and all of its descendents in the tree need to
                     # have their plugins reattached given the new context
-                    #items_with_new_context.append(top_level_item)
-                    #items_with_new_context.extend([i for i in top_level_item])
+                    # items_with_new_context.append(top_level_item)
+                    # items_with_new_context.extend([i for i in top_level_item])
 
                     sync_required = True
         else:
@@ -1361,8 +1359,8 @@ class AppDialog(QtGui.QWidget):
                 # TODO: see todo below...
                 # this item and all of its descendents in the tree need to have
                 # their plugins reattached given the new context
-                #items_with_new_context.append(self._current_item)
-                #items_with_new_context.extend([i for i in self._current_item])
+                # items_with_new_context.append(self._current_item)
+                # items_with_new_context.extend([i for i in self._current_item])
 
                 sync_required = True
 
@@ -1376,7 +1374,7 @@ class AppDialog(QtGui.QWidget):
         # ...
         # for any items that have a new context, rerun plugin attachment so that
         # they are published using the destination context's plugins
-        #self._publish_manager.attach_plugins(items_with_new_context)
+        # self._publish_manager.attach_plugins(items_with_new_context)
 
         if sync_required:
             self._synchronize_tree()

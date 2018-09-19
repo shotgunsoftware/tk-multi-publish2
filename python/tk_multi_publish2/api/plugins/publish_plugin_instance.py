@@ -313,7 +313,8 @@ class PublishPluginInstance(PluginInstanceBase):
                 except Exception, e:
                     self._logger.warning(
                         "%r: Could not load icon '%s': %s" % (
-                        self, icon_path, e)
+                            self, icon_path, e
+                        )
                     )
         except AttributeError:
             # plugin does not have an icon

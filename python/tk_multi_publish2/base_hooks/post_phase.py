@@ -38,7 +38,7 @@ class PostPhaseHook(HookBaseClass):
         To glean information about the validation of particular items, you can
         iterate over the items in the tree and introspect their
         :py:attr:`~.api.PublishItem.properties` dictionary. This requires
-        customizing the your publish plugins to populate any specific validation
+        customizing your publish plugins to populate any specific validation
         information (failure/success) as well. You might, for example, set a
         ``validation_failed`` boolean in the item properties, indicating if any
         of the item's tasks failed. You could then include validation error
@@ -52,7 +52,7 @@ class PostPhaseHook(HookBaseClass):
 
                 all_errors = []
 
-                # the publish tree is an iterator, so you can easily loop over
+                # the publish tree is iterable, so you can easily loop over
                 # all items in the tree
                 for item in publish_tree:
 
@@ -85,7 +85,7 @@ class PostPhaseHook(HookBaseClass):
         To glean information about the publish state of particular items, you
         can iterate over the items in the tree and introspect their
         :py:attr:`~.api.PublishItem.properties` dictionary. This requires
-        customizing the your publish plugins to populate any specific publish
+        customizing your publish plugins to populate any specific publish
         information that you want to process collectively here.
 
         .. warning:: You will not be able to use the item's
@@ -111,7 +111,7 @@ class PostPhaseHook(HookBaseClass):
         To glean information about the finalize state of particular items, you
         can iterate over the items in the tree and introspect their
         :py:attr:`~.api.PublishItem.properties` dictionary. This requires
-        customizing the your publish plugins to populate any specific finalize
+        customizing your publish plugins to populate any specific finalize
         information that you want to process collectively here.
 
         .. warning:: You will not be able to use the item's

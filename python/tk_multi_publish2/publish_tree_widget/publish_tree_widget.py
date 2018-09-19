@@ -65,7 +65,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
         # forward double clicks on items to the items themselves
         self.itemDoubleClicked.connect(lambda i, c: i.double_clicked(c))
-        
+
         # workaround to make the scrollbar work properly for QT versions < 5 on macOS
         # This look like a bug tracked on the QT side
         # ( https://bugreports.qt.io/browse/QTBUG-27043 )
@@ -123,7 +123,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         ui_item.update_expand_indicator()
 
         for child in item.children:
-            self._build_item_tree_r(child, checked, level+1, ui_item)
+            self._build_item_tree_r(child, checked, level + 1, ui_item)
 
         # lastly, handle the item level check state.
         # if the item has been marked as checked=False
@@ -162,8 +162,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             for item_index in reversed(range(top_level_item.childCount())):
                 item = top_level_item.child(item_index)
 
-                top_level_items = list(self._publish_manager.tree.root_item.children)
-                if item.item not in top_level_items:
+                if item.item not in self._publish_manager.tree.root_item.children:
                     # no longer in the publish mgr. remove from tree
                     top_level_item.takeChild(item_index)
                 else:
@@ -182,8 +181,8 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             # TODO: because the context has changed for these items, the attached
             # tasks for the underlying item will be different. make sure the old
             # ones are replaced with the new
-            #self.__rebuild_tasks_r(item)
-            #_init_item_r(item)
+            # self.__rebuild_tasks_r(item)
+            # _init_item_r(item)
 
         # pass 2 - check that there aren't any dangling contexts
         # process backwards so that when we take things out we don't
@@ -199,14 +198,14 @@ class PublishTreeWidget(QtGui.QTreeWidget):
                 self.takeTopLevelItem(top_level_index)
 
         # pass 3 - see if anything needs adding
-        top_level_items = list(self._publish_manager.tree.root_item.children)
-        for item in top_level_items:
+        nb_items = 0
+        for item in self._publish_manager.tree.root_item.children:
+            nb_items = nb_items + 1
             if item not in top_level_items_in_tree:
                 self.__add_item(item)
 
         # finally, see if we should show the summary widget or not
-        top_level_items = list(self._publish_manager.tree.root_item.children)
-        if len(top_level_items) < 2:
+        if nb_items < 2:
             self._summary_node.setHidden(True)
         else:
             self._summary_node.setHidden(False)
@@ -500,7 +499,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
         # ignore any selection that does not contain at least one TopLevelTreeNodeItems
         if not dragged_items:
-            logger.debug("No top-level nodes included in selection.")        
+            logger.debug("No top-level nodes included in selection.")
             return
 
         self._selected_items_state = selected_items_state
@@ -539,4 +538,3 @@ def _init_item_r(parent_item):
             child.setHidden(not child.task.visible)
         child.setExpanded(True)
         _init_item_r(child)
-
