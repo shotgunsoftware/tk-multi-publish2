@@ -9,7 +9,7 @@ track the data being created by artists and control how it is shared. The app
 can be modified for studio-specific needs by way of hooks that control how items
 are identified for presentation to artists for publishing and how those items
 are then processed. In addition to customizing the publish UI behavior, the
-underlying python API that drives the interface is also available for more
+underlying Python API that drives the interface is also available for more
 advanced studio customization.
 
 .. _publish-execution:
@@ -38,7 +38,7 @@ When the Publisher is launched, the current session (Maya, Nuke, Houdini, etc)
 is processed and publish items are collected for display in the Publish app's
 interface. These items represent what the artists may want to track in Shotgun
 and/or share with other artists by way of publishing. Similarly, as files are
-dragged/dropped onto the publish UI, they are processed and collected as publish
+dragged and dropped onto the publish UI, they are processed and collected as publish
 items. This item collection behavior is defined by the app's collector hook and
 can be taken over or modified by studios to customize what data should be
 tracked in Shotgun and how it should be shared between artists.
@@ -73,24 +73,23 @@ Item Review
 Once the acceptance phase is complete, the user can review the items, make
 changes to the target context of each, provide publish descriptions, take screen
 grabs, and update settings. Additional files can also be dragged and dropped or
-browsed for collection.
+browsed to for collection.
 
 
 Publishing
 ----------
 
-After the artist had taken the time to review the collected items, they can
-perform one of two actions.
+After the artist has taken the time to review the collected items, they can
+perform one of two actions;
 
-#. They can run a validation pass on the items. This will execute trigger a
-   validation pass for each task in the list in the order in which they are
-   displayed.
+#. They can run a validation pass on the items. This will trigger a validation
+   pass for each task in the list in the order in which they are displayed.
 #. The user can also decide to run the full publish pass. This will include all
    the validation steps above followed by execution of each plugin's publish
    pass followed by execution of each plugin's finalize pass.
 
 .. note:: The overview above describes the publish execution in terms of an
-    artists launching the Publish UI. All of these concepts, including
+    artist launching the Publish UI. All of these concepts, including
     collection, acceptance, and publish plugins are exposed by the
     :ref:`publish-api` making it possible to build more advanced, custom publish
     workflows outside of the default Publish UI.

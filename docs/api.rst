@@ -4,7 +4,7 @@ Publish API
 ===========
 
 The publish API gives developers access to the underlying data structures and
-methods used by the publish UI. Studios can use this interface to build more
+methods used by the publish UI. They can use this interface to build more
 advanced custom publish workflows.
 
 The primary interface to the API is the :ref:`publish-api-manager` class which
@@ -50,6 +50,8 @@ The code below shows how to execute a complete publish using this API:
     # all good. let's publish and finalize
     try:
         manager.publish()
+        # If a plugin needed to version up a file name after publish
+        # it would be done in the finalize.
         manager.finalize()
     except Exception, e:
         logger.error("There was trouble trying to publish!")
@@ -105,9 +107,6 @@ PublishItem
 -----------
 
 .. py:currentmodule:: tk_multi_publish2.api
-
-Publish items represent what is being published. They are the nodes in the
-:class:`~tk_multi_publish2.api.PublishTree`.
 
 .. autoclass:: PublishItem
     :members:

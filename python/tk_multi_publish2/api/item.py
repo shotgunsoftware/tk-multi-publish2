@@ -24,7 +24,8 @@ logger = sgtk.platform.get_logger(__name__)
 
 class PublishItem(object):
     """
-    The ``PublishItem`` class is used to represent something to be published.
+    Publish items represent what is being published. They are the nodes in the
+    :class:`~tk_multi_publish2.api.PublishTree`.
     """
 
     __slots__ = [
@@ -215,11 +216,6 @@ class PublishItem(object):
         during serialization.
         """
 
-        # For the global and local properties, the values are pickled allowing
-        # more flexibility with respect to what is stored there. Clients can add
-        # anything they want to these dictionaries. We document that this isn't
-        # guaranteed to work if non-picklable objects are stored in items
-        # properties, so it's up to them to be conscious of what goes in there.
         converted_local_properties = {}
         for (k, prop) in self._local_properties.iteritems():
             converted_local_properties[k] = prop.to_dict()
@@ -301,13 +297,13 @@ class PublishItem(object):
         are classified as ``file.{type}.sequence`` (``file.image.sequence`` for
         example).
 
-        For items defined within a DCC-session that must be save or exported
+        For items defined within a DCC-session that must be saved or exported
         prior to publish, the shipped integrations use the form ``{dcc}.{type}``
         for the primary session item and ``{dcc}.{type}.{subtype}`` for items
         within the session.
 
         In Maya, for example, the primary session item would be of type
-        ``maya.session`` and an item representing all geomtery in the session
+        ``maya.session`` and an item representing all geometry in the session
         would be ``maya.session.geometry``.
 
         These are merely conventions used in the shipped integrations and can be
@@ -321,7 +317,7 @@ class PublishItem(object):
         Examples include: ``Image File``, ``Movie File``, and ``Maya Scene``.
 
         The ``name`` argument is the display name for the item instance. This
-        can be the name of a file or a item name in Nuke or Houdini, or a
+        can be the name of a file or an item name in Nuke or Houdini, or a
         combination of both. This value is displayed to the user and should make
         it easy for the user to identify what the item represents in terms of
         the current session or a file on disk.
@@ -334,7 +330,7 @@ class PublishItem(object):
             notation.
         :param str type_display: Equivalent to the type, but for display
             purposes.
-        :param str name: The name to represent the item in a UI. This can be a
+        :param str name: The name to represent the item in a UI. This can be an
             item name in a DCC or a file name.
         """
 
@@ -358,7 +354,7 @@ class PublishItem(object):
         returned. If the property is not set on the item, then the supplied
         ``default_value`` will be returned (default is ``None``).
 
-        :param name: The property to retrieve.
+        :param str name: The property to retrieve.
         :param default_value: The value to return if the property is not set on
             the item.
 
@@ -367,19 +363,18 @@ class PublishItem(object):
 
         local_properties = self._get_local_properties()
 
-        return local_properties.get(name) or self.properties.get(name) or \
-            default_value
+        return local_properties.get(name) or self.properties.get(name) or default_value
 
     def get_thumbnail_as_path(self):
         """
         Returns the item's thumbnail as a path to a file on disk. If the
         thumbnail was originally supplied as a file path, that path will be
         returned. If the thumbnail was created via screen grab or set directly
-        via ``QtGui.QPixmap``, this method will generate an image as a temp file
+        via :class:`QtGui.QPixmap`, this method will generate an image as a temp file
         on disk and return its path.
 
         .. warning:: This property may return ``None`` if run without a UI
-            present and no thumbnail path as been set on the item.
+            present and no thumbnail path has been set on the item.
 
         :returns: Path to a file on disk or None if no thumbnail set
         """
@@ -442,7 +437,7 @@ class PublishItem(object):
     def set_icon_from_path(self, path):
         """
         Sets the icon for the item given a path to an image on disk. This path
-        will be converted to a ``QtGui.QPixmap`` when the item is displayed.
+        will be converted to a :class:`QtGui.QPixmap` when the item is displayed.
 
         .. note:: The :py:attr:`~icon` is for use only in the publisher UI and
             is a small representation of item being published. The icon should
@@ -456,7 +451,7 @@ class PublishItem(object):
     def set_thumbnail_from_path(self, path):
         """
         Sets the thumbnail for the item given a path to an image on disk. This
-        path will be converted to a ``QtGui.QPixmap`` when the item is
+        path will be converted to a :class:`QtGui.QPixmap` when the item is
         displayed.
 
         .. note:: The :py:attr:`~thumbnail` is typically associated with the
@@ -572,7 +567,7 @@ class PublishItem(object):
     @property
     def context_change_allowed(self):
         """
-        ``True`` if item allows context change, False otherwise.
+        Enable/disable context change for this item.
 
         Default is ``True``
         """
@@ -627,7 +622,7 @@ class PublishItem(object):
     @property
     def icon(self):
         """
-        The associated icon, as a QPixmap.
+        The associated icon, as a :class:`QtGui.QPixmap`.
 
         The icon is a small square image used to represent the item visually
 
@@ -651,24 +646,24 @@ class PublishItem(object):
             get_pixmap=lambda: self._icon_pixmap,
             set_pixmap=lambda pixmap: setattr(self, "_icon_pixmap", pixmap),
             get_parent_pixmap=lambda: self.parent.icon,
-            default_pixmap_path=":/tk_multi_publish2/item.png"
+            default_image_path=":/tk_multi_publish2/item.png"
         )
 
-    def _get_image(self, get_img_path, get_pixmap, set_pixmap, get_parent_pixmap, default_pixmap_path):
+    def _get_image(self, get_img_path, get_pixmap, set_pixmap, get_parent_pixmap, default_image_path):
         """
         Retrieves the image for the icon or thumbnail of this item.
 
         This method is written in a generic fashion in order to avoid complex logic duplicated
         inside the class.
 
-        It takes a series of getter and setter methods that allow to update the
+        It takes a series of getter and setter methods that allow for updating the
         thumbnail or the icon of this item.
 
         :param function get_img_path: Function returning the path to an image on disk.
         :param function get_pixmap: Function returning the pixmap for the image.
-        :param function set_pixmap: Function allowing to set the in-memory pixmap for the image.
-        :param function get_parent_pixmap: Function allowing to get the pixmap of the parent item.
-        :param str default_pixmap_path: Path to the default pixmap.
+        :param function set_pixmap: Function used to set the in-memory pixmap for the image.
+        :param function get_parent_pixmap: Function used to get the pixmap of the parent item.
+        :param str default_image_path: Path to the default pixmap.
         """
 
         # nothing to do if running without a UI
@@ -693,9 +688,9 @@ class PublishItem(object):
         elif self.parent:
             return get_parent_pixmap()
         else:
-            if default_pixmap_path:
+            if default_image_path:
                 # return default
-                return QtGui.QPixmap(default_pixmap_path)
+                return QtGui.QPixmap(default_image_path)
             else:
                 return None
 
@@ -721,7 +716,7 @@ class PublishItem(object):
         plugin. Attempts to access this property outside of a publish plugin
         will raise an ``AttributeError``.
 
-        This property behaves like the local storage in python's threading
+        This property behaves like the local storage in Python's threading
         module, except here, the data is local to the current publish plugin.
 
         You can get and set values for this property using standard dictionary
@@ -733,7 +728,7 @@ class PublishItem(object):
         Setting the values on :py:attr:`~properties` is a way to globally share
         information between publish plugins. Values set via
         :py:attr:`~local_properties` will only be applied during the execution
-        of the current plugin (similar to python's ``threading.local`` storage).
+        of the current plugin (similar to Python's ``threading.local`` storage).
 
         A common scenario to consider is when you have multiple publish plugins
         acting on the same item. You may, for example, want the ``publish_name``
@@ -760,7 +755,8 @@ class PublishItem(object):
 
         .. note:: If you plan to serialize your publish tree, you may run into
             issues if you add complex or non-serializable objects to the
-            properties dictionary.
+            properties dictionary. You should stick to data that can be
+            JSON-serialized.
         """
         return self._get_local_properties()
 
@@ -805,12 +801,12 @@ class PublishItem(object):
     def properties(self):
         """
         A :class:`PublishData` instance where arbitrary data can be stored on
-        the item. The property itself is read-only (you can't assign a different
+        the item. The property itself is read-only. You can't assign a different
         :class:`PublishData` instance.
 
         This property provides a way to store data that is global across all
         attached publish plugins. It is also useful for accessing data stored
-        on parent items that may be useful to plugin attached to child items.
+        on parent items that may be useful to plugins attached to a child item.
 
         For properties that are local to the current plugin, see
         :py:attr:`~local_properties`.
@@ -820,7 +816,8 @@ class PublishItem(object):
 
         .. note:: If you plan to serialize your publish tree, you may run into
           issues if you add complex or non-serializable objects to the
-          properties dictionary.
+          properties dictionary. You should stick to data that can be
+          JSON-serialized.
         """
         return self._global_properties
 
@@ -856,7 +853,7 @@ class PublishItem(object):
             get_pixmap=lambda: self._thumbnail_pixmap,
             set_pixmap=lambda pixmap: setattr(self, "_thumbnail_pixmap", pixmap),
             get_parent_pixmap=lambda: self.parent.thumbnail,
-            default_pixmap_path=None
+            default_image_path=None
         )
 
     @thumbnail.setter
@@ -891,7 +888,7 @@ class PublishItem(object):
     @property
     def thumbnail_explicit(self):
         """
-        Boolean property to indicate that thumbnail has been explicitly set.
+        Boolean property to indicate that a thumbnail has been explicitly set.
         When this flag is on, the summary thumbnail should be ignored for this
         this specific item.
         """
@@ -922,7 +919,7 @@ class PublishItem(object):
         self._type_spec = new_type_spec
 
     # leaving this as a property() definition because it is called 'type'.
-    # don't want to risk bad mojo with python trying to define `def type`.
+    # don't want to risk bad mojo with Python trying to define `def type`.
     def _get_type(self):
         """
         .. warning:: **DEPRECATED**.  Use :py:attr:`~type_spec` instead
@@ -1006,7 +1003,7 @@ class PublishItem(object):
 
             # now recurse over the each child's children. the recursion will
             # yield  the grand children back to this method. we need to yield
-            # these back to the calling method. in later versions of python, the
+            # these back to the calling method. in later versions of Python, the
             # `yield from` could be used to make this cleaner/clearer
             for grandchild_item in self._traverse_item(child_item):
                 yield grandchild_item

@@ -13,8 +13,8 @@ Collector Hook
 
 The collector hook handles processing the current user’s session to identify
 what will be published. It also handles processing any file paths that have been
-dragged/dropped onto the Publisher (or added manually via the
-:ref:`publish-api`). Once the collector identifies what is to be published,
+dragged/dropped onto the Publisher or added manually via the
+:ref:`publish-api`. Once the collector identifies what is to be published,
 :ref:`Publish Item <publish-api-item>` instances are created within the tree
 and presented to the user.
 
