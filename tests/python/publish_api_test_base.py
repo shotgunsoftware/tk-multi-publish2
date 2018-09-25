@@ -70,6 +70,7 @@ class PublishApiTestBase(TankTestBase):
         api = self.app.import_module("tk_multi_publish2").api
         self.PublishData = api.PublishData
         self.PublishItem = api.PublishItem
+        self.PublishTree = api.PublishTree
         self.PublishPluginInstance = api.plugins.PublishPluginInstance
 
         self.image_path = os.path.join(repo_root, "icon_256.png")

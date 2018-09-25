@@ -43,26 +43,11 @@ class PublishTask(object):
         """
         Returns an instance of a PublishTask from serialized data.
 
-        :param task_dict: A dictionary of deserialized task data
-        :param serialization_version: The version of serialization logic used to
+        :param dict task_dict: A dictionary of deserialized task data
+        :param int serialization_version: The version of serialization logic used to
             serialize this data.
         :param item: Optional item to associate with this task
         """
-
-        # import here to avoid cyclic imports
-        from .tree import PublishTree
-
-        # This check is valid until we need to alter the way serialization is
-        # handled after initial release. Once that happens, this should be
-        # altered to handle the various versions separately with this as the
-        # fallback when the serialization version is not recognized.
-        if serialization_version != PublishTree.SERIALIZATION_VERSION:
-            raise (
-                "Unrecognized serialization version for serlialized publish "
-                "task. It is unclear how this could have happened. Perhaps the "
-                "serialized file was hand edited? Please consult your pipeline "
-                "TD/developer/admin."
-            )
 
         # create the plugin instance
         plugin = PublishPluginInstance(

@@ -68,21 +68,6 @@ class PublishItem(object):
         :param parent: An optional parent to assign to this deserialized item.
         """
 
-        # import here to avoid cyclic imports
-        from .tree import PublishTree
-
-        # This check is valid until we need to alter the way serialization is
-        # handled after initial release. Once that happens, this should be
-        # altered to handle the various versions separately with this as the
-        # fallback when the serialization version is not recognized.
-        if serialization_version != PublishTree.SERIALIZATION_VERSION:
-            raise(
-                "Unrecognized serialization version for serlialized publish "
-                "item. It is unclear how this could have happened. Perhaps the "
-                "serialized file was hand edited? Please consult your pipeline "
-                "TD/developer/admin."
-            )
-
         # create the instance
         new_item = PublishItem(
             item_dict["name"],

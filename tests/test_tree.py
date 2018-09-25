@@ -48,7 +48,16 @@ class TestPublishItem(PublishApiTestBase):
         self.manager.load(temp_file_path)
         after_load = self.manager.tree.to_dict()
 
-        #self.assertEqual(before_load, after_load)
+        self.assertEqual(before_load, after_load)
+
+    def test_bad_document_version(self):
+
+        with self.assertRaisesRegexp(sgtk.TankError, "<missing version>"):
+            self.PublishTree.from_dict({})
+
+        bad_version = 99999999
+        with self.assertRaisesRegexp(sgtk.TankError, "Unrecognized serialization version \(%s\)" % bad_version):
+            self.PublishTree.from_dict({"serialization_version": bad_version})
 
     def test_pprint(self):
         """

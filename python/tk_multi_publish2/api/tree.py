@@ -101,10 +101,23 @@ class PublishTree(object):
         supplied dictionary is typically the result of calling ``to_dict`` on
         a publish tree instance during serialization.
         """
+        # This check is valid until we need to alter the way serialization is
+        # handled after initial release. Once that happens, this should be
+        # altered to handle the various versions separately with this as the
+        # fallback when the serialization version is not recognized.
+        serialization_version = tree_dict.get("serialization_version", "<missing version>")
+        if serialization_version != cls.SERIALIZATION_VERSION:
+            raise sgtk.TankError(
+                "Unrecognized serialization version (%s) for serialized publish "
+                "task. It is unclear how this could have happened. Perhaps the "
+                "serialized file was hand edited? Please consult your pipeline "
+                "TD/developer/admin." % serialization_version
+            )
+
         new_tree = cls()
         new_tree._root_item = PublishItem.from_dict(
             tree_dict["root_item"],
-            tree_dict["serialization_version"]
+            serialization_version
         )
 
         return new_tree
@@ -284,7 +297,7 @@ class PublishTree(object):
         """
         return {
             "root_item": self.root_item.to_dict(),
-            "serialization_version": PublishTree.SERIALIZATION_VERSION
+            "serialization_version": self.SERIALIZATION_VERSION
         }
 
     @property
