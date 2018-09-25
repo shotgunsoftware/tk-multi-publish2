@@ -8,8 +8,6 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-import uuid
-
 import sgtk
 
 HookBaseClass = sgtk.get_hook_baseclass()
@@ -26,14 +24,13 @@ class PublishPlugin(HookBaseClass):
     ############################################################################
     # Plugin properties
 
-    def __init__(self, *args, **kwargs):
-
-        super(PublishPlugin, self).__init__(*args, **kwargs)
-        self._id = uuid.uuid4().hex
-
     @property
     def id(self):
         return self._id
+
+    @id.setter
+    def id(self, new_id):
+        self._id = new_id
 
     @property
     def icon(self):
@@ -424,7 +421,7 @@ class PublishPlugin(HookBaseClass):
         """
 
         # defer Qt-related imports
-        from sgtk.platform.qt import QtCore, QtGui
+        from sgtk.platform.qt import QtGui
 
         # create a group box to display the description
         description_group_box = QtGui.QGroupBox(parent)

@@ -9,13 +9,16 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import os
+import tempfile
 
 from publish_api_test_base import PublishApiTestBase
+from tank_test.tank_test_base import temp_env_var
 from tank_test.tank_test_base import setUpModule # noqa
+from mock import patch, MagicMock
 
 import sgtk
 
-from mock import MagicMock
+logger = sgtk.LogManager.get_logger(__name__)
 
 
 class TestPublishItem(PublishApiTestBase):
@@ -298,3 +301,62 @@ class TestPublishItem(PublishApiTestBase):
         root.persistent = False
         child.persistent = False
         grand_child.persistent = False
+
+    def test_local_properties_persistance(self):
+        """
+        Ensures local properties can be reloaded and reaccessed by a new
+        manager instance.
+        """
+
+        # Indirectly create tasks, since we can't create them directly without a
+        # PublishPluginInstance object.
+        manager = self._create_manager()
+        manager.collect_session()
+
+        # Save the session to disk.
+        fd, temp_file_path = tempfile.mkstemp()
+        before_load = manager.tree.to_dict()
+        manager.save(temp_file_path)
+
+        # Creating a second manager will force the plugins to be reloaded by it.
+        new_manager = self._create_manager()
+
+        # Loads the tree.
+        new_manager.load(temp_file_path)
+        after_load = new_manager.tree.to_dict()
+
+        with temp_env_var(TEST_LOCAL_PROPERTIES="1"):
+            # Create a generator that will ensure all tasks sees the right local properties.
+            def task_yielder(manager):
+                nb_items_processed = 0
+                for item in manager.tree:
+                    for task in item.tasks:
+                        (is_valid, error_msg) = yield task
+                        # The validate method of both plugins will raise an error
+                        # if the the values can be retrieved.
+                        # We're raising if the test passes in the validate method
+                        # because we want to make sure the validate method
+                        # and the validation code is actually being called. If
+                        # some other error was raised due to a bug, it would be
+                        # caught by the errorEqual.
+                        self.assertFalse(is_valid)
+                        self.assertEqual(
+                            error_msg,
+                            "local_properties was serialized properly."
+                        )
+                        nb_items_processed += 1
+
+                # Make sure some tasks have been processed. We don't want a false-positive
+                # where no items have failed publishing because somehow no tasks
+                # were available due to a misconfiguration error in the test.
+                self.assertNotEqual(nb_items_processed, 0)
+
+            # Validate with our custom yielder
+            self.assertEqual(len(new_manager.validate(task_yielder(new_manager))), 3)
+
+    def _create_manager(self):
+        """
+        Creates a new PublishManager.
+        """
+        with patch("sgtk.platform.current_bundle", return_value=self.app):
+            return self.PublishManager(logger)

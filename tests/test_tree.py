@@ -16,9 +16,9 @@ from tank_test.tank_test_base import setUpModule # noqa
 import sgtk
 
 
-class TestPublishItem(PublishApiTestBase):
+class TestPublishTree(PublishApiTestBase):
 
-    def test_persistence(self):
+    def test_unserialized_tree_same_as_serialized(self):
         """
         Make sure that persistence doesn't lose information
         """
@@ -48,10 +48,13 @@ class TestPublishItem(PublishApiTestBase):
         self.manager.load(temp_file_path)
         after_load = self.manager.tree.to_dict()
 
+        self.maxDiff = None
         self.assertEqual(before_load, after_load)
 
     def test_bad_document_version(self):
-
+        """
+        Ensures we can't reload documents from an incorrect version.
+        """
         with self.assertRaisesRegexp(sgtk.TankError, "<missing version>"):
             self.PublishTree.from_dict({})
 
@@ -106,7 +109,7 @@ class TestPublishItem(PublishApiTestBase):
 
         class TestHook(sgtk.Hook):
             def __init__(self):
-                self.id = 1
+                self.id = "/path/to/pluign.py"
                 item.local_properties["property"] = local_prop
 
         # Local properties

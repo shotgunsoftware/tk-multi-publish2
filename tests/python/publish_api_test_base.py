@@ -71,6 +71,7 @@ class PublishApiTestBase(TankTestBase):
         self.PublishData = api.PublishData
         self.PublishItem = api.PublishItem
         self.PublishTree = api.PublishTree
+        self.PublishManager = api.PublishManager
         self.PublishPluginInstance = api.plugins.PublishPluginInstance
 
         self.image_path = os.path.join(repo_root, "icon_256.png")

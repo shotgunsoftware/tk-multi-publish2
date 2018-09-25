@@ -8,6 +8,8 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import os
+
 import sgtk
 
 HookBaseClass = sgtk.get_hook_baseclass()
@@ -41,6 +43,7 @@ class GenericRemotePlugin(HookBaseClass):
         return ["generic.item"]
 
     def accept(self, settings, item):
+        item.local_properties.plugin_name = "remote"
 
         # force 'run_on_farm' if there is no UI
         publisher = self.parent
@@ -50,6 +53,11 @@ class GenericRemotePlugin(HookBaseClass):
         return {"accepted": True}
 
     def validate(self, settings, item):
+        if "TEST_LOCAL_PROPERTIES" in os.environ:
+            # local properties was properly set, so make sure it raises an error.
+            # see test_item:test_local_properties_persistance for more info.
+            if item.local_properties.plugin_name == "remote":
+                raise Exception("local_properties was serialized properly.")
         self.logger.debug("Executing remote plugin validate.")
         return True
 

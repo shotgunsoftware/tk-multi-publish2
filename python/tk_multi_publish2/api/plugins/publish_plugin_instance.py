@@ -50,10 +50,12 @@ class PublishPluginInstance(PluginInstanceBase):
         implementation.
         """
         bundle = sgtk.platform.current_bundle()
-        return bundle.create_hook_instance(
+        hook = bundle.create_hook_instance(
             path,
             base_class=bundle.base_hooks.PublishPlugin
         )
+        hook.id = path
+        return hook
 
     @property
     def name(self):
