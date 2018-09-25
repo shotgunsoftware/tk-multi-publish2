@@ -183,16 +183,6 @@ class PublishItem(object):
         self._type_display = type_display
         self._type_spec = type_spec
 
-    def __iter__(self):
-        """
-        Iteration implementation for this item.
-
-        Allows for traversal of all subitems. Yields each of the item's
-        descendants in depth-first order.
-        """
-        for item in self._traverse_item(self):
-            yield item
-
     def __del__(self):
         """
         Destructor.
