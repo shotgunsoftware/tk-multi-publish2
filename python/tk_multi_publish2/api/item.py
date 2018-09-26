@@ -950,6 +950,7 @@ class PublishItem(object):
                 calling_object = frame_object.f_locals.get("self")
                 if calling_object and isinstance(calling_object, sgtk.hook.Hook):
                     hook_object = calling_object
+                    break
 
         if not hook_object:
             raise AttributeError(

@@ -26,10 +26,16 @@ class PublishPlugin(HookBaseClass):
 
     @property
     def id(self):
+        """
+        Unique string identifying this plugin.
+        """
         return self._id
 
     @id.setter
     def id(self, new_id):
+        """
+        Allows to set the unique string identifying this plugin.
+        """
         self._id = new_id
 
     @property

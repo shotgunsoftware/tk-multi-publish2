@@ -43,3 +43,5 @@ class BasicSceneCollector(HookBaseClass):
             "A Generic Publish Item",
             "Generic Item 3"
         )
+
+        parent_item.local_properties.collector_property = "collector_property"

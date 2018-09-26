@@ -1,14 +1,12 @@
 # Copyright (c) 2018 Shotgun Software Inc.
-# 
+#
 # CONFIDENTIAL AND PROPRIETARY
-# 
-# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit 
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
 # Source Code License included in this distribution package. See LICENSE.
-# By accessing, using, copying or modifying this work you indicate your 
-# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
-
-import uuid
 
 import sgtk
 
@@ -23,18 +21,22 @@ class CollectorPlugin(HookBaseClass):
     to gather items to be published within the current DCC session.
     """
 
-    ############################################################################
-    # Collector properties
-
-    def __init__(self, *args, **kwargs):
-
-        super(CollectorPlugin, self).__init__(*args, **kwargs)
-        self._id = uuid.uuid4().hex
-
     @property
     def id(self):
+        """
+        Unique string identifying this plugin.
+        """
         return self._id
 
+    @id.setter
+    def id(self, new_id):
+        """
+        Allows to set the unique string identifying this plugin.
+        """
+        self._id = new_id
+
+    ############################################################################
+    # Collector properties
     @property
     def settings(self):
         """
@@ -120,7 +122,7 @@ class CollectorPlugin(HookBaseClass):
         however. You could, for example, create a flat list of items, all
         sharing the same parent.
 
-        The image below shows a maya scene item with a child item that
+        The image below shows a Maya scene item with a child item that
         represents a playblast to be published. Each of these items has one or
         more publish tasks attached to them.
 

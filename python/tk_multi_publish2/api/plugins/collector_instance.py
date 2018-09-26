@@ -31,10 +31,12 @@ class CollectorPluginInstance(PluginInstanceBase):
         implementation.
         """
         bundle = sgtk.platform.current_bundle()
-        return bundle.create_hook_instance(
+        plugin = bundle.create_hook_instance(
             path,
             base_class=bundle.base_hooks.CollectorPlugin
         )
+        plugin.id = path
+        return plugin
 
     def run_process_file(self, item, path):
         """
@@ -55,7 +57,7 @@ class CollectorPluginInstance(PluginInstanceBase):
                 # the hook hasn't been updated to handle collector settings.
                 # call the method without a settings argument
                 return self._hook_instance.process_file(item, path)
-        except Exception, e:
+        except Exception:
             error_msg = traceback.format_exc()
             logger.error(
                 "Error running process_file for %s. %s" %
@@ -80,7 +82,7 @@ class CollectorPluginInstance(PluginInstanceBase):
                 # the hook hasn't been updated to handle collector settings.
                 # call the method without a settings argument
                 return self._hook_instance.process_current_session(item)
-        except Exception, e:
+        except Exception:
             error_msg = traceback.format_exc()
             logger.error(
                 "Error running process_current_session for %s. %s" %

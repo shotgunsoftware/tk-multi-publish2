@@ -39,8 +39,8 @@ class PublishTree(object):
               [task] Re-rez
               [task] Alternate Transcode
 
-    The tree is composed of a hierarchy of items. Each item in the tree
-    (excluding the root) can have associated tasks.
+    The tree is composed of a hierarchy of items. Each item in the tree,
+    excluding the root, can have associated tasks.
 
     Instances of this class are iterable, making traversal very easy:
 
@@ -163,9 +163,9 @@ class PublishTree(object):
     def __init__(self):
         """Initialize the publish tree instance."""
 
-        # The root item is the sole parent of all top-level publish items. It
+        # The root item is the sole parent of all top level publish items. It
         # has no use other than organization and provides an easy interface for
-        # beginning iteration and accessing all top-level items.
+        # beginning iteration and accessing all top level items.
         self._root_item = PublishItem(
             "__root__",
             "__root__",
@@ -197,7 +197,8 @@ class PublishTree(object):
         Clears the tree of all items.
 
         :param bool clear_persistent: If ``True``, all items will be cleared
-            from the tree, including persistent items. Default is ``True``.
+            from the tree, including persistent items. Default is ``False``,
+            which will clear non-persistent items only.
         """
 
         for item in self._root_item.children:
@@ -265,7 +266,7 @@ class PublishTree(object):
                 self.save(file_obj)
             except Exception, e:
                 logger.error(
-                    "Erorr saving the publish tree to disk: %s" % (e,)
+                    "Error saving the publish tree to disk: %s" % (e,)
                 )
                 raise
 
@@ -274,12 +275,12 @@ class PublishTree(object):
         Write a json-serialized representation of the publish tree to the
         supplied file-like object.
         """
-
         try:
             json.dump(
                 self,
                 file_obj,
                 indent=2,
+                # all non-ASCII characters in the output are escaped with \uXXXX sequences
                 ensure_ascii=True,
                 cls=_PublishTreeEncoder
             )
