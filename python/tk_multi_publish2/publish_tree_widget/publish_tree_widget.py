@@ -77,7 +77,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
     def set_publish_manager(self, publish_manager):
         """
-        Associate a plugin manager.
+        Associate a publish manager.
 
         This should be done once and immediately after
         construction. The reason it is not part of the constructor

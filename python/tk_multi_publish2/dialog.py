@@ -1247,6 +1247,7 @@ class AppDialog(QtGui.QWidget):
                     ui_item.STATUS_VALIDATION_ERROR,
                     str(e)
                 )
+                raise
             else:
                 if is_successful:
                     if is_standalone:
@@ -1294,11 +1295,11 @@ class AppDialog(QtGui.QWidget):
 
     def _finalize_task_generator(self):
         """
-        This method generates tasks for the publish phase. It handles
+        This method generates tasks for the finalize phase. It handles
         processing the tasks in the proper order and updating the task's UI
         representation in the dialog.
         """
-        for ui_item in self._task_generator("Publishing"):
+        for ui_item in self._task_generator("Finalizing"):
             try:
                 # yield each child item to be acted on by the publish api
                 if isinstance(ui_item, TreeNodeTask):
