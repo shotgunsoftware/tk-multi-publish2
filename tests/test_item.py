@@ -315,7 +315,6 @@ class TestPublishItem(PublishApiTestBase):
 
         # Save the session to disk.
         fd, temp_file_path = tempfile.mkstemp()
-        before_load = manager.tree.to_dict()
         manager.save(temp_file_path)
 
         # Creating a second manager will force the plugins to be reloaded by it.
@@ -323,7 +322,6 @@ class TestPublishItem(PublishApiTestBase):
 
         # Loads the tree.
         new_manager.load(temp_file_path)
-        after_load = new_manager.tree.to_dict()
 
         with temp_env_var(TEST_LOCAL_PROPERTIES="1"):
             # Create a generator that will ensure all tasks sees the right local properties.

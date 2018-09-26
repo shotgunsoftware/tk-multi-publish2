@@ -10,7 +10,7 @@ env:
 # so we will clone the repo install to a known location and run the tests there.
 install:
     - pip install -r tests/ci_requirements.txt
-    - git clone --depth 1 --branch SG-7259_json_and_context_utils https://github.com/shotgunsoftware/tk-core /tmp/tk-core
+    - git clone --depth 1 --branch master https://github.com/shotgunsoftware/tk-core /tmp/tk-core
     - git clone --depth 1 --branch master https://github.com/shotgunsoftware/tk-framework-qtwidgets /tmp/tk-framework-qtwidgets
     - git clone --depth 1 --branch master https://github.com/shotgunsoftware/tk-framework-shotgunutils /tmp/tk-framework-shotgunutils
     - git clone --depth 1 --branch master https://github.com/shotgunsoftware/tk-shell /tmp/tk-shell
