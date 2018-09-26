@@ -8,6 +8,9 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-from .collector import CollectorPlugin
-from .post_phase import PostPhaseHook
-from .publish_plugin import PublishPlugin
+# https://houndci.com configuration file for linting and PEP8
+
+python:
+  enabled: true
+  config_file: .flake8
+

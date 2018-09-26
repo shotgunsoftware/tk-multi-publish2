@@ -1,4 +1,4 @@
-# Copyright (c) 2017 Shotgun Software Inc.
+# Copyright (c) 2018 Shotgun Software Inc.
 #
 # CONFIDENTIAL AND PROPRIETARY
 #
@@ -8,6 +8,9 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-from .collector import CollectorPlugin
-from .post_phase import PostPhaseHook
-from .publish_plugin import PublishPlugin
+from .data import PublishData
+from .manager import PublishManager
+from .item import PublishItem
+from .task import PublishTask
+from .tree import PublishTree
+from .plugins import PluginSetting

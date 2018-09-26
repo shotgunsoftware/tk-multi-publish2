@@ -23,7 +23,13 @@ class MultiPublish2(sgtk.platform.Application):
         """
         Called as the application is being initialized
         """
+
         tk_multi_publish2 = self.import_module("tk_multi_publish2")
+
+        # the manager class provides the interface for publishing. We store a
+        # reference to it to enable the create_publish_manager method exposed on
+        # the application itself
+        self._manager_class = tk_multi_publish2.PublishManager
 
         # make the util methods available via the app instance
         self._util = tk_multi_publish2.util
@@ -101,6 +107,16 @@ class MultiPublish2(sgtk.platform.Application):
         Specifies that context changes are allowed.
         """
         return True
+
+    def create_publish_manager(self):
+        """
+        Create and return a :class:`tk_multi_publish2.PublishManager` instance.
+        See the :class:`tk_multi_publish2.PublishManager` docs for details on
+        how it can be used to automate your publishing workflows.
+
+        :returns: A :class:`tk_multi_publish2.PublishManager` instance
+        """
+        return self._manager_class()
 
     def destroy_app(self):
         """

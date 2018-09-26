@@ -93,78 +93,7 @@ class TreeNodeTask(TreeNodeBase):
 
         :returns: List of strings
         """
-        if self.enabled:
+        if self.checked:
             return [self._task.plugin.name]
         else:
             return []
-
-    def validate(self, standalone):
-        """
-        Perform validation
-        """
-        if not self.enabled:
-            # nothing to do!
-            return True
-
-        try:
-            status = self._task.validate()
-        except Exception, e:
-            self._set_status_upwards(
-                self._embedded_widget.VALIDATION_ERROR,
-                str(e)
-            )
-            status = False
-        else:
-            if status:
-                if standalone:
-                    self._embedded_widget.set_status(
-                        self._embedded_widget.VALIDATION_STANDALONE)
-                else:
-                    self._embedded_widget.set_status(
-                        self._embedded_widget.VALIDATION)
-            else:
-                self._set_status_upwards(
-                    self._embedded_widget.VALIDATION_ERROR,
-                    "Unknown validation error"
-                )
-        return status
-
-    def publish(self):
-        """
-        Perform publish
-        """
-        if not self.enabled:
-            # nothing to do!
-            return True
-
-        try:
-            self._task.publish()
-        except Exception, e:
-            self._set_status_upwards(
-                self._embedded_widget.PUBLISH_ERROR,
-                str(e)
-            )
-            raise
-        else:
-            self._embedded_widget.set_status(self._embedded_widget.PUBLISH)
-        return True
-
-    def finalize(self):
-        """
-        Perform finalize
-        """
-        if not self.enabled:
-            # nothing to do!
-            return True
-
-        try:
-            self._task.finalize()
-        except Exception, e:
-            self._set_status_upwards(
-                self._embedded_widget.FINALIZE_ERROR,
-                str(e)
-            )
-            raise
-        else:
-            self._embedded_widget.set_status(self._embedded_widget.FINALIZE)
-        return True

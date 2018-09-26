@@ -12,6 +12,5 @@
 # core API that should be used at runtime.
 
 location:
-  type: app_store
-  name: tk-core
-  version: v0.18.124
+  type: path
+  path: $SHOTGUN_EXTERNAL_REPOS_ROOT/tk-core

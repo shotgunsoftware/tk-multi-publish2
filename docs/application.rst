@@ -1,5 +1,5 @@
-Application Interface
-=====================
+App Interface
+=============
 
 .. py:currentmodule:: app
 
