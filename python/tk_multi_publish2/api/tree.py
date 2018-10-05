@@ -190,7 +190,9 @@ class PublishTree(object):
             which will clear non-persistent items only.
         """
 
-        for item in self._root_item.children:
+        # Create a list of children to remove, as we'll be iterating
+        # on the very items we are removing!!
+        for item in list(self._root_item.children):
             if clear_persistent or not item.persistent:
                 self.remove_item(item)
 
