@@ -499,17 +499,29 @@ class PublishItem(object):
         """
         A generator that yields the immediate :ref:`publish-api-item` children of
         this item.
-
-        .. note:: :ref:`publish-api-item` instances are iterators so if you need
-            to traverse all descendant items, you can do this:
-
-            .. code-block:: python
-
-                for descendant in item:
-                    # process descendant item
         """
         for child in self._children:
             yield child
+
+    @property
+    def descendants(self):
+        """
+        A generator that recursively all the :ref:`publish-api-item`
+        children and their children of this item.
+        """
+        for item in self._visit_recursive():
+            yield item
+
+    def _visit_recursive(self):
+        """
+        Yields all the children from an item and their descendants.
+
+        :param item: The :ref:`publish-api-item` instance to visit recursively.
+        """
+        for c in self.children:
+            yield c
+            for sub_c in c.descendants:
+                yield sub_c
 
     @property
     def context(self):

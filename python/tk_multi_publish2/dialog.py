@@ -501,7 +501,8 @@ class AppDialog(QtGui.QWidget):
                 # this is the summary item - so update all top level items and their children!
                 for top_level_item in self._publish_manager.tree.root_item.children:
                     top_level_item.description = self._summary_comment
-                    top_level_item._propagate_description_to_children()
+                    for item in top_level_item.descendants:
+                        item.description = comments
 
                 # all tasks have same description now, so set <multiple values> indicator to false
                 self._summary_comment_multiple_values = False
@@ -511,12 +512,12 @@ class AppDialog(QtGui.QWidget):
         # the "else" below means if this is a publish item
         else:
             self._current_item.description = comments
-            
+
             # <multiple values> placeholder text should not appear for individual items
             self.ui.item_comments._show_placeholder = False
 
             # if at least one task has a comment that is different than the summary description, set 
-            # <multiple values> indicator to true 
+            # <multiple values> indicator to true
             if self._summary_comment != comments:
                 self._summary_comment_multiple_values = True
 
@@ -535,15 +536,14 @@ class AppDialog(QtGui.QWidget):
                     top_level_item.thumbnail_explicit = False
 
                     # propagate the thumbnail to all descendant items
-                    for item in top_level_item:
+                    for item in top_level_item.descendants:
                         item.thumbnail = self._summary_thumbnail
                         item.thumbnail_explicit = False
         else:
             self._current_item.thumbnail = pixmap
             # specify that the new thumbnail overrides the one inherited from
             # summary
-            self._current_item.thumbnail_explicit = True 
-
+            self._current_item.thumbnail_explicit = True
 
     def _create_item_details(self, tree_item):
         """
@@ -654,7 +654,7 @@ class AppDialog(QtGui.QWidget):
                 thumbnail_has_multiple_values = True
                 break
 
-            for descendant in top_level_item:
+            for descendant in top_level_item.descendants:
                 if descendant.thumbnail_explicit:
                     # shortcut if one descendant has an explicit thumbnail
                     thumbnail_has_multiple_values = True
