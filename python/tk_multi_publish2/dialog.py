@@ -1192,6 +1192,16 @@ class AppDialog(QtGui.QWidget):
         self._validation_run = False
 
     def _get_tree_items(self):
+        """
+        Retrieves all the items from the tree.
+
+        :returns: A list of QTreeItem.
+        """
+        # We used to be iterating on the items and yielding them
+        # one after the other in the _task_generator method,
+        # but that often gave us Internal C++ error about deleted objects.
+        # It seems getting everything first and them returning a flat list
+        # works.
         tree_iterator = QtGui.QTreeWidgetItemIterator(self.ui.items_tree)
         tree_items = []
         while tree_iterator.value():
