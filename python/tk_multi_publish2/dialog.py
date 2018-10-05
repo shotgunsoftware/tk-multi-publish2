@@ -1191,6 +1191,15 @@ class AppDialog(QtGui.QWidget):
         # reset the validation flag
         self._validation_run = False
 
+    def _get_tree_items(self):
+        tree_iterator = QtGui.QTreeWidgetItemIterator(self.ui.items_tree)
+        tree_items = []
+        while tree_iterator.value():
+            tree_items.append(tree_iterator.value())
+            tree_iterator += 1
+
+        return tree_items
+
     def _task_generator(self, stage_name):
         """
         This method yields tree items for our various stages. It will update the UI
@@ -1199,17 +1208,15 @@ class AppDialog(QtGui.QWidget):
         :param stage_name: Name of the current stage.
         """
 
-        tree_iterator = QtGui.QTreeWidgetItemIterator(self.ui.items_tree)
-        while tree_iterator.value():
+        list_items = self._get_tree_items()
+
+        for ui_item in list_items:
 
             if self._stop_processing_flagged:
                 # jump out of the iteration
                 break
 
-            ui_item = tree_iterator.value()
-
             if not ui_item.checked:
-                tree_iterator += 1
                 continue
 
             self._progress_handler.push(
@@ -1223,7 +1230,6 @@ class AppDialog(QtGui.QWidget):
             finally:
                 self._progress_handler.increment_progress()
                 self._progress_handler.pop()
-                tree_iterator += 1
 
     def _validate_task_generator(self, is_standalone):
         """
