@@ -76,7 +76,7 @@ class PublishLogHandler(logging.Handler):
             status = self._progress_widget.INFO
 
         # request that the log manager processes the message
-        self._progress_widget.process_log_message(record.msg, status, action)
+        self._progress_widget.process_log_message(record.getMessage(), status, action)
 
 
 class PublishLogWrapper(object):
