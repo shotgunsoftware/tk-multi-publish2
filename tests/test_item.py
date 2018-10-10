@@ -366,3 +366,60 @@ class TestPublishItem(PublishApiTestBase):
         """
         with patch("sgtk.platform.current_bundle", return_value=self.app):
             return self.PublishManager(logger)
+
+
+class TestQtPixmapAvailability(PublishApiTestBase):
+
+    def setUp(self):
+        super(TestQtPixmapAvailability, self).setUp()
+
+        # Make sure we're about to reset a flag that actually exists!
+        self.assertTrue(hasattr(self.api.item, "_qt_pixmap_is_usable"))
+        self._reset_pixmap_flag()
+
+    def test_missing_qapplication(self):
+        """
+        Ensures a missing QApplication will not support QtPixmap usage.
+        """
+        with patch.object(sgtk.platform.qt.QtGui.QApplication, "instance", return_value=None):
+            self.assertFalse(self.api.item._is_qt_pixmap_usable())
+
+        self._reset_pixmap_flag()
+        self.assertTrue(self.api.item._is_qt_pixmap_usable())
+
+    def test_missing_qtgui(self):
+        """
+        Ensures a missing QApplication will not support QtPixmap usage.
+        """
+        QtGui = sgtk.platform.qt.QtGui
+        del sgtk.platform.qt.QtGui
+        self.assertFalse(self.api.item._is_qt_pixmap_usable())
+        self._reset_pixmap_flag()
+
+        sgtk.platform.qt.QtGui = QtGui
+        self.assertTrue(self.api.item._is_qt_pixmap_usable())
+
+    def test_pixmap_methods(self):
+        """
+        Ensures that method that normally use pixmap to validate behave normally when it
+        is not available and do validate thumbnails.
+        """
+        # Pretend QPixmap is not available.
+        self._reset_pixmap_flag(flag_value=False)
+        item = self.PublishItem("test", "test", "test")
+
+        # passing in a invalid file should not cause any validation...
+        item.set_thumbnail_from_path(__file__)
+        # ... and return the file as is.
+        self.assertEqual(item.get_thumbnail_as_path(), __file__)
+
+        # We should also get a None thumbnail back.
+        self.assertIsNone(item.thumbnail)
+
+    def _reset_pixmap_flag(self, flag_value=None):
+        """
+        Resets the pixmap availability flag.
+
+        :param bool flag_value: Value to set the flag. Defaults to ``None``.
+        """
+        self.api.item._qt_pixmap_is_usable = flag_value

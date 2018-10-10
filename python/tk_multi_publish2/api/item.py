@@ -34,9 +34,13 @@ def _is_qt_pixmap_usable():
         return _qt_pixmap_is_usable
 
     try:
+        # We can fail importing if the engine doesn't even support Qt.
         from sgtk.platform.qt import QtGui
-    except ImportError:
-        logger.warning("Could not import QtGui. Thumbnail validation will not be available.")
+        # We can also fail at using the QPixmap object in an engine like tk-shell
+        # that exposes a mocked-Qt module.
+        QtGui.QPixmap
+    except Exception as e:
+        logger.warning("Could not import QtGui.QPixmap. Thumbnail validation will not be available: %s", e)
         _qt_pixmap_is_usable = False
     else:
         if QtGui.QApplication.instance() is None:
