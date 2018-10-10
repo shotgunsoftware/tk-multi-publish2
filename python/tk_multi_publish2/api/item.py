@@ -21,6 +21,32 @@ from .task import PublishTask
 
 logger = sgtk.platform.get_logger(__name__)
 
+_qt_pixmap_is_usable = None
+
+
+def _is_qt_pixmap_usable():
+    """
+    Tries to import QtGui. If it fails, a message will be logged indicating
+    that thumbnail paths won't be validated.
+    """
+    global _qt_pixmap_is_usable
+    if _qt_pixmap_is_usable is not None:
+        return _qt_pixmap_is_usable
+
+    try:
+        from sgtk.platform.qt import QtGui
+    except ImportError:
+        logger.warning("Could not import QtGui. Thumbnail validation will not be available.")
+        _qt_pixmap_is_usable = False
+    else:
+        if QtGui.QApplication.instance() is None:
+            logger.warning("QApplication does not exist. Thumbnail validation will not be available.")
+            _qt_pixmap_is_usable = False
+        else:
+            _qt_pixmap_is_usable = True
+
+    return _qt_pixmap_is_usable
+
 
 class PublishItem(object):
     """
@@ -437,7 +463,42 @@ class PublishItem(object):
 
         :param str path: Path to a file on disk
         """
-        self._thumbnail_path = path
+        # Do not remove this. The original version of the API validated the thumbnail
+        # path and ensure it could be loaded into a pixmap.
+        self._thumbnail_path = self._validate_image(path)
+
+    def _validate_image(self, path):
+        """
+        Validates that the path points to an actual image.
+
+        If the file can't be loaded, a warning is logged and ``None`` is
+        returned.
+
+        :param str path: Path of the image to validate.
+
+        :returns: If the image was successfully loaded, the path is returned.
+            If the image couldn't be loaded, ``None`` is returned.
+        """
+        if not path:
+            return None
+
+        # We can't validate the path by creating a QPixmap, so bail out and
+        # return the unvalidated path.
+        if not _is_qt_pixmap_usable():
+            return path
+
+        # defer import until needed and to avoid issues when running without UI
+        from sgtk.platform.qt import QtGui
+
+        try:
+            icon = QtGui.QPixmap(path)
+        except Exception as e:
+            logger.warning(
+                "%r: Could not load icon '%s': %s" % (self, path, e)
+            )
+            return None
+        else:
+            return None if icon.isNull() else path
 
     @property
     def active(self):
@@ -652,9 +713,8 @@ class PublishItem(object):
         :param function get_parent_pixmap: Function used to get the pixmap of the parent item.
         :param str default_image_path: Path to the default pixmap.
         """
-
         # nothing to do if running without a UI
-        if not sgtk.platform.current_engine().has_ui:
+        if not _is_qt_pixmap_usable():
             return None
 
         # defer import until needed and to avoid issues when running without UI
