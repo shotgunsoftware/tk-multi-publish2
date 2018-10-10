@@ -310,7 +310,7 @@ class PublishManager(object):
 
         return failed_to_validate
 
-    def publish(self, task_generator=None):
+    def publish(self, task_generator=None, raise_on_error=False):
         """
         Publish items in the tree.
 
@@ -338,6 +338,8 @@ class PublishManager(object):
             publish_manager.validate(task_generator=local_tasks_generator)
 
         :param task_generator: A generator of :class:`~PublishTask` instances.
+        :param bool raise_on_error: If ``True``, the publish process will raise
+            an exception instead of logging it.
         """
 
         def task_cb(task):
@@ -349,6 +351,8 @@ class PublishManager(object):
             try:
                 task.publish()
             except Exception, e:
+                if raise_on_error:
+                    raise
                 pub_exception = e
 
             return pub_exception

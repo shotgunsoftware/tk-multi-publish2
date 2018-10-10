@@ -1099,7 +1099,9 @@ class AppDialog(QtGui.QWidget):
 
             try:
                 self._publish_manager.publish(
-                    task_generator=self._publish_task_generator())
+                    task_generator=self._publish_task_generator(),
+                    raise_on_error=True
+                )
             except Exception, e:
                 # ensure the full error shows up in the log file
                 logger.error("Publish error stack:\n%s" % (traceback.format_exc(),))
