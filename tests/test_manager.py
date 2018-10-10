@@ -109,11 +109,12 @@ class TestManager(PublishApiTestBase):
             task = MagicMock(
                 publish=Mock(side_effect=Exception("Test error!"))
             )
-            yield task
-            self.fail("Publisher should have raised an error.")
+            error = yield task
+            self.assertIsNotNone(error)
+            raise error
 
         with self.assertRaisesRegexp(Exception, "Test error!"):
-            self.manager.publish(test_nodes(), raise_on_error=True)
+            self.manager.publish(test_nodes())
 
     def test_publish_and_finalize_failures(self):
         """

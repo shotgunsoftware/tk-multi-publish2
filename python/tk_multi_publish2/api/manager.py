@@ -310,7 +310,7 @@ class PublishManager(object):
 
         return failed_to_validate
 
-    def publish(self, task_generator=None, raise_on_error=False):
+    def publish(self, task_generator=None):
         """
         Publish items in the tree.
 
@@ -351,8 +351,6 @@ class PublishManager(object):
             try:
                 task.publish()
             except Exception, e:
-                if raise_on_error:
-                    raise
                 pub_exception = e
 
             return pub_exception

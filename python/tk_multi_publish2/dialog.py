@@ -1099,8 +1099,7 @@ class AppDialog(QtGui.QWidget):
 
             try:
                 self._publish_manager.publish(
-                    task_generator=self._publish_task_generator(),
-                    raise_on_error=True
+                    task_generator=self._publish_task_generator()
                 )
             except Exception, e:
                 # ensure the full error shows up in the log file
@@ -1308,6 +1307,8 @@ class AppDialog(QtGui.QWidget):
                         ui_item.STATUS_PUBLISH_ERROR,
                         str(pub_exception)
                     )
+                    # This will abort the publish process.
+                    raise pub_exception
                 else:
                     ui_item.set_status(ui_item.STATUS_PUBLISH)
 
