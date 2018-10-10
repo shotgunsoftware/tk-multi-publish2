@@ -169,6 +169,14 @@ class TestPublishItem(PublishApiTestBase):
         )
         self.assertIsNotNone(item.get_thumbnail_as_path())
 
+    def test_invalid_file(self):
+        """
+        Ensures an invalid file will be properly caught by the item.
+        """
+        item = self.PublishItem("test", "test", "test")
+        item.set_thumbnail_from_path(__file__)
+        self.assertIsNone(item.get_thumbnail_as_path())
+
     def test_thumbnail_from_pixmap(self):
         """
         Ensures thumbnail can be loaded from memory and can be persisted on disk.
