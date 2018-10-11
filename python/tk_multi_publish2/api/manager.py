@@ -338,8 +338,6 @@ class PublishManager(object):
             publish_manager.validate(task_generator=local_tasks_generator)
 
         :param task_generator: A generator of :class:`~PublishTask` instances.
-        :param bool raise_on_error: If ``True``, the publish process will raise
-            an exception instead of logging it.
         """
 
         def task_cb(task):

@@ -26,9 +26,13 @@ _qt_pixmap_is_usable = None
 
 def _is_qt_pixmap_usable():
     """
-    Tries to import QtGui. If it fails, a message will be logged indicating
-    that thumbnail paths won't be validated.
+    Tries to import QtGui and access QPixmap. If it fails, the method returns False.
+
+    On failure, a warning will be logged. It will be logged only once.
     """
+
+    # We're using a cached state of the result of this method in order to display a warning
+    # only once.
     global _qt_pixmap_is_usable
     if _qt_pixmap_is_usable is not None:
         return _qt_pixmap_is_usable
