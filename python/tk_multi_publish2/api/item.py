@@ -47,6 +47,7 @@ def _is_qt_pixmap_usable():
         logger.warning("Could not import QtGui.QPixmap. Thumbnail validation will not be available: %s", e)
         _qt_pixmap_is_usable = False
     else:
+        # If QApplication is not available, we can't create QPixmap objects.
         if QtGui.QApplication.instance() is None:
             logger.warning("QApplication does not exist. Thumbnail validation will not be available.")
             _qt_pixmap_is_usable = False
@@ -455,7 +456,9 @@ class PublishItem(object):
 
         :param str path: Path to a file on disk
         """
-        self._icon_path = path
+        # Do not remove this. The original version of the API validated the icon
+        # path and ensured it could be loaded into a pixmap.
+        self._icon_path = self._validate_image(path)
 
     def set_thumbnail_from_path(self, path):
         """
@@ -472,7 +475,7 @@ class PublishItem(object):
         :param str path: Path to a file on disk
         """
         # Do not remove this. The original version of the API validated the thumbnail
-        # path and ensure it could be loaded into a pixmap.
+        # path and ensured it could be loaded into a pixmap.
         self._thumbnail_path = self._validate_image(path)
 
     def _validate_image(self, path):
@@ -575,8 +578,8 @@ class PublishItem(object):
     @property
     def descendants(self):
         """
-        A generator that recursively all the :ref:`publish-api-item`
-        children and their children of this item.
+        A generator that yields all the :ref:`publish-api-item` children and their children
+        of this item.
         """
         for item in self._visit_recursive():
             yield item
@@ -584,8 +587,6 @@ class PublishItem(object):
     def _visit_recursive(self):
         """
         Yields all the children from an item and their descendants.
-
-        :param item: The :ref:`publish-api-item` instance to visit recursively.
         """
         for c in self.children:
             yield c
