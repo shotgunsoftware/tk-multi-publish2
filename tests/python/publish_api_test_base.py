@@ -67,12 +67,12 @@ class PublishApiTestBase(TankTestBase):
 
         self.manager = self.app.create_publish_manager()
 
-        api = self.app.import_module("tk_multi_publish2").api
-        self.PublishData = api.PublishData
-        self.PublishItem = api.PublishItem
-        self.PublishTree = api.PublishTree
-        self.PublishManager = api.PublishManager
-        self.PublishPluginInstance = api.plugins.PublishPluginInstance
+        self.api = self.app.import_module("tk_multi_publish2").api
+        self.PublishData = self.api.PublishData
+        self.PublishItem = self.api.PublishItem
+        self.PublishTree = self.api.PublishTree
+        self.PublishManager = self.api.PublishManager
+        self.PublishPluginInstance = self.api.plugins.PublishPluginInstance
 
         self.image_path = os.path.join(repo_root, "icon_256.png")
         self.dark_image_path = os.path.join(repo_root, "icon_256_dark.png")

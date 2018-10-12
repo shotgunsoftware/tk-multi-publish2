@@ -178,19 +178,8 @@ class PublishTree(object):
 
         # item's are recursively iterable. this will yield all items under the
         # root.
-        for item in self._visit_recursive(self._root_item):
+        for item in self._root_item.descendants:
             yield item
-
-    def _visit_recursive(self, item):
-        """
-        Yields all the children from an item and their descendants.
-
-        :param item: The :ref:`publish-api-item` instance to visit recursively.
-        """
-        for c in item.children:
-            yield c
-            for sub_c in self._visit_recursive(c):
-                yield sub_c
 
     def clear(self, clear_persistent=False):
         """
@@ -201,7 +190,9 @@ class PublishTree(object):
             which will clear non-persistent items only.
         """
 
-        for item in self._root_item.children:
+        # Create a list of children to remove, as we'll be iterating
+        # on the very items we are removing!!
+        for item in list(self._root_item.children):
             if clear_persistent or not item.persistent:
                 self.remove_item(item)
 

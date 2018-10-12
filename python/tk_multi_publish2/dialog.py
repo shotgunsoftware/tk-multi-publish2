@@ -501,7 +501,8 @@ class AppDialog(QtGui.QWidget):
                 # this is the summary item - so update all top level items and their children!
                 for top_level_item in self._publish_manager.tree.root_item.children:
                     top_level_item.description = self._summary_comment
-                    top_level_item._propagate_description_to_children()
+                    for item in top_level_item.descendants:
+                        item.description = comments
 
                 # all tasks have same description now, so set <multiple values> indicator to false
                 self._summary_comment_multiple_values = False
@@ -511,12 +512,12 @@ class AppDialog(QtGui.QWidget):
         # the "else" below means if this is a publish item
         else:
             self._current_item.description = comments
-            
+
             # <multiple values> placeholder text should not appear for individual items
             self.ui.item_comments._show_placeholder = False
 
             # if at least one task has a comment that is different than the summary description, set 
-            # <multiple values> indicator to true 
+            # <multiple values> indicator to true
             if self._summary_comment != comments:
                 self._summary_comment_multiple_values = True
 
@@ -535,15 +536,14 @@ class AppDialog(QtGui.QWidget):
                     top_level_item.thumbnail_explicit = False
 
                     # propagate the thumbnail to all descendant items
-                    for item in top_level_item:
+                    for item in top_level_item.descendants:
                         item.thumbnail = self._summary_thumbnail
                         item.thumbnail_explicit = False
         else:
             self._current_item.thumbnail = pixmap
             # specify that the new thumbnail overrides the one inherited from
             # summary
-            self._current_item.thumbnail_explicit = True 
-
+            self._current_item.thumbnail_explicit = True
 
     def _create_item_details(self, tree_item):
         """
@@ -654,7 +654,7 @@ class AppDialog(QtGui.QWidget):
                 thumbnail_has_multiple_values = True
                 break
 
-            for descendant in top_level_item:
+            for descendant in top_level_item.descendants:
                 if descendant.thumbnail_explicit:
                     # shortcut if one descendant has an explicit thumbnail
                     thumbnail_has_multiple_values = True
@@ -1099,7 +1099,8 @@ class AppDialog(QtGui.QWidget):
 
             try:
                 self._publish_manager.publish(
-                    task_generator=self._publish_task_generator())
+                    task_generator=self._publish_task_generator()
+                )
             except Exception, e:
                 # ensure the full error shows up in the log file
                 logger.error("Publish error stack:\n%s" % (traceback.format_exc(),))
@@ -1191,6 +1192,25 @@ class AppDialog(QtGui.QWidget):
         # reset the validation flag
         self._validation_run = False
 
+    def _get_tree_items(self):
+        """
+        Retrieves all the items from the tree.
+
+        :returns: A list of QTreeItem.
+        """
+        # We used to be iterating on the items and yielding them
+        # one after the other in the _task_generator method,
+        # but that often gave us Internal C++ error about deleted objects.
+        # It seems getting everything first and them returning a flat list
+        # works.
+        tree_iterator = QtGui.QTreeWidgetItemIterator(self.ui.items_tree)
+        tree_items = []
+        while tree_iterator.value():
+            tree_items.append(tree_iterator.value())
+            tree_iterator += 1
+
+        return tree_items
+
     def _task_generator(self, stage_name):
         """
         This method yields tree items for our various stages. It will update the UI
@@ -1199,17 +1219,15 @@ class AppDialog(QtGui.QWidget):
         :param stage_name: Name of the current stage.
         """
 
-        tree_iterator = QtGui.QTreeWidgetItemIterator(self.ui.items_tree)
-        while tree_iterator.value():
+        list_items = self._get_tree_items()
+
+        for ui_item in list_items:
 
             if self._stop_processing_flagged:
                 # jump out of the iteration
                 break
 
-            ui_item = tree_iterator.value()
-
             if not ui_item.checked:
-                tree_iterator += 1
                 continue
 
             self._progress_handler.push(
@@ -1223,7 +1241,6 @@ class AppDialog(QtGui.QWidget):
             finally:
                 self._progress_handler.increment_progress()
                 self._progress_handler.pop()
-                tree_iterator += 1
 
     def _validate_task_generator(self, is_standalone):
         """
@@ -1290,6 +1307,8 @@ class AppDialog(QtGui.QWidget):
                         ui_item.STATUS_PUBLISH_ERROR,
                         str(pub_exception)
                     )
+                    # This will abort the publish process.
+                    raise pub_exception
                 else:
                     ui_item.set_status(ui_item.STATUS_PUBLISH)
 

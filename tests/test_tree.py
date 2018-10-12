@@ -86,6 +86,22 @@ class TestPublishTree(PublishApiTestBase):
         tree.clear(clear_persistent=True)
         self.assertEqual(len(list(self.manager.tree)), 0)
 
+    def test_clear_everything(self):
+        """
+        Ensures nodes are all properly deleted when calling clear.
+        """
+        # This test was written to ensure that all nodes are properly cleared the
+        # first time we called the method. An old bug had the clear remove one item
+        # out of two because we were iterating on the children of the root without
+        # making a copy of the list of items to remove first. Rookie mistake. :)
+        tree = self.manager.tree
+        for _ in range(10):
+            persistent = tree.root_item.create_item("persitent", "persistent", "persistent")
+            persistent.persistent = True
+
+        tree.clear(clear_persistent=True)
+        self.assertEqual(list(self.manager.tree), [])
+
     def test_root_deletion(self):
         """
         Ensures you can't delete the root.

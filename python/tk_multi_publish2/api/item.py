@@ -21,6 +21,41 @@ from .task import PublishTask
 
 logger = sgtk.platform.get_logger(__name__)
 
+_qt_pixmap_is_usable = None
+
+
+def _is_qt_pixmap_usable():
+    """
+    Tries to import QtGui and access QPixmap. If it fails, the method returns False.
+
+    On failure, a warning will be logged. It will be logged only once.
+    """
+
+    # We're using a cached state of the result of this method in order to display a warning
+    # only once.
+    global _qt_pixmap_is_usable
+    if _qt_pixmap_is_usable is not None:
+        return _qt_pixmap_is_usable
+
+    try:
+        # We can fail importing if the engine doesn't even support Qt.
+        from sgtk.platform.qt import QtGui
+        # We can also fail at using the QPixmap object in an engine like tk-shell
+        # that exposes a mocked-Qt module.
+        QtGui.QPixmap
+    except Exception as e:
+        logger.warning("Could not import QtGui.QPixmap. Thumbnail validation will not be available: %s", e)
+        _qt_pixmap_is_usable = False
+    else:
+        # If QApplication is not available, we can't create QPixmap objects.
+        if QtGui.QApplication.instance() is None:
+            logger.warning("QApplication does not exist. Thumbnail validation will not be available.")
+            _qt_pixmap_is_usable = False
+        else:
+            _qt_pixmap_is_usable = True
+
+    return _qt_pixmap_is_usable
+
 
 class PublishItem(object):
     """
@@ -421,7 +456,9 @@ class PublishItem(object):
 
         :param str path: Path to a file on disk
         """
-        self._icon_path = path
+        # Do not remove this. The original version of the API validated the icon
+        # path and ensured it could be loaded into a pixmap.
+        self._icon_path = self._validate_image(path)
 
     def set_thumbnail_from_path(self, path):
         """
@@ -437,7 +474,42 @@ class PublishItem(object):
 
         :param str path: Path to a file on disk
         """
-        self._thumbnail_path = path
+        # Do not remove this. The original version of the API validated the thumbnail
+        # path and ensured it could be loaded into a pixmap.
+        self._thumbnail_path = self._validate_image(path)
+
+    def _validate_image(self, path):
+        """
+        Validates that the path points to an actual image.
+
+        If the file can't be loaded, a warning is logged and ``None`` is
+        returned.
+
+        :param str path: Path of the image to validate.
+
+        :returns: If the image was successfully loaded, the path is returned.
+            If the image couldn't be loaded, ``None`` is returned.
+        """
+        if not path:
+            return None
+
+        # We can't validate the path by creating a QPixmap, so bail out and
+        # return the unvalidated path.
+        if not _is_qt_pixmap_usable():
+            return path
+
+        # defer import until needed and to avoid issues when running without UI
+        from sgtk.platform.qt import QtGui
+
+        try:
+            icon = QtGui.QPixmap(path)
+        except Exception as e:
+            logger.warning(
+                "%r: Could not load icon '%s': %s" % (self, path, e)
+            )
+            return None
+        else:
+            return None if icon.isNull() else path
 
     @property
     def active(self):
@@ -499,17 +571,27 @@ class PublishItem(object):
         """
         A generator that yields the immediate :ref:`publish-api-item` children of
         this item.
-
-        .. note:: :ref:`publish-api-item` instances are iterators so if you need
-            to traverse all descendant items, you can do this:
-
-            .. code-block:: python
-
-                for descendant in item:
-                    # process descendant item
         """
         for child in self._children:
             yield child
+
+    @property
+    def descendants(self):
+        """
+        A generator that yields all the :ref:`publish-api-item` children and their children
+        of this item.
+        """
+        for item in self._visit_recursive():
+            yield item
+
+    def _visit_recursive(self):
+        """
+        Yields all the children from an item and their descendants.
+        """
+        for c in self.children:
+            yield c
+            for sub_c in c.descendants:
+                yield sub_c
 
     @property
     def context(self):
@@ -640,9 +722,8 @@ class PublishItem(object):
         :param function get_parent_pixmap: Function used to get the pixmap of the parent item.
         :param str default_image_path: Path to the default pixmap.
         """
-
         # nothing to do if running without a UI
-        if not sgtk.platform.current_engine().has_ui:
+        if not _is_qt_pixmap_usable():
             return None
 
         # defer import until needed and to avoid issues when running without UI

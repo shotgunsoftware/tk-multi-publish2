@@ -100,6 +100,22 @@ class TestManager(PublishApiTestBase):
         # parent items, there should be two items.
         self.assertEqual(len(failures), 2)
 
+    def test_publish_raise_flag(self):
+        """
+        Ensures an exception is raised when the raise_on_error
+        flag is set.
+        """
+        def test_nodes():
+            task = MagicMock(
+                publish=Mock(side_effect=Exception("Test error!"))
+            )
+            error = yield task
+            self.assertIsNotNone(error)
+            raise error
+
+        with self.assertRaisesRegexp(Exception, "Test error!"):
+            self.manager.publish(test_nodes())
+
     def test_publish_and_finalize_failures(self):
         """
         Ensures publishing and finalizing report error properly.
