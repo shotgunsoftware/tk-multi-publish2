@@ -40,11 +40,11 @@ The code below shows how to execute a complete publish using this API:
     manager.collect_files([path1, path2, path3])
 
     # validate the items to publish
-    items_failed_validation = manager.validate()
+    tasks_failed_validation = manager.validate()
 
-    # oops, some items are invalid. see if they can be fixed
-    if items_failed_validation:
-        fix_invalid_items(items_failed_validation)
+    # oops, some tasks are invalid. see if they can be fixed
+    if tasks_failed_validation:
+        fix_invalid_tasks(tasks_failed_validation)
         # try again here or bail
 
     # all good. let's publish and finalize
@@ -53,9 +53,9 @@ The code below shows how to execute a complete publish using this API:
         # If a plugin needed to version up a file name after publish
         # it would be done in the finalize.
         manager.finalize()
-    except Exception, e:
+    except Exception as error:
         logger.error("There was trouble trying to publish!")
-        logger.error("Error: %s" % (e,))
+        logger.error("Error: %s", error)
 
 See the documentation for each of these classes below for more detail on how
 to use them.

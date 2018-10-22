@@ -253,8 +253,9 @@ class PublishManager(object):
 
         This is done by running the :meth:`~.base_hooks.PublishPlugin.validate`
         method on each task in the publish tree. A list of
-        :ref:`publish-api-item` instances with attached tasks that fail to
-        validate will be returned.
+        :class:`~PublishTask` instances that failed validation will be returned.
+        An exception will be associated with every task that failed validation
+        if one was raised.
 
         By default, the method will iterate over the manager's publish tree,
         validating all active tasks on all active items. To process tasks in a
@@ -276,14 +277,15 @@ class PublishManager(object):
 
         :param task_generator: A generator of :class:`~PublishTask` instances.
 
-        :returns: A list of items with tasks that failed to validate.
+        :returns: A list of tuples of (:class:`~PublishTask`,
+            optional :class:`Exception`) that failed to validate.
         """
 
         # we'll use this to build a list of tasks that failed to validate
         failed_to_validate = []
 
         def task_cb(task):
-            error_msg = None
+            error = None
             # do the actual validation and send the status back to the generator
             # so that it can react to the results. This is used, for example, by
             # the UI's generator to update the display of the task as it is
@@ -292,14 +294,14 @@ class PublishManager(object):
                 is_valid = task.validate()
             except Exception, e:
                 is_valid = False
-                error_msg = str(e)
+                error = e
 
             # if the task didn't validate, add it to the list of items that
             # failed (if it's not already there).
-            if not is_valid and task.item not in failed_to_validate:
-                failed_to_validate.append(task.item)
+            if not is_valid:
+                failed_to_validate.append((task, error))
 
-            return (is_valid, error_msg)
+            return (is_valid, error)
 
         self._process_tasks(task_generator, task_cb)
 
@@ -335,25 +337,14 @@ class PublishManager(object):
                         for task in item.tasks:
                             yield task
 
-            publish_manager.validate(task_generator=local_tasks_generator)
+            publish_manager.publish(task_generator=local_tasks_generator)
+
+        If an exception is raised by one of the published task, the publishing
+        is aborted and the exception is raised back to the caller.
 
         :param task_generator: A generator of :class:`~PublishTask` instances.
         """
-
-        def task_cb(task):
-            pub_exception = None
-
-            # do the actual publish
-            # the UI's generator to update the display of the task as it is
-            # being processed.
-            try:
-                task.publish()
-            except Exception, e:
-                pub_exception = e
-
-            return pub_exception
-
-        self._process_tasks(task_generator, task_cb)
+        self._process_tasks(task_generator, lambda task: task.publish())
 
         # execute the post publish method of the phase phase hook
         self._post_phase_hook.post_publish(self.tree)
@@ -383,24 +374,14 @@ class PublishManager(object):
                         for task in item.tasks:
                             yield task
 
-            publish_manager.validate(task_generator=report_tasks_generator)
+            publish_manager.finalize(task_generator=report_tasks_generator)
+
+        If an exception is raised by one of the finalized task, the finalization
+        is aborted and the exception is raised back to the caller.
 
         :param task_generator: A generator of :class:`~PublishTask` instances.
         """
-        def task_cb(task):
-            finalize_exception = None
-
-            # do the actual finalize
-            # the UI's generator to update the display of the task as it is
-            # being processed.
-            try:
-                task.finalize()
-            except Exception, e:
-                finalize_exception = e
-
-            return finalize_exception
-
-        self._process_tasks(task_generator, task_cb)
+        self._process_tasks(task_generator, lambda task: task.finalize())
 
         # execute the post finalize method of the phase phase hook
         self._post_phase_hook.post_finalize(self.tree)

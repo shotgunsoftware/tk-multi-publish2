@@ -1118,9 +1118,10 @@ class AppDialog(QtGui.QWidget):
                 self._progress_handler.push("Running finalizing pass")
 
                 try:
-                    self._publish_manager.finalize(
+                    finalization_errors = self._publish_manager.finalize(
                         task_generator=self._finalize_task_generator())
-                except Exception, e:
+                    publish_failed = bool(finalization_errors)
+                except Exception:
                     # ensure the full error shows up in the log file
                     logger.error("Finalize error stack:\n%s" % (traceback.format_exc(),))
                     # and log to ui
@@ -1252,7 +1253,8 @@ class AppDialog(QtGui.QWidget):
             try:
                 # yield each child item to be acted on by the publish api
                 if isinstance(ui_item, TreeNodeTask):
-                    (is_successful, error_msg) = yield ui_item.task
+                    (is_successful, error) = yield ui_item.task
+                    error_msg = str(error)
 
                 # all other nodes are UI-only and can handle their own
                 # validation
@@ -1288,13 +1290,12 @@ class AppDialog(QtGui.QWidget):
             try:
                 # yield each child item to be acted on by the publish api
                 if isinstance(ui_item, TreeNodeTask):
-                    pub_exception = yield ui_item.task
+                    yield ui_item.task
 
                 # all other nodes are UI-only and can handle their own
                 # publishing
                 else:
                     ui_item.publish()
-                    pub_exception = None
             except Exception, e:
                 ui_item.set_status_upwards(
                     ui_item.STATUS_PUBLISH_ERROR,
@@ -1302,15 +1303,7 @@ class AppDialog(QtGui.QWidget):
                 )
                 raise
             else:
-                if pub_exception:
-                    ui_item.set_status_upwards(
-                        ui_item.STATUS_PUBLISH_ERROR,
-                        str(pub_exception)
-                    )
-                    # This will abort the publish process.
-                    raise pub_exception
-                else:
-                    ui_item.set_status(ui_item.STATUS_PUBLISH)
+                ui_item.set_status(ui_item.STATUS_PUBLISH)
 
     def _finalize_task_generator(self):
         """
