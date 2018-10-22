@@ -1101,7 +1101,7 @@ class AppDialog(QtGui.QWidget):
                 self._publish_manager.publish(
                     task_generator=self._publish_task_generator()
                 )
-            except Exception, e:
+            except Exception:
                 # ensure the full error shows up in the log file
                 logger.error("Publish error stack:\n%s" % (traceback.format_exc(),))
                 # and log to ui
@@ -1118,9 +1118,8 @@ class AppDialog(QtGui.QWidget):
                 self._progress_handler.push("Running finalizing pass")
 
                 try:
-                    finalization_errors = self._publish_manager.finalize(
+                    self._publish_manager.finalize(
                         task_generator=self._finalize_task_generator())
-                    publish_failed = bool(finalization_errors)
                 except Exception:
                     # ensure the full error shows up in the log file
                     logger.error("Finalize error stack:\n%s" % (traceback.format_exc(),))
