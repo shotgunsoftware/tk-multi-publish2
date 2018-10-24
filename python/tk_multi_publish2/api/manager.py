@@ -255,7 +255,8 @@ class PublishManager(object):
         method on each task in the publish tree. A list of
         :class:`~PublishTask` instances that failed validation will be returned.
         An exception will be associated with every task that failed validation
-        if one was raised.
+        if one was raised. If no exception was raised, the second member of the
+        tuple will be ``None``.
 
         By default, the method will iterate over the manager's publish tree,
         validating all active tasks on all active items. To process tasks in a
@@ -296,8 +297,8 @@ class PublishManager(object):
                 is_valid = False
                 error = e
 
-            # if the task didn't validate, add it to the list of items that
-            # failed (if it's not already there).
+            # if the task didn't validate, add it to the list of tasks that
+            # failed.
             if not is_valid:
                 failed_to_validate.append((task, error))
 
