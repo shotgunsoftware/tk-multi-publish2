@@ -55,40 +55,41 @@ class TestManager(PublishApiTestBase):
         """
         Ensures publishing and finalizing report error properly.
         """
+        one_child_item = self.PublishItem("one_child", "one_child", "one_child")
+        two_children_item = self.PublishItem("two_child", "two_child", "two_child")
+        error_to_raise = Exception("Test error!")
+
+        task_1 = MagicMock(
+            item=one_child_item,
+            validate=lambda: False
+        )
+
+        task_2 = MagicMock(
+            item=two_children_item,
+            validate=Mock(side_effect=error_to_raise)
+        )
+
+        task_3 = MagicMock(
+            item=two_children_item,
+            validate=lambda: False
+        )
+
         def test_nodes():
-            one_child_item = self.PublishItem("one_child", "one_child", "one_child")
-
             # First yield a task that fails validation normally.
-            task = MagicMock(
-                item=one_child_item,
-                validate=lambda: False
-            )
-
-            is_valid, error_msg = (yield task)
+            is_valid, error_msg = (yield task_1)
             self.assertFalse(is_valid)
             self.assertIsNone(error_msg)
 
-            two_children_item = self.PublishItem("one_child", "one_child", "one_child")
-
             # Then yield a task that fails by raising an error
             # and has a different parent
-            task = MagicMock(
-                item=two_children_item,
-                validate=Mock(side_effect=Exception("Test error!"))
-            )
-
             # Invalid task should fail validation.
-            is_valid, error_msg = (yield task)
+            is_valid, error = (yield task_2)
             self.assertFalse(is_valid)
-            self.assertEqual(error_msg, "Test error!")
+            self.assertEqual(error, error_to_raise)
 
             # Then yield a task that has the same parent item and
             # also fail.
-            task = MagicMock(
-                item=two_children_item,
-                validate=lambda: False
-            )
-            is_valid, error_msg = (yield task)
+            is_valid, error_msg = (yield task_3)
 
             self.assertFalse(is_valid)
             self.assertIsNone(error_msg)
@@ -98,7 +99,14 @@ class TestManager(PublishApiTestBase):
         # The should be as many failures as there are failed *items*.
         # Since three tasks failed, but there were only two different
         # parent items, there should be two items.
-        self.assertEqual(len(failures), 2)
+        self.assertEqual(
+            failures,
+            [
+                (task_1, None),
+                (task_2, error_to_raise),
+                (task_3, None)
+            ]
+        )
 
     def test_publish_raise_flag(self):
         """
@@ -113,24 +121,36 @@ class TestManager(PublishApiTestBase):
             self.assertIsNotNone(error)
             raise error
 
-        with self.assertRaisesRegexp(Exception, "Test error!"):
+        with self.assertRaisesRegex(Exception, "Test error!"):
             self.manager.publish(test_nodes())
 
-    def test_publish_and_finalize_failures(self):
+    def test_finalize_failures(self):
         """
-        Ensures publishing and finalizing report error properly.
+        Ensures finalizing report exceptions properly and do not abort the finalize process.
         """
+        error = Exception("Test error!")
+
+        task = MagicMock(
+            finalize=Mock(side_effect=error)
+        )
+
         def test_nodes():
-
-            error = Exception("Test error!")
-
-            task = MagicMock(
-                publish=Mock(side_effect=error),
-                finalize=Mock(side_effect=error)
-            )
             returned_error = (yield task)
 
             self.assertEqual(error, returned_error)
 
-        self.manager.publish(test_nodes())
-        self.manager.finalize(test_nodes())
+        with self.assertRaisesRegex(Exception, "Test error!"):
+            self.manager.finalize(test_nodes())
+
+    def test_publish_failures(self):
+        """
+        Ensures finalizing report exceptions properly and do not abort the finalize process.
+        """
+        def test_nodes():
+            task = MagicMock(
+                publish=Mock(side_effect=Exception("Test error!"))
+            )
+            yield task
+
+        with self.assertRaisesRegex(Exception, "Test error!"):
+            self.manager.publish(test_nodes())

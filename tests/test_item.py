@@ -105,12 +105,12 @@ class TestPublishItem(PublishApiTestBase):
                 # Make sure if we're trying to access the local properties in a
                 # non plugin hook that the error is caught.
                 del self.id
-                with test.assertRaisesRegexp(AttributeError, "Could not determine the id for this"):
+                with test.assertRaisesRegex(AttributeError, "Could not determine the id for this"):
                     item.local_properties["test"]
 
         # Make sure if we're trying to access the local properties in a non-hook
         # derived class that the error is caught
-        with self.assertRaisesRegexp(AttributeError, "Could not determine the current publish plugin when"):
+        with self.assertRaisesRegex(AttributeError, "Could not determine the current publish plugin when"):
             item.local_properties["test"]
 
         # Instantiating the class will run the rest defined above.
@@ -128,7 +128,7 @@ class TestPublishItem(PublishApiTestBase):
         item5 = item2.create_item("test5", "test5", "test5")
 
         # Ensure removing an item that is not a children raises an error.
-        with self.assertRaisesRegexp(sgtk.TankError, "Unable to remove child item"):
+        with self.assertRaisesRegex(sgtk.TankError, "Unable to remove child item"):
             item.remove_item(item5)
 
         children = [c.name for c in item.children]
@@ -296,12 +296,12 @@ class TestPublishItem(PublishApiTestBase):
 
         # Root and grand children of the root can't be made persistent.
         self.assertFalse(grand_child.persistent)
-        with self.assertRaisesRegexp(sgtk.TankError, "Only top-level tree items"):
+        with self.assertRaisesRegex(sgtk.TankError, "Only top-level tree items"):
             grand_child.persistent = True
         self.assertFalse(grand_child.persistent)
 
         self.assertFalse(root.persistent)
-        with self.assertRaisesRegexp(sgtk.TankError, "Only top-level tree items"):
+        with self.assertRaisesRegex(sgtk.TankError, "Only top-level tree items"):
             root.persistent = True
         self.assertFalse(root.persistent)
 
@@ -337,7 +337,7 @@ class TestPublishItem(PublishApiTestBase):
                 nb_items_processed = 0
                 for item in manager.tree:
                     for task in item.tasks:
-                        (is_valid, error_msg) = yield task
+                        (is_valid, error) = yield task
                         # The validate method of both plugins will raise an error
                         # if the the values can be retrieved.
                         # We're raising if the test passes in the validate method
@@ -347,7 +347,7 @@ class TestPublishItem(PublishApiTestBase):
                         # caught by the errorEqual.
                         self.assertFalse(is_valid)
                         self.assertEqual(
-                            error_msg,
+                            str(error),
                             "local_properties was serialized properly."
                         )
                         nb_items_processed += 1
@@ -357,8 +357,8 @@ class TestPublishItem(PublishApiTestBase):
                 # were available due to a misconfiguration error in the test.
                 self.assertNotEqual(nb_items_processed, 0)
 
-            # Validate with our custom yielder
-            self.assertEqual(len(new_manager.validate(task_yielder(new_manager))), 3)
+            # Validate with our custom yielder. Each task that fails reports an error.
+            self.assertEqual(len(new_manager.validate(task_yielder(new_manager))), 6)
 
     def _create_manager(self):
         """
