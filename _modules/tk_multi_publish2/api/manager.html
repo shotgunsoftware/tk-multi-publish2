@@ -1,0 +1,884 @@
+
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tk_multi_publish2.api.manager &mdash; tk-multi-publish2 v2.2.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="tk-multi-publish2 v2.2.1 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    <a href='http://developer.shotgunsoftware.com'>
+    
+        <img style='width: 191px;
+                height: 60px; 
+                margin: 2px;
+                border-radius: 0px; 
+                padding: 0px;' 
+            src='../../../_static/logo@2x.png'/>
+    
+    </a>
+    
+
+          
+            <a href="../../../index.html" class="icon icon-home"> tk-multi-publish2
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../customizing.html">Publish Customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">Publish API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utility.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../application.html">App Interface</a></li>
+</ul>
+
+            
+          
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px; 
+                color: #b3b3b3; 
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>    
+    <style>
+        a.custom_post_menu { display: inline; 
+                             padding: 0px; 
+                             text-decoration: underline; }
+    </style>
+
+    <b>tk-multi-publish2</b> v2.2.1.<br>
+    
+        This documentation is part of the Shotgun Pipeline Toolkit.
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    The code associated with this documentation can be found 
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-multi-publish2'>here</a>.
+
+    </div>
+
+
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">tk-multi-publish2</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>tk_multi_publish2.api.manager</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for tk_multi_publish2.api.manager</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2018 Shotgun Software Inc.</span>
+<span class="c1">#</span>
+<span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
+<span class="c1">#</span>
+<span class="c1"># This work is provided &quot;AS IS&quot; and subject to the Shotgun Pipeline Toolkit</span>
+<span class="c1"># Source Code License included in this distribution package. See LICENSE.</span>
+<span class="c1"># By accessing, using, copying or modifying this work you indicate your</span>
+<span class="c1"># agreement to the Shotgun Pipeline Toolkit Source Code License. All rights</span>
+<span class="c1"># not expressly granted therein are reserved by Shotgun Software Inc.</span>
+
+<span class="kn">import</span> <span class="nn">fnmatch</span>
+
+<span class="kn">import</span> <span class="nn">sgtk</span>
+
+<span class="kn">from</span> <span class="nn">.tree</span> <span class="kn">import</span> <span class="n">PublishTree</span>
+<span class="kn">from</span> <span class="nn">.plugins</span> <span class="kn">import</span> <span class="n">CollectorPluginInstance</span><span class="p">,</span> <span class="n">PublishPluginInstance</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="PublishManager"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishManager">[docs]</a><span class="k">class</span> <span class="nc">PublishManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is used for managing and executing publishes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;_bundle&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_logger&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_tree&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_collector_instance&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_processed_contexts&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_post_phase_hook&quot;</span>
+    <span class="p">]</span>
+
+    <span class="c1">############################################################################</span>
+    <span class="c1"># setting names</span>
+
+    <span class="n">CONFIG_COLLECTOR_HOOK_PATH</span> <span class="o">=</span> <span class="s2">&quot;collector&quot;</span>
+    <span class="n">CONFIG_COLLECTOR_SETTINGS</span> <span class="o">=</span> <span class="s2">&quot;collector_settings&quot;</span>
+    <span class="n">CONFIG_PLUGIN_DEFINITIONS</span> <span class="o">=</span> <span class="s2">&quot;publish_plugins&quot;</span>
+    <span class="n">CONFIG_POST_PHASE_HOOK_PATH</span> <span class="o">=</span> <span class="s2">&quot;post_phase&quot;</span>
+
+    <span class="c1">############################################################################</span>
+    <span class="c1"># special item property keys</span>
+
+    <span class="c1"># this is the key we&#39;ll use to store a special property on items that</span>
+    <span class="c1"># are collected via a file path. we can use this later on to determine which</span>
+    <span class="c1"># items were added to the tree via path collection and what that original</span>
+    <span class="c1"># path was (client code could add multiple items for a single path).</span>
+    <span class="n">PROPERTY_KEY_COLLECTED_FILE_PATH</span> <span class="o">=</span> <span class="s2">&quot;__collected_file_path__&quot;</span>
+
+    <span class="c1">############################################################################</span>
+    <span class="c1"># instance methods</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_logger</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the manager.</span>
+
+<span class="sd">        :param publish_logger: This is a standard python logger to use during</span>
+<span class="sd">            publishing. A default logger will be provided if not supplied. This</span>
+<span class="sd">            can be useful when implementing a custom UI, for example, with a</span>
+<span class="sd">            specialized log handler (as is the case with the Publisher)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the current bundle (the publisher instance)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_bundle</span><span class="p">()</span>
+
+        <span class="c1"># a logger to be used by the various collector/publish plugins</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">publish_logger</span> <span class="ow">or</span> <span class="n">logger</span>
+
+        <span class="c1"># the underlying tree representation of the items to publish</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span> <span class="o">=</span> <span class="n">PublishTree</span><span class="p">()</span>
+
+        <span class="c1"># collector instance for this context</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collector_instance</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c1"># a lookup of context to publish plugins.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_processed_contexts</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># initialize the collector plugin</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loading collector plugin...&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_collector</span><span class="p">()</span>
+
+        <span class="c1"># go ahead and load the plugins for the current context for efficiency</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loading plugins for the current context...&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_publish_plugins</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">context</span><span class="p">)</span>
+
+        <span class="c1"># load the phose phase hook</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loading post phase hook...&quot;</span><span class="p">)</span>
+        <span class="n">post_phase_hook_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_POST_PHASE_HOOK_PATH</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_post_phase_hook</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">create_hook_instance</span><span class="p">(</span>
+            <span class="n">post_phase_hook_path</span><span class="p">,</span>
+            <span class="n">base_class</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">base_hooks</span><span class="o">.</span><span class="n">PostPhaseHook</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="PublishManager.collect_files"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishManager.collect_files">[docs]</a>    <span class="k">def</span> <span class="nf">collect_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_paths</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run the collection logic to populate the publish tree with items for</span>
+<span class="sd">        each supplied path.</span>
+
+<span class="sd">        Each path supplied to this method will be processed by the configured</span>
+<span class="sd">        collector hook for the current context. The collector will create</span>
+<span class="sd">        :ref:`publish-api-item` instances accordingly, each of which will be</span>
+<span class="sd">        marked as :py:attr:`~.api.PublishItem.persistent`.</span>
+
+<span class="sd">        :param list file_paths: A list of file paths to collect as items to</span>
+<span class="sd">            publish.</span>
+<span class="sd">        :returns: A list of the created :ref:`publish-api-item` instances.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">new_items</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="n">file_paths</span><span class="p">:</span>
+
+            <span class="c1"># get a list of all items in the tree prior to collection</span>
+            <span class="n">items_before</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path_already_collected</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;Skipping previously collected file path: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span>
+                    <span class="p">(</span><span class="n">file_path</span><span class="p">,)</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Collecting file path: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">file_path</span><span class="p">,))</span>
+
+                <span class="c1"># we supply the root item of the tree for parenting of items</span>
+                <span class="c1"># that are collected.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_collector_instance</span><span class="o">.</span><span class="n">run_process_file</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">root_item</span><span class="p">,</span>
+                    <span class="n">file_path</span>
+                <span class="p">)</span>
+
+            <span class="c1"># get a list of all items in the tree after collection</span>
+            <span class="n">items_after</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">)</span>
+
+            <span class="c1"># calculate which items are new</span>
+            <span class="n">new_file_items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">items_after</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">items_before</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">new_file_items</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No items collected for path: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">file_path</span><span class="p">,))</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Mark new items as persistent and include the file path that was</span>
+            <span class="c1"># used for collection as part of the item properties</span>
+            <span class="k">for</span> <span class="n">file_item</span> <span class="ow">in</span> <span class="n">new_file_items</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">file_item</span><span class="o">.</span><span class="n">parent</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">root_item</span><span class="p">:</span>
+                    <span class="c1"># only top-level items can be marked as persistent</span>
+                    <span class="n">file_item</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">file_item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">PROPERTY_KEY_COLLECTED_FILE_PATH</span><span class="p">]</span> <span class="o">=</span> \
+                    <span class="n">file_path</span>
+
+            <span class="c1"># attach the appropriate plugins to the new items</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attach_plugins</span><span class="p">(</span><span class="n">new_file_items</span><span class="p">)</span>
+
+            <span class="n">new_items</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">new_file_items</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_items</span></div>
+
+<div class="viewcode-block" id="PublishManager.collect_session"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishManager.collect_session">[docs]</a>    <span class="k">def</span> <span class="nf">collect_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run the collection logic to populate the tree with items to publish.</span>
+
+<span class="sd">        This method will collect all session :ref:`publish-api-item` instances</span>
+<span class="sd">        as defined by the configured collector hook for the current context.</span>
+
+<span class="sd">        This will reestablish the state of the publish tree, recomputing</span>
+<span class="sd">        everything. Any externally added file path items, or other items, marked</span>
+<span class="sd">        as :py:attr:`~.api.PublishItem.persistent` will be retained.</span>
+
+<span class="sd">        :returns: A list of the created :ref:`publish-api-item` instances.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># this will clear the tree of all non-persistent items.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">clear_persistent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="c1"># get a list of all items in the tree prior to collection (this should</span>
+        <span class="c1"># be only the persistent items)</span>
+        <span class="n">items_before</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">)</span>
+
+        <span class="c1"># we supply the root item of the tree for parenting of items that</span>
+        <span class="c1"># are collected.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collector_instance</span><span class="o">.</span><span class="n">run_process_current_session</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">root_item</span><span class="p">)</span>
+
+        <span class="c1"># get a list of all items in the tree after collection</span>
+        <span class="n">items_after</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">)</span>
+
+        <span class="c1"># calculate which items are new</span>
+        <span class="n">new_items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">items_after</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">items_before</span><span class="p">))</span>
+
+        <span class="c1"># attach the appropriate plugins to the new items</span>
+        <span class="k">if</span> <span class="n">new_items</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attach_plugins</span><span class="p">(</span><span class="n">new_items</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_items</span></div>
+
+<div class="viewcode-block" id="PublishManager.load"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishManager.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load a publish tree that was serialized and saved to disk.</span>
+
+<span class="sd">        This is a convenience method that replaces the manager&#39;s underlying</span>
+<span class="sd">        :ref:`publish-api-tree` with the deserialized contents stored in the</span>
+<span class="sd">        supplied file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span> <span class="o">=</span> <span class="n">PublishTree</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PublishManager.save"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishManager.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves a publish tree to disk.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">save_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_process_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_generator</span><span class="p">,</span> <span class="n">task_cb</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Processes tasks returned by the generator and invokes the passed in</span>
+<span class="sd">        callback on each. The result of the task callback will be forwarded back</span>
+<span class="sd">        to the generator.</span>
+
+<span class="sd">        :param task_genrator: Iterator on task to process.</span>
+<span class="sd">        :param task_cb: Callable that will process a task.</span>
+<span class="sd">            The signature is</span>
+<span class="sd">            def task_cb(task):</span>
+<span class="sd">                ...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># calling code can supply its own generator for tasks to process. if not</span>
+        <span class="c1"># supplied, we&#39;ll use our own generator.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">task_generator</span><span class="p">:</span>
+            <span class="n">task_generator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_generator</span><span class="p">()</span>
+
+        <span class="c1"># get the first task</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">task</span> <span class="o">=</span> <span class="n">task_generator</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="c1"># now begin iterating over tasks supplied by the generator</span>
+        <span class="k">while</span> <span class="n">task</span><span class="p">:</span>
+
+            <span class="n">return_value</span> <span class="o">=</span> <span class="n">task_cb</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+
+            <span class="c1"># send the return_value and get the next task. this is a bit annoying</span>
+            <span class="c1"># since send() returns the next value of the generator. which is why</span>
+            <span class="c1"># we&#39;re using `while` instead of a for loop with the generator.</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">task</span> <span class="o">=</span> <span class="n">task_generator</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">return_value</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+                <span class="k">break</span>
+
+<div class="viewcode-block" id="PublishManager.validate"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishManager.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_generator</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate items to be published.</span>
+
+<span class="sd">        This is done by running the :meth:`~.base_hooks.PublishPlugin.validate`</span>
+<span class="sd">        method on each task in the publish tree. A list of</span>
+<span class="sd">        :class:`~PublishTask` instances that failed validation will be returned.</span>
+<span class="sd">        An exception will be associated with every task that failed validation</span>
+<span class="sd">        if one was raised. If no exception was raised, the second member of the</span>
+<span class="sd">        tuple will be ``None``.</span>
+
+<span class="sd">        By default, the method will iterate over the manager&#39;s publish tree,</span>
+<span class="sd">        validating all active tasks on all active items. To process tasks in a</span>
+<span class="sd">        different way (different order or different criteria) you can provide</span>
+<span class="sd">        a custom ``task_generator`` that yields :class:`~PublishTask` instances.</span>
+
+<span class="sd">        For example, to validate all items in the tree, without worrying about</span>
+<span class="sd">        their active state:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            def all_tasks_generator(publish_tree):</span>
+
+<span class="sd">                for item in publish_tree:</span>
+<span class="sd">                    for task in item.tasks:</span>
+<span class="sd">                        yield task</span>
+
+<span class="sd">            publish_manager.validate(task_generator=all_tasks_generator)</span>
+
+<span class="sd">        :param task_generator: A generator of :class:`~PublishTask` instances.</span>
+
+<span class="sd">        :returns: A list of tuples of (:class:`~PublishTask`,</span>
+<span class="sd">            optional :class:`Exception`) that failed to validate.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># we&#39;ll use this to build a list of tasks that failed to validate</span>
+        <span class="n">failed_to_validate</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">def</span> <span class="nf">task_cb</span><span class="p">(</span><span class="n">task</span><span class="p">):</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="c1"># do the actual validation and send the status back to the generator</span>
+            <span class="c1"># so that it can react to the results. This is used, for example, by</span>
+            <span class="c1"># the UI&#39;s generator to update the display of the task as it is</span>
+            <span class="c1"># being processed.</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">is_valid</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">is_valid</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="n">error</span> <span class="o">=</span> <span class="n">e</span>
+
+            <span class="c1"># if the task didn&#39;t validate, add it to the list of tasks that</span>
+            <span class="c1"># failed.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_valid</span><span class="p">:</span>
+                <span class="n">failed_to_validate</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">task</span><span class="p">,</span> <span class="n">error</span><span class="p">))</span>
+
+            <span class="k">return</span> <span class="p">(</span><span class="n">is_valid</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_process_tasks</span><span class="p">(</span><span class="n">task_generator</span><span class="p">,</span> <span class="n">task_cb</span><span class="p">)</span>
+
+        <span class="c1"># execute the post validate method of the phase phase hook</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_post_phase_hook</span><span class="o">.</span><span class="n">post_validate</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">failed_to_validate</span></div>
+
+<div class="viewcode-block" id="PublishManager.publish"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishManager.publish">[docs]</a>    <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_generator</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Publish items in the tree.</span>
+
+<span class="sd">        This is done by running the :meth:`~.base_hooks.PublishPlugin.publish`</span>
+<span class="sd">        method on each task in the publish tree.</span>
+
+<span class="sd">        By default, the method will iterate over the manager&#39;s publish tree,</span>
+<span class="sd">        publishing all active tasks on all active items. To process tasks in a</span>
+<span class="sd">        different way (different order or different criteria) you can provide</span>
+<span class="sd">        a custom ``task_generator`` that yields :class:`~PublishTask` instances.</span>
+
+<span class="sd">        For example, to publish all items in the tree that have a</span>
+<span class="sd">        ``local_publish`` flag set in their properties dictionary, you could do</span>
+<span class="sd">        the following:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            def local_tasks_generator(publish_tree):</span>
+
+<span class="sd">                for item in publish_tree:</span>
+<span class="sd">                    if item.properties.get(&quot;local_publish&quot;):</span>
+<span class="sd">                        for task in item.tasks:</span>
+<span class="sd">                            yield task</span>
+
+<span class="sd">            publish_manager.publish(task_generator=local_tasks_generator)</span>
+
+<span class="sd">        If an exception is raised by one of the published task, the publishing</span>
+<span class="sd">        is aborted and the exception is raised back to the caller.</span>
+
+<span class="sd">        :param task_generator: A generator of :class:`~PublishTask` instances.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_process_tasks</span><span class="p">(</span><span class="n">task_generator</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">task</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">publish</span><span class="p">())</span>
+
+        <span class="c1"># execute the post publish method of the phase phase hook</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_post_phase_hook</span><span class="o">.</span><span class="n">post_publish</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PublishManager.finalize"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishManager.finalize">[docs]</a>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_generator</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finalize items in the tree.</span>
+
+<span class="sd">        This is done by running the :meth:`~.base_hooks.PublishPlugin.finalize`</span>
+<span class="sd">        method on each task in the publish tree.</span>
+
+<span class="sd">        By default, the method will iterate over the manager&#39;s publish tree,</span>
+<span class="sd">        finalizing all active tasks on all active items. To process tasks in a</span>
+<span class="sd">        different way (different order or different criteria) you can provide</span>
+<span class="sd">        a custom ``task_generator`` that yields :class:`~PublishTask` instances.</span>
+
+<span class="sd">        For example, to finalize all items in the tree that have a</span>
+<span class="sd">        ``generate_report`` flag set in their properties dictionary, you could</span>
+<span class="sd">        do the following:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            def report_tasks_generator(publish_tree):</span>
+
+<span class="sd">                for item in publish_tree:</span>
+<span class="sd">                    if item.properties.get(&quot;generate_report&quot;):</span>
+<span class="sd">                        for task in item.tasks:</span>
+<span class="sd">                            yield task</span>
+
+<span class="sd">            publish_manager.finalize(task_generator=report_tasks_generator)</span>
+
+<span class="sd">        If an exception is raised by one of the finalized task, the finalization</span>
+<span class="sd">        is aborted and the exception is raised back to the caller.</span>
+
+<span class="sd">        :param task_generator: A generator of :class:`~PublishTask` instances.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_process_tasks</span><span class="p">(</span><span class="n">task_generator</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">task</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">finalize</span><span class="p">())</span>
+
+        <span class="c1"># execute the post finalize method of the phase phase hook</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_post_phase_hook</span><span class="o">.</span><span class="n">post_finalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">context</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the execution context of the manager.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">context</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">logger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the manager&#39;s logger which is used during publish execution.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">collected_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of file paths for all items collected via the</span>
+<span class="sd">        :meth:`~collect_files` method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">collected_paths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">persistent_items</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">PROPERTY_KEY_COLLECTED_FILE_PATH</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">:</span>
+                <span class="n">collected_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">PROPERTY_KEY_COLLECTED_FILE_PATH</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">collected_paths</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the underlying :ref:`publish-api-tree` instance.</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span>
+
+    <span class="c1">############################################################################</span>
+    <span class="c1"># protected methods</span>
+
+    <span class="k">def</span> <span class="nf">_attach_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For each item supplied, given it&#39;s context, load the appropriate plugins</span>
+<span class="sd">        and add any matching tasks. If any tasks exist on the supplied items,</span>
+<span class="sd">        they will be removed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+
+            <span class="c1"># clear existing tasks for this item</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">clear_tasks</span><span class="p">()</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Processing item: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">item</span><span class="p">,))</span>
+
+            <span class="n">item_context</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">context</span>
+
+            <span class="n">context_plugins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_publish_plugins</span><span class="p">(</span><span class="n">item_context</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;Offering </span><span class="si">%s</span><span class="s2"> plugins for context: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
+                <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">context_plugins</span><span class="p">),</span> <span class="n">item_context</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">context_plugin</span> <span class="ow">in</span> <span class="n">context_plugins</span><span class="p">:</span>
+
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Checking plugin: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">context_plugin</span><span class="p">,))</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_filters_match</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">context_plugin</span><span class="p">):</span>
+                    <span class="k">continue</span>
+
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Running plugin acceptance method...&quot;</span><span class="p">)</span>
+
+                <span class="c1"># item/filters matched. now see if the plugin accepts</span>
+                <span class="n">accept_data</span> <span class="o">=</span> <span class="n">context_plugin</span><span class="o">.</span><span class="n">run_accept</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">accept_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;accepted&quot;</span><span class="p">):</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Plugin accepted the item.&quot;</span><span class="p">)</span>
+                    <span class="n">task</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="n">context_plugin</span><span class="p">)</span>
+                    <span class="n">task</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="n">accept_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;visible&quot;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+                    <span class="n">task</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="n">accept_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;checked&quot;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+                    <span class="n">task</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="n">accept_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;enabled&quot;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Plugin did not accept the item.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_item_filters_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">publish_plugin</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns ``True`` if the supplied item&#39;s type specification matches</span>
+<span class="sd">        the publish plugin&#39;s item filters.</span>
+
+<span class="sd">        :param item: The item to compare</span>
+<span class="sd">        :param publish_plugin: The publish plugin instance to compare</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">item_filter</span> <span class="ow">in</span> <span class="n">publish_plugin</span><span class="o">.</span><span class="n">item_filters</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">type_spec</span><span class="p">,</span> <span class="n">item_filter</span><span class="p">):</span>
+                <span class="c1"># there is a match!</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;Item </span><span class="si">%s</span><span class="s2"> with spec &#39;</span><span class="si">%s</span><span class="s2">&#39; matches plugin filters: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span>
+                    <span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">type_spec</span><span class="p">,</span> <span class="n">item_filter</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="c1"># no filters match the item&#39;s type</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s2">&quot;Item </span><span class="si">%s</span><span class="s2"> with spec &#39;</span><span class="si">%s</span><span class="s2">&#39; does not match any plugin filters: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span>
+            <span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">type_spec</span><span class="p">,</span> <span class="n">publish_plugin</span><span class="o">.</span><span class="n">item_filters</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">_load_collector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load the collector plugin for the current bundle configuration/context.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">collector_hook_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_COLLECTOR_HOOK_PATH</span><span class="p">)</span>
+        <span class="n">collector_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_COLLECTOR_SETTINGS</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collector_instance</span> <span class="o">=</span> <span class="n">CollectorPluginInstance</span><span class="p">(</span>
+            <span class="n">collector_hook_path</span><span class="p">,</span>
+            <span class="n">collector_settings</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_load_publish_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a context, this method load the corresponding, configured publish</span>
+<span class="sd">        plugins.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># return the cached plugins if the context has already been processed</span>
+        <span class="k">if</span> <span class="n">context</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_processed_contexts</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_processed_contexts</span><span class="p">[</span><span class="n">context</span><span class="p">]</span>
+
+        <span class="n">engine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">engine</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s2">&quot;Finding publish plugin settings for context: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">context</span><span class="p">,))</span>
+
+        <span class="k">if</span> <span class="n">context</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">context</span><span class="p">:</span>
+            <span class="c1"># if the context matches the bundle, we don&#39;t need to do any extra</span>
+            <span class="c1"># work since the settings are already accessible</span>
+            <span class="n">plugin_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_PLUGIN_DEFINITIONS</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># load the plugins from the supplied context. this means executing</span>
+            <span class="c1"># the pick environment hook and reading from disk. this is why we</span>
+            <span class="c1"># cache the plugins.</span>
+            <span class="n">context_settings</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">find_app_settings</span><span class="p">(</span>
+                <span class="n">engine</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">sgtk</span><span class="p">,</span>
+                <span class="n">context</span><span class="p">,</span>
+                <span class="n">engine_instance_name</span><span class="o">=</span><span class="n">engine</span><span class="o">.</span><span class="n">instance_name</span>
+            <span class="p">)</span>
+
+            <span class="n">app_settings</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">context_settings</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># There&#39;s more than one instance of that app for the engine</span>
+                <span class="c1"># instance, so we&#39;ll need to deterministically pick one. We&#39;ll</span>
+                <span class="c1"># pick the one with the same application instance name as the</span>
+                <span class="c1"># current app instance.</span>
+                <span class="k">for</span> <span class="n">settings</span> <span class="ow">in</span> <span class="n">context_settings</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;app_instance&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">instance_name</span><span class="p">:</span>
+                        <span class="n">app_settings</span> <span class="o">=</span> <span class="n">settings</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">context_settings</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">app_settings</span> <span class="o">=</span> <span class="n">context_settings</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;settings&quot;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">app_settings</span><span class="p">:</span>
+                <span class="n">plugin_settings</span> <span class="o">=</span> <span class="n">app_settings</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_PLUGIN_DEFINITIONS</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;Could not find publish plugin settings for context: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
+                    <span class="p">(</span><span class="n">context</span><span class="p">,)</span>
+                <span class="p">)</span>
+                <span class="n">plugin_settings</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># build up a list of all configured publish plugins here</span>
+        <span class="n">plugins</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># create plugin instances for configured plugins</span>
+        <span class="k">for</span> <span class="n">plugin_def</span> <span class="ow">in</span> <span class="n">plugin_settings</span><span class="p">:</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found publish plugin config: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">plugin_def</span><span class="p">,))</span>
+
+            <span class="n">publish_plugin_instance_name</span> <span class="o">=</span> <span class="n">plugin_def</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+            <span class="n">publish_plugin_hook_path</span> <span class="o">=</span> <span class="n">plugin_def</span><span class="p">[</span><span class="s2">&quot;hook&quot;</span><span class="p">]</span>
+            <span class="n">publish_plugin_settings</span> <span class="o">=</span> <span class="n">plugin_def</span><span class="p">[</span><span class="s2">&quot;settings&quot;</span><span class="p">]</span>
+
+            <span class="n">plugin_instance</span> <span class="o">=</span> <span class="n">PublishPluginInstance</span><span class="p">(</span>
+                <span class="n">publish_plugin_instance_name</span><span class="p">,</span>
+                <span class="n">publish_plugin_hook_path</span><span class="p">,</span>
+                <span class="n">publish_plugin_settings</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
+            <span class="p">)</span>
+            <span class="n">plugins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plugin_instance</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Created publish plugin: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">plugin_instance</span><span class="p">,))</span>
+
+        <span class="c1"># ensure the plugins are cached</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_processed_contexts</span><span class="p">[</span><span class="n">context</span><span class="p">]</span> <span class="o">=</span> <span class="n">plugins</span>
+
+        <span class="k">return</span> <span class="n">plugins</span>
+
+    <span class="k">def</span> <span class="nf">_path_already_collected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns ``True`` if the supplied file path has been collected into the</span>
+<span class="sd">        tree already. ``False`` otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># check each persistent item for a collected file path. if it matches</span>
+        <span class="c1"># the supplied path, then the path has already been collected.</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">persistent_items</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">PROPERTY_KEY_COLLECTED_FILE_PATH</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">:</span>
+                <span class="n">collected_path</span> <span class="o">=</span> \
+                    <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">PROPERTY_KEY_COLLECTED_FILE_PATH</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">collected_path</span> <span class="o">==</span> <span class="n">file_path</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="c1"># no existing, persistent item was collected with this path</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">_task_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method generates all active tasks for all active items in the</span>
+<span class="sd">        publish tree and yields them to the caller.</span>
+
+<span class="sd">        This is the default task generator used by validate, publish, and</span>
+<span class="sd">        finalize if no custom task generator is supplied.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Iterating over tasks...&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;Skipping item &#39;</span><span class="si">%s</span><span class="s2">&#39; because it is inactive&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">item</span><span class="p">,))</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">tasks</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;Skipping item &#39;</span><span class="si">%s</span><span class="s2">&#39; because it has no tasks attached.&quot;</span> <span class="o">%</span>
+                    <span class="p">(</span><span class="n">item</span><span class="p">,)</span>
+                <span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Processing item: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">item</span><span class="p">,))</span>
+            <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">tasks</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Skipping inactive task: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">task</span><span class="p">,))</span>
+                    <span class="k">continue</span>
+
+                <span class="n">status</span> <span class="o">=</span> <span class="p">(</span><span class="k">yield</span> <span class="n">task</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Task </span><span class="si">%s</span><span class="s2"> status: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">status</span><span class="p">))</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Autodesk.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'v2.2.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+</body>
+</html>

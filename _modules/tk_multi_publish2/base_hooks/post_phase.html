@@ -1,0 +1,370 @@
+
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tk_multi_publish2.base_hooks.post_phase &mdash; tk-multi-publish2 v2.2.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="tk-multi-publish2 v2.2.1 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    <a href='http://developer.shotgunsoftware.com'>
+    
+        <img style='width: 191px;
+                height: 60px; 
+                margin: 2px;
+                border-radius: 0px; 
+                padding: 0px;' 
+            src='../../../_static/logo@2x.png'/>
+    
+    </a>
+    
+
+          
+            <a href="../../../index.html" class="icon icon-home"> tk-multi-publish2
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../customizing.html">Publish Customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">Publish API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utility.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../application.html">App Interface</a></li>
+</ul>
+
+            
+          
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px; 
+                color: #b3b3b3; 
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>    
+    <style>
+        a.custom_post_menu { display: inline; 
+                             padding: 0px; 
+                             text-decoration: underline; }
+    </style>
+
+    <b>tk-multi-publish2</b> v2.2.1.<br>
+    
+        This documentation is part of the Shotgun Pipeline Toolkit.
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    The code associated with this documentation can be found 
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-multi-publish2'>here</a>.
+
+    </div>
+
+
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">tk-multi-publish2</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>tk_multi_publish2.base_hooks.post_phase</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for tk_multi_publish2.base_hooks.post_phase</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2018 Shotgun Software Inc.</span>
+<span class="c1">#</span>
+<span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
+<span class="c1">#</span>
+<span class="c1"># This work is provided &quot;AS IS&quot; and subject to the Shotgun Pipeline Toolkit</span>
+<span class="c1"># Source Code License included in this distribution package. See LICENSE.</span>
+<span class="c1"># By accessing, using, copying or modifying this work you indicate your</span>
+<span class="c1"># agreement to the Shotgun Pipeline Toolkit Source Code License. All rights</span>
+<span class="c1"># not expressly granted therein are reserved by Shotgun Software Inc.</span>
+
+<span class="kn">import</span> <span class="nn">sgtk</span>
+
+<span class="n">HookBaseClass</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">get_hook_baseclass</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="PostPhaseHook"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PostPhaseHook">[docs]</a><span class="k">class</span> <span class="nc">PostPhaseHook</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This hook defines methods that are executed after each phase of a publish:</span>
+<span class="sd">    validation, publish, and finalization. Each method receives the</span>
+<span class="sd">    :ref:`publish-api-tree` tree instance being used by the publisher, giving</span>
+<span class="sd">    full control to further curate the publish tree including the publish items</span>
+<span class="sd">    and the tasks attached to them. See the :ref:`publish-api-tree`</span>
+<span class="sd">    documentation for additional details on how to traverse the tree and</span>
+<span class="sd">    manipulate it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PostPhaseHook.post_validate"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PostPhaseHook.post_validate">[docs]</a>    <span class="k">def</span> <span class="nf">post_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_tree</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is executed after the validation pass has completed for each</span>
+<span class="sd">        item in the tree, before the publish pass.</span>
+
+<span class="sd">        A :ref:`publish-api-tree` instance representing the items to publish,</span>
+<span class="sd">        and their associated tasks, is supplied as an argument. The tree can be</span>
+<span class="sd">        traversed in this method to inspect the items and tasks and process them</span>
+<span class="sd">        collectively. The instance can also be used to save the state of the</span>
+<span class="sd">        tree to disk for execution later or on another machine.</span>
+
+<span class="sd">        To glean information about the validation of particular items, you can</span>
+<span class="sd">        iterate over the items in the tree and introspect their</span>
+<span class="sd">        :py:attr:`~.api.PublishItem.properties` dictionary. This requires</span>
+<span class="sd">        customizing your publish plugins to populate any specific validation</span>
+<span class="sd">        information (failure/success) as well. You might, for example, set a</span>
+<span class="sd">        ``validation_failed`` boolean in the item properties, indicating if any</span>
+<span class="sd">        of the item&#39;s tasks failed. You could then include validation error</span>
+<span class="sd">        messages in a ``validation_errors`` list on the item, appending error</span>
+<span class="sd">        messages during task execution. Then, this method might look something</span>
+<span class="sd">        like this:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            def post_validate(self, publish_tree):</span>
+
+<span class="sd">                all_errors = []</span>
+
+<span class="sd">                # the publish tree is iterable, so you can easily loop over</span>
+<span class="sd">                # all items in the tree</span>
+<span class="sd">                for item in publish_tree:</span>
+
+<span class="sd">                    # access properties set on the item during the execution of</span>
+<span class="sd">                    # the attached publish plugins</span>
+<span class="sd">                    if item.properties.validation_failed:</span>
+<span class="sd">                        all_errors.extend(item.properties.validation_errors)</span>
+
+<span class="sd">                # process all validation issues here...</span>
+
+<span class="sd">        .. warning:: You will not be able to use the item&#39;s</span>
+<span class="sd">            :py:attr:`~.api.PublishItem.local_properties` in this hook since</span>
+<span class="sd">            :py:attr:`~.api.PublishItem.local_properties` are only accessible</span>
+<span class="sd">            during the execution of a publish plugin.</span>
+
+<span class="sd">        :param publish_tree: The :ref:`publish-api-tree` instance representing</span>
+<span class="sd">            the items to be published.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Executing post validate hook method...&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PostPhaseHook.post_publish"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PostPhaseHook.post_publish">[docs]</a>    <span class="k">def</span> <span class="nf">post_publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_tree</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is executed after the publish pass has completed for each</span>
+<span class="sd">        item in the tree, before the finalize pass.</span>
+
+<span class="sd">        A :ref:`publish-api-tree` instance representing the items that were</span>
+<span class="sd">        published is supplied as an argument. The tree can be traversed in this</span>
+<span class="sd">        method to inspect the items and process them collectively.</span>
+
+<span class="sd">        To glean information about the publish state of particular items, you</span>
+<span class="sd">        can iterate over the items in the tree and introspect their</span>
+<span class="sd">        :py:attr:`~.api.PublishItem.properties` dictionary. This requires</span>
+<span class="sd">        customizing your publish plugins to populate any specific publish</span>
+<span class="sd">        information that you want to process collectively here.</span>
+
+<span class="sd">        .. warning:: You will not be able to use the item&#39;s</span>
+<span class="sd">            :py:attr:`~.api.PublishItem.local_properties` in this hook since</span>
+<span class="sd">            :py:attr:`~.api.PublishItem.local_properties` are only accessible</span>
+<span class="sd">            during the execution of a publish plugin.</span>
+
+<span class="sd">        :param publish_tree: The :ref:`publish-api-tree` instance representing</span>
+<span class="sd">            the items to be published.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Executing post publish hook method...&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PostPhaseHook.post_finalize"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PostPhaseHook.post_finalize">[docs]</a>    <span class="k">def</span> <span class="nf">post_finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_tree</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is executed after the finalize pass has completed for each</span>
+<span class="sd">        item in the tree.</span>
+
+<span class="sd">        A :ref:`publish-api-tree` instance representing the items that were</span>
+<span class="sd">        published and finalized is supplied as an argument. The tree can be</span>
+<span class="sd">        traversed in this method to inspect the items and process them</span>
+<span class="sd">        collectively.</span>
+
+<span class="sd">        To glean information about the finalize state of particular items, you</span>
+<span class="sd">        can iterate over the items in the tree and introspect their</span>
+<span class="sd">        :py:attr:`~.api.PublishItem.properties` dictionary. This requires</span>
+<span class="sd">        customizing your publish plugins to populate any specific finalize</span>
+<span class="sd">        information that you want to process collectively here.</span>
+
+<span class="sd">        .. warning:: You will not be able to use the item&#39;s</span>
+<span class="sd">            :py:attr:`~.api.PublishItem.local_properties` in this hook since</span>
+<span class="sd">            :py:attr:`~.api.PublishItem.local_properties` are only accessible</span>
+<span class="sd">            during the execution of a publish plugin.</span>
+
+<span class="sd">        :param publish_tree: The :ref:`publish-api-tree` instance representing</span>
+<span class="sd">            the items to be published.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Executing post finalize hook method...&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Autodesk.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'v2.2.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+</body>
+</html>

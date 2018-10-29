@@ -1,0 +1,526 @@
+
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tk_multi_publish2.api.task &mdash; tk-multi-publish2 v2.2.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="tk-multi-publish2 v2.2.1 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    <a href='http://developer.shotgunsoftware.com'>
+    
+        <img style='width: 191px;
+                height: 60px; 
+                margin: 2px;
+                border-radius: 0px; 
+                padding: 0px;' 
+            src='../../../_static/logo@2x.png'/>
+    
+    </a>
+    
+
+          
+            <a href="../../../index.html" class="icon icon-home"> tk-multi-publish2
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../customizing.html">Publish Customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">Publish API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utility.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../application.html">App Interface</a></li>
+</ul>
+
+            
+          
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px; 
+                color: #b3b3b3; 
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>    
+    <style>
+        a.custom_post_menu { display: inline; 
+                             padding: 0px; 
+                             text-decoration: underline; }
+    </style>
+
+    <b>tk-multi-publish2</b> v2.2.1.<br>
+    
+        This documentation is part of the Shotgun Pipeline Toolkit.
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    The code associated with this documentation can be found 
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-multi-publish2'>here</a>.
+
+    </div>
+
+
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">tk-multi-publish2</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>tk_multi_publish2.api.task</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for tk_multi_publish2.api.task</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2018 Shotgun Software Inc.</span>
+<span class="c1">#</span>
+<span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
+<span class="c1">#</span>
+<span class="c1"># This work is provided &quot;AS IS&quot; and subject to the Shotgun Pipeline Toolkit</span>
+<span class="c1"># Source Code License included in this distribution package. See LICENSE.</span>
+<span class="c1"># By accessing, using, copying or modifying this work you indicate your</span>
+<span class="c1"># agreement to the Shotgun Pipeline Toolkit Source Code License. All rights</span>
+<span class="c1"># not expressly granted therein are reserved by Shotgun Software Inc.</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<span class="kn">import</span> <span class="nn">sgtk</span>
+<span class="kn">from</span> <span class="nn">.plugins</span> <span class="kn">import</span> <span class="n">PluginSetting</span><span class="p">,</span> <span class="n">PublishPluginInstance</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="PublishTask"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishTask">[docs]</a><span class="k">class</span> <span class="nc">PublishTask</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Publish tasks represent the operations to be performed on</span>
+<span class="sd">    a :ref:`publish-api-item` in the :ref:`publish-api-tree`. Each item has a</span>
+<span class="sd">    list of associated tasks that will be executed when a publish is initiated.</span>
+
+<span class="sd">    Each task wraps a configured publish plugin instance, storing the</span>
+<span class="sd">    settings defined by that plugin that are specific to the item it is</span>
+<span class="sd">    associated with.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;_item&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_plugin&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_description&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_settings&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_active&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_visible&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_enabled&quot;</span>
+    <span class="p">]</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">task_dict</span><span class="p">,</span> <span class="n">serialization_version</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an instance of a PublishTask from serialized data.</span>
+
+<span class="sd">        :param dict task_dict: A dictionary of deserialized task data</span>
+<span class="sd">        :param int serialization_version: The version of serialization logic used to</span>
+<span class="sd">            serialize this data.</span>
+<span class="sd">        :param item: Optional item to associate with this task</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># create the plugin instance</span>
+        <span class="n">plugin</span> <span class="o">=</span> <span class="n">PublishPluginInstance</span><span class="p">(</span>
+            <span class="n">task_dict</span><span class="p">[</span><span class="s2">&quot;plugin_name&quot;</span><span class="p">],</span>
+            <span class="n">task_dict</span><span class="p">[</span><span class="s2">&quot;plugin_path&quot;</span><span class="p">],</span>
+            <span class="n">task_dict</span><span class="p">[</span><span class="s2">&quot;plugin_settings&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="c1"># create the instance and assign all the internal members</span>
+        <span class="n">new_task</span> <span class="o">=</span> <span class="n">PublishTask</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+        <span class="n">new_task</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">task_dict</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="n">new_task</span><span class="o">.</span><span class="n">_description</span> <span class="o">=</span> <span class="n">task_dict</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
+        <span class="n">new_task</span><span class="o">.</span><span class="n">_active</span> <span class="o">=</span> <span class="n">task_dict</span><span class="p">[</span><span class="s2">&quot;active&quot;</span><span class="p">]</span>
+        <span class="n">new_task</span><span class="o">.</span><span class="n">_visible</span> <span class="o">=</span> <span class="n">task_dict</span><span class="p">[</span><span class="s2">&quot;visible&quot;</span><span class="p">]</span>
+        <span class="n">new_task</span><span class="o">.</span><span class="n">_enabled</span> <span class="o">=</span> <span class="n">task_dict</span><span class="p">[</span><span class="s2">&quot;enabled&quot;</span><span class="p">]</span>
+
+        <span class="c1"># create all the setting instances from the data</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">setting</span><span class="p">)</span> <span class="ow">in</span> <span class="n">task_dict</span><span class="p">[</span><span class="s2">&quot;settings&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">new_setting</span> <span class="o">=</span> <span class="n">PluginSetting</span><span class="p">(</span>
+                <span class="n">setting</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                <span class="n">setting</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span>
+                <span class="n">setting</span><span class="p">[</span><span class="s2">&quot;default_value&quot;</span><span class="p">],</span>
+                <span class="n">setting</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">new_setting</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">setting</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+            <span class="n">new_task</span><span class="o">.</span><span class="n">_settings</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_setting</span>
+
+        <span class="k">return</span> <span class="n">new_task</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">visible</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">enabled</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">checked</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the task.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_item</span> <span class="o">=</span> <span class="n">item</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plugin</span> <span class="o">=</span> <span class="n">plugin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="bp">None</span> <span class="c1"># task name override of plugin name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_description</span> <span class="o">=</span> <span class="bp">None</span> <span class="c1"># task description override of plugin desc.</span>
+
+        <span class="c1"># need to make a deep copy of the settings as they may be modified</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">setting_name</span><span class="p">,</span> <span class="n">setting</span><span class="p">)</span> <span class="ow">in</span> <span class="n">plugin</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="p">[</span><span class="n">setting_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">setting</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_active</span> <span class="o">=</span> <span class="n">checked</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visible</span> <span class="o">=</span> <span class="n">visible</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_enabled</span> <span class="o">=</span> <span class="n">enabled</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Created publish tree task: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,))</span>
+
+    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dictionary representation of a :class:`~PublishTask` instance.</span>
+<span class="sd">        Typically used during serialization.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Convert each of the settings to a dictionary.</span>
+        <span class="n">converted_settings</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">setting</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">converted_settings</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">setting</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+
+        <span class="c1"># build the full dictionary representation of this task</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;plugin_name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;plugin_path&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+            <span class="s2">&quot;plugin_settings&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">configured_settings</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span>
+            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_description</span><span class="p">,</span>
+            <span class="s2">&quot;settings&quot;</span><span class="p">:</span> <span class="n">converted_settings</span><span class="p">,</span>
+            <span class="s2">&quot;active&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_active</span><span class="p">,</span>
+            <span class="s2">&quot;visible&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visible</span><span class="p">,</span>
+            <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enabled</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Representation of the item as a string.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Human readable representation of the task.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="k">def</span> <span class="nf">is_same_task_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other_task</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Indicates if this task represents the same plugin type as the supplied</span>
+<span class="sd">        publish task.</span>
+
+<span class="sd">        :param other_task: The other plugin to test against.</span>
+<span class="sd">        :type other_task: :class:`PublishTask`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugin</span> <span class="o">==</span> <span class="n">other_task</span><span class="o">.</span><span class="n">_plugin</span>
+
+    <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Publish this Task</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">run_publish</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">item</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finalize this Task</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">run_finalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">item</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate this Task</span>
+
+<span class="sd">        :returns: True if validation succeeded, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">run_validate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">item</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">active</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the item&#39;s active state if it has been explicitly set, `None``</span>
+<span class="sd">        otherwise.</span>
+
+<span class="sd">        .. note:: This property is shared with ``checked`` and can be used</span>
+<span class="sd">            interchangeably to make code more readable depending on the context</span>
+<span class="sd">            (with/without the UI).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_active</span>
+
+    <span class="nd">@active.setter</span>
+    <span class="k">def</span> <span class="nf">active</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">active_state</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Explicitly set the active state.</span>
+
+<span class="sd">        There are 3 active states that can be supplied:</span>
+
+<span class="sd">        * ``True``: Set the item to be active</span>
+<span class="sd">        * ``False``: Set the item to be inactive</span>
+<span class="sd">        * ``None``: Clear the item&#39;s state, rely on inheritance within the tree</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_active</span> <span class="o">=</span> <span class="n">active_state</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">checked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Boolean property to indicate that this task should be checked by</span>
+<span class="sd">        default when displayed in a publish UI.</span>
+
+<span class="sd">        .. note:: This property is shared with ``active`` and can be used</span>
+<span class="sd">            interchangeably to make code more readable depending on the context</span>
+<span class="sd">            (with/without the UI).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_active</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">visible</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Boolean property to indicate that this task should be visible in a</span>
+<span class="sd">        publish UI.</span>
+
+<span class="sd">        .. note:: This property is shared with ``active`` and can be used</span>
+<span class="sd">            interchangeably to make code more readable depending on the context</span>
+<span class="sd">            (with/without the UI).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visible</span>
+
+    <span class="nd">@visible.setter</span>
+    <span class="k">def</span> <span class="nf">visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_visible</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the visibility state.</span>
+
+<span class="sd">        :param bool is_enabled: If ``True``, the task will be visible in</span>
+<span class="sd">            the publish UI. If ``False``, it won&#39;t be visible.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visible</span> <span class="o">=</span> <span class="n">is_visible</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Boolean property to indicate that this task should be editable in a</span>
+<span class="sd">        publish UI.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enabled</span>
+
+    <span class="nd">@enabled.setter</span>
+    <span class="k">def</span> <span class="nf">enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_enabled</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the enabled state.</span>
+
+<span class="sd">        :param bool is_enabled: If ``True``, the task will be editable in</span>
+<span class="sd">            the publish UI. If ``False``, it won&#39;t be editable.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_enabled</span> <span class="o">=</span> <span class="n">is_enabled</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The description of the item if it has been explicitly set,</span>
+<span class="sd">        ``None`` otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_description</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">description</span>
+
+    <span class="nd">@description.setter</span>
+    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_description</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets a new description for the task with the given string.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_description</span> <span class="o">=</span> <span class="n">new_description</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">item</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The :ref:`publish-api-item` this task is associated with&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The display name of the task.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="nd">@name.setter</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets a new display name for the task with the given string.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">new_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the publish plugin instance associated with this task&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugin</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A :py:attr:`dict` of settings associated with this task.</span>
+
+<span class="sd">        The keys of this dictionary are the setting names and the values are</span>
+<span class="sd">        :ref:`publish-api-setting` instances.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Autodesk.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'v2.2.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+</body>
+</html>

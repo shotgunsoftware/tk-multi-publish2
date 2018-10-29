@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.base_hooks.collector &mdash; tk-multi-publish2 v2.1.7 documentation</title>
+  <title>tk_multi_publish2.base_hooks.collector &mdash; tk-multi-publish2 v2.2.1 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.1.7 documentation" href="../../../index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.2.1 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -89,13 +89,11 @@
             
             
                 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../execution.html">Publish Execution</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../collector.html">Collection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../items.html">Items</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../plugin.html">Publish Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../customizing.html">Publish Customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">Publish API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../utility.html">Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../application.html">Application Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../application.html">App Interface</a></li>
 </ul>
 
             
@@ -119,7 +117,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.1.7.<br>
+    <b>tk-multi-publish2</b> v2.2.1.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -173,14 +171,14 @@
            <div itemprop="articleBody">
             
   <h1>Source code for tk_multi_publish2.base_hooks.collector</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Copyright (c) 2017 Shotgun Software Inc.</span>
-<span class="c1"># </span>
+<span></span><span class="c1"># Copyright (c) 2018 Shotgun Software Inc.</span>
+<span class="c1">#</span>
 <span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
-<span class="c1"># </span>
-<span class="c1"># This work is provided &quot;AS IS&quot; and subject to the Shotgun Pipeline Toolkit </span>
+<span class="c1">#</span>
+<span class="c1"># This work is provided &quot;AS IS&quot; and subject to the Shotgun Pipeline Toolkit</span>
 <span class="c1"># Source Code License included in this distribution package. See LICENSE.</span>
-<span class="c1"># By accessing, using, copying or modifying this work you indicate your </span>
-<span class="c1"># agreement to the Shotgun Pipeline Toolkit Source Code License. All rights </span>
+<span class="c1"># By accessing, using, copying or modifying this work you indicate your</span>
+<span class="c1"># agreement to the Shotgun Pipeline Toolkit Source Code License. All rights</span>
 <span class="c1"># not expressly granted therein are reserved by Shotgun Software Inc.</span>
 
 <span class="kn">import</span> <span class="nn">sgtk</span>
@@ -188,7 +186,7 @@
 <span class="n">HookBaseClass</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">get_hook_baseclass</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="CollectorPlugin"><a class="viewcode-back" href="../../../collector.html#tk_multi_publish2.base_hooks.CollectorPlugin">[docs]</a><span class="k">class</span> <span class="nc">CollectorPlugin</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
+<div class="viewcode-block" id="CollectorPlugin"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.CollectorPlugin">[docs]</a><span class="k">class</span> <span class="nc">CollectorPlugin</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class defines the required interface for a collector plugin.</span>
 <span class="sd">    Collectors are used to gather individual files that are loaded via the</span>
@@ -196,9 +194,22 @@
 <span class="sd">    to gather items to be published within the current DCC session.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Unique string identifying this plugin.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span>
+
+    <span class="nd">@id.setter</span>
+    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Allows to set the unique string identifying this plugin.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">new_id</span>
+
     <span class="c1">############################################################################</span>
     <span class="c1"># Collector properties</span>
-
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -268,7 +279,7 @@
     <span class="c1">############################################################################</span>
     <span class="c1"># Collection methods</span>
 
-<div class="viewcode-block" id="CollectorPlugin.process_current_session"><a class="viewcode-back" href="../../../collector.html#tk_multi_publish2.base_hooks.CollectorPlugin.process_current_session">[docs]</a>    <span class="k">def</span> <span class="nf">process_current_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">parent_item</span><span class="p">):</span>
+<div class="viewcode-block" id="CollectorPlugin.process_current_session"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.CollectorPlugin.process_current_session">[docs]</a>    <span class="k">def</span> <span class="nf">process_current_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">parent_item</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method analyzes the current engine session and creates a hierarchy</span>
 <span class="sd">        of items for publishing.</span>
@@ -276,13 +287,15 @@
 <span class="sd">        A typical implementation of this method would create an item that</span>
 <span class="sd">        represents the current session (e.g. the current Maya file) or all open</span>
 <span class="sd">        documents in a multi-document scenario (such as Photoshop). Top level</span>
-<span class="sd">        items area created as children of the supplied ``parent_item``.</span>
+<span class="sd">        items area created as children of the supplied ``parent_item``</span>
+<span class="sd">        (a :ref:`publish-api-item` instance).</span>
 
 <span class="sd">        Any additional items, specific to the current session, can then be</span>
 <span class="sd">        created as children of the session item. This is not a requirement</span>
-<span class="sd">        however.</span>
+<span class="sd">        however. You could, for example, create a flat list of items, all</span>
+<span class="sd">        sharing the same parent.</span>
 
-<span class="sd">        The image below shows a maya scene item with a child item that</span>
+<span class="sd">        The image below shows a Maya scene item with a child item that</span>
 <span class="sd">        represents a playblast to be published. Each of these items has one or</span>
 <span class="sd">        more publish tasks attached to them.</span>
 
@@ -292,11 +305,11 @@
 
 <span class="sd">        The ``settings`` argument is a dictionary where the keys are the names</span>
 <span class="sd">        of the settings defined by the :func:`settings` property and the values</span>
-<span class="sd">        are :class:`~.processing.Setting` instances as</span>
-<span class="sd">        configured for this instance of the publish app.</span>
+<span class="sd">        are :ref:`publish-api-setting` instances as configured for this</span>
+<span class="sd">        instance of the publish app.</span>
 
 <span class="sd">        To create items within this method, use the</span>
-<span class="sd">        :meth:`~.processing.Item.create_item` method available on the supplied</span>
+<span class="sd">        :meth:`~.api.PublishItem.create_item` method available on the supplied</span>
 <span class="sd">        ``parent_item``.</span>
 
 <span class="sd">        Example Maya implementation:</span>
@@ -324,14 +337,13 @@
 <span class="sd">           for additional example implementations.</span>
 
 <span class="sd">        :param dict settings: A dictionary of configured</span>
-<span class="sd">            :class:`~.processing.Setting` objects for this</span>
-<span class="sd">            collector.</span>
-<span class="sd">        :param parent_item: The root :class:`~.processing.Item` instance to</span>
+<span class="sd">            :ref:`publish-api-setting` objects for this collector.</span>
+<span class="sd">        :param parent_item: The root :ref:`publish-api-item` instance to</span>
 <span class="sd">            collect child items for.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="CollectorPlugin.process_file"><a class="viewcode-back" href="../../../collector.html#tk_multi_publish2.base_hooks.CollectorPlugin.process_file">[docs]</a>    <span class="k">def</span> <span class="nf">process_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">parent_item</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<div class="viewcode-block" id="CollectorPlugin.process_file"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.CollectorPlugin.process_file">[docs]</a>    <span class="k">def</span> <span class="nf">process_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">parent_item</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method creates one or more items to publish for the supplied file</span>
 <span class="sd">        path.</span>
@@ -348,11 +360,11 @@
 
 <span class="sd">        The ``settings`` argument is a dictionary where the keys are the names</span>
 <span class="sd">        of the settings defined by the :func:`settings` property and the values</span>
-<span class="sd">        are :class:`~.processing.Setting` instances as</span>
+<span class="sd">        are :ref:`publish-api-setting` instances as</span>
 <span class="sd">        configured for this instance of the publish app.</span>
 
 <span class="sd">        To create items within this method, use the</span>
-<span class="sd">        :meth:`~.processing.Item.create_item` method available on the supplied</span>
+<span class="sd">        :meth:`~.api.PublishItem.create_item` method available on the supplied</span>
 <span class="sd">        ``parent_item``.</span>
 
 <span class="sd">        Example implementation:</span>
@@ -385,9 +397,8 @@
 <span class="sd">           for additional example implementations.</span>
 
 <span class="sd">        :param dict settings: A dictionary of configured</span>
-<span class="sd">            :class:`~.processing.Setting` objects for this</span>
-<span class="sd">            collector.</span>
-<span class="sd">        :param parent_item: The root :class:`~.processing.Item` instance to</span>
+<span class="sd">            :ref:`publish-api-setting` objects for this collector.</span>
+<span class="sd">        :param parent_item: The root :ref:`publish-api-item` instance to</span>
 <span class="sd">            collect child items for.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
@@ -423,7 +434,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'v2.1.7',
+            VERSION:'v2.2.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

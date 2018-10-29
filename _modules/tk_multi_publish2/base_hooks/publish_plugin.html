@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.base_hooks.publish_plugin &mdash; tk-multi-publish2 v2.1.7 documentation</title>
+  <title>tk_multi_publish2.base_hooks.publish_plugin &mdash; tk-multi-publish2 v2.2.1 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.1.7 documentation" href="../../../index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.2.1 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -89,13 +89,11 @@
             
             
                 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../execution.html">Publish Execution</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../collector.html">Collection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../items.html">Items</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../plugin.html">Publish Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../customizing.html">Publish Customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">Publish API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../utility.html">Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../application.html">Application Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../application.html">App Interface</a></li>
 </ul>
 
             
@@ -119,7 +117,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.1.7.<br>
+    <b>tk-multi-publish2</b> v2.2.1.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -188,7 +186,7 @@
 <span class="n">HookBaseClass</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">get_hook_baseclass</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="PublishPlugin"><a class="viewcode-back" href="../../../plugin.html#tk_multi_publish2.base_hooks.PublishPlugin">[docs]</a><span class="k">class</span> <span class="nc">PublishPlugin</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
+<div class="viewcode-block" id="PublishPlugin"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PublishPlugin">[docs]</a><span class="k">class</span> <span class="nc">PublishPlugin</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class defines the required interface for a publish plugin. Publish</span>
 <span class="sd">    plugins are responsible for operating on items collected by the collector</span>
@@ -198,6 +196,20 @@
 
     <span class="c1">############################################################################</span>
     <span class="c1"># Plugin properties</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Unique string identifying this plugin.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span>
+
+    <span class="nd">@id.setter</span>
+    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Allows to set the unique string identifying this plugin.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">new_id</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">icon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -367,7 +379,7 @@
 <span class="sd">        plugin is interested in.</span>
 
 <span class="sd">        As items are collected by the collector hook, they are given an item</span>
-<span class="sd">        type string (see :meth:`~.processing.Item.create_item`). The strings</span>
+<span class="sd">        type string (see :meth:`~.api.PublishItem.create_item`). The strings</span>
 <span class="sd">        provided by this property will be compared to each collected item&#39;s</span>
 <span class="sd">        type.</span>
 
@@ -384,7 +396,7 @@
     <span class="c1">############################################################################</span>
     <span class="c1"># Publish processing methods</span>
 
-<div class="viewcode-block" id="PublishPlugin.accept"><a class="viewcode-back" href="../../../plugin.html#tk_multi_publish2.base_hooks.PublishPlugin.accept">[docs]</a>    <span class="k">def</span> <span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<div class="viewcode-block" id="PublishPlugin.accept"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PublishPlugin.accept">[docs]</a>    <span class="k">def</span> <span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method is called by the publisher to see if the plugin accepts the</span>
 <span class="sd">        supplied item for processing.</span>
@@ -445,15 +457,15 @@
 
 <span class="sd">        :param dict settings: The keys are strings, matching the keys returned</span>
 <span class="sd">            in the :data:`settings` property. The values are</span>
-<span class="sd">            :class:`~.processing.Setting` instances.</span>
-<span class="sd">        :param item: The :class:`~.processing.Item` instance to process for</span>
+<span class="sd">            :ref:`publish-api-setting` instances.</span>
+<span class="sd">        :param item: The :ref:`publish-api-item` instance to process for</span>
 <span class="sd">            acceptance.</span>
 
 <span class="sd">        :returns: dictionary with boolean keys accepted, required and enabled</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="PublishPlugin.validate"><a class="viewcode-back" href="../../../plugin.html#tk_multi_publish2.base_hooks.PublishPlugin.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<div class="viewcode-block" id="PublishPlugin.validate"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PublishPlugin.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validates the given item, ensuring it is ok to publish.</span>
 
@@ -482,14 +494,14 @@
 
 <span class="sd">        :param dict settings: The keys are strings, matching the keys returned</span>
 <span class="sd">            in the :data:`settings` property. The values are</span>
-<span class="sd">            :class:`~.processing.Setting` instances.</span>
-<span class="sd">        :param item: The :class:`~.processing.Item` instance to validate.</span>
+<span class="sd">            :ref:`publish-api-setting` instances.</span>
+<span class="sd">        :param item: The :ref:`publish-api-item` instance to validate.</span>
 
 <span class="sd">        :returns: True if item is valid, False otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="PublishPlugin.publish"><a class="viewcode-back" href="../../../plugin.html#tk_multi_publish2.base_hooks.PublishPlugin.publish">[docs]</a>    <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<div class="viewcode-block" id="PublishPlugin.publish"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PublishPlugin.publish">[docs]</a>    <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Executes the publish logic for the given item and settings.</span>
 
@@ -531,12 +543,12 @@
 
 <span class="sd">        :param dict settings: The keys are strings, matching the keys returned</span>
 <span class="sd">            in the :data:`settings` property. The values are</span>
-<span class="sd">            :class:`~.processing.Setting` instances.</span>
-<span class="sd">        :param item: The :class:`~.processing.Item` instance to validate.</span>
+<span class="sd">            :ref:`publish-api-setting` instances.</span>
+<span class="sd">        :param item: The :ref:`publish-api-item` instance to publish.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="PublishPlugin.finalize"><a class="viewcode-back" href="../../../plugin.html#tk_multi_publish2.base_hooks.PublishPlugin.finalize">[docs]</a>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<div class="viewcode-block" id="PublishPlugin.finalize"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PublishPlugin.finalize">[docs]</a>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute the finalize logic for the given item and settings.</span>
 
@@ -563,8 +575,8 @@
 
 <span class="sd">        :param dict settings: The keys are strings, matching the keys returned</span>
 <span class="sd">            in the :data:`settings` property. The values are</span>
-<span class="sd">            :class:`~.processing.Setting` instances.</span>
-<span class="sd">        :param item: The :class:`~.processing.Item` instance to validate.</span>
+<span class="sd">            :ref:`publish-api-setting` instances.</span>
+<span class="sd">        :param item: The :ref:`publish-api-item` instance to finalize.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
@@ -576,7 +588,7 @@
     <span class="c1"># allows clients to write their own publish plugins while deferring custom</span>
     <span class="c1"># UI settings implementations until needed.</span>
 
-<div class="viewcode-block" id="PublishPlugin.create_settings_widget"><a class="viewcode-back" href="../../../plugin.html#tk_multi_publish2.base_hooks.PublishPlugin.create_settings_widget">[docs]</a>    <span class="k">def</span> <span class="nf">create_settings_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+<div class="viewcode-block" id="PublishPlugin.create_settings_widget"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PublishPlugin.create_settings_widget">[docs]</a>    <span class="k">def</span> <span class="nf">create_settings_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a Qt widget, for the supplied parent widget (a container widget</span>
 <span class="sd">        on the right side of the publish UI).</span>
@@ -588,7 +600,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># defer Qt-related imports</span>
-        <span class="kn">from</span> <span class="nn">sgtk.platform.qt</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+        <span class="kn">from</span> <span class="nn">sgtk.platform.qt</span> <span class="kn">import</span> <span class="n">QtGui</span>
 
         <span class="c1"># create a group box to display the description</span>
         <span class="n">description_group_box</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGroupBox</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
@@ -610,7 +622,7 @@
         <span class="c1"># return the description group box as the widget to display</span>
         <span class="k">return</span> <span class="n">description_group_box</span></div>
 
-<div class="viewcode-block" id="PublishPlugin.get_ui_settings"><a class="viewcode-back" href="../../../plugin.html#tk_multi_publish2.base_hooks.PublishPlugin.get_ui_settings">[docs]</a>    <span class="k">def</span> <span class="nf">get_ui_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+<div class="viewcode-block" id="PublishPlugin.get_ui_settings"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PublishPlugin.get_ui_settings">[docs]</a>    <span class="k">def</span> <span class="nf">get_ui_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Invoked by the publisher when the selection changes so the new settings</span>
 <span class="sd">        can be applied on the previously selected tasks.</span>
@@ -638,7 +650,7 @@
         <span class="c1"># custom UI to show up in the app</span>
         <span class="k">return</span> <span class="p">{}</span></div>
 
-<div class="viewcode-block" id="PublishPlugin.set_ui_settings"><a class="viewcode-back" href="../../../plugin.html#tk_multi_publish2.base_hooks.PublishPlugin.set_ui_settings">[docs]</a>    <span class="k">def</span> <span class="nf">set_ui_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
+<div class="viewcode-block" id="PublishPlugin.set_ui_settings"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PublishPlugin.set_ui_settings">[docs]</a>    <span class="k">def</span> <span class="nf">set_ui_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Allows the custom UI to populate its fields with the settings from the</span>
 <span class="sd">        currently selected tasks.</span>
@@ -669,7 +681,7 @@
 <span class="sd">        When invoked with multiple settings dictionaries, it is the</span>
 <span class="sd">        responsibility of the custom UI to decide how to display the</span>
 <span class="sd">        information. If you do not wish to implement the editing of multiple</span>
-<span class="sd">        tasks at the same time, you can raise a `NotImplementedError` when</span>
+<span class="sd">        tasks at the same time, you can raise a ``NotImplementedError`` when</span>
 <span class="sd">        there is more than one item in the list and the publisher will inform</span>
 <span class="sd">        the user than only one task of that type can be edited at a time.</span>
 
@@ -714,7 +726,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'v2.1.7',
+            VERSION:'v2.2.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Shotgun Publisher API reference, v2.1.7 &mdash; tk-multi-publish2 v2.1.7 documentation</title>
+  <title>Shotgun Publisher API reference, v2.2.1 &mdash; tk-multi-publish2 v2.2.1 documentation</title>
   
 
   
@@ -32,8 +32,8 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.1.7 documentation" href="#"/>
-        <link rel="next" title="Publish Execution" href="execution.html"/> 
+    <link rel="top" title="tk-multi-publish2 v2.2.1 documentation" href="#"/>
+        <link rel="next" title="Publish Customization" href="customizing.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -89,13 +89,11 @@
             
             
                 <ul>
-<li class="toctree-l1"><a class="reference internal" href="execution.html">Publish Execution</a></li>
-<li class="toctree-l1"><a class="reference internal" href="collector.html">Collection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="items.html">Items</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plugin.html">Publish Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customizing.html">Publish Customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Publish API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utility.html">Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="application.html">Application Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="application.html">App Interface</a></li>
 </ul>
 
             
@@ -119,7 +117,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.1.7.<br>
+    <b>tk-multi-publish2</b> v2.2.1.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -158,7 +156,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="#">Docs</a> &raquo;</li>
       
-    <li>Shotgun Publisher API reference, v2.1.7</li>
+    <li>Shotgun Publisher API reference, v2.2.1</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -171,31 +169,104 @@
            <div itemprop="articleBody">
             
   <div class="section" id="shotgun-publisher-api-reference-release">
-<h1>Shotgun Publisher API reference, v2.1.7<a class="headerlink" href="#shotgun-publisher-api-reference-release" title="Permalink to this headline">¶</a></h1>
+<h1>Shotgun Publisher API reference, v2.2.1<a class="headerlink" href="#shotgun-publisher-api-reference-release" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p>The Publish app is highly customizable by way of hooks that control how items
-are presented to artists for publishing and how those items are then processed.</p>
-<p>The graphic below outlines the major concepts of the publish2 app and API. The
-links on the left can be used to examine each of these concepts in detail.</p>
+<p>The Publish app is a highly customizable workflow tool that allows studios to
+track the data being created by artists and control how it is shared. The app
+can be modified for studio-specific needs by way of hooks that control how items
+are identified for presentation to artists for publishing and how those items
+are then processed. In addition to customizing the publish UI behavior, the
+underlying Python API that drives the interface is also available for more
+advanced studio customization.</p>
+<div class="section" id="publish-execution">
+<span id="id1"></span><h3>Publish Execution<a class="headerlink" href="#publish-execution" title="Permalink to this headline">¶</a></h3>
+<p>The publisher has several phases of execution that developers should be aware
+of before implementing custom behaviors.</p>
+<p>The graphic and descriptions below outline these concepts for developers just
+getting started with the publisher. The links on the left can be used to examine
+each of these concepts and the APIs that drive the publisher in detail.</p>
+<hr class="docutils" />
 <img alt="_images/publish_overview.png" src="_images/publish_overview.png" />
+<hr class="docutils" />
+<div class="section" id="collection-acceptance">
+<h4>Collection &amp; Acceptance<a class="headerlink" href="#collection-acceptance" title="Permalink to this headline">¶</a></h4>
+<p>When the Publisher is launched, the current session (Maya, Nuke, Houdini, etc)
+is processed and publish items are collected for display in the Publish app&#8217;s
+interface. These items represent what the artists may want to track in Shotgun
+and/or share with other artists by way of publishing. Similarly, as files are
+dragged and dropped onto the publish UI, they are processed and collected as publish
+items. This item collection behavior is defined by the app&#8217;s collector hook and
+can be taken over or modified by studios to customize what data should be
+tracked in Shotgun and how it should be shared between artists.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For a deeper dive into the collection behavior and how it can be
+customized, see the <a class="reference internal" href="customizing.html#publish-collector"><span class="std std-ref">Collector Hook</span></a> docs.</p>
+</div>
+<p>Before the collected items are shown in the Publisher UI, they will
+automatically be processed for acceptance. Publish plugins are configured for
+the Publisher that define how items are processed when a publish is triggered.
+During the acceptance phase, each configured plugin will have a chance to accept
+each collected item.</p>
+<p>This acceptance phase has two parts. The first part handles comparing the
+collected item&#8217;s type specification to a list of filters provided by the publish
+plugin. If the item&#8217;s type specification matches one of the plugin&#8217;s filters,
+then the second part of acceptance is triggered. This part allows the configured
+plugin to further inspect the item to indicate if it can and will operate on the
+item.</p>
+<p>For each plugin that is accepted, a publish task is shown in the UI. These
+publish tasks represent the processing that will happen once a publish is
+triggered.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For a deeper dive into the publish plugin behavior and how it can be
+customized, see the <a class="reference internal" href="customizing.html#publish-plugin"><span class="std std-ref">Publish Plugin</span></a> docs.</p>
+</div>
+</div>
+<div class="section" id="item-review">
+<h4>Item Review<a class="headerlink" href="#item-review" title="Permalink to this headline">¶</a></h4>
+<p>Once the acceptance phase is complete, the user can review the items, make
+changes to the target context of each, provide publish descriptions, take screen
+grabs, and update settings. Additional files can also be dragged and dropped or
+browsed to for collection.</p>
+</div>
+<div class="section" id="publishing">
+<h4>Publishing<a class="headerlink" href="#publishing" title="Permalink to this headline">¶</a></h4>
+<p>After the artist has taken the time to review the collected items, they can
+perform one of two actions;</p>
+<ol class="arabic simple">
+<li>They can run a validation pass on the items. This will trigger a validation
+pass for each task in the list in the order in which they are displayed.</li>
+<li>The user can also decide to run the full publish pass. This will include all
+the validation steps above followed by execution of each plugin&#8217;s publish
+pass followed by execution of each plugin&#8217;s finalize pass.</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The overview above describes the publish execution in terms of an
+artist launching the Publish UI. All of these concepts, including
+collection, acceptance, and publish plugins are exposed by the
+<a class="reference internal" href="api.html#publish-api"><span class="std std-ref">Publish API</span></a> making it possible to build more advanced, custom publish
+workflows outside of the default Publish UI.</p>
+</div>
 <p>The following sections outline all of the hooks and APIs available to studios
-for publish workflow customization.</p>
+for publish workflow building and customization.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="execution.html">Publish Execution</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="execution.html#collection-acceptance">Collection &amp; Acceptance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="execution.html#item-review">Item Review</a></li>
-<li class="toctree-l2"><a class="reference internal" href="execution.html#publishing">Publishing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customizing.html">Publish Customization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="customizing.html#collector-hook">Collector Hook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="customizing.html#publish-plugin">Publish Plugin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="customizing.html#post-phase-hook">Post Phase Hook</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="collector.html">Collection</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="collector.html#collector-api">Collector API</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="items.html">Items</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plugin.html">Publish Plugins</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="plugin.html#publish-plugin-api">Publish Plugin API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Publish API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#publishmanager">PublishManager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#publishtree">PublishTree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#publishitem">PublishItem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#publishtask">PublishTask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#publishdata">PublishData</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#pluginsetting">PluginSetting</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a><ul>
@@ -207,8 +278,10 @@ for publish workflow customization.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="utility.html">Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="application.html">Application Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="application.html">App Interface</a></li>
 </ul>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -220,7 +293,7 @@ for publish workflow customization.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="execution.html" class="btn btn-neutral float-right" title="Publish Execution" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="customizing.html" class="btn btn-neutral float-right" title="Publish Customization" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>
@@ -251,7 +324,7 @@ for publish workflow customization.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'v2.1.7',
+            VERSION:'v2.2.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

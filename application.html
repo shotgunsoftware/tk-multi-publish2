@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Application Interface &mdash; tk-multi-publish2 v2.1.7 documentation</title>
+  <title>App Interface &mdash; tk-multi-publish2 v2.2.1 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.1.7 documentation" href="index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.2.1 documentation" href="index.html"/>
         <link rel="prev" title="Utilities" href="utility.html"/> 
 
   
@@ -89,13 +89,11 @@
             
             
                 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="execution.html">Publish Execution</a></li>
-<li class="toctree-l1"><a class="reference internal" href="collector.html">Collection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="items.html">Items</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plugin.html">Publish Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customizing.html">Publish Customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Publish API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utility.html">Utilities</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Application Interface</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">App Interface</a></li>
 </ul>
 
             
@@ -119,7 +117,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.1.7.<br>
+    <b>tk-multi-publish2</b> v2.2.1.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -158,7 +156,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>Application Interface</li>
+    <li>App Interface</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -170,12 +168,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="application-interface">
-<h1>Application Interface<a class="headerlink" href="#application-interface" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="app-interface">
+<h1>App Interface<a class="headerlink" href="#app-interface" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="app.MultiPublish2">
 <em class="property">class </em><code class="descclassname">app.</code><code class="descname">MultiPublish2</code><a class="reference internal" href="_modules/app.html#MultiPublish2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.MultiPublish2" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is the <a class="reference external" href="http://developer.shotgunsoftware.com/tk-core/platform.html#sgtk.platform.Application" title="(in tk-core vv0.18.154)"><code class="xref py py-class docutils literal"><span class="pre">sgtk.platform.Application</span></code></a> subclass that defines the
+<dd><p>This is the <a class="reference external" href="http://developer.shotgunsoftware.com/tk-core/platform.html#sgtk.platform.Application" title="(in tk-core vv0.18.157)"><code class="xref py py-class docutils literal"><span class="pre">sgtk.platform.Application</span></code></a> subclass that defines the
 top-level publish2 interface.</p>
 <p>Application instances are constructed by the toolkit launch process
 and various factory methods such as <code class="xref py py-meth docutils literal"><span class="pre">start_engine()</span></code>.</p>
@@ -199,8 +197,8 @@ and various factory methods such as <code class="xref py py-meth docutils litera
 <p>This module provides base class implementations of collector and publish
 plugin hooks:</p>
 <ul class="simple">
-<li><a class="reference internal" href="collector.html#tk_multi_publish2.base_hooks.CollectorPlugin" title="tk_multi_publish2.base_hooks.CollectorPlugin"><code class="xref py py-class docutils literal"><span class="pre">CollectorPlugin</span></code></a></li>
-<li><a class="reference internal" href="plugin.html#tk_multi_publish2.base_hooks.PublishPlugin" title="tk_multi_publish2.base_hooks.PublishPlugin"><code class="xref py py-class docutils literal"><span class="pre">PublishPlugin</span></code></a></li>
+<li><a class="reference internal" href="customizing.html#tk_multi_publish2.base_hooks.CollectorPlugin" title="tk_multi_publish2.base_hooks.CollectorPlugin"><code class="xref py py-class docutils literal"><span class="pre">CollectorPlugin</span></code></a></li>
+<li><a class="reference internal" href="customizing.html#tk_multi_publish2.base_hooks.PublishPlugin" title="tk_multi_publish2.base_hooks.PublishPlugin"><code class="xref py py-class docutils literal"><span class="pre">PublishPlugin</span></code></a></li>
 </ul>
 <p>Access to these classes won&#8217;t typically be needed when writing hooks as
 they are are injected into the class hierarchy automatically for any
@@ -236,6 +234,22 @@ directly.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A handle on the app&#8217;s <code class="docutils literal"><span class="pre">util</span></code> module.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="app.MultiPublish2.create_publish_manager">
+<code class="descname">create_publish_manager</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#MultiPublish2.create_publish_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.MultiPublish2.create_publish_manager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create and return a <code class="xref py py-class docutils literal"><span class="pre">tk_multi_publish2.PublishManager</span></code> instance.
+See the <code class="xref py py-class docutils literal"><span class="pre">tk_multi_publish2.PublishManager</span></code> docs for details on
+how it can be used to automate your publishing workflows.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A <code class="xref py py-class docutils literal"><span class="pre">tk_multi_publish2.PublishManager</span></code> instance</td>
 </tr>
 </tbody>
 </table>
@@ -283,7 +297,7 @@ directly.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'v2.1.7',
+            VERSION:'v2.2.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
