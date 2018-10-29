@@ -55,11 +55,11 @@ class TestPublishTree(PublishApiTestBase):
         """
         Ensures we can't reload documents from an incorrect version.
         """
-        with self.assertRaisesRegexp(sgtk.TankError, "<missing version>"):
+        with self.assertRaisesRegex(sgtk.TankError, "<missing version>"):
             self.PublishTree.from_dict({})
 
         bad_version = 99999999
-        with self.assertRaisesRegexp(sgtk.TankError, "Unrecognized serialization version \(%s\)" % bad_version):
+        with self.assertRaisesRegex(sgtk.TankError, "Unrecognized serialization version \(%s\)" % bad_version):
             self.PublishTree.from_dict({"serialization_version": bad_version})
 
     def test_pprint(self):
@@ -106,7 +106,7 @@ class TestPublishTree(PublishApiTestBase):
         """
         Ensures you can't delete the root.
         """
-        with self.assertRaisesRegexp(sgtk.TankError, "Removing the root item is not allowed."):
+        with self.assertRaisesRegex(sgtk.TankError, "Removing the root item is not allowed."):
             self.manager.tree.remove_item(self.manager.tree.root_item)
 
     def _set_item(self, item, boolean, description, icon_path, thumb_path, local_prop, global_prop):
