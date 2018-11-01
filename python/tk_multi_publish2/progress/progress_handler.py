@@ -54,18 +54,13 @@ class ProgressHandler(object):
             self.PHASE_FINALIZE: QtGui.QPixmap(":/tk_multi_publish2/status_success.png"),
         }
 
-        self._icon_error_lookup = {
-            self.PHASE_LOAD: QtGui.QPixmap(":/tk_multi_publish2/status_warning.png"),
-            self.PHASE_VALIDATE: QtGui.QPixmap(":/tk_multi_publish2/status_warning.png"),
-            self.PHASE_PUBLISH: QtGui.QPixmap(":/tk_multi_publish2/status_error.png"),
-            self.PHASE_FINALIZE: QtGui.QPixmap(":/tk_multi_publish2/status_error.png"),
-        }
+        self._icon_warning = QtGui.QPixmap(":/tk_multi_publish2/status_warning.png")
+        self._icon_error = QtGui.QPixmap(":/tk_multi_publish2/status_error.png")
 
-
-        self._debug_brush = QtGui.QBrush(QtGui.QColor("#05AB6C"))  # green
-        self._warning_brush = QtGui.QBrush(QtGui.QColor("#F57209"))  # orange
-        self._error_brush = QtGui.QBrush(QtGui.QColor("#FF2D5B"))  # red
-
+        # These colors come from the HIG.
+        self._debug_brush = QtGui.QBrush(QtGui.QColor("#88BC47"))  # green
+        self._warning_brush = QtGui.QBrush(QtGui.QColor("#F9A332"))  # orange
+        self._error_brush = QtGui.QBrush(QtGui.QColor("#EC494A"))  # red
 
         # parent our progress widget overlay
         self._progress_details = ProgressDetailsWidget(self._progress_bar.parent())
@@ -160,10 +155,12 @@ class ProgressHandler(object):
         # set phase icon in logger
         if self._current_phase is None:
             icon = None
-        elif status != self.ERROR:
-            icon = self._icon_lookup[self._current_phase]
+        elif status == self.ERROR:
+            icon = self._icon_error
+        elif status == self.WARNING:
+            icon = self._icon_warning
         else:
-            icon = self._icon_error_lookup[self._current_phase]
+            icon = self._icon_lookup[self._current_phase]
 
         self._icon_label.setPixmap(icon)
 
@@ -213,7 +210,7 @@ class ProgressHandler(object):
             self._process_action(item, action)
 
         self._progress_details.log_tree.setCurrentItem(item)
-        self._log_messages.append("%s%s" % (" " * (self._current_indent*2), message))
+        self._log_messages.append("%s%s" % (" " * (self._current_indent * 2), message))
 
         QtCore.QCoreApplication.processEvents()
 
