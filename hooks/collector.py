@@ -149,7 +149,7 @@ class BasicSceneCollector(HookBaseClass):
         """
         return {}
 
-    def process_current_session(self, settings, parent_item):
+    def process_current_session(self, settings, parent_item, collection_args=None):
         """
         Analyzes the current scene open in a DCC and parents a subtree of items
         under the parent_item passed in.
@@ -161,7 +161,7 @@ class BasicSceneCollector(HookBaseClass):
         # default implementation does not do anything
         pass
 
-    def process_file(self, settings, parent_item, path):
+    def process_file(self, settings, parent_item, path, collection_args=None):
         """
         Analyzes the given file and creates one or more items
         to represent it.
