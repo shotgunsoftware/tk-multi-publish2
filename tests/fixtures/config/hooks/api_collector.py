@@ -19,7 +19,7 @@ class BasicSceneCollector(HookBaseClass):
     A basic collector that handles files and general objects.
     """
 
-    def process_current_session(self, settings, parent_item):
+    def process_current_session(self, settings, parent_item, collection_args):
         """
         Analyzes the current scene open in a DCC and parents a subtree of items
         under the parent_item passed in.
@@ -45,3 +45,6 @@ class BasicSceneCollector(HookBaseClass):
         )
 
         parent_item.local_properties.collector_property = "collector_property"
+
+        if collection_args:
+            parent_item.properties.update(collection_args)
