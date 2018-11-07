@@ -9,12 +9,13 @@ env:
 # Ideally we would be pip installing tk-core, but we need the testing framework from core,
 # so we will clone the repo install to a known location and run the tests there.
 install:
-    - pip install -r tests/ci_requirements.txt
     - git clone --depth 1 --branch master https://github.com/shotgunsoftware/tk-core /tmp/tk-core
     - git clone --depth 1 --branch master https://github.com/shotgunsoftware/tk-framework-qtwidgets /tmp/tk-framework-qtwidgets
     - git clone --depth 1 --branch master https://github.com/shotgunsoftware/tk-framework-shotgunutils /tmp/tk-framework-shotgunutils
     - git clone --depth 1 --branch master https://github.com/shotgunsoftware/tk-shell /tmp/tk-shell
-    # install pyside - from https://stackoverflow.com/questions/24489588
+    # Install CI dependencies
+    - pip install -r /tmp/tk-core/tests/ci_requirements.txt
+# install pyside - from https://stackoverflow.com/questions/24489588
     - sudo apt-get install libqt4-dev
     - pip install PySide --no-index --find-links https://parkin.github.io/python-wheelhouse/;
     # Travis CI servers use virtualenvs, so we need to finish the install by the following
