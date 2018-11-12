@@ -40,6 +40,19 @@ class PublishData(collections.MutableMapping):
         """
         return cls(**data)
 
+    def _from_json(self, data):
+        if isinstance(data, dict):
+            if "__tk_type" in data:
+                if data["__tk_type"] == "sgtk.Template":
+                    return self.parent.sgtk.templates[data["name"]]
+                raise NotImplementedError("Serialized type %s is not supported" % data["__tk_type"])
+            else:
+                return {k: self._from_json(data[k]) for k in data}
+        elif isinstance(data, list):
+            return [self._from_json(d) for d in data]
+        else:
+            return d
+
     def __init__(self, **kwargs):
         """
         .. note:: Developers should not create instances of this class. Instances
@@ -57,7 +70,22 @@ class PublishData(collections.MutableMapping):
 
         :return: A dictionary representing the data stored on the instance.
         """
-        return copy.deepcopy(self.__dict__)
+        return copy.deepcopy(self._make_json_serializable(self.__dict__))
+
+    def _make_json_serializable(self, data):
+        if isinstance(data, dict):
+            return {
+                k: self._make_json_serializable(data[k]) for k in data
+            }
+        elif isinstance(data, list):
+            return [self._make_json_serializable(d) for d in data]
+        elif isinstance(data, sgtk.Template):
+            return {
+                "__tk_type": "sgtk.Template",
+                "name": data.name
+            }
+        else:
+            return data
 
     def __setitem__(self, key, value):
         self.__dict__[key] = value
