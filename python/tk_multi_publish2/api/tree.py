@@ -152,7 +152,9 @@ class PublishTree(object):
         """
 
         try:
-            return sgtk.util.json.load(file_obj, object_hook=_json_to_objects)
+            return PublishTree.from_dict(
+                sgtk.util.json.load(file_obj, object_hook=_json_to_objects)
+            )
         except Exception, e:
             logger.error(
                 "Error loading publish tree: %s\n%s" %
