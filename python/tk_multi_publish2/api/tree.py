@@ -152,7 +152,7 @@ class PublishTree(object):
         """
 
         try:
-            return sgtk.util.json.load(file_obj, cls=_PublishTreeDecoder)
+            return sgtk.util.json.load(file_obj, object_hook=_json_to_objects)
         except Exception, e:
             logger.error(
                 "Error loading publish tree: %s\n%s" %
@@ -268,7 +268,7 @@ class PublishTree(object):
         """
         try:
             json.dump(
-                self,
+                self.to_dict(),
                 file_obj,
                 indent=2,
                 # all non-ASCII characters in the output are escaped with \uXXXX sequences
@@ -338,15 +338,17 @@ class _PublishTreeEncoder(json.JSONEncoder):
     """
     Implements the json encoder interface for custom publish tree serialization.
     """
-    def default(self, publish_tree):
-        return publish_tree.to_dict()
+    def default(self, data):
+        if isinstance(data, sgtk.Template):
+            return {
+                "__tk_template": True,
+                "name": data.name
+            }
+        else:
+            return super(_PublishTreeEncoder).default(data)
 
 
-class _PublishTreeDecoder(json.JSONDecoder):
-    """
-    Implements the json decoder interface for custom publish tree
-    deserialization.
-    """
-    def decode(self, json_str):
-        tree_dict = sgtk.util.json.loads(json_str)
-        return PublishTree.from_dict(tree_dict)
+def _json_to_objects(data):
+    if data.get("__tk_template", False):
+        return sgtk.platform.current_engine().sgtk.templates[data["name"]]
+    return data
