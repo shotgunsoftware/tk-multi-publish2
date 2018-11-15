@@ -1,11 +1,11 @@
 # Copyright (c) 2017 Shotgun Software Inc.
-# 
+#
 # CONFIDENTIAL AND PROPRIETARY
-# 
-# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit 
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
 # Source Code License included in this distribution package. See LICENSE.
-# By accessing, using, copying or modifying this work you indicate your 
-# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import os
@@ -321,8 +321,7 @@ class BasicFilePublishPlugin(HookBaseClass):
                     "<pre>%s</pre>" % (pprint.pformat(publishes),)
                 )
                 self.logger.warn(
-                    "Found %s conflicting publishes in Shotgun" %
-                        (len(publishes),),
+                    "Found %s conflicting publishes in Shotgun" % (len(publishes),),
                     extra={
                         "action_show_more_info": {
                             "label": "Show Conflicts",
@@ -360,6 +359,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         publish_version = self.get_publish_version(settings, item)
         publish_path = self.get_publish_path(settings, item)
         publish_dependencies = self.get_publish_dependencies(settings, item)
+        publish_user = self.get_publish_user(settings, item)
 
         # if the parent item has a publish path, include it in the list of
         # dependencies
@@ -377,6 +377,7 @@ class BasicFilePublishPlugin(HookBaseClass):
             "comment": item.description,
             "path": publish_path,
             "name": publish_name,
+            "created_by": publish_user,
             "version_number": publish_version,
             "thumbnail_path": item.get_thumbnail_as_path(),
             "published_file_type": publish_type,
@@ -661,6 +662,18 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         return dependencies
 
+    def get_publish_user(self, settings, item):
+        """
+        Get the user that will be associated with this publish.
+
+        By default, this method results ``None``, which means the
+        default user detection logic from the :meth:`sgtk.util.register_publish`
+        method will be used.
+
+        :return: A user entity dictionary.
+        """
+        return None
+
     ############################################################################
     # protected methods
 
@@ -748,7 +761,7 @@ class BasicFilePublishPlugin(HookBaseClass):
                 publish_folder = os.path.dirname(publish_file)
                 ensure_folder_exists(publish_folder)
                 copy_file(work_file, publish_file)
-            except Exception, e:
+            except Exception:
                 raise Exception(
                     "Failed to copy work file from '%s' to '%s'.\n%s" %
                     (work_file, publish_file, traceback.format_exc())
