@@ -364,5 +364,8 @@ def _json_to_objects(data):
     :rtype: object
     """
     if data.get("__tk_type") == "sgtk.Template":
-        return sgtk.platform.current_engine().sgtk.templates[data["name"]]
+        templates = sgtk.platform.current_engine().sgtk.templates
+        if data["name"] not in templates:
+            raise sgtk.TankError("Template '{0}' was not found in templates.yml.".format(data["name"]))
+        return templates[data["name"]]
     return data
