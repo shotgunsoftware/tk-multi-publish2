@@ -148,10 +148,11 @@ class PublishTree(object):
 
         :param file file_obj: A file-like object
         :return: A :class:`~.PublishTree` instance
-
         """
 
         try:
+            # Pass in a object hook so that certain Toolkit objects are restored back
+            # from their serialized representation.
             return PublishTree.from_dict(
                 sgtk.util.json.load(file_obj, object_hook=_json_to_objects)
             )
@@ -275,6 +276,8 @@ class PublishTree(object):
                 indent=2,
                 # all non-ASCII characters in the output are escaped with \uXXXX sequences
                 ensure_ascii=True,
+                # Use a custom JSON encoder to certain Toolkit objects are concerted into a
+                # JSON
                 cls=_PublishTreeEncoder
             )
         except Exception, e:
@@ -343,7 +346,7 @@ class _PublishTreeEncoder(json.JSONEncoder):
     def default(self, data):
         if isinstance(data, sgtk.Template):
             return {
-                "__tk_template": True,
+                "__tk_type": "sgtk.Template",
                 "name": data.name
             }
         else:
@@ -351,6 +354,15 @@ class _PublishTreeEncoder(json.JSONEncoder):
 
 
 def _json_to_objects(data):
-    if data.get("__tk_template", False):
+    """
+    Check if an dictionary is actually representing a Toolkit object and
+    unserializes it.
+
+    :param dict data: Data to parse.
+
+    :returns: The original data passed in or the Toolkit object if one was found.
+    :rtype: object
+    """
+    if data.get("__tk_type") == "sgtk.Template":
         return sgtk.platform.current_engine().sgtk.templates[data["name"]]
     return data
