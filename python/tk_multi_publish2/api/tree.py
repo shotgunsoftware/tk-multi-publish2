@@ -137,7 +137,7 @@ class PublishTree(object):
                 return PublishTree.load(tree_file_obj)
             except Exception, e:
                 logger.error(
-                    "Erorr trying to load publish tree from file: %s" % (e,)
+                    "Error trying to load publish tree from file: %s" % (e,)
                 )
                 raise
 
