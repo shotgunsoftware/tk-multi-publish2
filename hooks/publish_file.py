@@ -80,6 +80,10 @@ class BasicFilePublishPlugin(HookBaseClass):
             registering the publish. If the item's parent has been published,
             it's path will be appended to this list.
 
+        publish_user - If set, will be supplied to SG as the publish user
+            when registering the new publish. If not available, the publishing
+            will falling back to the :meth:`sgtk.util.register_publish` logic.
+
     NOTE: accessing these ``publish_*`` values on the item does not necessarily
     return the value used during publish execution. Use the corresponding
     ``get_publish_*`` methods which include fallback logic when no property is
@@ -401,6 +405,16 @@ class BasicFilePublishPlugin(HookBaseClass):
         item.properties.sg_publish_data = sgtk.util.register_publish(
             **publish_data)
         self.logger.info("Publish registered!")
+        self.logger.debug(
+            "Shotgun Publish data...",
+            extra={
+                "action_show_more_info": {
+                    "label": "Shotgun Publish Data",
+                    "tooltip": "Show the complete Shotgun Publish Entity dictionary",
+                    "text": "<pre>%s</pre>" % (pprint.pformat(item.properties.sg_publish_data),)
+                }
+            }
+        )
 
     def finalize(self, settings, item):
         """
@@ -666,13 +680,12 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
         Get the user that will be associated with this publish.
 
-        By default, this method results ``None``, which means the
-        default user detection logic from the :meth:`sgtk.util.register_publish`
-        method will be used.
+        :param settings: This plugin instance's configured settings
+        :param item: The item to determine the publish template for
 
         :return: A user entity dictionary.
         """
-        return None
+        return item.get_property("publish_user", default_value=None)
 
     ############################################################################
     # protected methods
