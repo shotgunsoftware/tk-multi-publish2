@@ -82,7 +82,7 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         publish_user - If set, will be supplied to SG as the publish user
             when registering the new publish. If not available, the publishing
-            will falling back to the :meth:`sgtk.util.register_publish` logic.
+            will fall back to the :meth:`tank.util.register_publish` logic.
 
     NOTE: accessing these ``publish_*`` values on the item does not necessarily
     return the value used during publish execution. Use the corresponding
