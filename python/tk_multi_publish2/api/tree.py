@@ -271,7 +271,7 @@ class PublishTree(object):
         """
         try:
             json.dump(
-                self.to_dict(),
+                self,
                 file_obj,
                 indent=2,
                 # all non-ASCII characters in the output are escaped with \uXXXX sequences
@@ -344,7 +344,9 @@ class _PublishTreeEncoder(json.JSONEncoder):
     Implements the json encoder interface for custom publish tree serialization.
     """
     def default(self, data):
-        if isinstance(data, sgtk.Template):
+        if isinstance(data, PublishTree):
+            return data.to_dict()
+        elif isinstance(data, sgtk.Template):
             return {
                 "__tk_type": "sgtk.Template",
                 "name": data.name
