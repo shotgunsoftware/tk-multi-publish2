@@ -367,8 +367,8 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         # if the parent item has a publish path, include it in the list of
         # dependencies
-        if "sg_publish_path" in item.parent.properties:
-            publish_dependencies.append(item.parent.properties.sg_publish_path)
+        if "sg_publish_data" in item.parent.properties:
+            publish_dependencies.append(item.parent.properties.sg_publish_data.get('path', {}).get('local_path', ''))
 
         # handle copying of work to publish if templates are in play
         self._copy_work_to_publish(settings, item)
