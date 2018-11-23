@@ -126,7 +126,7 @@ class PublishTree(object):
     def load_file(file_path):
         """
         This method returns a new :class:`~.PublishTree` instance by reading
-        a serialized tree file from disk.
+        a serialized tree file from disk._sgtk_custom_type
 
         :param str file_path: The path to a serialized publish tree.
         :return: A :class:`~.PublishTree` instance
@@ -137,7 +137,7 @@ class PublishTree(object):
                 return PublishTree.load(tree_file_obj)
             except Exception, e:
                 logger.error(
-                    "Error trying to load publish tree from file: %s" % (e,)
+                    "Error trying to load publish tree from file '%s': %s" % (file_path, e)
                 )
                 raise
 
@@ -276,7 +276,7 @@ class PublishTree(object):
                 indent=2,
                 # all non-ASCII characters in the output are escaped with \uXXXX sequences
                 ensure_ascii=True,
-                # Use a custom JSON encoder to certain Toolkit objects are concerted into a
+                # Use a custom JSON encoder to certain Toolkit objects are converted into a
                 # JSON
                 cls=_PublishTreeEncoder
             )
@@ -348,7 +348,7 @@ class _PublishTreeEncoder(json.JSONEncoder):
             return data.to_dict()
         elif isinstance(data, sgtk.Template):
             return {
-                "__tk_type": "sgtk.Template",
+                "_sgtk_custom_type": "sgtk.Template",
                 "name": data.name
             }
         else:
@@ -365,7 +365,7 @@ def _json_to_objects(data):
     :returns: The original data passed in or the Toolkit object if one was found.
     :rtype: object
     """
-    if data.get("__tk_type") == "sgtk.Template":
+    if data.get("_sgtk_custom_type") == "sgtk.Template":
         templates = sgtk.platform.current_engine().sgtk.templates
         if data["name"] not in templates:
             raise sgtk.TankError("Template '{0}' was not found in templates.yml.".format(data["name"]))

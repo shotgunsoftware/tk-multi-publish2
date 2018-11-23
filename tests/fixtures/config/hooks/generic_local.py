@@ -38,6 +38,7 @@ class GenericLocalPlugin(HookBaseClass):
 
     def accept(self, settings, item):
         item.local_properties.plugin_name = "local"
+        item.properties.path = __file__
         return {"accepted": True}
 
     def validate(self, settings, item):
@@ -47,11 +48,10 @@ class GenericLocalPlugin(HookBaseClass):
             if item.local_properties.plugin_name == "local":
                 raise Exception("local_properties was serialized properly.")
         self.logger.debug("Executing local plugin validate.")
-        return super(GenericLocalPlugin).validate(settings, item)
+        return super(GenericLocalPlugin, self).validate(settings, item)
 
     def publish(self, settings, item):
         self.logger.debug("Executing local plugin publish.")
-        item.properties.path = __file__
         super(GenericLocalPlugin, self).publish(settings, item)
         # Mockgun doesn't properly set the link_type field, so we'll do it ourselves
         # so later calls to resolve_publish_path do not fail.

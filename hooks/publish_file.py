@@ -680,10 +680,13 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
         Get the user that will be associated with this publish.
 
+        If publish_user is not defined as a ``property`` or ``local_property``,
+        this method will return ``None``.
+
         :param settings: This plugin instance's configured settings
         :param item: The item to determine the publish template for
 
-        :return: A user entity dictionary.
+        :return: A user entity dictionary or ``None`` if not defined.
         """
         return item.get_property("publish_user", default_value=None)
 
