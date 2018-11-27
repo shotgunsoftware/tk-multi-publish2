@@ -102,6 +102,31 @@ class TestPublishItem(PublishApiTestBase):
                 test.assertEqual(item.local_properties["test"], 2)
                 test.assertEqual(item.get_property("test"), 2)
 
+                # Make sure get_property returns any value if it is set.
+
+                # Make sure if the value is not set we get the default
+                test.assertEqual(item.get_property("get_test", default_value=3), 3)
+
+                # Then set the property to None
+                item.properties.get_test = None
+                # We should get it back.
+                test.assertEqual(item.get_property("get_test", default_value=3), None)
+                # And if we remove it we should get back to getting the default value.
+                del item.properties["get_test"]
+                test.assertEqual(item.get_property("get_test", default_value=3), 3)
+
+                # Now setting a local property should take precedence over the default.
+                item.local_properties.get_test = None
+                test.assertEqual(item.get_property("get_test", default_value=3), None)
+                # And if we remove it we should get back to getting the default value.
+                del item.local_properties["get_test"]
+                test.assertEqual(item.get_property("get_test", default_value=3), 3)
+
+                # Make sure local properties take precedence over global ones.
+                item.properties.get_test = 1
+                item.local_properties.get_test = 2
+                test.assertEqual(item.get_property("get_test", default_value=3), 2)
+
                 # Make sure if we're trying to access the local properties in a
                 # non plugin hook that the error is caught.
                 del self.id

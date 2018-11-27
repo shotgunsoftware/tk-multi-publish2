@@ -126,7 +126,7 @@ class PublishTree(object):
     def load_file(file_path):
         """
         This method returns a new :class:`~.PublishTree` instance by reading
-        a serialized tree file from disk.
+        a serialized tree file from disk._sgtk_custom_type
 
         :param str file_path: The path to a serialized publish tree.
         :return: A :class:`~.PublishTree` instance
@@ -137,7 +137,7 @@ class PublishTree(object):
                 return PublishTree.load(tree_file_obj)
             except Exception, e:
                 logger.error(
-                    "Erorr trying to load publish tree from file: %s" % (e,)
+                    "Error trying to load publish tree from file '%s': %s" % (file_path, e)
                 )
                 raise
 
@@ -148,11 +148,14 @@ class PublishTree(object):
 
         :param file file_obj: A file-like object
         :return: A :class:`~.PublishTree` instance
-
         """
 
         try:
-            return sgtk.util.json.load(file_obj, cls=_PublishTreeDecoder)
+            # Pass in a object hook so that certain Toolkit objects are restored back
+            # from their serialized representation.
+            return PublishTree.from_dict(
+                sgtk.util.json.load(file_obj, object_hook=_json_to_objects)
+            )
         except Exception, e:
             logger.error(
                 "Error loading publish tree: %s\n%s" %
@@ -273,6 +276,8 @@ class PublishTree(object):
                 indent=2,
                 # all non-ASCII characters in the output are escaped with \uXXXX sequences
                 ensure_ascii=True,
+                # Use a custom JSON encoder to certain Toolkit objects are converted into a
+                # JSON
                 cls=_PublishTreeEncoder
             )
         except Exception, e:
@@ -338,15 +343,31 @@ class _PublishTreeEncoder(json.JSONEncoder):
     """
     Implements the json encoder interface for custom publish tree serialization.
     """
-    def default(self, publish_tree):
-        return publish_tree.to_dict()
+    def default(self, data):
+        if isinstance(data, PublishTree):
+            return data.to_dict()
+        elif isinstance(data, sgtk.Template):
+            return {
+                "_sgtk_custom_type": "sgtk.Template",
+                "name": data.name
+            }
+        else:
+            return super(_PublishTreeEncoder).default(data)
 
 
-class _PublishTreeDecoder(json.JSONDecoder):
+def _json_to_objects(data):
     """
-    Implements the json decoder interface for custom publish tree
-    deserialization.
+    Check if an dictionary is actually representing a Toolkit object and
+    unserializes it.
+
+    :param dict data: Data to parse.
+
+    :returns: The original data passed in or the Toolkit object if one was found.
+    :rtype: object
     """
-    def decode(self, json_str):
-        tree_dict = sgtk.util.json.loads(json_str)
-        return PublishTree.from_dict(tree_dict)
+    if data.get("_sgtk_custom_type") == "sgtk.Template":
+        templates = sgtk.platform.current_engine().sgtk.templates
+        if data["name"] not in templates:
+            raise sgtk.TankError("Template '{0}' was not found in templates.yml.".format(data["name"]))
+        return templates[data["name"]]
+    return data

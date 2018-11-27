@@ -57,7 +57,7 @@ class PublishData(collections.MutableMapping):
 
         :return: A dictionary representing the data stored on the instance.
         """
-        return copy.deepcopy(self.__dict__)
+        return copy.copy(self.__dict__)
 
     def __setitem__(self, key, value):
         self.__dict__[key] = value

@@ -373,7 +373,12 @@ class PublishItem(object):
 
         local_properties = self._get_local_properties()
 
-        return local_properties.get(name) or self.properties.get(name) or default_value
+        if name in local_properties:
+            return local_properties[name]
+        elif name in self.properties:
+            return self.properties[name]
+        else:
+            return default_value
 
     def get_thumbnail_as_path(self):
         """
