@@ -21,7 +21,7 @@ import sgtk
 # again and this time get_hook_baseclass will return something.
 try:
     base_class = sgtk.get_hook_baseclass()
-except:
+except Exception:
     pass
 else:
     class TestHook(base_class):
