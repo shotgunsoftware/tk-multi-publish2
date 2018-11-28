@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.api.item &mdash; tk-multi-publish2 v2.2.2 documentation</title>
+  <title>tk_multi_publish2.api.item &mdash; tk-multi-publish2 v2.3.0 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.2.2 documentation" href="../../../index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.3.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -117,7 +117,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.2.2.<br>
+    <b>tk-multi-publish2</b> v2.3.0.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -546,7 +546,12 @@
 
         <span class="n">local_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_local_properties</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="n">local_properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="ow">or</span> <span class="n">default_value</span></div>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">local_properties</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">local_properties</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">default_value</span></div>
 
 <div class="viewcode-block" id="PublishItem.get_thumbnail_as_path"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishItem.get_thumbnail_as_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_thumbnail_as_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1269,7 +1274,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'v2.2.2',
+            VERSION:'v2.3.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

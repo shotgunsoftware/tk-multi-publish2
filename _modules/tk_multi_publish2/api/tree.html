@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.api.tree &mdash; tk-multi-publish2 v2.2.2 documentation</title>
+  <title>tk_multi_publish2.api.tree &mdash; tk-multi-publish2 v2.3.0 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.2.2 documentation" href="../../../index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.3.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -117,7 +117,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.2.2.<br>
+    <b>tk-multi-publish2</b> v2.3.0.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -299,7 +299,7 @@
 <div class="viewcode-block" id="PublishTree.load_file"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishTree.load_file">[docs]</a>    <span class="k">def</span> <span class="nf">load_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method returns a new :class:`~.PublishTree` instance by reading</span>
-<span class="sd">        a serialized tree file from disk.</span>
+<span class="sd">        a serialized tree file from disk._sgtk_custom_type</span>
 
 <span class="sd">        :param str file_path: The path to a serialized publish tree.</span>
 <span class="sd">        :return: A :class:`~.PublishTree` instance</span>
@@ -310,7 +310,7 @@
                 <span class="k">return</span> <span class="n">PublishTree</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">tree_file_obj</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="s2">&quot;Erorr trying to load publish tree from file: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="p">,)</span>
+                    <span class="s2">&quot;Error trying to load publish tree from file &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
                 <span class="p">)</span>
                 <span class="k">raise</span></div>
 
@@ -321,11 +321,14 @@
 
 <span class="sd">        :param file file_obj: A file-like object</span>
 <span class="sd">        :return: A :class:`~.PublishTree` instance</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">_PublishTreeDecoder</span><span class="p">)</span>
+            <span class="c1"># Pass in a object hook so that certain Toolkit objects are restored back</span>
+            <span class="c1"># from their serialized representation.</span>
+            <span class="k">return</span> <span class="n">PublishTree</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span>
+                <span class="n">sgtk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">object_hook</span><span class="o">=</span><span class="n">_json_to_objects</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="s2">&quot;Error loading publish tree: </span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
@@ -446,6 +449,8 @@
                 <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
                 <span class="c1"># all non-ASCII characters in the output are escaped with \uXXXX sequences</span>
                 <span class="n">ensure_ascii</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                <span class="c1"># Use a custom JSON encoder to certain Toolkit objects are converted into a</span>
+                <span class="c1"># JSON</span>
                 <span class="bp">cls</span><span class="o">=</span><span class="n">_PublishTreeEncoder</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
@@ -511,18 +516,34 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements the json encoder interface for custom publish tree serialization.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_tree</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">publish_tree</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">PublishTree</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">Template</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;_sgtk_custom_type&quot;</span><span class="p">:</span> <span class="s2">&quot;sgtk.Template&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">name</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">_PublishTreeEncoder</span><span class="p">)</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">_PublishTreeDecoder</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONDecoder</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_json_to_objects</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Implements the json decoder interface for custom publish tree</span>
-<span class="sd">    deserialization.</span>
+<span class="sd">    Check if an dictionary is actually representing a Toolkit object and</span>
+<span class="sd">    unserializes it.</span>
+
+<span class="sd">    :param dict data: Data to parse.</span>
+
+<span class="sd">    :returns: The original data passed in or the Toolkit object if one was found.</span>
+<span class="sd">    :rtype: object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json_str</span><span class="p">):</span>
-        <span class="n">tree_dict</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">PublishTree</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">tree_dict</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_sgtk_custom_type&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;sgtk.Template&quot;</span><span class="p">:</span>
+        <span class="n">templates</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span><span class="o">.</span><span class="n">sgtk</span><span class="o">.</span><span class="n">templates</span>
+        <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">templates</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">TankError</span><span class="p">(</span><span class="s2">&quot;Template &#39;{0}&#39; was not found in templates.yml.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">templates</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="n">data</span>
 </pre></div>
 
            </div>
@@ -555,7 +576,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'v2.2.2',
+            VERSION:'v2.3.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
