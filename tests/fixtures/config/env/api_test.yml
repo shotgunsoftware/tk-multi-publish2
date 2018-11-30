@@ -27,12 +27,12 @@ engines:
         collector: "{self}/collector.py:{config}/api_collector.py"
         publish_plugins:
           - name: Local Publish
-            hook: "{config}/generic_local.py"
+            hook: "{self}/publish_file.py:{config}/generic_local.py"
             settings: {}
           - name: Remote Publish
-            hook: "{config}/generic_remote.py"
+            hook: "{self}/publish_file.py:{config}/generic_remote.py"
             settings: {}
-        post_phase: "{config}/post_phase_test.py"
+        post_phase: "{self}/post_phase.py:{config}/post_phase_test.py"
 
 frameworks:
   tk-framework-qtwidgets_v2.x.x:

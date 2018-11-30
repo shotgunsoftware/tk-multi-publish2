@@ -10,6 +10,8 @@
 
 import tempfile
 
+from mock import patch
+
 from publish_api_test_base import PublishApiTestBase
 from tank_test.tank_test_base import setUpModule # noqa
 
@@ -131,3 +133,29 @@ class TestPublishTree(PublishApiTestBase):
         # Local properties
         TestHook()
         item.properties["property"] = global_prop
+
+    def test_template_in_properties_persistance(self):
+        """
+        Makes sure Templates can be saved property inside a JSON document.
+        """
+        # Create a tree item with a template in a property.
+        tree = self.manager.tree
+        item = tree.root_item.create_item(
+            "with_template", "with_template", "with_template"
+        )
+        item.properties.template = self.tk.templates["shot_root"]
+
+        # Save that tree and reload it.
+        fd, temp_file_path = tempfile.mkstemp()
+        tree.save_file(temp_file_path)
+        new_tree = tree.load_file(temp_file_path)
+
+        # Get the first children of the root item and make sure it has a template
+        # property name shot_root.
+        new_item = next(new_tree.root_item.children)
+        self.assertEqual(new_item.properties.template.name, "shot_root")
+
+        # Make sure an appropriate error is raised if the template is missing.
+        with patch.dict(self.tk.templates, clear=True):
+            with self.assertRaisesRegex(sgtk.TankError, "Template 'shot_root' was not found"):
+                new_tree = tree.load_file(temp_file_path)
