@@ -508,6 +508,21 @@ class PublishItem(object):
 
         try:
             icon = QtGui.QPixmap(path)
+            if icon.isNull():
+                try:
+                    from PIL import Image
+                    im = Image.open(path)
+                    # needs to be rgba
+                    im = im.convert('RGBA')
+                    r, g, b, a = im.split()
+                    # swapping channel order for qt
+                    im2 = Image.merge("RGBA", (b, g, r, a))
+
+                    data = im2.tobytes("raw", "RGBA")
+                    qim = QtGui.QImage(data, im.size[0], im.size[1], QtGui.QImage.Format_ARGB32)
+                    icon = QtGui.QPixmap.fromImage(qim)
+                except ImportError:
+                    pass
         except Exception as e:
             logger.warning(
                 "%r: Could not load icon '%s': %s" % (self, path, e)
@@ -737,7 +752,23 @@ class PublishItem(object):
         if get_img_path() and not get_pixmap():
             # we have a path but haven't yet created the pixmap. create it
             try:
-                set_pixmap(QtGui.QPixmap(get_img_path()))
+                pixmap = QtGui.QPixmap(get_img_path())
+                if pixmap.isNull():
+                    try:
+                        from PIL import Image
+                        im = Image.open(get_img_path())
+                        # needs to be rgba
+                        im = im.convert('RGBA')
+                        r, g, b, a = im.split()
+                        # swapping channel order for qt
+                        im2 = Image.merge("RGBA", (b, g, r, a))
+
+                        data = im2.tobytes("raw", "RGBA")
+                        qim = QtGui.QImage(data, im.size[0], im.size[1], QtGui.QImage.Format_ARGB32)
+                        pixmap = QtGui.QPixmap.fromImage(qim)
+                    except ImportError:
+                        pass
+                set_pixmap(pixmap)
             except Exception, e:
                 logger.warning(
                     "%r: Could not load icon '%s': %s" %
