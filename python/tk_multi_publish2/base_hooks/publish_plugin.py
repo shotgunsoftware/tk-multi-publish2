@@ -365,7 +365,7 @@ class PublishPlugin(HookBaseClass):
                     "version_number": publish_version,
                     "thumbnail_path": item.get_thumbnail_as_path(),
                     "published_file_type": "Maya Scene",
-                    "dependency_paths": self._maya_get_session_depenencies()
+                    "dependency_paths": self._maya_get_session_dependencies()
                 )
 
         :param dict settings: The keys are strings, matching the keys returned
