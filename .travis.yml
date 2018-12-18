@@ -1,15 +1,25 @@
-# Config file for automatic testing at travis-ci.org
+# Copyright (c) 2018 Shotgun Software Inc.
+#
+# CONFIDENTIAL AND PROPRIETARY
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
+# Source Code License included in this distribution package. See LICENSE.
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
+# not expressly granted therein are reserved by Shotgun Software Inc.
+
+# travis-ci.org CI unit tests integration configuration file.
 
 sudo: true
 language: python
 
 matrix:
-    include:
-      - python: 2.7
-      - python: 2.7
-        env: SG_QT_LIBRARY=PySide
-      - python: 2.7
-        env: SG_QT_LIBRARY=PySide2
+  include:
+    - python: 2.7
+    - python: 2.7
+      env: SG_QT_LIBRARY=PySide
+    - python: 2.7
+      env: SG_QT_LIBRARY=PySide2
 
 install:
   - pip install https://github.com/shotgunsoftware/tk-build/archive/proof_of_concept.zip
