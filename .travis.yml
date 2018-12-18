@@ -14,7 +14,7 @@ matrix:
 install:
   - pip install https://github.com/shotgunsoftware/tk-build/archive/proof_of_concept.zip
   - tk-ci-install
-  - git clone --depth 1 --branch master https://github.com/shotgunsoftware/tk-shell -C ${TRAVIS_BUILD_DIR}/..
+  - tk-clone tk-shell --shallow
 
 script:
   - tk-ci-tests
