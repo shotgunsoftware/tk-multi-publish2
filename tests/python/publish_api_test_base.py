@@ -84,8 +84,9 @@ class PublishApiTestBase(TankTestBase):
         self.QtCore = QtCore
 
         # Instantiate the QApplication singleton if missing.
-        if QtGui is not None and QtGui.QApplication.instance() is None:
-            QtGui.QApplication([])
+        if QtGui is not None:
+            if QtGui.QApplication.instance() is None:
+                QtGui.QApplication([])
             self.image = QtGui.QPixmap(self.image_path)
         else:
             self.image = None
