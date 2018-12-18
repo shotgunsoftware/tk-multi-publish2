@@ -17,7 +17,7 @@ engines:
   tk-shell:
     location:
         type: path
-        path: $SHOTGUN_EXTERNAL_REPOS_ROOT/tk-shell
+        path: $SHOTGUN_TEST_ENGINE
     apps:
       tk-multi-publish2:
         location:
