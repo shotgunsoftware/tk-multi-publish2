@@ -17,6 +17,13 @@ from .instance_base import PluginInstanceBase
 logger = sgtk.platform.get_logger(__name__)
 
 
+def _is_qt_missing():
+    return not(
+        sgtk.platform.current_engine().has_qt4 or
+        sgtk.platform.current_engine().has_qt5
+    )
+
+
 class PublishPluginInstance(PluginInstanceBase):
     """
     Class that wraps around a publishing plugin hook
@@ -102,7 +109,7 @@ class PublishPluginInstance(PluginInstanceBase):
         """
 
         # nothing to do if running without a UI
-        if not sgtk.platform.current_engine().has_ui:
+        if _is_qt_missing():
             return None
 
         if not self._icon_pixmap:
@@ -159,7 +166,7 @@ class PublishPluginInstance(PluginInstanceBase):
             )
             return {"accepted": False}
         finally:
-            if not sgtk.platform.current_engine().has_ui:
+            if not _is_qt_missing():
                 from sgtk.platform.qt import QtCore
                 QtCore.QCoreApplication.processEvents()
 
@@ -221,7 +228,7 @@ class PublishPluginInstance(PluginInstanceBase):
         """
 
         # nothing to do if running without a UI
-        if not sgtk.platform.current_engine().has_ui:
+        if _is_qt_missing():
             return None
 
         with self._handle_plugin_error(None, "Error laying out widgets: %s"):
@@ -238,7 +245,7 @@ class PublishPluginInstance(PluginInstanceBase):
         """
 
         # nothing to do if running without a UI
-        if not sgtk.platform.current_engine().has_ui:
+        if _is_qt_missing():
             return None
 
         with self._handle_plugin_error(None, "Error reading settings from UI: %s"):
@@ -257,7 +264,7 @@ class PublishPluginInstance(PluginInstanceBase):
         """
 
         # nothing to do if running without a UI
-        if not sgtk.platform.current_engine().has_ui:
+        if _is_qt_missing():
             return None
 
         with self._handle_plugin_error(None, "Error writing settings to UI: %s"):
@@ -291,7 +298,7 @@ class PublishPluginInstance(PluginInstanceBase):
             if success_msg:
                 self._logger.debug(success_msg)
         finally:
-            if not sgtk.platform.current_engine().has_ui:
+            if not _is_qt_missing():
                 from sgtk.platform.qt import QtCore
                 QtCore.QCoreApplication.processEvents()
 

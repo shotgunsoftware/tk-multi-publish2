@@ -12,7 +12,7 @@ import os
 import tempfile
 
 from publish_api_test_base import PublishApiTestBase
-from tank_test.tank_test_base import temp_env_var
+from tank_test.tank_test_base import temp_env_var, skip_if_pyside_missing
 from tank_test.tank_test_base import setUpModule # noqa
 from mock import patch, MagicMock
 
@@ -171,6 +171,7 @@ class TestPublishItem(PublishApiTestBase):
         children = [c.name for c in item.children]
         self.assertEqual(len(list(item.children)), 0)
 
+    @skip_if_pyside_missing
     def test_icon_from_file(self):
         """
         Ensures icon is loadable from file and cached.
@@ -183,6 +184,7 @@ class TestPublishItem(PublishApiTestBase):
             has_default_image=True
         )
 
+    @skip_if_pyside_missing
     def test_thumbnail_from_file(self):
         """
         Ensures thumbnail is loadable from file and cached.
@@ -194,6 +196,7 @@ class TestPublishItem(PublishApiTestBase):
         )
         self.assertIsNotNone(item.get_thumbnail_as_path())
 
+    @skip_if_pyside_missing
     def test_invalid_file(self):
         """
         Ensures an invalid file will be properly caught by the item.
@@ -219,6 +222,10 @@ class TestPublishItem(PublishApiTestBase):
         # ... we shouldn't be getting a path to disk back.
         item.thumbnail = mocknail
         self.assertIsNone(item.get_thumbnail_as_path())
+
+        # Skip the test of the test as it requires Qt.
+        if self.image is None:
+            return
 
         # Set the thumbnail to valid, we should be getting a path back.
         item.thumbnail = self.image
@@ -393,6 +400,7 @@ class TestPublishItem(PublishApiTestBase):
             return self.PublishManager(logger)
 
 
+@skip_if_pyside_missing
 class TestQtPixmapAvailability(PublishApiTestBase):
 
     def setUp(self):

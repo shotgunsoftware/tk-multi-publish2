@@ -95,16 +95,19 @@ class TestPublishPluginInstance(PublishApiTestBase):
         del mock_plugin.create_settings_widget
         self.assertFalse(ppi.has_custom_ui)
 
-        # Ensure the icon that was loaded by the plugin is the one specified
-        # via the file path.
-        self.assertEqual(ppi.icon.cacheKey(), self.image.cacheKey())
-        # Clear the pixmap cache.
-        ppi._icon_pixmap = None
-        del mock_plugin.icon
-        self.assertEqual(
-            ppi.icon.cacheKey(),
-            self.QtGui.QPixmap(":/tk_multi_publish2/task.png").cacheKey()
-        )
+        # If the image is not available, this is because Qt isn't available.
+        # so don't test that part.
+        if self.image:
+            # Ensure the icon that was loaded by the plugin is the one specified
+            # via the file path.
+            self.assertEqual(ppi.icon.cacheKey(), self.image.cacheKey())
+            # Clear the pixmap cache.
+            ppi._icon_pixmap = None
+            del mock_plugin.icon
+            self.assertEqual(
+                ppi.icon.cacheKey(),
+                self.QtGui.QPixmap(":/tk_multi_publish2/task.png").cacheKey()
+            )
 
     @mock_publish_plugin_instance_hook_creation
     def test_accept_with_exception(self, create_hook_instance):
