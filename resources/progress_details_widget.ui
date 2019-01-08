@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>696</width>
-    <height>358</height>
+    <width>370</width>
+    <height>233</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,6 +40,12 @@
         </item>
         <item>
          <widget class="QToolButton" name="copy_log_button">
+          <property name="minimumSize">
+           <size>
+            <width>105</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open the publisher's log file. The log file is useful for deeper debugging of publish issues. For issues involving Shotgun Support, please include a copy of this file when submitting a support request. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
