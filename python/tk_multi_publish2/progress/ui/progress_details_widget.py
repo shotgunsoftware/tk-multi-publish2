@@ -11,7 +11,7 @@ from tank.platform.qt import QtCore, QtGui
 class Ui_ProgressDetailsWidget(object):
     def setupUi(self, ProgressDetailsWidget):
         ProgressDetailsWidget.setObjectName("ProgressDetailsWidget")
-        ProgressDetailsWidget.resize(696, 358)
+        ProgressDetailsWidget.resize(370, 233)
         self.verticalLayout = QtGui.QVBoxLayout(ProgressDetailsWidget)
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -28,6 +28,7 @@ class Ui_ProgressDetailsWidget(object):
         self.progress_label.setObjectName("progress_label")
         self.horizontalLayout.addWidget(self.progress_label)
         self.copy_log_button = QtGui.QToolButton(self.progress_frame)
+        self.copy_log_button.setMinimumSize(QtCore.QSize(105, 0))
         self.copy_log_button.setToolButtonStyle(QtCore.Qt.ToolButtonTextOnly)
         self.copy_log_button.setObjectName("copy_log_button")
         self.horizontalLayout.addWidget(self.copy_log_button)
