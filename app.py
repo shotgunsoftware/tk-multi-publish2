@@ -1,11 +1,11 @@
 # Copyright (c) 2017 Shotgun Software Inc.
-# 
+#
 # CONFIDENTIAL AND PROPRIETARY
-# 
-# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit 
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
 # Source Code License included in this distribution package. See LICENSE.
-# By accessing, using, copying or modifying this work you indicate your 
-# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 import os
 import sgtk
@@ -16,7 +16,7 @@ logger = sgtk.platform.get_logger(__name__)
 class MultiPublish2(sgtk.platform.Application):
     """
     This is the :class:`sgtk.platform.Application` subclass that defines the
-    top-level publish2 interface.
+    top-level publish2 interface. Testing.
     """
 
     def init_app(self):
