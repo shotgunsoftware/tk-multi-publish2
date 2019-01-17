@@ -16,7 +16,7 @@ logger = sgtk.platform.get_logger(__name__)
 class MultiPublish2(sgtk.platform.Application):
     """
     This is the :class:`sgtk.platform.Application` subclass that defines the
-    top-level publish2 interface. Testing.
+    top-level publish2 interface.
     """
 
     def init_app(self):
