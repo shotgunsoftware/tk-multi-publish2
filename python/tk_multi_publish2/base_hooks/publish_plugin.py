@@ -451,15 +451,18 @@ class PublishPlugin(HookBaseClass):
 
     def get_ui_settings(self, widget):
         """
-        Invoked by the publisher when the selection changes so the new settings
-        can be applied on the previously selected tasks.
+        Invoked by the publisher when the selection changes. It is performed on the
+        task that was just selected so that the publisher can gather the settings.
+        These settings can then be later used to repopulate the custom UI if the task
+        gets selected again, and also be used in the publishing process by the plugin.
 
         The widget argument is the widget that was previously created by
         `create_settings_widget`.
 
         The method returns an dictionary, where the key is the name of a
         setting that should be updated and the value is the new value of that
-        setting. Note that it is not necessary to return all the values from
+        setting. Note that it is up to you how you want to store the UI's state as
+        settings and you don't have to necessarily to return all the values from
         the UI. This is to allow the publisher to update a subset of settings
         when multiple tasks have been selected.
 
