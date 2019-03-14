@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Publish Customization &mdash; tk-multi-publish2 v2.3.2 documentation</title>
+  <title>Publish Customization &mdash; tk-multi-publish2 v2.3.3 documentation</title>
   
 
   
@@ -32,9 +32,9 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.3.2 documentation" href="index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.3.3 documentation" href="index.html"/>
         <link rel="next" title="Publish API" href="api.html"/>
-        <link rel="prev" title="Shotgun Publisher API reference, v2.3.2" href="index.html"/> 
+        <link rel="prev" title="Shotgun Publisher API reference, v2.3.3" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -129,7 +129,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.3.2.<br>
+    <b>tk-multi-publish2</b> v2.3.3.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -196,7 +196,7 @@ and presented to the user.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">For more information on how to take over, subclass, and manage hooks,
-see the <a class="reference external" href="http://developer.shotgunsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.18.160)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
+see the <a class="reference external" href="http://developer.shotgunsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.18.163)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="collector-hook-api">
@@ -429,7 +429,7 @@ custom publish plugin UI.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">For more information on how to take over, subclass, and manage hooks,
-see the <a class="reference external" href="http://developer.shotgunsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.18.160)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
+see the <a class="reference external" href="http://developer.shotgunsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.18.163)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="publish-plugin-api">
@@ -838,13 +838,16 @@ settings.</td>
 <dl class="method">
 <dt id="tk_multi_publish2.base_hooks.PublishPlugin.get_ui_settings">
 <code class="descname">get_ui_settings</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/publish_plugin.html#PublishPlugin.get_ui_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin.get_ui_settings" title="Permalink to this definition">¶</a></dt>
-<dd><p>Invoked by the publisher when the selection changes so the new settings
-can be applied on the previously selected tasks.</p>
+<dd><p>Invoked by the Publisher when the selection changes. This method gathers the settings
+on the previously selected task, so that they can be later used to repopulate the
+custom UI if the task gets selected again. They will also be passed to the accept, validate,
+publish and finalize methods, so that the settings can be used to drive the publish process.</p>
 <p>The widget argument is the widget that was previously created by
 <cite>create_settings_widget</cite>.</p>
-<p>The method returns an dictionary, where the key is the name of a
+<p>The method returns a dictionary, where the key is the name of a
 setting that should be updated and the value is the new value of that
-setting. Note that it is not necessary to return all the values from
+setting. Note that it is up to you how you want to store the UI&#8217;s state as
+settings and you don&#8217;t have to necessarily to return all the values from
 the UI. This is to allow the publisher to update a subset of settings
 when multiple tasks have been selected.</p>
 <p>Example:</p>
@@ -1058,7 +1061,7 @@ the items to be published.</td>
         <a href="api.html" class="btn btn-neutral float-right" title="Publish API" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="Shotgun Publisher API reference, v2.3.2" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral" title="Shotgun Publisher API reference, v2.3.3" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1088,7 +1091,7 @@ the items to be published.</td>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'v2.3.2',
+            VERSION:'v2.3.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

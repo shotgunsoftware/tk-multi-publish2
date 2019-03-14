@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.base_hooks.publish_plugin &mdash; tk-multi-publish2 v2.3.2 documentation</title>
+  <title>tk_multi_publish2.base_hooks.publish_plugin &mdash; tk-multi-publish2 v2.3.3 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.3.2 documentation" href="../../../index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.3.3 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -117,7 +117,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.3.2.<br>
+    <b>tk-multi-publish2</b> v2.3.3.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -624,15 +624,18 @@
 
 <div class="viewcode-block" id="PublishPlugin.get_ui_settings"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PublishPlugin.get_ui_settings">[docs]</a>    <span class="k">def</span> <span class="nf">get_ui_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Invoked by the publisher when the selection changes so the new settings</span>
-<span class="sd">        can be applied on the previously selected tasks.</span>
+<span class="sd">        Invoked by the Publisher when the selection changes. This method gathers the settings</span>
+<span class="sd">        on the previously selected task, so that they can be later used to repopulate the</span>
+<span class="sd">        custom UI if the task gets selected again. They will also be passed to the accept, validate,</span>
+<span class="sd">        publish and finalize methods, so that the settings can be used to drive the publish process.</span>
 
 <span class="sd">        The widget argument is the widget that was previously created by</span>
 <span class="sd">        `create_settings_widget`.</span>
 
-<span class="sd">        The method returns an dictionary, where the key is the name of a</span>
+<span class="sd">        The method returns a dictionary, where the key is the name of a</span>
 <span class="sd">        setting that should be updated and the value is the new value of that</span>
-<span class="sd">        setting. Note that it is not necessary to return all the values from</span>
+<span class="sd">        setting. Note that it is up to you how you want to store the UI&#39;s state as</span>
+<span class="sd">        settings and you don&#39;t have to necessarily to return all the values from</span>
 <span class="sd">        the UI. This is to allow the publisher to update a subset of settings</span>
 <span class="sd">        when multiple tasks have been selected.</span>
 
@@ -726,7 +729,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'v2.3.2',
+            VERSION:'v2.3.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
