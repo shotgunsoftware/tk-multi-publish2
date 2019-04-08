@@ -10,6 +10,7 @@
 
 import os
 import pprint
+import sys
 
 import sgtk
 
@@ -340,6 +341,9 @@ def get_conflicting_publishes(context, path, publish_name, filters=None):
 
     # ensure the path is normalized for comparison
     normalized_path = sgtk.util.ShotgunPath.normalize(path)
+    # on windows compare paths case insensitively
+    if sys.platform == "win32":
+        normalized_path = normalized_path.lower()
 
     # next, extract the publish path from each of the returned publishes and
     # compare it against the supplied path. if the paths match, we add the
@@ -352,6 +356,10 @@ def get_conflicting_publishes(context, path, publish_name, filters=None):
             # ensure the published path is normalized for comparison
             normalized_publish_path = sgtk.util.ShotgunPath.normalize(
                 publish_path)
+
+            if sys.platform == "win32":
+                normalized_publish_path = normalized_publish_path.lower()
+
             if normalized_path == normalized_publish_path:
                 matching_publishes.append(publish)
 
