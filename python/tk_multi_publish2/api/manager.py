@@ -520,7 +520,7 @@ class PublishManager(object):
         engine = self._bundle.engine
 
         logger.debug(
-            "Finding publish plugin settings for context: %s" % (context,))
+            "Finding publish plugin settings (via pick_environment) for context: %s" % (context,))
 
         if context == self._bundle.context:
             # if the context matches the bundle, we don't need to do any extra
