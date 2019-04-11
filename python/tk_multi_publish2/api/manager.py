@@ -519,18 +519,19 @@ class PublishManager(object):
 
         engine = self._bundle.engine
 
-        logger.debug(
-            "Finding publish plugin settings (via pick_environment) for context: %s" % (context,))
-
         if context == self._bundle.context:
             # if the context matches the bundle, we don't need to do any extra
             # work since the settings are already accessible
+            logger.debug(
+                "Finding publish plugin settings for context: %s" % (context,))
             plugin_settings = self._bundle.get_setting(
                 self.CONFIG_PLUGIN_DEFINITIONS)
         else:
             # load the plugins from the supplied context. this means executing
             # the pick environment hook and reading from disk. this is why we
             # cache the plugins.
+            logger.debug(
+                "Finding publish plugin settings via pick_environment for context: %s" % (context,))
             context_settings = sgtk.platform.engine.find_app_settings(
                 engine.name,
                 self._bundle.name,
