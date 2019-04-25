@@ -91,9 +91,9 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         publish_kwargs - A dictionary of kwargs that should be passed to
             :meth:`tank.util.register_publish`. These kwargs will be used to
-            update the kwark dictionary that is passed when calling
+            update the kwarg dictionary that is passed when calling
             :meth:`tank.util.register_publish`, meaning that any value set here
-            will supercede a value already retreived from another ``property``
+            will supersede a value already retrieved from another ``property``
             or ``local_property``.
 
     NOTE: accessing these ``publish_*`` values on the item does not necessarily
@@ -728,9 +728,9 @@ class BasicFilePublishPlugin(HookBaseClass):
     def get_publish_kwargs(self, settings, item):
         """
         Get kwargs that should be passed to :meth:`tank.util.register_publish`.
-        These kwargs will be used to update the kwark dictionary that is passed
+        These kwargs will be used to update the kwarg dictionary that is passed
         when calling :meth:`tank.util.register_publish`, meaning that any value
-        set here will supercede a value already retreived from another
+        set here will supersede a value already retrieved from another
         ``property`` or ``local_property``.
 
         If publish_kwargs is not defined as a ``property`` or
