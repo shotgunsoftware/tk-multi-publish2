@@ -85,28 +85,13 @@ class TestBasicPublishPlugin(PublishApiTestBase):
             "publish_fields": {"publish_fields key": "publish_fields value"},
             "publish_kwargs": {"publish_kwargs_key": "publish_kwargs value"},
         }
-        item_dict = {
-            "active": True,
-            "allows_context_change": False,
-            "children": [],
-            "context": None,
-            "description": "description value",
-            "enabled": True,
-            "expanded": True,
-            "global_properties": global_props_dict,
-            "icon_path": "icon path value",
-            "local_properties": {},
-            "name": "name value",
-            "persistent": False,
-            "tasks": [],
-            "thumbnail_enabled": False,
-            "thumbnail_explicit": False,
-            "thumbnail_path": "thumbnail path value",
-            "type_display": "type display value",
-            "type_spec": "type spec value",
-        }
+        item_dict = {"description": "description value", "thumbnail_path": "thumbnail_path value"}
         parent = self.PublishItem("blah", "blah", "blah")
-        publish_item = self.PublishItem.from_dict(item_dict, 1, parent=parent)
+        publish_item = self.PublishItem("baz", "baz", "baz")
+        publish_item._parent = parent
+        publish_item._global_properties = self.PublishData.from_dict(global_props_dict)
+        publish_item._description = item_dict["description"]
+        publish_item._thumbnail_path = item_dict["thumbnail_path"]
 
         # ensure that register_publish is called with the expected data
         with mock.patch("sgtk.util.register_publish") as register_publish_mock:
