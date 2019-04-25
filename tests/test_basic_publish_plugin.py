@@ -9,6 +9,7 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import os
+import mock
 
 from publish_api_test_base import PublishApiTestBase
 from tank_test.tank_test_base import setUpModule # noqa
@@ -45,10 +46,7 @@ else:
 
 class TestBasicPublishPlugin(PublishApiTestBase):
 
-    def test_get_user_settings(self):
-        """
-        Ensures get_user_settings reads publish_user from the properties.
-        """
+    def _create_hook(self):
         hook_instance = self.engine.create_hook_instance(
             os.path.pathsep.join([
                 os.path.join(os.environ["REPO_ROOT"], "hooks", "publish_file"),
@@ -57,5 +55,74 @@ class TestBasicPublishPlugin(PublishApiTestBase):
             base_class=self.app.base_hooks.PublishPlugin
         )
         hook_instance.id = __file__
+        return hook_instance
 
+    def test_get_user_settings(self):
+        """
+        Ensures get_user_settings reads publish_user from the properties.
+        """
+        hook_instance = self._create_hook()
         hook_instance.test_get_user_settings(self, {}, self.PublishItem("user", "user", "user"))
+
+    def test_publish(self):
+        """
+        Ensure that the publish method passes the correct kwargs to
+        register_publish.
+        """
+        # test hook instance
+        hook_instance = self._create_hook()
+        # mock parent object
+        parent = mock.MagicMock()
+        parent.sgtk = sgtk
+        # mock publish item with specific data we expect to see
+        global_props_dict = {
+            "publish_type": "publish_type value",
+            "publish_name": "publish_name value",
+            "publish_version": "publish_version value",
+            "publish_path": "publish_path value",
+            "publish_dependencies": "publish_dependencies value",
+            "publish_user": "publish_user value",
+            "publish_fields": {"publish_fields key": "publish_fields value"},
+            "publish_kwargs": {"publish_kwargs_key": "publish_kwargs value"},
+        }
+        item_dict = {
+            "active": True,
+            "allows_context_change": False,
+            "children": [],
+            "context": None,
+            "description": "description value",
+            "enabled": True,
+            "expanded": True,
+            "global_properties": global_props_dict,
+            "icon_path": "icon path value",
+            "local_properties": {},
+            "name": "name value",
+            "persistent": False,
+            "tasks": [],
+            "thumbnail_enabled": False,
+            "thumbnail_explicit": False,
+            "thumbnail_path": "thumbnail path value",
+            "type_display": "type display value",
+            "type_spec": "type spec value",
+        }
+        parent = self.PublishItem("blah", "blah", "blah")
+        publish_item = self.PublishItem.from_dict(item_dict, 1, parent=parent)
+
+        # ensure that register_publish is called with the expected data
+        with mock.patch("sgtk.util.register_publish") as register_publish_mock:
+            hook_instance.publish({}, publish_item)
+            expected_kwargs = {
+                "tk": hook_instance.parent.sgtk,
+                "context": parent.context,
+                "comment": item_dict["description"],
+                "path": global_props_dict["publish_path"],
+                "name": global_props_dict["publish_name"],
+                "created_by": global_props_dict["publish_user"],
+                "version_number": global_props_dict["publish_version"],
+                "thumbnail_path": item_dict["thumbnail_path"],
+                "published_file_type": global_props_dict["publish_type"],
+                "dependency_paths": global_props_dict["publish_dependencies"],
+                "sg_fields": global_props_dict["publish_fields"]
+            }
+            expected_kwargs.update(global_props_dict["publish_kwargs"])
+            register_publish_mock.assert_called_once_with(**expected_kwargs)
