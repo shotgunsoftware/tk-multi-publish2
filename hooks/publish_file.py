@@ -84,17 +84,16 @@ class BasicFilePublishPlugin(HookBaseClass):
             when registering the new publish. If not available, the publishing
             will fall back to the :meth:`tank.util.register_publish` logic.
 
-        publish_fields - A dictionary of additional fields that should be used
-            for the publish. This dictionary is passed on to
+        publish_fields - If set, will be passed to
             :meth:`tank.util.register_publish` as the ``sg_fields`` keyword
-            argument.
+            argument. A dictionary of additional fields that should be used
+            for the publish entity in Shotgun.
 
-        publish_kwargs - A dictionary of kwargs that should be passed to
-            :meth:`tank.util.register_publish`. These kwargs will be used to
-            update the kwarg dictionary that is passed when calling
-            :meth:`tank.util.register_publish`, meaning that any value set here
-            will supersede a value already retrieved from another ``property``
-            or ``local_property``.
+        publish_kwargs - If set, will be used to update the dictionary of kwargs
+            passed to :meth:`tank.util.register_publish`. Because this
+            dictionary updates the kwargs built from other ``property``
+            and ``local_property`` values, any kwargs set in this property will
+            supersede those values.
 
     NOTE: accessing these ``publish_*`` values on the item does not necessarily
     return the value used during publish execution. Use the corresponding
