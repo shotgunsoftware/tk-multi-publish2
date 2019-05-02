@@ -35,15 +35,21 @@ def launch_engine():
     user = sgtk.authentication.ShotgunAuthenticator().get_user()
     sg = user.create_sg_connection()
 
+    project = sg.find_one("Project", [["tank_name", "is_not", None]])
+    if project is None:
+        raise RuntimeError("You need at least one project with the Project.tank_name field set.")
+
     # Bootstrap
     manager = sgtk.bootstrap.ToolkitManager(user)
     manager.plugin_id = "basic.shell"
     manager.base_configuration = "sgtk:descriptor:path?path=$REPO_ROOT/tests/fixtures/config"
     manager.do_shotgun_config_lookup = False
     manager.progress_callback = progress_callback
+
+
     return manager.bootstrap_engine(
         "tk-shell",
-        sg.find_one("Project", [])
+        project
     )
 
 
