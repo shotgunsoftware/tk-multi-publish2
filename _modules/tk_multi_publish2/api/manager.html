@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.api.manager &mdash; tk-multi-publish2 v2.3.3 documentation</title>
+  <title>tk_multi_publish2.api.manager &mdash; tk-multi-publish2 v2.3.4 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.3.3 documentation" href="../../../index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.3.4 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -117,7 +117,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.3.3.<br>
+    <b>tk-multi-publish2</b> v2.3.4.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -692,18 +692,19 @@
 
         <span class="n">engine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">engine</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="s2">&quot;Finding publish plugin settings for context: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">context</span><span class="p">,))</span>
-
         <span class="k">if</span> <span class="n">context</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">context</span><span class="p">:</span>
             <span class="c1"># if the context matches the bundle, we don&#39;t need to do any extra</span>
             <span class="c1"># work since the settings are already accessible</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;Finding publish plugin settings for context: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">context</span><span class="p">,))</span>
             <span class="n">plugin_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_PLUGIN_DEFINITIONS</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># load the plugins from the supplied context. this means executing</span>
             <span class="c1"># the pick environment hook and reading from disk. this is why we</span>
             <span class="c1"># cache the plugins.</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;Finding publish plugin settings via pick_environment for context: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">context</span><span class="p">,))</span>
             <span class="n">context_settings</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">find_app_settings</span><span class="p">(</span>
                 <span class="n">engine</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
@@ -842,7 +843,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'v2.3.3',
+            VERSION:'v2.3.4',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
