@@ -22,5 +22,7 @@ class PickEnvironment(Hook):
 
         if "PUBLISH2_API_TEST" in os.environ:
             return "api_test"
+        elif "PUBLISH2_EXTRA_FIELDS_TEST" in os.environ:
+            return "extra_fields_test"
         else:
             return "test"
