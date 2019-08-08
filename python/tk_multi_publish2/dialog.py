@@ -117,10 +117,12 @@ class AppDialog(QtGui.QWidget):
         self.ui.drag_progress_message.hide()
 
         # buttons
-        self.ui.validate.clicked.connect(self.do_validate)
         self.ui.publish.clicked.connect(self.do_publish)
         self.ui.close.clicked.connect(self.close)
         self.ui.close.hide()
+        # do_validate is invoked using a lambda function because it receives custom parameters
+        # https://eli.thegreenplace.net/2011/04/25/passing-extra-arguments-to-pyqt-slot/
+        self.ui.validate.clicked.connect(lambda: self.do_validate())
 
         # overlay
         self._overlay = SummaryOverlay(self.ui.main_frame)
