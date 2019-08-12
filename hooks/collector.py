@@ -89,11 +89,6 @@ class BasicSceneCollector(HookBaseClass):
                     "icon": self._get_icon_path("hiero.png"),
                     "item_type": "file.hiero",
                 },
-                "PDF": {
-                    "extensions": ["pdf"],
-                    "icon": self._get_icon_path("texture.png"),
-                    "item_type": "file.pdf",
-                },
                 "Houdini Scene": {
                     "extensions": ["hip", "hipnc"],
                     "icon": self._get_icon_path("houdini.png"),
@@ -128,6 +123,11 @@ class BasicSceneCollector(HookBaseClass):
                     "extensions": ["tif", "tiff", "tx", "tga", "dds", "rat"],
                     "icon": self._get_icon_path("texture.png"),
                     "item_type": "file.texture",
+                },
+                "PDF": {
+                    "extensions": ["pdf"],
+                    "icon": self._get_icon_path("file.png"),
+                    "item_type": "file.image",
                 },
             }
 
