@@ -115,7 +115,7 @@ class UploadVersionPlugin(HookBaseClass):
         """
 
         # we use "video" since that's the mimetype category.
-        return ["file.image", "file.video", "file.pdf"]
+        return ["file.image", "file.video"]
 
     def accept(self, settings, item):
         """
