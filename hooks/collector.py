@@ -89,6 +89,11 @@ class BasicSceneCollector(HookBaseClass):
                     "icon": self._get_icon_path("hiero.png"),
                     "item_type": "file.hiero",
                 },
+                "PDF": {
+                    "extensions": ["pdf"],
+                    "icon": self._get_icon_path("texture.png"),
+                    "item_type": "file.pdf",
+                },
                 "Houdini Scene": {
                     "extensions": ["hip", "hipnc"],
                     "icon": self._get_icon_path("houdini.png"),

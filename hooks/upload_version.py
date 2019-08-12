@@ -88,7 +88,7 @@ class UploadVersionPlugin(HookBaseClass):
         return {
             "File Extensions": {
                 "type": "str",
-                "default": "jpeg, jpg, png, mov, mp4",
+                "default": "jpeg, jpg, png, mov, mp4, pdf",
                 "description": "File Extensions of files to include"
             },
             "Upload": {
@@ -115,7 +115,7 @@ class UploadVersionPlugin(HookBaseClass):
         """
 
         # we use "video" since that's the mimetype category.
-        return ["file.image", "file.video"]
+        return ["file.image", "file.video", "file.pdf"]
 
     def accept(self, settings, item):
         """
