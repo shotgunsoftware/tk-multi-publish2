@@ -74,6 +74,11 @@ class BasicSceneCollector(HookBaseClass):
 
             # do this once to avoid unnecessary processing
             self._common_file_info = {
+                "Alias File": {
+                    "extensions": ["wire"],
+                    "icon": self._get_icon_path("alias.png"),
+                    "item_type": "file.alias",
+                },
                 "Alembic Cache": {
                     "extensions": ["abc"],
                     "icon": self._get_icon_path("alembic.png"),
@@ -113,6 +118,11 @@ class BasicSceneCollector(HookBaseClass):
                     "extensions": ["psd", "psb"],
                     "icon": self._get_icon_path("photoshop.png"),
                     "item_type": "file.photoshop",
+                },
+                "VRED Scene": {
+                    "extensions": ["vpb", "vpe", "osb"],
+                    "icon": self._get_icon_path("vred.png"),
+                    "item_type": "file.vred",
                 },
                 "Rendered Image": {
                     "extensions": ["dpx", "exr"],
