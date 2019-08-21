@@ -29,6 +29,5 @@ def show_dialog(app):
     app.engine.show_dialog(display_name, app, AppDialog)
 
 
-# Added by Squeeze
-# This expose the PluginManager class so we can do headless publishes.
-from .processing import PluginManager
+
+
