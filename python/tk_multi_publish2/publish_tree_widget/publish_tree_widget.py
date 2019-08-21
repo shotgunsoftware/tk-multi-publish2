@@ -44,7 +44,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         :param parent: The parent QWidget for this control
         """
         super(PublishTreeWidget, self).__init__(parent)
-        self._plugin_manager = None
+        self._publish_manager = None
         self._selected_items_state = []
         self._bundle = sgtk.platform.current_bundle()
         # make sure that we cannot drop items on the root item
@@ -65,7 +65,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
         # forward double clicks on items to the items themselves
         self.itemDoubleClicked.connect(lambda i, c: i.double_clicked(c))
-        
+
         # workaround to make the scrollbar work properly for QT versions < 5 on macOS
         # This look like a bug tracked on the QT side
         # ( https://bugreports.qt.io/browse/QTBUG-27043 )
@@ -75,28 +75,28 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             self.verticalScrollBar().sliderMoved.connect(self.updateEditorGeometries)
             self.verticalScrollBar().rangeChanged.connect(self.updateEditorGeometries)
 
-    def set_plugin_manager(self, plugin_manager):
+    def set_publish_manager(self, publish_manager):
         """
-        Associate a plugin manager.
+        Associate a publish manager.
 
         This should be done once and immediately after
         construction. The reason it is not part of the constructor
         is to allow the widget to be used in QT Designer.
 
-        :param plugin_manager: Plugin manager instance
+        :param publish_manager: Publish manager instance
         """
-        self._plugin_manager = plugin_manager
+        self._publish_manager = publish_manager
 
-    def _build_item_tree_r(self, item, enabled, level, tree_parent):
+    def _build_item_tree_r(self, item, checked, level, tree_parent):
         """
         Build a subtree of items, recursively, for the given item
 
-        :param item: Low level processing item instance
-        :param bool enabled: flag to indicate that the item is enabled
+        :param item: Low level publish api item instance
+        :param bool checked: flag to indicate that the item is checked
         :param int level: recursion depth
         :param QTreeWidgetItem tree_parent: parent node in tree
         """
-        if len(item.tasks) == 0 and len(item.children) == 0:
+        if len(list(item.tasks)) == 0 and len(list(item.children)) == 0:
             # orphan. Don't create it
             return None
 
@@ -110,8 +110,8 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         # set expand state for item
         ui_item.setExpanded(item.expanded)
 
-        # see if the node is enabled. This setting propagates down
-        enabled &= item.enabled
+        # see if the node is checked. This setting propagates down
+        checked &= item.checked
 
         # create children
         for task in item.tasks:
@@ -123,7 +123,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         ui_item.update_expand_indicator()
 
         for child in item.children:
-            self._build_item_tree_r(child, enabled, level+1, ui_item)
+            self._build_item_tree_r(child, checked, level + 1, ui_item)
 
         # lastly, handle the item level check state.
         # if the item has been marked as checked=False
@@ -162,8 +162,8 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             for item_index in reversed(range(top_level_item.childCount())):
                 item = top_level_item.child(item_index)
 
-                if item.item not in self._plugin_manager.top_level_items:
-                    # no longer in the plugin mgr. remove from tree
+                if item.item not in self._publish_manager.tree.root_item.children:
+                    # no longer in the publish mgr. remove from tree
                     top_level_item.takeChild(item_index)
                 else:
                     # an active item
@@ -174,9 +174,15 @@ class PublishTreeWidget(QtGui.QTreeWidget):
                         (item, state) = self.__take_item(top_level_item, item_index)
                         items_to_move.append((item, state))
 
-        # now put all the moved items in
+        # now put all the moved items back in the tree.
         for item, state in items_to_move:
             self.__insert_item(item, state)
+
+            # TODO: because the context has changed for these items, the attached
+            # tasks for the underlying item will be different. make sure the old
+            # ones are replaced with the new
+            # self.__rebuild_tasks_r(item)
+            # _init_item_r(item)
 
         # pass 2 - check that there aren't any dangling contexts
         # process backwards so that when we take things out we don't
@@ -192,12 +198,14 @@ class PublishTreeWidget(QtGui.QTreeWidget):
                 self.takeTopLevelItem(top_level_index)
 
         # pass 3 - see if anything needs adding
-        for item in self._plugin_manager.top_level_items:
+        nb_items = 0
+        for item in self._publish_manager.tree.root_item.children:
+            nb_items = nb_items + 1
             if item not in top_level_items_in_tree:
                 self.__add_item(item)
 
         # finally, see if we should show the summary widget or not
-        if len(self._plugin_manager.top_level_items) < 2:
+        if nb_items < 2:
             self._summary_node.setHidden(True)
         else:
             self._summary_node.setHidden(False)
@@ -284,18 +292,49 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         if widget_item.isSelected():
             widget_item.treeWidget().scrollToItem(widget_item)
 
-    def __add_item(self, processing_item):
+    # TODO: this was written to handle item's changing context either via drag/
+    # drop or manual context widget change. this will clear existing tasks and
+    # create new ones based on the underlying api item representation
+    def __rebuild_tasks_r(self, widget_item):
+        """
+        Recursively rebuild the tasks for the supplied widget item and its
+        descendants.
+
+        :param widget_item: The top most widget item to rebuild tasks for.
+        """
+
+        child_items = []
+
+        for child_index in reversed(xrange(widget_item.childCount())):
+            child = widget_item.child(child_index)
+            widget_item.takeChild(child_index)
+            if not isinstance(child, TreeNodeTask):
+                # this is a child item. we'll add it to the list of items to
+                # add back once the tasks have been rebuilt
+                child_items.append(child)
+
+        # add all the new tasks for this item
+        for task in widget_item.item.tasks:
+            ui_task = TreeNodeTask(task, widget_item)
+            self.__created_items.append(ui_task)
+
+        # add the child items back and process their tasks
+        for child_item in reversed(child_items):
+            widget_item.addChild(child_item)
+            self.__rebuild_tasks_r(child_item)
+
+    def __add_item(self, publish_item):
         """
         Create a node in the tree to represent the given top level item
 
-        :param processing_item: processing module item instance.
+        :param publish_item: publish api item instance.
         """
-        context_tree_node = self.__ensure_context_node_exists(processing_item.context)
+        context_tree_node = self.__ensure_context_node_exists(publish_item.context)
 
         # now add the new node
         self._build_item_tree_r(
-            processing_item,
-            enabled=True,
+            publish_item,
+            checked=True,
             level=0,
             tree_parent=context_tree_node
         )
@@ -342,7 +381,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         tasks = defaultdict(int)
         for child_index in xrange(node.childCount()):
             child = node.child(child_index)
-            if isinstance(child, TreeNodeTask) and child.enabled:
+            if isinstance(child, TreeNodeTask) and child.checked:
                 task_obj = child.task
                 tasks[task_obj.plugin.name] += 1
             else:
@@ -412,17 +451,17 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         # run default implementation
         super(PublishTreeWidget, self).dropEvent(event)
 
-        for item, state in self._selected_items_state:
+        for ui_item, state in self._selected_items_state:
 
             # make sure that the item picks up the new context
-            if isinstance(item, TopLevelTreeNodeItem):
-                item.synchronize_context()
+            if isinstance(ui_item, TopLevelTreeNodeItem):
+                ui_item.synchronize_context()
 
             # re-initialize the item recursively
-            _init_item_r(item)
+            _init_item_r(ui_item)
 
             # restore state after drop
-            self.__set_item_state(item, state)
+            self.__set_item_state(ui_item, state)
 
         self.tree_reordered.emit()
 
@@ -460,7 +499,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
         # ignore any selection that does not contain at least one TopLevelTreeNodeItems
         if not dragged_items:
-            logger.debug("No top-level nodes included in selection.")        
+            logger.debug("No top-level nodes included in selection.")
             return
 
         self._selected_items_state = selected_items_state
@@ -499,4 +538,3 @@ def _init_item_r(parent_item):
             child.setHidden(not child.task.visible)
         child.setExpanded(True)
         _init_item_r(child)
-

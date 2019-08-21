@@ -4,12 +4,10 @@
 # Use of this software is subject to the terms of the Autodesk license agreement
 # provided at the time of installation or download, or which otherwise accompanies
 # this software in either electronic or hard copy form.
-import sys
 import os
+import sys
 
 sys.path.insert(0, "../../tk-core/python")
-
-import sgtk
 
 
 def progress_callback(value, message):
@@ -17,6 +15,10 @@ def progress_callback(value, message):
 
 
 def launch_engine():
+
+    # Imported locally to avoid use after bootstrap.
+    import sgtk
+
     # Installs a StreamHandler so we see the server output in the console.
     sgtk.LogManager().initialize_base_file_handler("tk-multi-publish2.test")
 
@@ -27,6 +29,7 @@ def launch_engine():
     )
     repo_root = os.path.normpath(repo_root)
     os.environ["REPO_ROOT"] = repo_root
+    os.environ["SHOTGUN_EXTERNAL_REPOS_ROOT"] = os.path.dirname(repo_root)
 
     # Authenticate
     user = sgtk.authentication.ShotgunAuthenticator().get_user()

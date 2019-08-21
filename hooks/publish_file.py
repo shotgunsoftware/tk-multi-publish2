@@ -1,11 +1,11 @@
 # Copyright (c) 2017 Shotgun Software Inc.
-# 
+#
 # CONFIDENTIAL AND PROPRIETARY
-# 
-# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit 
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
 # Source Code License included in this distribution package. See LICENSE.
-# By accessing, using, copying or modifying this work you indicate your 
-# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import os
@@ -79,6 +79,21 @@ class BasicFilePublishPlugin(HookBaseClass):
         publish_dependencies - A list of files to include as dependencies when
             registering the publish. If the item's parent has been published,
             it's path will be appended to this list.
+
+        publish_user - If set, will be supplied to SG as the publish user
+            when registering the new publish. If not available, the publishing
+            will fall back to the :meth:`tank.util.register_publish` logic.
+
+        publish_fields - If set, will be passed to
+            :meth:`tank.util.register_publish` as the ``sg_fields`` keyword
+            argument. A dictionary of additional fields that should be used
+            for the publish entity in Shotgun.
+
+        publish_kwargs - If set, will be used to update the dictionary of kwargs
+            passed to :meth:`tank.util.register_publish`. Because this
+            dictionary updates the kwargs built from other ``property``
+            and ``local_property`` values, any kwargs set in this property will
+            supersede those values.
 
     NOTE: accessing these ``publish_*`` values on the item does not necessarily
     return the value used during publish execution. Use the corresponding
@@ -321,8 +336,7 @@ class BasicFilePublishPlugin(HookBaseClass):
                     "<pre>%s</pre>" % (pprint.pformat(publishes),)
                 )
                 self.logger.warn(
-                    "Found %s conflicting publishes in Shotgun" %
-                        (len(publishes),),
+                    "Found %s conflicting publishes in Shotgun" % (len(publishes),),
                     extra={
                         "action_show_more_info": {
                             "label": "Show Conflicts",
@@ -360,6 +374,10 @@ class BasicFilePublishPlugin(HookBaseClass):
         publish_version = self.get_publish_version(settings, item)
         publish_path = self.get_publish_path(settings, item)
         publish_dependencies = self.get_publish_dependencies(settings, item)
+        publish_user = self.get_publish_user(settings, item)
+        publish_fields = self.get_publish_fields(settings, item)
+        # catch-all for any extra kwargs that should be passed to register_publish.
+        publish_kwargs = self.get_publish_kwargs(settings, item)
 
         # if the parent item has a publish path, include it in the list of
         # dependencies
@@ -377,11 +395,16 @@ class BasicFilePublishPlugin(HookBaseClass):
             "comment": item.description,
             "path": publish_path,
             "name": publish_name,
+            "created_by": publish_user,
             "version_number": publish_version,
             "thumbnail_path": item.get_thumbnail_as_path(),
             "published_file_type": publish_type,
-            "dependency_paths": publish_dependencies
+            "dependency_paths": publish_dependencies,
+            "sg_fields": publish_fields
         }
+
+        # add extra kwargs
+        publish_data.update(publish_kwargs)
 
         # log the publish data for debugging
         self.logger.debug(
@@ -400,6 +423,16 @@ class BasicFilePublishPlugin(HookBaseClass):
         item.properties.sg_publish_data = sgtk.util.register_publish(
             **publish_data)
         self.logger.info("Publish registered!")
+        self.logger.debug(
+            "Shotgun Publish data...",
+            extra={
+                "action_show_more_info": {
+                    "label": "Shotgun Publish Data",
+                    "tooltip": "Show the complete Shotgun Publish Entity dictionary",
+                    "text": "<pre>%s</pre>" % (pprint.pformat(item.properties.sg_publish_data),)
+                }
+            }
+        )
 
     def finalize(self, settings, item):
         """
@@ -661,6 +694,55 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         return dependencies
 
+    def get_publish_user(self, settings, item):
+        """
+        Get the user that will be associated with this publish.
+
+        If publish_user is not defined as a ``property`` or ``local_property``,
+        this method will return ``None``.
+
+        :param settings: This plugin instance's configured settings
+        :param item: The item to determine the publish template for
+
+        :return: A user entity dictionary or ``None`` if not defined.
+        """
+        return item.get_property("publish_user", default_value=None)
+
+    def get_publish_fields(self, settings, item):
+        """
+        Get additional fields that should be used for the publish. This
+        dictionary is passed on to :meth:`tank.util.register_publish` as the
+        ``sg_fields`` keyword argument.
+
+        If publish_fields is not defined as a ``property`` or
+        ``local_property``, this method will return an empty dictionary.
+
+        :param settings: This plugin instance's configured settings
+        :param item: The item to determine the publish template for
+
+        :return: A dictionary of field names and values for those fields.
+        """
+        return item.get_property("publish_fields", default_value={})
+
+    def get_publish_kwargs(self, settings, item):
+        """
+        Get kwargs that should be passed to :meth:`tank.util.register_publish`.
+        These kwargs will be used to update the kwarg dictionary that is passed
+        when calling :meth:`tank.util.register_publish`, meaning that any value
+        set here will supersede a value already retrieved from another
+        ``property`` or ``local_property``.
+
+        If publish_kwargs is not defined as a ``property`` or
+        ``local_property``, this method will return an empty dictionary.
+
+        :param settings: This plugin instance's configured settings
+        :param item: The item to determine the publish template for
+
+        :return: A dictionary of kwargs to be passed to
+                 :meth:`tank.util.register_publish`.
+        """
+        return item.get_property("publish_kwargs", default_value={})
+
     ############################################################################
     # protected methods
 
@@ -748,7 +830,7 @@ class BasicFilePublishPlugin(HookBaseClass):
                 publish_folder = os.path.dirname(publish_file)
                 ensure_folder_exists(publish_folder)
                 copy_file(work_file, publish_file)
-            except Exception, e:
+            except Exception:
                 raise Exception(
                     "Failed to copy work file from '%s' to '%s'.\n%s" %
                     (work_file, publish_file, traceback.format_exc())

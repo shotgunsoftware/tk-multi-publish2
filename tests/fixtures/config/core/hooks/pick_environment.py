@@ -9,6 +9,7 @@ Hook which chooses an environment file to use based on the current context.
 This file is almost always overridden by a standard config.
 """
 
+import os
 from sgtk import Hook
 
 
@@ -18,4 +19,10 @@ class PickEnvironment(Hook):
         The default implementation assumes there are two environments, called shot
         and asset, and switches to these based on entity type.
         """
-        return "test"
+
+        if "PUBLISH2_API_TEST" in os.environ:
+            return "api_test"
+        elif "PUBLISH2_EXTRA_FIELDS_TEST" in os.environ:
+            return "extra_fields_test"
+        else:
+            return "test"

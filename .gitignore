@@ -1,4 +1,5 @@
 *.py[cod]
+.DS_Store
 
 # C extensions
 *.so
@@ -24,6 +25,7 @@ pip-log.txt
 # Unit test / coverage reports
 .coverage
 .tox
+coverage_html_report
 nosetests.xml
 
 # Translations

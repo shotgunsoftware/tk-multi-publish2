@@ -1,11 +1,11 @@
 # Copyright (c) 2017 Shotgun Software Inc.
-# 
+#
 # CONFIDENTIAL AND PROPRIETARY
-# 
-# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit 
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
 # Source Code License included in this distribution package. See LICENSE.
-# By accessing, using, copying or modifying this work you indicate your 
-# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 import os
 import sgtk
@@ -23,7 +23,13 @@ class MultiPublish2(sgtk.platform.Application):
         """
         Called as the application is being initialized
         """
+
         tk_multi_publish2 = self.import_module("tk_multi_publish2")
+
+        # the manager class provides the interface for publishing. We store a
+        # reference to it to enable the create_publish_manager method exposed on
+        # the application itself
+        self._manager_class = tk_multi_publish2.PublishManager
 
         # make the util methods available via the app instance
         self._util = tk_multi_publish2.util
@@ -101,6 +107,16 @@ class MultiPublish2(sgtk.platform.Application):
         Specifies that context changes are allowed.
         """
         return True
+
+    def create_publish_manager(self):
+        """
+        Create and return a :class:`tk_multi_publish2.PublishManager` instance.
+        See the :class:`tk_multi_publish2.PublishManager` docs for details on
+        how it can be used to automate your publishing workflows.
+
+        :returns: A :class:`tk_multi_publish2.PublishManager` instance
+        """
+        return self._manager_class()
 
     def destroy_app(self):
         """

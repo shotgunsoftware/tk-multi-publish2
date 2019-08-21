@@ -12,8 +12,9 @@
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
 
-logger = sgtk.platform.get_logger(__name__)
+from .custom_widget_base import CustomTreeWidgetBase
 
+logger = sgtk.platform.get_logger(__name__)
 
 
 class TreeNodeBase(QtGui.QTreeWidgetItem):
@@ -24,6 +25,16 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
     Item widget which is used to display the actual UI
     for the tree node.
     """
+
+    # Expose the underlying widget statuses on the wrapping tree node items
+    STATUS_NEUTRAL = CustomTreeWidgetBase.NEUTRAL
+    STATUS_VALIDATION = CustomTreeWidgetBase.VALIDATION
+    STATUS_VALIDATION_STANDALONE = CustomTreeWidgetBase.VALIDATION_STANDALONE
+    STATUS_VALIDATION_ERROR = CustomTreeWidgetBase.VALIDATION_ERROR
+    STATUS_PUBLISH = CustomTreeWidgetBase.PUBLISH
+    STATUS_PUBLISH_ERROR = CustomTreeWidgetBase.PUBLISH_ERROR
+    STATUS_FINALIZE = CustomTreeWidgetBase.FINALIZE
+    STATUS_FINALIZE_ERROR = CustomTreeWidgetBase.FINALIZE_ERROR
 
     CHECKBOX_ROLE = QtCore.Qt.UserRole + 1001
 
@@ -68,7 +79,7 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         return self.data(0, self.CHECKBOX_ROLE)
 
     @property
-    def enabled(self):
+    def checked(self):
         return self.check_state != QtCore.Qt.Unchecked
 
     def set_check_state(self, state):
@@ -140,15 +151,18 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         """
         self._embedded_widget.set_status(self._embedded_widget.NEUTRAL)
 
+    def set_status(self, *args, **kwargs):
+        self._embedded_widget.set_status(*args, **kwargs)
+
     # message is for the status icon tooltip. The status is propagated to
     # parents, but the message is not.
-    def _set_status_upwards(self, status, message, info_below = False):
+    def set_status_upwards(self, status, message, info_below=False):
         """
         Traverse all parents and set them to be a certain status
         """
         self._embedded_widget.set_status(status, message, info_below)
         if self.parent():
-            self.parent()._set_status_upwards(
+            self.parent().set_status_upwards(
                 status,
                 "There are issues with some of the items in this group.",
                 True
@@ -194,5 +208,3 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         :param int column: The column that was double clicked
         """
         pass
-
-
