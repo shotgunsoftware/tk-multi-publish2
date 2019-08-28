@@ -48,6 +48,12 @@ class TreeNodeItem(TreeNodeBase):
         widget.set_icon(self._item.icon)
         widget.set_checkbox_value(self.data(0, self.CHECKBOX_ROLE))
 
+        # connect checkbox enable state with item.enabled propertie
+        widget.ui.checkbox.setEnabled(self._item.enabled)
+        # connect checkbox checked state with item.checked propertie
+        widget.ui.checkbox.clicked.connect(
+            lambda: self.setChecked(self.checked))
+
         # connect the collapse/expand tool button to the toggle callback
         widget.expand_indicator.clicked.connect(
             lambda: self.setExpanded(not self.isExpanded()))
@@ -110,6 +116,12 @@ class TreeNodeItem(TreeNodeBase):
         :returns: task or item instance
         """
         return self.item
+
+    def setChecked(self, checked):
+        '''
+        Set checked (active) state for corresponding PublishItem
+        '''
+        self._item.checked = checked
 
     def setExpanded(self, expand):
         """
@@ -193,6 +205,7 @@ class TreeNodeItem(TreeNodeBase):
             icon = self._collapsed_icon
 
         self._embedded_widget.expand_indicator.setIcon(icon)
+
 
 class TopLevelTreeNodeItem(TreeNodeItem):
     """
