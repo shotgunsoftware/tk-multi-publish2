@@ -1,3 +1,7 @@
+'''
+(.*)([._-])v(.*)([._-])(\d+)\.([^.]+)$
+'''
+
 # Copyright (c) 2017 Shotgun Software Inc.
 #
 # CONFIDENTIAL AND PROPRIETARY
@@ -24,18 +28,24 @@ HookBaseClass = sgtk.get_hook_baseclass()
 VERSION_REGEX = re.compile("(.*)([._-])v(\d+)\.?([^.]+)?$", re.IGNORECASE)
 
 # a regular expression used to extract the frame number from the file.
-# this implementation assumes the version number is of the form '.####'
+# this implementation assumes the frame number is of the form '.####'
 # coming just before the extension in the filename and just after a '.', '_',
 # or '-'.
 FRAME_REGEX = re.compile("(.*)([._-])(\d+)\.([^.]+)$", re.IGNORECASE)
 
+# a regular expression used to extrand the frame number AND version from the file.
+# this implementation assumes the frame number is of the form '.####'
+# coming just before the extension in the filename and just after a '.', '_',
+# or '-'.
+# also assuming the version number is of the form 'v###' coming before the frame number and frame seperator.
+VERSION_FRAME_REGEX = re.compile("(.*)([._-])v(.*)([._-])(\d+)\.([^.]+)$", re.IGNORECASE)
 
 class BasicPathInfo(HookBaseClass):
     """
     Methods for basic file path parsing.
     """
 
-    def get_publish_name(self, path, sequence=False):
+    def get_publish_name(self, path, sequence=False, version=False):
         """
         Given a file path, return the display name to use for publishing.
 
@@ -70,6 +80,7 @@ class BasicPathInfo(HookBaseClass):
 
         version_pattern_match = re.search(VERSION_REGEX, filename)
         frame_pattern_match = re.search(FRAME_REGEX, filename)
+        version_frame_pattern_match = re.search(VERSION_FRAME_REGEX, filename)
 
         if version_pattern_match:
             # found a version number, use the other groups to remove it
@@ -86,6 +97,17 @@ class BasicPathInfo(HookBaseClass):
             frame = frame_pattern_match.group(3)
             display_str = "#" * len(frame)
             extension = frame_pattern_match.group(4) or ""
+            publish_name = "%s%s%s.%s" % (
+                prefix, frame_sep, display_str, extension)
+        elif version_frame_pattern_match and sequence and version:
+            # found a frame number, meplace it with #s
+            prefix = version_frame_pattern_match.group(1)
+            version_sep = version_frame_pattern_match.group(2)
+            version = version_frame_pattern_match.group(3)
+            frame_sep = version_frame_pattern_match.group(4)
+            frame = version_frame_pattern_match.group(5)
+            display_str = "#" * len(frame)
+            extension = version_frame_pattern_match.group(6) or ""
             publish_name = "%s%s%s.%s" % (
                 prefix, frame_sep, display_str, extension)
         else:
