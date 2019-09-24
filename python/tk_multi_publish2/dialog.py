@@ -588,7 +588,7 @@ class AppDialog(QtGui.QWidget):
         
         self.ui.item_thumbnail._set_multiple_values_indicator(False)
         self.ui.item_thumbnail.set_thumbnail(item.thumbnail)
-        
+
 
         # Items with default thumbnails should still be able to have override thumbnails set by the user
         self.ui.item_thumbnail.setEnabled(True)
@@ -1229,8 +1229,9 @@ class AppDialog(QtGui.QWidget):
                 # jump out of the iteration
                 break
 
-            if not ui_item.checked:
-                continue
+            if 'Publishing' not in stage_name:
+                if not ui_item.checked:
+                    continue
 
             self._progress_handler.push(
                 "%s: %s" % (stage_name, ui_item,),
@@ -1291,7 +1292,9 @@ class AppDialog(QtGui.QWidget):
             try:
                 # yield each child item to be acted on by the publish api
                 if isinstance(ui_item, TreeNodeTask):
-                    yield ui_item.task
+                    ui_item.task.active = ui_item.checked
+                    if ui_item.checked:
+                        yield ui_item.task
 
                 # all other nodes are UI-only and can handle their own
                 # publishing
