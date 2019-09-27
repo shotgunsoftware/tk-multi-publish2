@@ -124,6 +124,11 @@ class BasicSceneCollector(HookBaseClass):
                     "icon": self._get_icon_path("texture.png"),
                     "item_type": "file.texture",
                 },
+                "PDF": {
+                    "extensions": ["pdf"],
+                    "icon": self._get_icon_path("file.png"),
+                    "item_type": "file.image",
+                },
             }
 
         return self._common_file_info
