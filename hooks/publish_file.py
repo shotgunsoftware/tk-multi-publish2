@@ -380,10 +380,10 @@ class BasicFilePublishPlugin(HookBaseClass):
         # catch-all for any extra kwargs that should be passed to register_publish.
         publish_kwargs = self.get_publish_kwargs(settings, item)
 
-        # if the parent item has a publish path, include it in the list of
+        # if the parent item has publish data, get it path to include it in the list of
         # dependencies
-        if "sg_publish_path" in item.parent.properties:
-            publish_dependencies.append(item.parent.properties.sg_publish_path)
+        if "sg_publish_data" in item.parent.properties and "path" in item.parent.properties.sg_publish_data:
+            publish_dependencies.append(item.parent.properties.sg_publish_data["path"]["local_path"])
 
         # handle copying of work to publish if templates are in play
         self._copy_work_to_publish(settings, item)
