@@ -142,8 +142,7 @@ class ProgressHandler(object):
         Copy the log to the clipboard
         """
         logger.debug("Copying %d log messages to clipboard..." % len(self._log_messages))
-        app = QtCore.QCoreApplication.instance()
-        app.clipboard().setText("\n".join(self._log_messages))
+        QtGui.QApplication.clipboard().setText("\n".join(self._log_messages))
 
     def process_log_message(self, message, status, action):
         """
