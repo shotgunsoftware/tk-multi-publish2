@@ -374,7 +374,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         publish_name = self.get_publish_name(settings, item)
         publish_version = self.get_publish_version(settings, item)
         publish_path = self.get_publish_path(settings, item)
-        publish_dependencies = self.get_publish_dependencies(settings, item)
+        publish_dependencies_paths = self.get_publish_dependencies(settings, item)
         publish_user = self.get_publish_user(settings, item)
         publish_fields = self.get_publish_fields(settings, item)
         # catch-all for any extra kwargs that should be passed to register_publish.
@@ -382,8 +382,9 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         # if the parent item has publish data, get it path to include it in the list of
         # dependencies
-        if "sg_publish_data" in item.parent.properties and "path" in item.parent.properties.sg_publish_data:
-            publish_dependencies.append(item.parent.properties.sg_publish_data["path"]["local_path"])
+        publish_dependencies_ids = []
+        if "sg_publish_data" in item.parent.properties:
+            publish_dependencies_ids.append(item.parent.properties.sg_publish_data["id"])
 
         # handle copying of work to publish if templates are in play
         self._copy_work_to_publish(settings, item)
@@ -400,7 +401,8 @@ class BasicFilePublishPlugin(HookBaseClass):
             "version_number": publish_version,
             "thumbnail_path": item.get_thumbnail_as_path(),
             "published_file_type": publish_type,
-            "dependency_paths": publish_dependencies,
+            "dependency_paths": publish_dependencies_paths,
+            "dependency_ids": publish_dependencies_ids,
             "sg_fields": publish_fields
         }
 
