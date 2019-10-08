@@ -382,7 +382,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         # catch-all for any extra kwargs that should be passed to register_publish.
         publish_kwargs = self.get_publish_kwargs(settings, item)
 
-        # if the parent item has publish data, get it path to include it in the list of
+        # if the parent item has publish data, get it id to include it in the list of
         # dependencies
         publish_dependencies_ids = []
         if "sg_publish_data" in item.parent.properties:
