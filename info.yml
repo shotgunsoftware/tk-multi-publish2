@@ -1,11 +1,11 @@
 # Copyright (c) 2017 Shotgun Software Inc.
-# 
+#
 # CONFIDENTIAL AND PROPRIETARY
-# 
-# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit 
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
 # Source Code License included in this distribution package. See LICENSE.
-# By accessing, using, copying or modifying this work you indicate your 
-# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 configuration:
@@ -47,6 +47,14 @@ configuration:
            information from file paths. This includes version and frame number
            identification, publish display name, image sequence paths, etc."
         default_value: "{self}/path_info.py"
+
+    task_required:
+        type: bool
+        description:
+            "If true validates that a task is selected for every item and disables/enables the
+            validate and publish buttons and finally change the color for the task
+            label."
+        default_value: false
 
     publish_plugins:
         type: list
@@ -105,21 +113,20 @@ configuration:
 # the Shotgun fields that this app needs in order to operate correctly
 requires_shotgun_fields:
 
-# More verbose description of this item 
+# More verbose description of this item
 display_name: "Publish"
 description: "Provides UI and functionality to publish files to Shotgun."
 
 # Required minimum versions for this item to run
 requires_shotgun_version:
 requires_core_version: "v0.18.153"
-requires_engine_version: 
+requires_engine_version:
 
-# this app works in all engines - it does not contain 
+# this app works in all engines - it does not contain
 # any host application specific commands
-supported_engines: 
+supported_engines:
 
 # the frameworks required to run this app
 frameworks:
     - {"name": "tk-framework-shotgunutils", "version": "v5.x.x"}
     - {"name": "tk-framework-qtwidgets", "version": "v2.x.x", "minimum_version": "v2.7.0"}
-    
