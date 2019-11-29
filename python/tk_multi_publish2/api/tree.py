@@ -352,7 +352,7 @@ class _PublishTreeEncoder(json.JSONEncoder):
                 "name": data.name
             }
         else:
-            return super(_PublishTreeEncoder).default(data)
+            return super(_PublishTreeEncoder, self).default(data)
 
 
 def _json_to_objects(data):
