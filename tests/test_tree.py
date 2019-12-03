@@ -8,8 +8,8 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+from StringIO import StringIO
 import tempfile
-import re
 import datetime
 
 from mock import patch
@@ -69,10 +69,9 @@ class TestPublishTree(PublishApiTestBase):
         # Store a datetime object as this can't be serialized.
         item.properties["dateteime"] = datetime.datetime.now()
 
-        fd, temp_file_path = tempfile.mkstemp()
         # Check that we get the error we expect.
-        with self.assertRaisesRegex(TypeError, "datetime.* is not JSON serializable" ):
-            self.manager.save(temp_file_path)
+        with self.assertRaisesRegex(TypeError, "datetime.* is not JSON serializable"):
+            tree.save(StringIO())
 
     def test_bad_document_version(self):
         """

@@ -266,7 +266,7 @@ class PublishTree(object):
 
     def save(self, file_obj):
         """
-        Write a json-serialized representation of the publish tree to the
+        Writes a json-serialized representation of the publish tree to the
         supplied file-like object.
         """
         try:
