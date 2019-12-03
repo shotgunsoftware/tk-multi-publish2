@@ -9,6 +9,8 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import tempfile
+import re
+import datetime
 
 from mock import patch
 
@@ -33,6 +35,8 @@ class TestPublishTree(PublishApiTestBase):
 
         # Create some items that will modify
         tree = self.manager.tree
+        # Make sure we are working with a clean tree.
+        tree.clear()
         item = tree.root_item.create_item("item.a", "Item A", "Item A")
         child = item.create_item("item.b", "Item B", "Item B")
 
@@ -52,6 +56,44 @@ class TestPublishTree(PublishApiTestBase):
 
         self.maxDiff = None
         self.assertEqual(before_load, after_load)
+
+        # leave the tree in a clean state
+        tree.clear()
+
+    def test_unserializable_tree(self):
+        """
+        Tests that if you store an unserializable object on an item, it will fail with a
+        "is not JSON serializable" TypeError.
+        """
+        # Indirectly create tasks, since we can't create them directly without a
+        # PublishPluginInstance object.
+        self.manager.collect_session()
+
+        # Create some items that will modify
+        tree = self.manager.tree
+        # Make sure we are working with a clean tree.
+        tree.clear()
+
+        item = tree.root_item.create_item("item.a", "Item A", "Item A")
+
+        # Create a datetime object as this can't be serialized.
+        datetime_now = datetime.datetime.now()
+
+        # Touch every property of an item.
+        self._set_item(
+            item, True, "Description 1", "/a/b/c.png", "/d/e/f.png", datetime_now, "global"
+        )
+
+        fd, temp_file_path = tempfile.mkstemp()
+
+        # Escape the special characters that come from the repr.
+        escaped_date_time_string = re.escape(repr(datetime_now))
+
+        # Check that we get the error we expect.
+        with self.assertRaisesRegex(TypeError, "%s is not JSON serializable" % escaped_date_time_string):
+            self.manager.save(temp_file_path)
+        # Leave the tree in a clean state.
+        tree.clear()
 
     def test_bad_document_version(self):
         """
