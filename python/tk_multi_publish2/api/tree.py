@@ -345,15 +345,6 @@ class _PublishTreeEncoder(json.JSONEncoder):
     """
     def default(self, data):
         
-        is_nuke_session = False
-        
-        try:
-            import nuke
-        except ImportError:
-            pass
-        else:
-            is_nuke_session = True
-            
         if isinstance(data, PublishTree):
             return data.to_dict()
         elif isinstance(data, sgtk.Template):
