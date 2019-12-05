@@ -362,13 +362,7 @@ class _PublishTreeEncoder(json.JSONEncoder):
         else:
             return super(_PublishTreeEncoder).default(data)
 
-def get_dcc():
-    try:
-        import nuke
-    except ImportError:
-        pass
-    else:
-        return 't
+
 def _json_to_objects(data):
     """
     Check if an dictionary is actually representing a Toolkit object and
