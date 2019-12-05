@@ -344,6 +344,16 @@ class _PublishTreeEncoder(json.JSONEncoder):
     Implements the json encoder interface for custom publish tree serialization.
     """
     def default(self, data):
+        
+        is_nuke_session = False
+        
+        try:
+            import nuke
+        except ImportError:
+            pass
+        else:
+            is_nuke_session = True
+            
         if isinstance(data, PublishTree):
             return data.to_dict()
         elif isinstance(data, sgtk.Template):
@@ -351,10 +361,23 @@ class _PublishTreeEncoder(json.JSONEncoder):
                 "_sgtk_custom_type": "sgtk.Template",
                 "name": data.name
             }
+        elif sgtk.platform.current_engine() == 'tk-nuke':
+            import nuke
+            if isinstance(data, nuke.Gizmo):
+                return {
+                    "_sgtk_custom_type": "sgtk.tk-nuke-writenode",
+                    "name": data.name()
+                }
         else:
             return super(_PublishTreeEncoder).default(data)
 
-
+def get_dcc():
+    try:
+        import nuke
+    except ImportError:
+        pass
+    else:
+        return 't
 def _json_to_objects(data):
     """
     Check if an dictionary is actually representing a Toolkit object and
