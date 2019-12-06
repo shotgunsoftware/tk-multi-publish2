@@ -266,7 +266,7 @@ class PublishTree(object):
 
     def save(self, file_obj):
         """
-        Write a json-serialized representation of the publish tree to the
+        Writes a json-serialized representation of the publish tree to the
         supplied file-like object.
         """
         try:
@@ -352,7 +352,7 @@ class _PublishTreeEncoder(json.JSONEncoder):
                 "name": data.name
             }
         else:
-            return super(_PublishTreeEncoder).default(data)
+            return super(_PublishTreeEncoder, self).default(data)
 
 
 def _json_to_objects(data):

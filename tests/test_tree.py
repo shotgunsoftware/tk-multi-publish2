@@ -8,7 +8,9 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+from StringIO import StringIO
 import tempfile
+import datetime
 
 from mock import patch
 
@@ -33,6 +35,7 @@ class TestPublishTree(PublishApiTestBase):
 
         # Create some items that will modify
         tree = self.manager.tree
+        # Make sure we are working with a clean tree.
         item = tree.root_item.create_item("item.a", "Item A", "Item A")
         child = item.create_item("item.b", "Item B", "Item B")
 
@@ -52,6 +55,23 @@ class TestPublishTree(PublishApiTestBase):
 
         self.maxDiff = None
         self.assertEqual(before_load, after_load)
+
+    def test_unserializable_tree(self):
+        """
+        Tests that if you store an unserializable object on an item, it will fail with a
+        "is not JSON serializable" TypeError.
+        """
+
+        # Create some items that will modify
+        tree = self.manager.tree
+
+        item = tree.root_item.create_item("item.a", "Item A", "Item A")
+        # Store a datetime object as this can't be serialized.
+        item.properties["dateteime"] = datetime.datetime.now()
+
+        # Check that we get the error we expect.
+        with self.assertRaisesRegex(TypeError, "datetime.* is not JSON serializable"):
+            tree.save(StringIO())
 
     def test_bad_document_version(self):
         """
