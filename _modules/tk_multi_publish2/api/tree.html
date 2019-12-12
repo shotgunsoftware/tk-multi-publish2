@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.api.tree &mdash; tk-multi-publish2 v2.4.0 documentation</title>
+  <title>tk_multi_publish2.api.tree &mdash; tk-multi-publish2 v2.4.1 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.4.0 documentation" href="../../../index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.4.1 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -117,7 +117,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.4.0.<br>
+    <b>tk-multi-publish2</b> v2.4.1.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -439,7 +439,7 @@
 
     <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Write a json-serialized representation of the publish tree to the</span>
+<span class="sd">        Writes a json-serialized representation of the publish tree to the</span>
 <span class="sd">        supplied file-like object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -525,7 +525,7 @@
                 <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">name</span>
             <span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">_PublishTreeEncoder</span><span class="p">)</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">_PublishTreeEncoder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_json_to_objects</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
@@ -576,7 +576,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'v2.4.0',
+            VERSION:'v2.4.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
