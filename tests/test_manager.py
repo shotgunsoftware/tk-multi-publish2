@@ -154,3 +154,35 @@ class TestManager(PublishApiTestBase):
 
         with self.assertRaisesRegex(Exception, "Test error!"):
             self.manager.publish(test_nodes())
+
+    def test_collection_args(self):
+        """
+        Ensures that collection_args is propagated to the collector hook
+        """
+        collection_args = {
+            "flag_1": True,
+            "flag_2": False,
+            "flag_3": 10,
+        }
+        # if collection_args is provided to collect_session
+        # api_collector adds collection_args to root item properties
+        # this is done only for test purposes
+
+        # without collection_args provided,
+        # root_item properties do not contain collection_args
+        self.manager.collect_session()
+        root_item = self.manager.tree.root_item
+        root_item_properties = root_item.properties
+        self.assertNotIn("flag_1", root_item_properties)
+        self.assertNotIn("flag_2", root_item_properties)
+        self.assertNotIn("flag_3", root_item_properties)
+
+        # now we provide collection_args
+        self.manager.collect_session(collection_args)
+
+        # so properties should be filled
+        self.assertEqual(root_item.properties["flag_1"], collection_args["flag_1"])
+        self.assertEqual(root_item.properties["flag_2"], collection_args["flag_2"])
+        self.assertEqual(root_item.properties["flag_3"], collection_args["flag_3"])
+
+

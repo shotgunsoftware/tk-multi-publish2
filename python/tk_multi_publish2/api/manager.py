@@ -93,7 +93,7 @@ class PublishManager(object):
             base_class=self._bundle.base_hooks.PostPhaseHook
         )
 
-    def collect_files(self, file_paths):
+    def collect_files(self, file_paths, collection_args=None):
         """
         Run the collection logic to populate the publish tree with items for
         each supplied path.
@@ -127,7 +127,8 @@ class PublishManager(object):
                 # that are collected.
                 self._collector_instance.run_process_file(
                     self.tree.root_item,
-                    file_path
+                    file_path,
+                    collection_args,
                 )
 
             # get a list of all items in the tree after collection
@@ -156,7 +157,7 @@ class PublishManager(object):
 
         return new_items
 
-    def collect_session(self):
+    def collect_session(self, collection_args=None):
         """
         Run the collection logic to populate the tree with items to publish.
 
@@ -180,7 +181,7 @@ class PublishManager(object):
         # we supply the root item of the tree for parenting of items that
         # are collected.
         self._collector_instance.run_process_current_session(
-            self.tree.root_item)
+            self.tree.root_item, collection_args)
 
         # get a list of all items in the tree after collection
         items_after = list(self.tree)
