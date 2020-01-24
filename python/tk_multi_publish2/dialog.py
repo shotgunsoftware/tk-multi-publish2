@@ -1265,7 +1265,7 @@ class AppDialog(QtGui.QWidget):
                 else:
                     is_successful = ui_item.validate(is_standalone)
                     error_msg = "Unknown validation error!"
-            except Exception, e:
+            except Exception as e:
                 ui_item.set_status_upwards(
                     ui_item.STATUS_VALIDATION_ERROR,
                     str(e)
@@ -1300,7 +1300,7 @@ class AppDialog(QtGui.QWidget):
                 # publishing
                 else:
                     ui_item.publish()
-            except Exception, e:
+            except Exception as e:
                 ui_item.set_status_upwards(
                     ui_item.STATUS_PUBLISH_ERROR,
                     str(e)
@@ -1326,7 +1326,7 @@ class AppDialog(QtGui.QWidget):
                 else:
                     ui_item.finalize()
                     finalize_exception = None
-            except Exception, e:
+            except Exception as e:
                 ui_item.set_status_upwards(
                     ui_item.STATUS_FINALIZE_ERROR,
                     str(e)
@@ -1450,7 +1450,7 @@ class AppDialog(QtGui.QWidget):
         try:
             logger.debug("Opening url: '%s'." % (url,))
             QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
-        except Exception, e:
+        except Exception as e:
             logger.error("Failed to open url: '%s'. Reason: %s" % (url, e))
 
     def _trigger_stop_processing(self):

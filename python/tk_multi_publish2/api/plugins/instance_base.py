@@ -76,7 +76,7 @@ class PluginInstanceBase(object):
         """
         try:
             hook_settings_schema = self._hook_instance.settings
-        except AttributeError, e:
+        except AttributeError as e:
             # property not defined by the hook
             logger.debug("no settings property defined by hook")
             hook_settings_schema = {}

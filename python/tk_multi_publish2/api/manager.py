@@ -293,7 +293,7 @@ class PublishManager(object):
             # being processed.
             try:
                 is_valid = task.validate()
-            except Exception, e:
+            except Exception as e:
                 is_valid = False
                 error = e
 

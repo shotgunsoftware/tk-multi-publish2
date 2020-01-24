@@ -213,7 +213,7 @@ class PublishItem(object):
             if os.path.exists(temp_file):
                 try:
                     os.remove(temp_file)
-                except Exception, e:
+                except Exception as e:
                     logger.warning(
                         "Could not remove temporary file '%s': %s" % (temp_file, e)
                     )
@@ -738,7 +738,7 @@ class PublishItem(object):
             # we have a path but haven't yet created the pixmap. create it
             try:
                 set_pixmap(QtGui.QPixmap(get_img_path()))
-            except Exception, e:
+            except Exception as e:
                 logger.warning(
                     "%r: Could not load icon '%s': %s" %
                     (self, get_img_path(), e)

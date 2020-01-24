@@ -67,7 +67,7 @@ def show_in_shotgun(entity):
     try:
         logger.debug("Opening entity url: '%s'." % (url,))
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
-    except Exception, e:
+    except Exception as e:
         logger.error("Failed to open url: '%s'. Reason: %s" % (url, e))
 
 
@@ -80,7 +80,7 @@ def show_more_info(pixmap, message, text, parent):
 
     try:
         MoreInfoDialog(pixmap, message, text, parent)
-    except Exception, e:
+    except Exception as e:
         logger.error("Failed to launch more info dialog. Reason: %s" % (e,))
 
 def open_url(url):
@@ -92,6 +92,6 @@ def open_url(url):
 
     try:
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
-    except Exception, e:
+    except Exception as e:
         logger.error("Failed to launch more info dialog. Reason: %s" % (e,))
 

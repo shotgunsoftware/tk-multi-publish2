@@ -8,6 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+from __future__ import print_function
 import pprint
 import sgtk
 
@@ -71,17 +72,17 @@ class VitorPlugin(HookBaseClass):
         return {"accepted": True}
 
     def validate(self, settings, item):
-        print item, "was validated! The settings were:"
+        print(item, "was validated! The settings were:")
         pprint.pprint(dict(list((k, v.value) for k, v in settings.iteritems())))
         return True
 
     def publish(self, settings, item):
-        print item, "was published! The settings were:"
+        print(item, "was published! The settings were:")
         pprint.pprint(dict(list((k, v.value) for k, v in settings.iteritems())))
         pass
 
     def finalize(self, settings, item):
-        print item, "was finalized! The settings were:"
+        print(item, "was finalized! The settings were:")
         pprint.pprint(dict(list((k, v.value) for k, v in settings.iteritems())))
         pass
 

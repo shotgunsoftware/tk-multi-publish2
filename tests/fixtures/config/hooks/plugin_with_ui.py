@@ -8,6 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+from __future__ import print_function
 import abc
 import pprint
 
@@ -368,7 +369,7 @@ class PluginWithUi(HookBaseClass):
 
         :returns: True if item is valid, False otherwise.
         """
-        print item, "was published! The settings were:"
+        print(item, "was published! The settings were:")
         pprint.pprint(dict(list((k, v.value) for k, v in settings.iteritems())))
         return True
 

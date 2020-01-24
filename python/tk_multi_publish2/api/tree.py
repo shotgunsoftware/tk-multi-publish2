@@ -8,6 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+from __future__ import print_function
 import traceback
 
 import json
@@ -135,7 +136,7 @@ class PublishTree(object):
         with open(file_path, "rb") as tree_file_obj:
             try:
                 return PublishTree.load(tree_file_obj)
-            except Exception, e:
+            except Exception as e:
                 logger.error(
                     "Error trying to load publish tree from file '%s': %s" % (file_path, e)
                 )
@@ -156,7 +157,7 @@ class PublishTree(object):
             return PublishTree.from_dict(
                 sgtk.util.json.load(file_obj, object_hook=_json_to_objects)
             )
-        except Exception, e:
+        except Exception as e:
             logger.error(
                 "Error loading publish tree: %s\n%s" %
                 (e, traceback.format_exc())
@@ -234,7 +235,7 @@ class PublishTree(object):
               [task] Upload Media
         """
 
-        print self.pformat()
+        print(self.pformat())
 
     def remove_item(self, item):
         """
@@ -258,7 +259,7 @@ class PublishTree(object):
         with open(file_path, "w") as file_obj:
             try:
                 self.save(file_obj)
-            except Exception, e:
+            except Exception as e:
                 logger.error(
                     "Error saving the publish tree to disk: %s" % (e,)
                 )
@@ -280,7 +281,7 @@ class PublishTree(object):
                 # JSON
                 cls=_PublishTreeEncoder
             )
-        except Exception, e:
+        except Exception as e:
             logger.error(
                 "Error saving publish tree: %s\n%s" %
                 (e, traceback.format_exc())

@@ -312,7 +312,7 @@ class PublishPluginInstance(PluginInstanceBase):
             if icon_path:
                 try:
                     pixmap = QtGui.QPixmap(icon_path)
-                except Exception, e:
+                except Exception as e:
                     self._logger.warning(
                         "%r: Could not load icon '%s': %s" % (
                             self, icon_path, e
