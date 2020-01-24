@@ -10,7 +10,7 @@
 
 
 import sgtk
-from sgtk.platform.qt import QtCore, QtGui
+from sgtk.platform.qt import QtCore
 from .tree_node_base import TreeNodeBase
 from .custom_widget_task import CustomTreeWidgetTask
 

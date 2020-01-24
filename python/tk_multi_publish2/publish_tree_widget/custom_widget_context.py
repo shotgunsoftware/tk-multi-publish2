@@ -10,7 +10,7 @@
 
 
 import sgtk
-from sgtk.platform.qt import QtCore, QtGui
+from sgtk.platform.qt import QtCore
 from .ui.context_widget import Ui_ContextWidget
 from .custom_widget_base import CustomTreeWidgetBase
 

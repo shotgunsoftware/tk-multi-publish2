@@ -10,9 +10,9 @@
 
 import sgtk
 
-from .api import PublishManager
-from . import base_hooks
-from . import util
+from .api import PublishManager  # noqa
+from . import base_hooks  # noqa
+from . import util  # noqa
 
 
 def show_dialog(app):

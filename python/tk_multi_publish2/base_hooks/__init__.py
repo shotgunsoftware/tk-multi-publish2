@@ -8,6 +8,6 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-from .collector import CollectorPlugin
-from .post_phase import PostPhaseHook
-from .publish_plugin import PublishPlugin
+from .collector import CollectorPlugin  # noqa
+from .post_phase import PostPhaseHook  # noqa
+from .publish_plugin import PublishPlugin  # noqa

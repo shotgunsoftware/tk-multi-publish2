@@ -8,6 +8,6 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-from .custom_widget_base import CustomTreeWidgetBase
-from .publish_tree_widget import PublishTreeWidget
-from .tree_node_item import TreeNodeItem, TreeNodeTask, TopLevelTreeNodeItem
+from .custom_widget_base import CustomTreeWidgetBase  # noqa
+from .publish_tree_widget import PublishTreeWidget  # noqa
+from .tree_node_item import TreeNodeItem, TreeNodeTask, TopLevelTreeNodeItem  # noqa

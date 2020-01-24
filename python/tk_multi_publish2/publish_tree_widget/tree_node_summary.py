@@ -10,7 +10,7 @@
 
 
 import sgtk
-from sgtk.platform.qt import QtCore, QtGui
+from sgtk.platform.qt import QtCore
 from .custom_widget_summary import CustomTreeWidgetSummary
 
 logger = sgtk.platform.get_logger(__name__)

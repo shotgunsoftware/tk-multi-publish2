@@ -9,7 +9,7 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 
-from sgtk.platform.qt import QtCore, QtGui
+from sgtk.platform.qt import QtGui
 import sgtk
 
 from .ui.more_info_widget import Ui_MoreInfoWidget

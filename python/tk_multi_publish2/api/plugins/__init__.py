@@ -8,6 +8,6 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-from .collector_instance import CollectorPluginInstance
-from .publish_plugin_instance import PublishPluginInstance
-from .setting import PluginSetting
+from .collector_instance import CollectorPluginInstance  # noqa
+from .publish_plugin_instance import PublishPluginInstance  # noqa
+from .setting import PluginSetting  # noqa
