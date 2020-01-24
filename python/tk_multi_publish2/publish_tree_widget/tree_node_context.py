@@ -17,6 +17,7 @@ logger = sgtk.platform.get_logger(__name__)
 
 from .tree_node_base import TreeNodeBase
 
+
 class TreeNodeContext(TreeNodeBase):
     """
     Highest level object in the tree, representing a context
@@ -85,5 +86,3 @@ class TreeNodeContext(TreeNodeBase):
         Perform finalize
         """
         return True
-
-

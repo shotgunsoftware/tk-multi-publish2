@@ -12,7 +12,7 @@ import os
 import mock
 
 from publish_api_test_base import PublishApiTestBase
-from tank_test.tank_test_base import setUpModule # noqa
+from tank_test.tank_test_base import setUpModule  # noqa
 
 import sgtk
 
@@ -25,8 +25,8 @@ try:
 except Exception:
     pass
 else:
-    class TestHook(base_class):
 
+    class TestHook(base_class):
         def test_get_user_settings(self, test, settings, item):
 
             # Make sure get_publish_user returns nothing by default.
@@ -45,14 +45,15 @@ else:
 
 
 class TestBasicPublishPlugin(PublishApiTestBase):
-
     def _create_hook(self):
         hook_instance = self.engine.create_hook_instance(
-            os.path.pathsep.join([
-                os.path.join(os.environ["REPO_ROOT"], "hooks", "publish_file"),
-                os.path.splitext(__file__)[0]
-            ]),
-            base_class=self.app.base_hooks.PublishPlugin
+            os.path.pathsep.join(
+                [
+                    os.path.join(os.environ["REPO_ROOT"], "hooks", "publish_file"),
+                    os.path.splitext(__file__)[0],
+                ]
+            ),
+            base_class=self.app.base_hooks.PublishPlugin,
         )
         hook_instance.id = __file__
         return hook_instance
@@ -62,7 +63,9 @@ class TestBasicPublishPlugin(PublishApiTestBase):
         Ensures get_user_settings reads publish_user from the properties.
         """
         hook_instance = self._create_hook()
-        hook_instance.test_get_user_settings(self, {}, self.PublishItem("user", "user", "user"))
+        hook_instance.test_get_user_settings(
+            self, {}, self.PublishItem("user", "user", "user")
+        )
 
     def test_publish(self):
         """
@@ -85,7 +88,10 @@ class TestBasicPublishPlugin(PublishApiTestBase):
             "publish_fields": {"publish_fields key": "publish_fields value"},
             "publish_kwargs": {"publish_kwargs_key": "publish_kwargs value"},
         }
-        item_dict = {"description": "description value", "thumbnail_path": "thumbnail_path value"}
+        item_dict = {
+            "description": "description value",
+            "thumbnail_path": "thumbnail_path value",
+        }
         parent = self.PublishItem("blah", "blah", "blah")
         parent.properties.sg_publish_data = {"type": "PublishedFile", "id": 32}
         publish_item = self.PublishItem("baz", "baz", "baz")
@@ -109,7 +115,7 @@ class TestBasicPublishPlugin(PublishApiTestBase):
                 "published_file_type": global_props_dict["publish_type"],
                 "dependency_paths": global_props_dict["publish_dependencies"],
                 "dependency_ids": [32],
-                "sg_fields": global_props_dict["publish_fields"]
+                "sg_fields": global_props_dict["publish_fields"],
             }
             expected_kwargs.update(global_props_dict["publish_kwargs"])
             register_publish_mock.assert_called_once_with(**expected_kwargs)

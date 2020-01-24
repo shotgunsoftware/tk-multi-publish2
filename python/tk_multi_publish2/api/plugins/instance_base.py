@@ -105,7 +105,7 @@ class PluginInstanceBase(object):
                 setting_name,
                 data_type=setting_schema.get("type"),
                 default_value=setting_schema.get("default"),
-                description=setting_schema.get("description")
+                description=setting_schema.get("description"),
             )
             setting.value = value
 

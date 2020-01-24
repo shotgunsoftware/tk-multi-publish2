@@ -60,7 +60,7 @@ class VitorPlugin(HookBaseClass):
             "Export Name": {
                 "type": "str",
                 "default": "",
-                "description": "Export name setting."
+                "description": "Export name setting.",
             },
         }
 
@@ -88,7 +88,6 @@ class VitorPlugin(HookBaseClass):
 
 
 class CustomNameWidget(QtGui.QWidget):
-
     def __init__(self, parent, qtwidgets, description_widget=None):
         QtGui.QWidget.__init__(self, parent)
 
@@ -112,5 +111,7 @@ class CustomNameWidget(QtGui.QWidget):
 
         elided_label = qtwidgets.import_module("elided_label")
         long_label = elided_label.ElidedLabel(self)
-        long_label.setText("ASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDF")
+        long_label.setText(
+            "ASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDF"
+        )
         layout.addWidget(long_label)

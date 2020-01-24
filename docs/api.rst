@@ -142,4 +142,3 @@ PluginSetting
 .. autoclass:: PluginSetting
     :members:
     :show-inheritance:
-

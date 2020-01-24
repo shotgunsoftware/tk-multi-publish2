@@ -47,8 +47,7 @@ class PluginWithoutUi(HookBaseClass):
         else:
             self.logger.error(
                 "Publish type property incorrect. "
-                "Should be '%s' but is '%s'" %
-                (expected_value, publish_type)
+                "Should be '%s' but is '%s'" % (expected_value, publish_type)
             )
             return False
 
@@ -60,8 +59,7 @@ class PluginWithoutUi(HookBaseClass):
         else:
             self.logger.error(
                 "Publish path property incorrect. "
-                "Should be '%s' but is '%s'" %
-                (expected_value, publish_path)
+                "Should be '%s' but is '%s'" % (expected_value, publish_path)
             )
             return False
 
@@ -73,8 +71,7 @@ class PluginWithoutUi(HookBaseClass):
         else:
             self.logger.error(
                 "Publish name property incorrect. "
-                "Should be '%s' but is '%s'" %
-                (expected_value, publish_name)
+                "Should be '%s' but is '%s'" % (expected_value, publish_name)
             )
             return False
 
@@ -86,8 +83,7 @@ class PluginWithoutUi(HookBaseClass):
         else:
             self.logger.error(
                 "Publish version property incorrect. "
-                "Should be '%s' but is '%s'" %
-                (expected_value, publish_version)
+                "Should be '%s' but is '%s'" % (expected_value, publish_version)
             )
             return False
 
@@ -99,8 +95,7 @@ class PluginWithoutUi(HookBaseClass):
         else:
             self.logger.error(
                 "Publish dependencies property incorrect. "
-                "Should be '%s' but is '%s'" %
-                (expected_value, publish_dependencies)
+                "Should be '%s' but is '%s'" % (expected_value, publish_dependencies)
             )
             return False
 

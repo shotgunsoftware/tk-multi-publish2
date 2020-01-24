@@ -27,27 +27,23 @@ class BasicSceneCollector(HookBaseClass):
         :param parent_item: Root item instance
         """
         parent_item.create_item(
-            "plugin.noui",
-            "This is an item without a UI.",
-            "This is a display name"
+            "plugin.noui", "This is an item without a UI.", "This is a display name"
         )
 
         parent_item.create_item(
             "plugin.withui",
             "This is an item that has a UI",
-            "This is a the display name of an item with a UI"
+            "This is a the display name of an item with a UI",
         )
 
         parent_item.create_item(
             "plugin.withui",
             "This is another item that has a UI",
-            "This is a the display name of another item with a UI"
+            "This is a the display name of another item with a UI",
         )
 
         property_item = parent_item.create_item(
-            "plugin.property_test",
-            "Dummy item for testing properties",
-            "Property Test"
+            "plugin.property_test", "Dummy item for testing properties", "Property Test"
         )
 
         property_item.properties["path"] = "/foo/bar/image.%04d.jpg"
@@ -63,13 +59,13 @@ class BasicSceneCollector(HookBaseClass):
         property_item.properties["publish_version"] = "007"
         property_item.properties["publish_dependencies"] = [
             "/foo/bar/model.abc",
-            "/foo/bar/rig.ma"
+            "/foo/bar/rig.ma",
         ]
 
         check_visibility_item = parent_item.create_item(
             "plugin.test.visibility",
             "Dummy item for testing plugin visibility",
-            "Visibility Test"
+            "Visibility Test",
         )
 
         check_visibility_item.properties["path"] = "/foo/bar/image.%04d.jpg"
@@ -77,7 +73,7 @@ class BasicSceneCollector(HookBaseClass):
         check_invisibility_item = parent_item.create_item(
             "plugin.test.invisibility",
             "You shouldn't see a plugin below",
-            "&lt;-- Expand indicator should be hidden"
+            "&lt;-- Expand indicator should be hidden",
         )
 
         check_invisibility_item.properties["path"] = "/foo/bar/image.%04d.jpg"
@@ -86,7 +82,7 @@ class BasicSceneCollector(HookBaseClass):
         visibility_sub_item = check_visibility_item.create_item(
             "plugin.test.invisibility",
             "You shouldn't see a plugin below",
-            "&lt;-- Expand indicator should be hidden"
+            "&lt;-- Expand indicator should be hidden",
         )
 
         visibility_sub_item.properties["path"] = "/foo/bar/image.%04d.jpg"

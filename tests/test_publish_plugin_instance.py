@@ -9,7 +9,7 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 from publish_api_test_base import PublishApiTestBase
-from tank_test.tank_test_base import setUpModule # noqa
+from tank_test.tank_test_base import setUpModule  # noqa
 
 import logging
 from mock import Mock, MagicMock, patch
@@ -34,7 +34,6 @@ def mock_publish_plugin_instance_hook_creation(func):
 # It's very important to derive from object here, because Python 2.6's
 # implementation of the handler class doesn't, which breaks property setters.
 class Handler(logging.Handler, object):
-
     def __init__(self):
         logging.Handler.__init__(self)
         self.found = False
@@ -51,7 +50,8 @@ class Handler(logging.Handler, object):
 
     def emit(self, record):
         if self.keyword:
-            self.found |= (self.keyword in record.msg)
+            self.found |= self.keyword in record.msg
+
 
 # Set up the testing logger.
 handler = Handler()
@@ -59,7 +59,6 @@ logger.addHandler(handler)
 
 
 class TestPublishPluginInstance(PublishApiTestBase):
-
     @mock_publish_plugin_instance_hook_creation
     def test_plugin_attributes(self, create_hook_instance):
         """
@@ -103,7 +102,7 @@ class TestPublishPluginInstance(PublishApiTestBase):
         del mock_plugin.icon
         self.assertEqual(
             ppi.icon.cacheKey(),
-            self.QtGui.QPixmap(":/tk_multi_publish2/task.png").cacheKey()
+            self.QtGui.QPixmap(":/tk_multi_publish2/task.png").cacheKey(),
         )
 
     @mock_publish_plugin_instance_hook_creation

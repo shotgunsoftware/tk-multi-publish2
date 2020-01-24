@@ -106,7 +106,9 @@ class PublishTree(object):
         # handled after initial release. Once that happens, this should be
         # altered to handle the various versions separately with this as the
         # fallback when the serialization version is not recognized.
-        serialization_version = tree_dict.get("serialization_version", "<missing version>")
+        serialization_version = tree_dict.get(
+            "serialization_version", "<missing version>"
+        )
         if serialization_version != cls.SERIALIZATION_VERSION:
             raise sgtk.TankError(
                 "Unrecognized serialization version (%s) for serialized publish "
@@ -117,8 +119,7 @@ class PublishTree(object):
 
         new_tree = cls()
         new_tree._root_item = PublishItem.from_dict(
-            tree_dict["root_item"],
-            serialization_version
+            tree_dict["root_item"], serialization_version
         )
 
         return new_tree
@@ -138,7 +139,8 @@ class PublishTree(object):
                 return PublishTree.load(tree_file_obj)
             except Exception as e:
                 logger.error(
-                    "Error trying to load publish tree from file '%s': %s" % (file_path, e)
+                    "Error trying to load publish tree from file '%s': %s"
+                    % (file_path, e)
                 )
                 raise
 
@@ -159,8 +161,7 @@ class PublishTree(object):
             )
         except Exception as e:
             logger.error(
-                "Error loading publish tree: %s\n%s" %
-                (e, traceback.format_exc())
+                "Error loading publish tree: %s\n%s" % (e, traceback.format_exc())
             )
             raise
 
@@ -170,12 +171,7 @@ class PublishTree(object):
         # The root item is the sole parent of all top level publish items. It
         # has no use other than organization and provides an easy interface for
         # beginning iteration and accessing all top level items.
-        self._root_item = PublishItem(
-            "__root__",
-            "__root__",
-            "__root__",
-            parent=None
-        )
+        self._root_item = PublishItem("__root__", "__root__", "__root__", parent=None)
 
     def __iter__(self):
         """Iterates over the tree, depth first."""
@@ -260,9 +256,7 @@ class PublishTree(object):
             try:
                 self.save(file_obj)
             except Exception as e:
-                logger.error(
-                    "Error saving the publish tree to disk: %s" % (e,)
-                )
+                logger.error("Error saving the publish tree to disk: %s" % (e,))
                 raise
 
     def save(self, file_obj):
@@ -279,12 +273,11 @@ class PublishTree(object):
                 ensure_ascii=True,
                 # Use a custom JSON encoder to certain Toolkit objects are converted into a
                 # JSON
-                cls=_PublishTreeEncoder
+                cls=_PublishTreeEncoder,
             )
         except Exception as e:
             logger.error(
-                "Error saving publish tree: %s\n%s" %
-                (e, traceback.format_exc())
+                "Error saving publish tree: %s\n%s" % (e, traceback.format_exc())
             )
             raise
 
@@ -295,7 +288,7 @@ class PublishTree(object):
         """
         return {
             "root_item": self.root_item.to_dict(),
-            "serialization_version": self.SERIALIZATION_VERSION
+            "serialization_version": self.SERIALIZATION_VERSION,
         }
 
     @property
@@ -331,8 +324,7 @@ class PublishTree(object):
 
             # now do the item's tasks
             for task in item.tasks:
-                tree_str += "%s[task] %s\n" % (
-                    ((depth * 2) + 2) * " ", str(task))
+                tree_str += "%s[task] %s\n" % (((depth * 2) + 2) * " ", str(task))
 
             # process the children as well
             tree_str += "%s" % (self._format_tree(item, depth=depth + 1),)
@@ -344,14 +336,12 @@ class _PublishTreeEncoder(json.JSONEncoder):
     """
     Implements the json encoder interface for custom publish tree serialization.
     """
+
     def default(self, data):
         if isinstance(data, PublishTree):
             return data.to_dict()
         elif isinstance(data, sgtk.Template):
-            return {
-                "_sgtk_custom_type": "sgtk.Template",
-                "name": data.name
-            }
+            return {"_sgtk_custom_type": "sgtk.Template", "name": data.name}
         else:
             return super(_PublishTreeEncoder, self).default(data)
 
@@ -369,6 +359,8 @@ def _json_to_objects(data):
     if data.get("_sgtk_custom_type") == "sgtk.Template":
         templates = sgtk.platform.current_engine().sgtk.templates
         if data["name"] not in templates:
-            raise sgtk.TankError("Template '{0}' was not found in templates.yml.".format(data["name"]))
+            raise sgtk.TankError(
+                "Template '{0}' was not found in templates.yml.".format(data["name"])
+            )
         return templates[data["name"]]
     return data

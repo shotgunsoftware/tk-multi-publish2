@@ -16,6 +16,7 @@ from .ui.progress_details_widget import Ui_ProgressDetailsWidget
 
 logger = sgtk.platform.get_logger(__name__)
 
+
 class ProgressDetailsWidget(QtGui.QWidget):
     """
     Progress reporting and logging
@@ -147,6 +148,7 @@ class ResizeEventFilter(QtCore.QObject):
     # event system
     self.ui.thumbnail.installEventFilter(filter)
     """
+
     resized = QtCore.Signal()
 
     def eventFilter(self, obj, event):

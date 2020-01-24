@@ -16,8 +16,8 @@ HookBaseClass = sgtk.get_hook_baseclass()
 # this isn't a realistic example of post phase hook, but it allows for testing
 # several non-item-specific methods
 
-class PostPhaseHook(HookBaseClass):
 
+class PostPhaseHook(HookBaseClass):
     def post_validate(self, publish_tree):
         self.logger.debug("Executing post validate hook method...")
 

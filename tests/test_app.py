@@ -24,10 +24,7 @@ def launch_engine():
     sgtk.LogManager().initialize_base_file_handler("tk-multi-publish2.test")
 
     # Set the repo root environment variable that is used by the config.
-    repo_root = os.path.join(
-        os.path.abspath(os.path.dirname(__file__)),
-        ".."
-    )
+    repo_root = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..")
     repo_root = os.path.normpath(repo_root)
     os.environ["REPO_ROOT"] = repo_root
     os.environ["SHOTGUN_EXTERNAL_REPOS_ROOT"] = os.path.dirname(repo_root)
@@ -38,20 +35,20 @@ def launch_engine():
 
     project = sg.find_one("Project", [["tank_name", "is_not", None]])
     if project is None:
-        raise RuntimeError("You need at least one project with the Project.tank_name field set.")
+        raise RuntimeError(
+            "You need at least one project with the Project.tank_name field set."
+        )
 
     # Bootstrap
     manager = sgtk.bootstrap.ToolkitManager(user)
     manager.plugin_id = "basic.shell"
-    manager.base_configuration = "sgtk:descriptor:path?path=$REPO_ROOT/tests/fixtures/config"
+    manager.base_configuration = (
+        "sgtk:descriptor:path?path=$REPO_ROOT/tests/fixtures/config"
+    )
     manager.do_shotgun_config_lookup = False
     manager.progress_callback = progress_callback
 
-
-    return manager.bootstrap_engine(
-        "tk-shell",
-        project
-    )
+    return manager.bootstrap_engine("tk-shell", project)
 
 
 def main():

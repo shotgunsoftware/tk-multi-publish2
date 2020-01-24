@@ -17,6 +17,7 @@ logger = sgtk.platform.get_logger(__name__)
 
 from .more_info_dialog import MoreInfoDialog
 
+
 def show_folder(path):
     """
     Show the supplied path in the filesystem.
@@ -38,9 +39,7 @@ def show_folder(path):
     elif system == "win32":
         cmd = 'cmd.exe /C start "Folder" "%s"' % launch_path
     else:
-        logger.error(
-            "Don't know how to launch browser for '%s'." % (system,)
-        )
+        logger.error("Don't know how to launch browser for '%s'." % (system,))
         return
 
     exit_code = os.system(cmd)
@@ -58,11 +57,7 @@ def show_in_shotgun(entity):
 
     publisher = sgtk.platform.current_bundle()
 
-    url = "%s/detail/%s/%d" % (
-        publisher.sgtk.shotgun_url,
-        entity["type"],
-        entity["id"]
-    )
+    url = "%s/detail/%s/%d" % (publisher.sgtk.shotgun_url, entity["type"], entity["id"])
 
     try:
         logger.debug("Opening entity url: '%s'." % (url,))
@@ -83,6 +78,7 @@ def show_more_info(pixmap, message, text, parent):
     except Exception as e:
         logger.error("Failed to launch more info dialog. Reason: %s" % (e,))
 
+
 def open_url(url):
     """
     Opens the supplied url via desktop services.
@@ -94,4 +90,3 @@ def open_url(url):
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
     except Exception as e:
         logger.error("Failed to launch more info dialog. Reason: %s" % (e,))
-

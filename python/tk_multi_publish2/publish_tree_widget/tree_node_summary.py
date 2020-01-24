@@ -62,5 +62,3 @@ class TreeNodeSummary(TreeNodeBase):
         Perform finalize
         """
         return True
-
-

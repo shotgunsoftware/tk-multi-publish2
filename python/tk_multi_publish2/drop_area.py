@@ -21,10 +21,12 @@ def drop_area(cls):
 
     @todo - move this into the qtwidgets framework
     """
+
     class WrappedClass(cls):
         """
         Wrapping class
         """
+
         # Emitted when something is dropped on the widget
         something_dropped = QtCore.Signal(list)
 
@@ -98,11 +100,14 @@ def drop_area(cls):
                         # urls as they are, assuming the problem should be fixed
                         # in custom Python / PyQt / PySide
                         import Foundation
+
                         fixed_urls = []
                         for url in urls:
                             # It is fine to pass a regular file url to this method
                             # e.g. file:///foo/bar/blah.ext
-                            fu = Foundation.NSURL.URLWithString_(url.toString()).filePathURL()
+                            fu = Foundation.NSURL.URLWithString_(
+                                url.toString()
+                            ).filePathURL()
                             fixed_urls.append(QtCore.QUrl(str(fu)))
                         urls = fixed_urls
                     except:
@@ -137,6 +142,7 @@ def drop_area(cls):
 @drop_area
 class DropAreaFrame(QtGui.QFrame):
     pass
+
 
 def _is_local_file(url):
     """

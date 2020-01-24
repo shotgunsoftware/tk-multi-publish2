@@ -16,6 +16,7 @@ from .ui.more_info_widget import Ui_MoreInfoWidget
 
 logger = sgtk.platform.get_logger(__name__)
 
+
 class MoreInfoDialog(QtGui.QDialog):
     """
     A dialog to display additional logging info
