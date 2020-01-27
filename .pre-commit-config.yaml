@@ -31,8 +31,6 @@ repos:
     - id: requirements-txt-fixer
     # Removes trailing whitespaces.
     - id: trailing-whitespace
-    - id: flake8
-      args: [--select=F]
   # Leave black at the bottom so all touchups are done before it is run.
   - repo: https://github.com/ambv/black
     rev: 19.10b0
