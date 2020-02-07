@@ -13,4 +13,4 @@
 
 location:
   type: path
-  path: $SHOTGUN_EXTERNAL_REPOS_ROOT/tk-core
+  path: $SHOTGUN_REPOS_ROOT/tk-core
