@@ -320,9 +320,9 @@ class AppDialog(QtGui.QWidget):
 
         # look at how many items are checked
         checked_top_items = 0
-        for context_index in xrange(self.ui.items_tree.topLevelItemCount()):
+        for context_index in range(self.ui.items_tree.topLevelItemCount()):
             context_item = self.ui.items_tree.topLevelItem(context_index)
-            for child_index in xrange(context_item.childCount()):
+            for child_index in range(context_item.childCount()):
                 child_item = context_item.child(child_index)
                 if child_item.checked:
                     checked_top_items += 1
@@ -950,7 +950,7 @@ class AppDialog(QtGui.QWidget):
         """
 
         def _check_r(parent):
-            for child_index in xrange(parent.childCount()):
+            for child_index in range(parent.childCount()):
                 child = parent.child(child_index)
                 child.checkbox.setChecked(checked)
                 _check_r(child)
@@ -965,7 +965,7 @@ class AppDialog(QtGui.QWidget):
         Clear the current progress icon recursively
         for the given tree node
         """
-        for child_index in xrange(parent.childCount()):
+        for child_index in range(parent.childCount()):
             child = parent.child(child_index)
             child.reset_progress()
             self._reset_tree_icon_r(child)
@@ -992,7 +992,7 @@ class AppDialog(QtGui.QWidget):
         # set all nodes to "ready to go"
         def _begin_process_r(parent):
             total_number_nodes = 0
-            for child_index in xrange(parent.childCount()):
+            for child_index in range(parent.childCount()):
                 child = parent.child(child_index)
                 if child.checked:
                     # child is ticked
@@ -1506,7 +1506,7 @@ class AppDialog(QtGui.QWidget):
             return
 
         all_items_selected_task = True
-        for context_index in xrange(self.ui.items_tree.topLevelItemCount()):
+        for context_index in range(self.ui.items_tree.topLevelItemCount()):
             context_item = self.ui.items_tree.topLevelItem(context_index)
 
             if hasattr(context_item, "context") and not context_item.context.task:

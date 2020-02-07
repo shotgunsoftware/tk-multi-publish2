@@ -74,7 +74,7 @@ class TreeNodeItem(TreeNodeBase):
             items_summaries = []
             task_summaries = []
 
-            for child_index in xrange(self.childCount()):
+            for child_index in range(self.childCount()):
                 child_item = self.child(child_index)
 
                 if isinstance(child_item, TreeNodeTask):
@@ -153,7 +153,7 @@ class TreeNodeItem(TreeNodeBase):
 
         show_indicator = False
 
-        for child_index in xrange(self.childCount()):
+        for child_index in range(self.childCount()):
             child_item = self.child(child_index)
 
             if isinstance(child_item, TreeNodeTask):

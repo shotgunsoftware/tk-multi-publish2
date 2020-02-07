@@ -152,7 +152,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         #
         top_level_items_in_tree = []
         items_to_move = []
-        for top_level_index in xrange(self.topLevelItemCount()):
+        for top_level_index in range(self.topLevelItemCount()):
             top_level_item = self.topLevelItem(top_level_index)
 
             if not isinstance(top_level_item, TreeNodeContext):
@@ -221,7 +221,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         """
         # first find the right context
         context_tree_node = None
-        for context_index in xrange(self.topLevelItemCount()):
+        for context_index in range(self.topLevelItemCount()):
             context_item = self.topLevelItem(context_index)
             if isinstance(context_item, TreeNodeContext) and str(
                 context_item.context
@@ -306,7 +306,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
         child_items = []
 
-        for child_index in reversed(xrange(widget_item.childCount())):
+        for child_index in reversed(range(widget_item.childCount())):
             child = widget_item.child(child_index)
             widget_item.takeChild(child_index)
             if not isinstance(child, TreeNodeTask):
@@ -345,7 +345,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         """
         summary = []
         num_items = 0
-        for context_index in xrange(self.topLevelItemCount()):
+        for context_index in range(self.topLevelItemCount()):
             context_item = self.topLevelItem(context_index)
             summary.extend(context_item.create_summary())
             tasks = self._summarize_tasks_r(context_item)
@@ -377,7 +377,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             value represents the number of instances of that task.
         """
         tasks = defaultdict(int)
-        for child_index in xrange(node.childCount()):
+        for child_index in range(node.childCount()):
             child = node.child(child_index)
             if isinstance(child, TreeNodeTask) and child.checked:
                 task_obj = child.task
@@ -410,9 +410,9 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         else:
             # summary hidden. select first item instead.
             first_item = None
-            for context_index in xrange(1, self.topLevelItemCount()):
+            for context_index in range(1, self.topLevelItemCount()):
                 context_item = self.topLevelItem(context_index)
-                for child_index in xrange(context_item.childCount()):
+                for child_index in range(context_item.childCount()):
                     first_item = context_item.child(child_index)
                     break
             if first_item:
@@ -431,7 +431,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         logger.debug("Setting state %d for all plugin %s" % (state, plugin))
 
         def _check_r(parent):
-            for child_index in xrange(parent.childCount()):
+            for child_index in range(parent.childCount()):
                 child = parent.child(child_index)
                 if isinstance(child, TreeNodeTask) and child.task.plugin == plugin:
                     child.set_check_state(state)
@@ -528,7 +528,7 @@ def _init_item_r(parent_item):
         parent_item.update_expand_indicator()
 
     # do this for all children of the supplied item recursively
-    for child_index in xrange(parent_item.childCount()):
+    for child_index in range(parent_item.childCount()):
         child = parent_item.child(child_index)
         if isinstance(child, TreeNodeTask):
             # maintain visibility setting after re-init (usually drop)
