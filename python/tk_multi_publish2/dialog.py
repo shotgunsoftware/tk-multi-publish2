@@ -1619,8 +1619,11 @@ class _TaskSelection(object):
         """
         return self._items == other._items
 
-    def __nonzero__(self):
+    def __bool__(self):
         """
         :returns: ``True`` is the selection is not empty, ``False`` otherwise.
         """
         return bool(self._items)
+
+    # To maintain Python 2 compatibility, define __nonzero__ as well as __bool__
+    __nonzero__ = __bool__

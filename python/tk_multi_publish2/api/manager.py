@@ -227,7 +227,7 @@ class PublishManager(object):
         # get the first task
         task = None
         try:
-            task = task_generator.next()
+            task = next(task_generator)
         except StopIteration:
             pass
 
