@@ -461,7 +461,7 @@ class BasicSceneCollector(HookBaseClass):
             # get all the image mime type image extensions as well
             mimetypes.init()
             types_map = mimetypes.types_map
-            for (ext, mimetype) in types_map.iteritems():
+            for (ext, mimetype) in types_map.items():
                 if mimetype.startswith("image/"):
                     image_extensions.add(ext.lstrip("."))
 

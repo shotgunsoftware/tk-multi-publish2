@@ -377,7 +377,7 @@ class PluginWithUi(HookBaseClass):
         :returns: True if item is valid, False otherwise.
         """
         print(item, "was published! The settings were:")
-        pprint.pprint(dict(list((k, v.value) for k, v in settings.iteritems())))
+        pprint.pprint(dict(list((k, v.value) for k, v in settings.items())))
         return True
 
     def publish(self, settings, item):

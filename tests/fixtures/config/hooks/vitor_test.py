@@ -73,17 +73,17 @@ class VitorPlugin(HookBaseClass):
 
     def validate(self, settings, item):
         print(item, "was validated! The settings were:")
-        pprint.pprint(dict(list((k, v.value) for k, v in settings.iteritems())))
+        pprint.pprint(dict(list((k, v.value) for k, v in settings.items())))
         return True
 
     def publish(self, settings, item):
         print(item, "was published! The settings were:")
-        pprint.pprint(dict(list((k, v.value) for k, v in settings.iteritems())))
+        pprint.pprint(dict(list((k, v.value) for k, v in settings.items())))
         pass
 
     def finalize(self, settings, item):
         print(item, "was finalized! The settings were:")
-        pprint.pprint(dict(list((k, v.value) for k, v in settings.iteritems())))
+        pprint.pprint(dict(list((k, v.value) for k, v in settings.items())))
         pass
 
 

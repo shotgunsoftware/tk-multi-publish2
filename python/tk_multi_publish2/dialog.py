@@ -472,7 +472,7 @@ class AppDialog(QtGui.QWidget):
         for task in selected_tasks:
             # The settings returned by the UI are actual value, not Settings objects, so apply each
             # value returned on the appropriate settings object.
-            for k, v in settings.iteritems():
+            for k, v in settings.items():
                 task.settings[k].value = v
 
     def _push_settings_into_ui(self, selected_tasks):
@@ -487,7 +487,7 @@ class AppDialog(QtGui.QWidget):
         tasks_settings = []
         for task in selected_tasks:
             settings_dict = {}
-            for k, v in task.settings.iteritems():
+            for k, v in task.settings.items():
                 settings_dict[k] = v.value
             tasks_settings.append(settings_dict)
 

@@ -354,7 +354,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             # how many items there are for each type
             num_items += sum(tasks.values())
             # iterate over dictionary and build histogram
-            for task_name, num_tasks in tasks.iteritems():
+            for task_name, num_tasks in tasks.items():
                 if num_tasks == 1:
                     summary.append("&ndash; %s: 1 item<br>" % task_name)
                 else:
@@ -385,7 +385,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             else:
                 # process children
                 child_tasks = self._summarize_tasks_r(child)
-                for task_name, num_task_instances in child_tasks.iteritems():
+                for task_name, num_task_instances in child_tasks.items():
                     tasks[task_name] += num_task_instances
         return tasks
 
