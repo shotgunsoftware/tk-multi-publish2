@@ -8,7 +8,6 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-import sys
 import sgtk
 from collections import defaultdict
 from sgtk.platform.qt import QtCore, QtGui
@@ -70,7 +69,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         # This look like a bug tracked on the QT side
         # ( https://bugreports.qt.io/browse/QTBUG-27043 )
         # ( https://stackoverflow.com/questions/15331256/qlistwidget-with-custom-widget-does-not-scroll-properly-in-mac-os )
-        if QtCore.__version__.startswith("4.") and sys.platform == "darwin":
+        if QtCore.__version__.startswith("4.") and sgtk.util.is_macos():
             self.verticalScrollBar().actionTriggered.connect(
                 self.updateEditorGeometries
             )
