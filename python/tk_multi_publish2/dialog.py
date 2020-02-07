@@ -12,6 +12,7 @@ import traceback
 
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
+from tank_vendor import six
 
 from .api import PublishManager, PublishItem, PublishTask
 from .ui.dialog import Ui_Dialog
@@ -724,7 +725,7 @@ class AppDialog(QtGui.QWidget):
         if len(current_contexts) == 1:
             # only one context being used by current items. prepopulate it in
             # the summary view's context widget
-            context_key = current_contexts.keys()[0]
+            context_key = list(current_contexts.keys())[0]
             self.ui.context_widget.set_context(current_contexts[context_key])
             context_label_text = "Task and Entity Link to apply to all items:"
         else:
@@ -805,12 +806,7 @@ class AppDialog(QtGui.QWidget):
         self._progress_handler.push("Processing external files...")
 
         # pyside gives us back unicode. Make sure we convert it to strings
-        str_files = []
-        for f in files:
-            if isinstance(f, unicode):
-                str_files.append(f.encode("utf-8"))
-            else:
-                str_files.append(f)
+        str_files = [six.ensure_str(f) for f in files]
 
         try:
             self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
