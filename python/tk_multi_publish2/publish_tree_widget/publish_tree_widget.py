@@ -71,7 +71,9 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         # ( https://bugreports.qt.io/browse/QTBUG-27043 )
         # ( https://stackoverflow.com/questions/15331256/qlistwidget-with-custom-widget-does-not-scroll-properly-in-mac-os )
         if QtCore.__version__.startswith("4.") and sys.platform == "darwin":
-            self.verticalScrollBar().actionTriggered.connect(self.updateEditorGeometries)
+            self.verticalScrollBar().actionTriggered.connect(
+                self.updateEditorGeometries
+            )
             self.verticalScrollBar().sliderMoved.connect(self.updateEditorGeometries)
             self.verticalScrollBar().rangeChanged.connect(self.updateEditorGeometries)
 
@@ -221,7 +223,9 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         context_tree_node = None
         for context_index in xrange(self.topLevelItemCount()):
             context_item = self.topLevelItem(context_index)
-            if isinstance(context_item, TreeNodeContext) and str(context_item.context) == str(context):
+            if isinstance(context_item, TreeNodeContext) and str(
+                context_item.context
+            ) == str(context):
                 context_tree_node = context_item
 
         if context_tree_node is None:
@@ -241,10 +245,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         :param item: Item to operate on
         :returns: dict with state
         """
-        state = {
-            "selected": item.isSelected(),
-            "expanded": item.isExpanded()
-        }
+        state = {"selected": item.isSelected(), "expanded": item.isExpanded()}
         return state
 
     def __set_item_state(self, item, state):
@@ -333,10 +334,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
         # now add the new node
         self._build_item_tree_r(
-            publish_item,
-            checked=True,
-            level=0,
-            tree_parent=context_tree_node
+            publish_item, checked=True, level=0, tree_parent=context_tree_node
         )
 
     def get_full_summary(self):
@@ -430,9 +428,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         :param plugin: Plugin for which tasks should be manipulated
         :param state: checkstate to set.
         """
-        logger.debug(
-            "Setting state %d for all plugin %s" % (state, plugin)
-        )
+        logger.debug("Setting state %d for all plugin %s" % (state, plugin))
 
         def _check_r(parent):
             for child_index in xrange(parent.childCount()):
@@ -440,6 +436,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
                 if isinstance(child, TreeNodeTask) and child.task.plugin == plugin:
                     child.set_check_state(state)
                 _check_r(child)
+
         root = self.invisibleRootItem()
         _check_r(root)
 

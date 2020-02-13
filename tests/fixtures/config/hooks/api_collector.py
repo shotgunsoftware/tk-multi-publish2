@@ -27,21 +27,15 @@ class BasicSceneCollector(HookBaseClass):
         :param parent_item: Root item instance
         """
         parent_item.create_item(
-            "generic.item",
-            "A Generic Publish Item",
-            "Generic Item 1"
+            "generic.item", "A Generic Publish Item", "Generic Item 1"
         )
 
         parent_item.create_item(
-            "generic.item",
-            "A Generic Publish Item",
-            "Generic Item 2"
+            "generic.item", "A Generic Publish Item", "Generic Item 2"
         )
 
         parent_item.create_item(
-            "generic.item",
-            "A Generic Publish Item",
-            "Generic Item 3"
+            "generic.item", "A Generic Publish Item", "Generic Item 3"
         )
 
         parent_item.local_properties.collector_property = "collector_property"

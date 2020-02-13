@@ -35,7 +35,7 @@ class PublishTask(object):
         "_settings",
         "_active",
         "_visible",
-        "_enabled"
+        "_enabled",
     ]
 
     @classmethod
@@ -70,7 +70,7 @@ class PublishTask(object):
                 setting["name"],
                 setting["type"],
                 setting["default_value"],
-                setting["description"]
+                setting["description"],
             )
             new_setting.value = setting["value"]
             new_task._settings[k] = new_setting
@@ -84,8 +84,8 @@ class PublishTask(object):
 
         self._item = item
         self._plugin = plugin
-        self._name = None # task name override of plugin name
-        self._description = None # task description override of plugin desc.
+        self._name = None  # task name override of plugin name
+        self._description = None  # task description override of plugin desc.
 
         # need to make a deep copy of the settings as they may be modified
         self._settings = {}

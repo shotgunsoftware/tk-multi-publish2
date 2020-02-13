@@ -2,6 +2,7 @@
 [![Build Status Linux](https://secure.travis-ci.org/shotgunsoftware/tk-multi-publish2.svg?branch=master)](http://travis-ci.org/shotgunsoftware/tk-multi-publish2)
 [![API Coverage Status](https://coveralls.io/repos/github/shotgunsoftware/tk-multi-publish2/badge.svg?branch=master)](https://coveralls.io/github/shotgunsoftware/tk-multi-publish2?branch=master)
 [![Linting](https://img.shields.io/badge/PEP8%20by-Hound%20CI-a873d1.svg)](https://houndci.com)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 
 ## Documentation

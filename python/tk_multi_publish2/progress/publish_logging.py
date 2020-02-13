@@ -118,9 +118,7 @@ class PublishLogWrapper(object):
         else:
             self._handler.setLevel(logging.INFO)
 
-        formatter = logging.Formatter(
-            "[%(levelname)s %(basename)s] %(message)s"
-        )
+        formatter = logging.Formatter("[%(levelname)s %(basename)s] %(message)s")
         self._handler.setFormatter(formatter)
 
     def shut_down(self):

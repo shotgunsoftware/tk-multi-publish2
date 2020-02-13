@@ -71,9 +71,7 @@ class ProgressStatusLabel(QtGui.QLabel):
         text_width = self.width() - 10
 
         elided_message = metrics.elidedText(
-            chopped_message,
-            QtCore.Qt.ElideRight,
-            text_width
+            chopped_message, QtCore.Qt.ElideRight, text_width
         )
         self.setText(elided_message, compute_elide=False)
 

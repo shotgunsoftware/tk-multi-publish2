@@ -13,7 +13,7 @@ import tempfile
 
 from publish_api_test_base import PublishApiTestBase
 from tank_test.tank_test_base import temp_env_var
-from tank_test.tank_test_base import setUpModule # noqa
+from tank_test.tank_test_base import setUpModule  # noqa
 from mock import patch, MagicMock
 
 import sgtk
@@ -22,7 +22,6 @@ logger = sgtk.LogManager.get_logger(__name__)
 
 
 class TestPublishItem(PublishApiTestBase):
-
     def test_depth_first_iteration(self):
 
         root = self.manager.tree.root_item
@@ -130,12 +129,16 @@ class TestPublishItem(PublishApiTestBase):
                 # Make sure if we're trying to access the local properties in a
                 # non plugin hook that the error is caught.
                 del self.id
-                with test.assertRaisesRegex(AttributeError, "Could not determine the id for this"):
+                with test.assertRaisesRegex(
+                    AttributeError, "Could not determine the id for this"
+                ):
                     item.local_properties["test"]
 
         # Make sure if we're trying to access the local properties in a non-hook
         # derived class that the error is caught
-        with self.assertRaisesRegex(AttributeError, "Could not determine the current publish plugin when"):
+        with self.assertRaisesRegex(
+            AttributeError, "Could not determine the current publish plugin when"
+        ):
             item.local_properties["test"]
 
         # Instantiating the class will run the rest defined above.
@@ -180,7 +183,7 @@ class TestPublishItem(PublishApiTestBase):
         self._test_image_from_file(
             self.PublishItem.set_icon_from_path,
             self.PublishItem.icon.__get__,
-            has_default_image=True
+            has_default_image=True,
         )
 
     def test_thumbnail_from_file(self):
@@ -190,7 +193,7 @@ class TestPublishItem(PublishApiTestBase):
         item = self._test_image_from_file(
             self.PublishItem.set_thumbnail_from_path,
             self.PublishItem.thumbnail.__get__,
-            has_default_image=False
+            has_default_image=False,
         )
         self.assertIsNotNone(item.get_thumbnail_as_path())
 
@@ -247,6 +250,7 @@ class TestPublishItem(PublishApiTestBase):
 
         del item
         import gc
+
         gc.collect()
 
         self.assertFalse(os.path.exists(temporary_path))
@@ -372,8 +376,7 @@ class TestPublishItem(PublishApiTestBase):
                         # caught by the errorEqual.
                         self.assertFalse(is_valid)
                         self.assertEqual(
-                            str(error),
-                            "local_properties was serialized properly."
+                            str(error), "local_properties was serialized properly."
                         )
                         nb_items_processed += 1
 
@@ -394,7 +397,6 @@ class TestPublishItem(PublishApiTestBase):
 
 
 class TestQtPixmapAvailability(PublishApiTestBase):
-
     def setUp(self):
         super(TestQtPixmapAvailability, self).setUp()
 
@@ -406,7 +408,9 @@ class TestQtPixmapAvailability(PublishApiTestBase):
         """
         Ensures a missing QApplication will not support QtPixmap usage.
         """
-        with patch.object(sgtk.platform.qt.QtGui.QApplication, "instance", return_value=None):
+        with patch.object(
+            sgtk.platform.qt.QtGui.QApplication, "instance", return_value=None
+        ):
             self.assertFalse(self.api.item._is_qt_pixmap_usable())
 
         self._reset_pixmap_flag()

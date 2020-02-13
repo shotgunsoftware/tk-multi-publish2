@@ -8,6 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+from __future__ import print_function
 import pprint
 import sgtk
 
@@ -59,7 +60,7 @@ class VitorPlugin(HookBaseClass):
             "Export Name": {
                 "type": "str",
                 "default": "",
-                "description": "Export name setting."
+                "description": "Export name setting.",
             },
         }
 
@@ -71,23 +72,22 @@ class VitorPlugin(HookBaseClass):
         return {"accepted": True}
 
     def validate(self, settings, item):
-        print item, "was validated! The settings were:"
+        print(item, "was validated! The settings were:")
         pprint.pprint(dict(list((k, v.value) for k, v in settings.iteritems())))
         return True
 
     def publish(self, settings, item):
-        print item, "was published! The settings were:"
+        print(item, "was published! The settings were:")
         pprint.pprint(dict(list((k, v.value) for k, v in settings.iteritems())))
         pass
 
     def finalize(self, settings, item):
-        print item, "was finalized! The settings were:"
+        print(item, "was finalized! The settings were:")
         pprint.pprint(dict(list((k, v.value) for k, v in settings.iteritems())))
         pass
 
 
 class CustomNameWidget(QtGui.QWidget):
-
     def __init__(self, parent, qtwidgets, description_widget=None):
         QtGui.QWidget.__init__(self, parent)
 
@@ -111,5 +111,7 @@ class CustomNameWidget(QtGui.QWidget):
 
         elided_label = qtwidgets.import_module("elided_label")
         long_label = elided_label.ElidedLabel(self)
-        long_label.setText("ASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDF")
+        long_label.setText(
+            "ASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDFASDF"
+        )
         layout.addWidget(long_label)

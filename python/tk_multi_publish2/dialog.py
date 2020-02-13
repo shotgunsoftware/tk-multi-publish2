@@ -17,18 +17,20 @@ from .api import PublishManager, PublishItem, PublishTask
 from .ui.dialog import Ui_Dialog
 from .progress import ProgressHandler
 from .summary_overlay import SummaryOverlay
-from .publish_tree_widget import (
-    TreeNodeItem,
-    TreeNodeTask,
-    TopLevelTreeNodeItem
-)
+from .publish_tree_widget import TreeNodeItem, TreeNodeTask, TopLevelTreeNodeItem
 
 # import frameworks
 settings = sgtk.platform.import_framework("tk-framework-shotgunutils", "settings")
 help_screen = sgtk.platform.import_framework("tk-framework-qtwidgets", "help_screen")
-task_manager = sgtk.platform.import_framework("tk-framework-shotgunutils", "task_manager")
-shotgun_model = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_model")
-shotgun_globals = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_globals")
+task_manager = sgtk.platform.import_framework(
+    "tk-framework-shotgunutils", "task_manager"
+)
+shotgun_model = sgtk.platform.import_framework(
+    "tk-framework-shotgunutils", "shotgun_model"
+)
+shotgun_globals = sgtk.platform.import_framework(
+    "tk-framework-shotgunutils", "shotgun_globals"
+)
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -42,7 +44,12 @@ class AppDialog(QtGui.QWidget):
     (DRAG_SCREEN, PUBLISH_SCREEN) = range(2)
 
     # details ui panes
-    (ITEM_DETAILS, TASK_DETAILS, PLEASE_SELECT_DETAILS, MULTI_EDIT_NOT_SUPPORTED) = range(4)
+    (
+        ITEM_DETAILS,
+        TASK_DETAILS,
+        PLEASE_SELECT_DETAILS,
+        MULTI_EDIT_NOT_SUPPORTED,
+    ) = range(4)
 
     def __init__(self, parent=None):
         """
@@ -56,9 +63,7 @@ class AppDialog(QtGui.QWidget):
 
         # create a background task manager
         self._task_manager = task_manager.BackgroundTaskManager(
-            self,
-            start_processing=True,
-            max_threads=2
+            self, start_processing=True, max_threads=2
         )
 
         # register the data fetcher with the global schema manager
@@ -74,8 +79,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.context_widget.set_up(self._task_manager)
 
         # only allow entities that can be linked to PublishedFile entities
-        self.ui.context_widget.restrict_entity_types_by_link(
-            "PublishedFile", "entity")
+        self.ui.context_widget.restrict_entity_types_by_link("PublishedFile", "entity")
 
         # tooltips for the task and link inputs
         self.ui.context_widget.set_task_tooltip(
@@ -135,7 +139,9 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_comments.textChanged.connect(self._on_item_comment_change)
 
         # selection in tree view
-        self.ui.items_tree.itemSelectionChanged.connect(self._update_details_from_selection)
+        self.ui.items_tree.itemSelectionChanged.connect(
+            self._update_details_from_selection
+        )
 
         # clicking in the tree view
         self.ui.items_tree.checked.connect(self._update_details_from_selection)
@@ -146,7 +152,9 @@ class AppDialog(QtGui.QWidget):
         # tool buttons
         self.ui.delete_items.clicked.connect(self._delete_selected)
         self.ui.expand_all.clicked.connect(lambda: self._set_tree_items_expanded(True))
-        self.ui.collapse_all.clicked.connect(lambda: self._set_tree_items_expanded(False))
+        self.ui.collapse_all.clicked.connect(
+            lambda: self._set_tree_items_expanded(False)
+        )
         self.ui.refresh.clicked.connect(self._full_rebuild)
 
         # stop processing logic
@@ -167,19 +175,20 @@ class AppDialog(QtGui.QWidget):
         # browse file action
         self._browse_file_action = QtGui.QAction(self)
         self._browse_file_action.setText("Browse files to publish")
-        self._browse_file_action.setIcon(
-            QtGui.QIcon(":/tk_multi_publish2/file.png"))
+        self._browse_file_action.setIcon(QtGui.QIcon(":/tk_multi_publish2/file.png"))
         self._browse_file_action.triggered.connect(
-            lambda: self._on_browse(folders=False))
+            lambda: self._on_browse(folders=False)
+        )
 
         # browse folder action
         self._browse_folder_action = QtGui.QAction(self)
-        self._browse_folder_action.setText(
-            "Browse folders to publish image sequences")
-        self._browse_folder_action.setIcon(QtGui.QIcon(
-            ":/tk_multi_publish2/image_sequence.png"))
+        self._browse_folder_action.setText("Browse folders to publish image sequences")
+        self._browse_folder_action.setIcon(
+            QtGui.QIcon(":/tk_multi_publish2/image_sequence.png")
+        )
         self._browse_folder_action.triggered.connect(
-            lambda: self._on_browse(folders=True))
+            lambda: self._on_browse(folders=True)
+        )
 
         # browse menu
         self._browse_menu = QtGui.QMenu(self)
@@ -197,9 +206,11 @@ class AppDialog(QtGui.QWidget):
         # in the designer file. So as a note, if you want to change the text or
         # icon, you'll need to do it above and in designer.
         self.ui.drop_area_browse_file.clicked.connect(
-            lambda: self._on_browse(folders=False))
+            lambda: self._on_browse(folders=False)
+        )
         self.ui.drop_area_browse_seq.clicked.connect(
-            lambda: self._on_browse(folders=True))
+            lambda: self._on_browse(folders=True)
+        )
 
         # currently displayed item
         self._current_item = None
@@ -218,18 +229,18 @@ class AppDialog(QtGui.QWidget):
 
         # set up progress reporting
         self._progress_handler = ProgressHandler(
-            self.ui.progress_status_icon,
-            self.ui.progress_message,
-            self.ui.progress_bar
+            self.ui.progress_status_icon, self.ui.progress_message, self.ui.progress_bar
         )
 
         # link the summary overlay status button with the log window
         self._overlay.info_clicked.connect(
-            self._progress_handler._progress_details.toggle)
+            self._progress_handler._progress_details.toggle
+        )
 
         # connect the drag screen progress button to show the progress details
         self.ui.drag_progress_message.clicked.connect(
-            self._progress_handler.show_details)
+            self._progress_handler.show_details
+        )
 
         # hide settings for now
         self.ui.item_settings_label.hide()
@@ -240,7 +251,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.items_tree.set_publish_manager(self._publish_manager)
 
         # this is the pixmap in the summary thumbnail
-        self._summary_thumbnail = None 
+        self._summary_thumbnail = None
 
         # set publish button text
         self._display_action_name = self._bundle.get_setting("display_action_name")
@@ -267,8 +278,10 @@ class AppDialog(QtGui.QWidget):
         """
         # if our log details ui is showing and escape
         # is pressed, capture it and hide the log details ui
-        if self._progress_handler.is_showing_details() and \
-                event.key() == QtCore.Qt.Key_Escape:
+        if (
+            self._progress_handler.is_showing_details()
+            and event.key() == QtCore.Qt.Key_Escape
+        ):
             # hide log window
             self._progress_handler.hide_details()
 
@@ -327,7 +340,9 @@ class AppDialog(QtGui.QWidget):
         if self._is_task_selection_homogeneous(items):
             # We should update the tasks details ui.
             self._current_item = None
-            publish_tasks = _TaskSelection([item.get_publish_instance() for item in items])
+            publish_tasks = _TaskSelection(
+                [item.get_publish_instance() for item in items]
+            )
             self._update_task_details_ui(publish_tasks)
         elif len(items) != 1:
             # Otherwise we can't show items from a multi-selection, so inform the user.
@@ -419,7 +434,8 @@ class AppDialog(QtGui.QWidget):
         # Now figure out if we need to create/replace the widgets.
         if (
             # If we had a selection before
-            self._current_tasks and
+            self._current_tasks
+            and
             # and it was of the same type as the new one.
             self._current_tasks.is_same_task_type(new_task_selection)
         ):
@@ -427,7 +443,8 @@ class AppDialog(QtGui.QWidget):
         else:
             logger.debug("Building a custom ui for %s.", new_task_selection.plugin)
             widget = new_task_selection.plugin.run_create_settings_widget(
-                self.ui.task_settings_parent)
+                self.ui.task_settings_parent
+            )
             self.ui.task_settings.widget = widget
 
         # Update the UI with the settings from the current plugin.
@@ -476,7 +493,9 @@ class AppDialog(QtGui.QWidget):
 
         if selected_tasks.has_custom_ui:
             try:
-                selected_tasks.set_settings(self.ui.task_settings.widget, tasks_settings)
+                selected_tasks.set_settings(
+                    self.ui.task_settings.widget, tasks_settings
+                )
             except NotImplementedError:
                 self.ui.details_stack.setCurrentIndex(self.MULTI_EDIT_NOT_SUPPORTED)
                 return False
@@ -512,7 +531,9 @@ class AppDialog(QtGui.QWidget):
                 # all tasks have same description now, so set <multiple values> indicator to false
                 self._summary_comment_multiple_values = False
 
-            self.ui.item_comments._show_placeholder = self._summary_comment_multiple_values
+            self.ui.item_comments._show_placeholder = (
+                self._summary_comment_multiple_values
+            )
 
         # the "else" below means if this is a publish item
         else:
@@ -521,7 +542,7 @@ class AppDialog(QtGui.QWidget):
             # <multiple values> placeholder text should not appear for individual items
             self.ui.item_comments._show_placeholder = False
 
-            # if at least one task has a comment that is different than the summary description, set 
+            # if at least one task has a comment that is different than the summary description, set
             # <multiple values> indicator to true
             if self._summary_comment != comments:
                 self._summary_comment_multiple_values = True
@@ -588,10 +609,9 @@ class AppDialog(QtGui.QWidget):
         # unless item thumbnail was set after summary thumbnail
         if self._summary_thumbnail and not item.thumbnail_explicit:
             item.thumbnail = self._summary_thumbnail
-        
+
         self.ui.item_thumbnail._set_multiple_values_indicator(False)
         self.ui.item_thumbnail.set_thumbnail(item.thumbnail)
-        
 
         # Items with default thumbnails should still be able to have override thumbnails set by the user
         self.ui.item_thumbnail.setEnabled(True)
@@ -601,8 +621,7 @@ class AppDialog(QtGui.QWidget):
 
             if item.context_change_allowed:
                 self.ui.context_widget.enable_editing(
-                    True,
-                    "<p>Task and Entity Link to apply to the selected item:</p>"
+                    True, "<p>Task and Entity Link to apply to the selected item:</p>"
                 )
             else:
                 self.ui.context_widget.enable_editing(
@@ -610,8 +629,8 @@ class AppDialog(QtGui.QWidget):
                     "<p>Context changing has been disabled for this item. "
                     "It will be associated with "
                     "<strong><a style='color:#C8C8C8; text-decoration:none' "
-                    "href='%s'>%s</a></strong></p>" %
-                    (item.context.shotgun_url, item.context)
+                    "href='%s'>%s</a></strong></p>"
+                    % (item.context.shotgun_url, item.context),
                 )
 
             # set the context
@@ -635,9 +654,9 @@ class AppDialog(QtGui.QWidget):
 
         # skip settings for now
         ## render settings
-        #self.ui.item_settings.set_static_data(
+        # self.ui.item_settings.set_static_data(
         #    [(p, item.properties[p]) for p in item.properties]
-        #)
+        # )
 
     def _create_master_summary_details(self):
         """
@@ -647,7 +666,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.details_stack.setCurrentIndex(self.ITEM_DETAILS)
 
         display_name = self._bundle.get_setting("display_name")
-        self.ui.item_name.setText("%s Summary"%display_name)
+        self.ui.item_name.setText("%s Summary" % display_name)
         self.ui.item_icon.setPixmap(QtGui.QPixmap(":/tk_multi_publish2/icon_256.png"))
 
         self.ui.item_thumbnail_label.show()
@@ -671,17 +690,18 @@ class AppDialog(QtGui.QWidget):
                 break
 
         self.ui.item_thumbnail._set_multiple_values_indicator(
-            thumbnail_has_multiple_values)
+            thumbnail_has_multiple_values
+        )
         self.ui.item_thumbnail.set_thumbnail(self._summary_thumbnail)
 
-        # setting enabled to true to be able to take a snapshot to define the thumbnail 
+        # setting enabled to true to be able to take a snapshot to define the thumbnail
         self.ui.item_thumbnail.setEnabled(True)
 
         self.ui.item_description_label.setText("Description for all items")
         self.ui.item_comments.setPlainText(self._summary_comment)
 
         # the item_comments PublishDescriptionFocus won't display placeholder text if it is in focus
-        # so clearing the focus from that widget in order to see the <multiple values> warning once 
+        # so clearing the focus from that widget in order to see the <multiple values> warning once
         # the master summary details page is opened
         self.ui.item_comments.clearFocus()
         self.ui.item_comments._show_placeholder = self._summary_comment_multiple_values
@@ -735,8 +755,7 @@ class AppDialog(QtGui.QWidget):
         """
         self._progress_handler.set_phase(self._progress_handler.PHASE_LOAD)
         self._progress_handler.push(
-            "Collecting items to %s..." %
-            (self._display_action_name)
+            "Collecting items to %s..." % (self._display_action_name)
         )
 
         previously_collected_files = self._publish_manager.collected_files
@@ -746,24 +765,21 @@ class AppDialog(QtGui.QWidget):
         new_session_items = self._publish_manager.collect_session()
 
         logger.debug(
-            "Refresh: Running collection on all previously collected external "
-            "files"
+            "Refresh: Running collection on all previously collected external " "files"
         )
-        new_file_items = self._publish_manager.collect_files(
-            previously_collected_files)
+        new_file_items = self._publish_manager.collect_files(previously_collected_files)
 
         num_items_created = len(new_session_items) + len(new_file_items)
         num_errors = self._progress_handler.pop()
 
         if num_errors == 0 and num_items_created == 1:
-            self._progress_handler.logger.info(
-                "One item discovered by publisher.")
+            self._progress_handler.logger.info("One item discovered by publisher.")
         elif num_errors == 0 and num_items_created > 1:
             self._progress_handler.logger.info(
-                "%d items discovered by publisher." % num_items_created)
+                "%d items discovered by publisher." % num_items_created
+            )
         elif num_errors > 0:
-            self._progress_handler.logger.error(
-                "Errors reported. See log for details.")
+            self._progress_handler.logger.error("Errors reported. See log for details.")
 
         # make sure the ui is up to date
         self._synchronize_tree()
@@ -801,8 +817,7 @@ class AppDialog(QtGui.QWidget):
 
             # ensure the progress details are parented here in case we get
             # stuck here.
-            self._progress_handler.progress_details.set_parent(
-                self.ui.main_frame)
+            self._progress_handler.progress_details.set_parent(self.ui.main_frame)
 
             self._overlay.show_loading()
             self.ui.button_container.hide()
@@ -815,11 +830,17 @@ class AppDialog(QtGui.QWidget):
             elif num_errors == 0 and num_items_created == 1:
                 self._progress_handler.logger.info("One item was added.")
             elif num_errors == 0 and num_items_created > 1:
-                self._progress_handler.logger.info("%d items were added." % num_items_created)
+                self._progress_handler.logger.info(
+                    "%d items were added." % num_items_created
+                )
             elif num_errors == 1:
-                self._progress_handler.logger.error("An error was reported. Please see the log for details.")
+                self._progress_handler.logger.error(
+                    "An error was reported. Please see the log for details."
+                )
             else:
-                self._progress_handler.logger.error("%d errors reported. Please see the log for details." % num_errors)
+                self._progress_handler.logger.error(
+                    "%d errors reported. Please see the log for details." % num_errors
+                )
 
             # rebuild the tree
             self._synchronize_tree()
@@ -830,8 +851,8 @@ class AppDialog(QtGui.QWidget):
 
         top_level_items = list(self._publish_manager.tree.root_item.children)
         if (
-            len(top_level_items) == 0 and
-            self.ui.main_stack.currentIndex() == self.DRAG_SCREEN
+            len(top_level_items) == 0
+            and self.ui.main_stack.currentIndex() == self.DRAG_SCREEN
         ):
             # there are no top-level items and we're still on the drag screen.
             # something not good happened. show a button to open the progress
@@ -839,8 +860,7 @@ class AppDialog(QtGui.QWidget):
 
             self.ui.drag_progress_message.setText(
                 "Could not determine items to %s. "
-                "Click for more info..." %
-                (self._display_action_name,)
+                "Click for more info..." % (self._display_action_name,)
             )
             self.ui.drag_progress_message.show()
         else:
@@ -868,14 +888,14 @@ class AppDialog(QtGui.QWidget):
                 # ensure the progress details widget is available for overlay on the
                 # drop area
                 self._progress_handler.progress_details.set_parent(
-                    self.ui.large_drop_area)
+                    self.ui.large_drop_area
+                )
         else:
             self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
 
             # ensure the progress details widget is available for overlay on the
             # main frame of the publish ui
-            self._progress_handler.progress_details.set_parent(
-                self.ui.main_frame)
+            self._progress_handler.progress_details.set_parent(self.ui.main_frame)
 
             self.ui.items_tree.build_tree()
 
@@ -908,10 +928,8 @@ class AppDialog(QtGui.QWidget):
             msg = "Remove the item from the list?"
 
         res = QtGui.QMessageBox.question(
-            self,
-            "Remove items?",
-            msg,
-            QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel)
+            self, "Remove items?", msg, QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel
+        )
 
         if res == QtGui.QMessageBox.Cancel:
             return
@@ -934,6 +952,7 @@ class AppDialog(QtGui.QWidget):
         """
         Check all boxes in the currently active tree
         """
+
         def _check_r(parent):
             for child_index in xrange(parent.childCount()):
                 child = parent.child(child_index)
@@ -1013,16 +1032,21 @@ class AppDialog(QtGui.QWidget):
         self.ui.stop_processing.show()
         try:
             failed_to_validate = self._publish_manager.validate(
-                task_generator=self._validate_task_generator(is_standalone))
+                task_generator=self._validate_task_generator(is_standalone)
+            )
             num_issues = len(failed_to_validate)
         finally:
             self._progress_handler.pop()
             if self._stop_processing_flagged:
                 self._progress_handler.logger.info("Processing aborted by user.")
             elif num_issues > 0:
-                self._progress_handler.logger.error("Validation Complete. %d issues reported." % num_issues)
+                self._progress_handler.logger.error(
+                    "Validation Complete. %d issues reported." % num_issues
+                )
             else:
-                self._progress_handler.logger.info("Validation Complete. All checks passed.")
+                self._progress_handler.logger.info(
+                    "Validation Complete. All checks passed."
+                )
 
             if is_standalone:
                 # reset process aborted flag
@@ -1059,8 +1083,7 @@ class AppDialog(QtGui.QWidget):
                 # do_validate returns the number of issues encountered
                 if self.do_validate(is_standalone=False) > 0:
                     self._progress_handler.logger.error(
-                        "Validation errors detected. "
-                        "Not proceeding with publish."
+                        "Validation errors detected. " "Not proceeding with publish."
                     )
                     self.ui.button_container.show()
                     return
@@ -1069,7 +1092,8 @@ class AppDialog(QtGui.QWidget):
             elif self._validation_run:
                 self._progress_handler.logger.info(
                     "Skipping validation pass just before publish. "
-                    "It was already run manually.")
+                    "It was already run manually."
+                )
 
             # validation not required on publish. no validation done yet
             else:
@@ -1079,15 +1103,14 @@ class AppDialog(QtGui.QWidget):
                     "%s without Validation?" % (self._display_action_name,),
                     "You are attempting to %s without validation. Are you sure "
                     "you wish to continue?" % (self._display_action_name,),
-                    buttons=QtGui.QMessageBox.Yes | QtGui.QMessageBox.Cancel
+                    buttons=QtGui.QMessageBox.Yes | QtGui.QMessageBox.Cancel,
                 )
                 if button_clicked == QtGui.QMessageBox.Cancel:
                     # user does not want ot continue.
                     self.ui.button_container.show()
                     return
 
-                self._progress_handler.logger.info(
-                    "User skipped validation step.")
+                self._progress_handler.logger.info("User skipped validation step.")
 
             if self._stop_processing_flagged:
                 # stop processing
@@ -1124,12 +1147,17 @@ class AppDialog(QtGui.QWidget):
 
                 try:
                     self._publish_manager.finalize(
-                        task_generator=self._finalize_task_generator())
+                        task_generator=self._finalize_task_generator()
+                    )
                 except Exception:
                     # ensure the full error shows up in the log file
-                    logger.error("Finalize error stack:\n%s" % (traceback.format_exc(),))
+                    logger.error(
+                        "Finalize error stack:\n%s" % (traceback.format_exc(),)
+                    )
                     # and log to ui
-                    self._progress_handler.logger.error("Error while finalizing. Aborting.")
+                    self._progress_handler.logger.error(
+                        "Error while finalizing. Aborting."
+                    )
                     publish_failed = True
                 finally:
                     self._progress_handler.pop()
@@ -1155,7 +1183,9 @@ class AppDialog(QtGui.QWidget):
         self.ui.close.show()
 
         if publish_failed:
-            self._progress_handler.logger.error("Publish Failed! For details, click here.")
+            self._progress_handler.logger.error(
+                "Publish Failed! For details, click here."
+            )
             self._overlay.show_fail()
         else:
 
@@ -1167,7 +1197,9 @@ class AppDialog(QtGui.QWidget):
                 # ignore all errors. ex: using a core that doesn't support metrics
                 pass
 
-            self._progress_handler.logger.info("Publish Complete! For details, click here.")
+            self._progress_handler.logger.info(
+                "Publish Complete! For details, click here."
+            )
             self._overlay.show_success()
 
     def _publish_again_clicked(self):
@@ -1238,7 +1270,7 @@ class AppDialog(QtGui.QWidget):
             self._progress_handler.push(
                 "%s: %s" % (stage_name, ui_item,),
                 ui_item.icon,
-                ui_item.get_publish_instance()
+                ui_item.get_publish_instance(),
             )
 
             try:
@@ -1265,11 +1297,8 @@ class AppDialog(QtGui.QWidget):
                 else:
                     is_successful = ui_item.validate(is_standalone)
                     error_msg = "Unknown validation error!"
-            except Exception, e:
-                ui_item.set_status_upwards(
-                    ui_item.STATUS_VALIDATION_ERROR,
-                    str(e)
-                )
+            except Exception as e:
+                ui_item.set_status_upwards(ui_item.STATUS_VALIDATION_ERROR, str(e))
                 raise
             else:
                 if is_successful:
@@ -1279,8 +1308,7 @@ class AppDialog(QtGui.QWidget):
                         ui_item.set_status(ui_item.STATUS_VALIDATION)
                 else:
                     ui_item.set_status_upwards(
-                        ui_item.STATUS_VALIDATION_ERROR,
-                        error_msg
+                        ui_item.STATUS_VALIDATION_ERROR, error_msg
                     )
 
     def _publish_task_generator(self):
@@ -1300,11 +1328,8 @@ class AppDialog(QtGui.QWidget):
                 # publishing
                 else:
                     ui_item.publish()
-            except Exception, e:
-                ui_item.set_status_upwards(
-                    ui_item.STATUS_PUBLISH_ERROR,
-                    str(e)
-                )
+            except Exception as e:
+                ui_item.set_status_upwards(ui_item.STATUS_PUBLISH_ERROR, str(e))
                 raise
             else:
                 ui_item.set_status(ui_item.STATUS_PUBLISH)
@@ -1326,17 +1351,13 @@ class AppDialog(QtGui.QWidget):
                 else:
                     ui_item.finalize()
                     finalize_exception = None
-            except Exception, e:
-                ui_item.set_status_upwards(
-                    ui_item.STATUS_FINALIZE_ERROR,
-                    str(e)
-                )
+            except Exception as e:
+                ui_item.set_status_upwards(ui_item.STATUS_FINALIZE_ERROR, str(e))
                 raise
             else:
                 if finalize_exception:
                     ui_item.set_status_upwards(
-                        ui_item.STATUS_FINALIZE_ERROR,
-                        str(finalize_exception)
+                        ui_item.STATUS_FINALIZE_ERROR, str(finalize_exception)
                     )
                 else:
                     ui_item.set_status(ui_item.STATUS_FINALIZE)
@@ -1411,7 +1432,7 @@ class AppDialog(QtGui.QWidget):
         # options for either browse type
         options = [
             QtGui.QFileDialog.DontResolveSymlinks,
-            QtGui.QFileDialog.DontUseNativeDialog
+            QtGui.QFileDialog.DontUseNativeDialog,
         ]
 
         if folders:
@@ -1450,7 +1471,7 @@ class AppDialog(QtGui.QWidget):
         try:
             logger.debug("Opening url: '%s'." % (url,))
             QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
-        except Exception, e:
+        except Exception as e:
             logger.error("Failed to open url: '%s'. Reason: %s" % (url, e))
 
     def _trigger_stop_processing(self):
@@ -1521,6 +1542,7 @@ class _TaskSelection(object):
 
     :param items: List of task for in the selection. Defaults to an empty list.
     """
+
     def __init__(self, items=None):
         self._items = items or []
 

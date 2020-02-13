@@ -34,7 +34,7 @@ class GenericRemotePlugin(HookBaseClass):
             "run_on_farm": {
                 "type": "bool",
                 "default": "True",
-                "description": "Indicates whether this plugin should run on farm."
+                "description": "Indicates whether this plugin should run on farm.",
             }
         }
 

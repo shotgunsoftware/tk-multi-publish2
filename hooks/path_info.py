@@ -86,8 +86,7 @@ class BasicPathInfo(HookBaseClass):
             frame = frame_pattern_match.group(3)
             display_str = "#" * len(frame)
             extension = frame_pattern_match.group(4) or ""
-            publish_name = "%s%s%s.%s" % (
-                prefix, frame_sep, display_str, extension)
+            publish_name = "%s%s%s.%s" % (prefix, frame_sep, display_str, extension)
         else:
             publish_name = filename
 
@@ -212,8 +211,7 @@ class BasicPathInfo(HookBaseClass):
         publisher = self.parent
         logger = publisher.logger
 
-        logger.debug(
-            "Looking for sequences in folder: '%s'..." % (folder,))
+        logger.debug("Looking for sequences in folder: '%s'..." % (folder,))
 
         # list of already processed file names
         processed_names = {}
@@ -267,7 +265,7 @@ class BasicPathInfo(HookBaseClass):
             # seq pattern
             processed_names[file_no_frame] = {
                 "sequence_path": seq_path,
-                "file_list": [file_path]
+                "file_list": [file_path],
             }
 
         # build the final list of sequence paths to return

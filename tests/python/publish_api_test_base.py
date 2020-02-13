@@ -11,7 +11,7 @@
 import os
 import sgtk
 
-from tank_test.tank_test_base import TankTestBase # noqa
+from tank_test.tank_test_base import TankTestBase  # noqa
 
 
 class PublishApiTestBase(TankTestBase):
@@ -31,16 +31,14 @@ class PublishApiTestBase(TankTestBase):
         self.shotgun_model = self.framework.import_module("shotgun_model")
 
     """
+
     def setUp(self):
         """
         Fixtures setup
         """
         os.environ["PUBLISH2_API_TEST"] = "1"
         repo_root = os.path.normpath(
-            os.path.join(
-                os.path.dirname(__file__),
-                "..", ".."
-            )
+            os.path.join(os.path.dirname(__file__), "..", "..")
         )
 
         os.environ["REPO_ROOT"] = repo_root
@@ -51,7 +49,9 @@ class PublishApiTestBase(TankTestBase):
         # set up an environment variable that points to the root of the
         # framework so we can specify its location in the environment fixture
 
-        self.framework_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+        self.framework_root = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "..", "..")
+        )
         os.environ["APP_ROOT"] = self.framework_root
 
         # Add these to mocked shotgun

@@ -9,7 +9,7 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 from publish_api_test_base import PublishApiTestBase
-from tank_test.tank_test_base import setUpModule # noqa
+from tank_test.tank_test_base import setUpModule  # noqa
 
 
 class TestPublishData(PublishApiTestBase):
@@ -58,6 +58,5 @@ class TestPublishData(PublishApiTestBase):
         # the data. Then, we'll turn the data once again back to a dict
         # so we can do a simply comparison with a dict.
         self.assertEqual(
-            self.PublishData.from_dict(data.to_dict()).to_dict(),
-            {"one": 1, "two": 2}
+            self.PublishData.from_dict(data.to_dict()).to_dict(), {"one": 1, "two": 2}
         )

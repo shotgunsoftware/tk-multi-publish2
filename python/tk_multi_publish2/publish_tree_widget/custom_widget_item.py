@@ -10,7 +10,6 @@
 
 
 import sgtk
-from sgtk.platform.qt import QtCore, QtGui
 from .ui.item_widget import Ui_ItemWidget
 from .custom_widget_base import CustomTreeWidgetBase
 
@@ -93,7 +92,7 @@ class CustomTreeWidgetItem(CustomTreeWidgetBase):
 
         if draggable:
             self.ui.handle_stack.show()
-            self.ui.handle_stack.setCurrentIndex(0) # draggable
+            self.ui.handle_stack.setCurrentIndex(0)  # draggable
         else:
             self.ui.handle_stack.hide()
 

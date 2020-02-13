@@ -1,11 +1,11 @@
 # Copyright (c) 2017 Shotgun Software Inc.
-# 
+#
 # CONFIDENTIAL AND PROPRIETARY
-# 
-# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit 
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
 # Source Code License included in this distribution package. See LICENSE.
-# By accessing, using, copying or modifying this work you indicate your 
-# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import os
@@ -28,11 +28,7 @@ class UploadVersionPlugin(HookBaseClass):
         """
 
         # look for icon one level up from this hook's folder in "icons" folder
-        return os.path.join(
-            self.disk_location,
-            "icons",
-            "review.png"
-        )
+        return os.path.join(self.disk_location, "icons", "review.png")
 
     @property
     def name(self):
@@ -62,7 +58,11 @@ class UploadVersionPlugin(HookBaseClass):
         copy of the file will be attached to it. The file can then be reviewed
         via the project's <a href='%s'>Media</a> page, <a href='%s'>RV</a>, or
         the <a href='%s'>Shotgun Review</a> mobile app.
-        """ % (media_page_url, review_url, review_url)
+        """ % (
+            media_page_url,
+            review_url,
+            review_url,
+        )
 
         # TODO: when settings editable, describe upload vs. link
 
@@ -89,19 +89,18 @@ class UploadVersionPlugin(HookBaseClass):
             "File Extensions": {
                 "type": "str",
                 "default": "jpeg, jpg, png, mov, mp4, pdf",
-                "description": "File Extensions of files to include"
+                "description": "File Extensions of files to include",
             },
             "Upload": {
                 "type": "bool",
                 "default": True,
-                "description": "Upload content to Shotgun?"
+                "description": "Upload content to Shotgun?",
             },
             "Link Local File": {
                 "type": "bool",
                 "default": True,
-                "description": "Should the local file be referenced by Shotgun"
+                "description": "Should the local file be referenced by Shotgun",
             },
-
         }
 
     @property
@@ -161,19 +160,15 @@ class UploadVersionPlugin(HookBaseClass):
             # log the accepted file and display a button to reveal it in the fs
             self.logger.info(
                 "Version upload plugin accepted: %s" % (file_path,),
-                extra={
-                    "action_show_folder": {
-                        "path": file_path
-                    }
-                }
+                extra={"action_show_folder": {"path": file_path}},
             )
 
             # return the accepted info
             return {"accepted": True}
         else:
             self.logger.debug(
-                "%s is not in the valid extensions list for Version creation" %
-                (extension,)
+                "%s is not in the valid extensions list for Version creation"
+                % (extension,)
             )
             return {"accepted": False}
 
@@ -226,7 +221,7 @@ class UploadVersionPlugin(HookBaseClass):
             "code": publish_name,
             "description": item.description,
             "entity": self._get_version_entity(item),
-            "sg_task": item.context.task
+            "sg_task": item.context.task,
         }
 
         if "sg_publish_data" in item.properties:
@@ -243,9 +238,9 @@ class UploadVersionPlugin(HookBaseClass):
                 "action_show_more_info": {
                     "label": "Version Data",
                     "tooltip": "Show the complete Version data dictionary",
-                    "text": "<pre>%s</pre>" % (pprint.pformat(version_data),)
+                    "text": "<pre>%s</pre>" % (pprint.pformat(version_data),),
                 }
-            }
+            },
         )
 
         # Create the version
@@ -268,20 +263,13 @@ class UploadVersionPlugin(HookBaseClass):
                 upload_path = path
 
             self.parent.shotgun.upload(
-                "Version",
-                version["id"],
-                upload_path,
-                "sg_uploaded_movie"
+                "Version", version["id"], upload_path, "sg_uploaded_movie"
             )
         elif thumb:
             # only upload thumb if we are not uploading the content. with
             # uploaded content, the thumb is automatically extracted.
             self.logger.info("Uploading thumbnail...")
-            self.parent.shotgun.upload_thumbnail(
-                "Version",
-                version["id"],
-                thumb
-            )
+            self.parent.shotgun.upload_thumbnail("Version", version["id"], thumb)
 
         self.logger.info("Upload complete!")
 
@@ -305,9 +293,9 @@ class UploadVersionPlugin(HookBaseClass):
                 "action_show_in_shotgun": {
                     "label": "Show Version",
                     "tooltip": "Reveal the version in Shotgun.",
-                    "entity": version
+                    "entity": version,
                 }
-            }
+            },
         )
 
     def _get_version_entity(self, item):
