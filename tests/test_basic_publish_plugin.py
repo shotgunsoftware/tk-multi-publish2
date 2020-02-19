@@ -46,11 +46,20 @@ else:
 
 class TestBasicPublishPlugin(PublishApiTestBase):
     def _create_hook(self):
+        # Use a relative path for the repo root, since __resolve_hook_expression splits on `:`,
+        # and this will break on Windows where absolute paths include `:`
+        # We'll be coming from the fixtures' hooks dir, `REPO_ROOT/tests/fixtures/config/hooks`,
+        # so we'll need to go up 4 levels.
+        rel_repo_root = os.path.join(*("..",) * 4)
         hook_instance = self.engine.create_hook_instance(
-            os.path.pathsep.join(
+            ":".join(
                 [
-                    os.path.join(os.environ["REPO_ROOT"], "hooks", "publish_file"),
-                    os.path.splitext(__file__)[0],
+                    os.path.join(rel_repo_root, "hooks", "publish_file"),
+                    os.path.join(
+                        rel_repo_root,
+                        "tests",
+                        os.path.splitext(os.path.basename(__file__))[0],
+                    ),
                 ]
             ),
             base_class=self.app.base_hooks.PublishPlugin,
