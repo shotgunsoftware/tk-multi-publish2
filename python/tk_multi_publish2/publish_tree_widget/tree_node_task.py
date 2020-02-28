@@ -58,7 +58,20 @@ class TreeNodeTask(TreeNodeBase):
         widget.set_header(self._task.plugin.name)
         widget.set_icon(self._task.plugin.icon)
         widget.set_checkbox_value(self.data(0, self.CHECKBOX_ROLE))
+
+        # connect checkbox enable state with task.enabled property
+        widget.ui.checkbox.setEnabled(self._task.enabled)
+        # connect checkbox checked state with task.active property
+        widget.ui.checkbox.clicked.connect(self._set_task_checked)
+
         return widget
+
+    def _set_task_checked(self):
+        """
+        Set PublishTask active state to the widget's checked state.
+        :return: None
+        """
+        self._task.active = self.checked
 
     def set_check_state(self, state, apply_to_all_plugins=False):
         """
