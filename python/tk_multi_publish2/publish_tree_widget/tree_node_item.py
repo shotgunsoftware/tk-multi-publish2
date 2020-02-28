@@ -50,6 +50,11 @@ class TreeNodeItem(TreeNodeBase):
         widget.set_icon(self._item.icon)
         widget.set_checkbox_value(self.data(0, self.CHECKBOX_ROLE))
 
+        # connect checkbox enable state with item.enabled property
+        widget.ui.checkbox.setEnabled(self._item.enabled)
+        # connect checkbox checked state with item.checked property
+        widget.ui.checkbox.clicked.connect(self._set_item_checked)
+
         # connect the collapse/expand tool button to the toggle callback
         widget.expand_indicator.clicked.connect(
             lambda: self.setExpanded(not self.isExpanded())
@@ -62,6 +67,13 @@ class TreeNodeItem(TreeNodeBase):
 
     def __str__(self):
         return "%s %s" % (self._item.type_display, self._item.name)
+
+    def _set_item_checked(self):
+        """
+        Set PublishItem checked state to the widget's checked state.
+        :return: None
+        """
+        self._item.checked = self.checked
 
     def create_summary(self):
         """
