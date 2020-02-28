@@ -325,7 +325,7 @@ ProgressDetailsWidget #log_tree::item {
 }
 
 #progress_bar::chunk {
-    background-color: {{SG_HIGHLIGHT_COLOR}}; 
+    background-color: {{SG_HIGHLIGHT_COLOR}};
 }
 
 #bottom_frame #stop_processing {
