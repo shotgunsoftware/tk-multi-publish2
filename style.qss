@@ -378,7 +378,8 @@ ProgressDetailsWidget #log_tree::item {
     border-radius: 2px;
     background-color: {{SG_HIGHLIGHT_COLOR}};
     color: #FFFFFF;
-    padding: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
 }
 
 
