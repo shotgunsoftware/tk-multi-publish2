@@ -126,7 +126,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         # ensure the expand indicator is shown/hidden depending on child
         # visibility
         ui_item.update_expand_indicator()
-            
+
         # lastly, handle the item level check state.
         # if the item has been marked as checked=False
         # uncheck it now (which will affect all children)
