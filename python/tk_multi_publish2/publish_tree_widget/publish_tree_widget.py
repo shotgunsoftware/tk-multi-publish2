@@ -49,7 +49,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         # make sure that we cannot drop items on the root item
         self.invisibleRootItem().setFlags(QtCore.Qt.ItemIsEnabled)
 
-        # 20 px indent for items
+        # 28 px indent for items
         self.setIndentation(28)
         # no indentation for the top level items
         self.setRootIsDecorated(False)
@@ -65,6 +65,10 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         # forward double clicks on items to the items themselves
         self.itemDoubleClicked.connect(lambda i, c: i.double_clicked(c))
 
+        # Capture the native expand toggles and update the button state.
+        self.itemExpanded.connect(self.on_item_expand_state_change)
+        self.itemCollapsed.connect(self.on_item_expand_state_change)
+
         # workaround to make the scrollbar work properly for QT versions < 5 on macOS
         # This look like a bug tracked on the QT side
         # ( https://bugreports.qt.io/browse/QTBUG-27043 )
@@ -75,6 +79,37 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             )
             self.verticalScrollBar().sliderMoved.connect(self.updateEditorGeometries)
             self.verticalScrollBar().rangeChanged.connect(self.updateEditorGeometries)
+
+    def on_item_expand_state_change(self, item):
+        # Since the item can be expanded/collapsed via the custom expand button
+        # but also via the invisible native expand button (which can still be clicked),
+        # we should capture the events and update the custom button expand state.
+        # Not all items have an expand state, so check first.
+        if hasattr(item, "_check_expand_state"):
+            item._check_expand_state()
+
+
+    def drawBranches(self, painter, rect, index):
+        """
+        Overrides drawing of the branches - The bit that sits to the left of the item and usually contains
+         the native expand collapse button.
+         This feels a bit hacky, but since we are providing our own button, and we don't want to show the native
+         branches area, we are shifting the items along to sit over the top of it in the style.qss
+         (see #items_tree::item). However the selection box does not shift, so we are overriding this method
+         to paint in the remainder of the selection box covering the branch area.
+        """
+        # First draw the default visuals for the branch.
+        super(PublishTreeWidget, self).drawBranches(painter, rect, index)
+
+        if index in self.selectedIndexes():
+            # Draw the selection boarder around the shifted item.
+            # The provided QRec instance will cover everything from the far left to the beginning of the item
+            # but since we only to draw the selection box around the item in the branch area, we should shift the
+            # start point in in line with the item shift in the style sheet.
+            rect.setX(rect.x() + rect.width() - 28 )
+            color = QtGui.QColor(self._bundle.style_constants["SG_HIGHLIGHT_COLOR"])
+            painter.fillRect(rect, color)
+
 
     def set_publish_manager(self, publish_manager):
         """

@@ -39,6 +39,7 @@ class Ui_TaskWidget(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.header.sizePolicy().hasHeightForWidth())
         self.header.setSizePolicy(sizePolicy)
+        self.header.setMinimumSize(QtCore.QSize(1, 1))
         self.header.setObjectName("header")
         self.horizontalLayout.addWidget(self.header)
         self.status = QtGui.QToolButton(self.frame)

@@ -11,7 +11,7 @@ from tank.platform.qt import QtCore, QtGui
 class Ui_ItemWidget(object):
     def setupUi(self, ItemWidget):
         ItemWidget.setObjectName("ItemWidget")
-        ItemWidget.resize(290, 45)
+        ItemWidget.resize(313, 46)
         ItemWidget.setMinimumSize(QtCore.QSize(0, 45))
         self.verticalLayout = QtGui.QVBoxLayout(ItemWidget)
         self.verticalLayout.setSpacing(0)
@@ -57,6 +57,7 @@ class Ui_ItemWidget(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.header.sizePolicy().hasHeightForWidth())
         self.header.setSizePolicy(sizePolicy)
+        self.header.setMinimumSize(QtCore.QSize(1, 1))
         self.header.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.header.setObjectName("header")
         self.horizontalLayout.addWidget(self.header)
