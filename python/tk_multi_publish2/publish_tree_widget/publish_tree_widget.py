@@ -88,7 +88,6 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         if hasattr(item, "_check_expand_state"):
             item._check_expand_state()
 
-
     def drawBranches(self, painter, rect, index):
         """
         Overrides drawing of the branches - The bit that sits to the left of the item and usually contains
@@ -106,10 +105,9 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             # The provided QRec instance will cover everything from the far left to the beginning of the item
             # but since we only to draw the selection box around the item in the branch area, we should shift the
             # start point in in line with the item shift in the style sheet.
-            rect.setX(rect.x() + rect.width() - 28 )
+            rect.setX(rect.x() + rect.width() - 28)
             color = QtGui.QColor(self._bundle.style_constants["SG_HIGHLIGHT_COLOR"])
             painter.fillRect(rect, color)
-
 
     def set_publish_manager(self, publish_manager):
         """
