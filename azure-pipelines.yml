@@ -31,8 +31,6 @@ variables:
 jobs:
 - template: build-pipeline.yml@templates
   parameters:
-    # TODO remove this once a suitable fix for tk-core is merged to master.
-    tk_core_ref: SG-13279_tk-multi-publish2_python3
     additional_repositories:
     - name: tk-framework-qtwidgets
       ref: master
