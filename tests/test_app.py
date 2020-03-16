@@ -23,12 +23,6 @@ def launch_engine():
     # Installs a StreamHandler so we see the server output in the console.
     sgtk.LogManager().initialize_base_file_handler("tk-multi-publish2.test")
 
-    # Set the repo root environment variable that is used by the config.
-    repo_root = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..")
-    repo_root = os.path.normpath(repo_root)
-    os.environ["REPO_ROOT"] = repo_root
-    os.environ["SHOTGUN_EXTERNAL_REPOS_ROOT"] = os.path.dirname(repo_root)
-
     # Authenticate
     user = sgtk.authentication.ShotgunAuthenticator().get_user()
     sg = user.create_sg_connection()

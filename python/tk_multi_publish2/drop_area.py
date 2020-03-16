@@ -8,8 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-import sys
-
+import sgtk
 from tank.platform.qt import QtCore, QtGui
 
 
@@ -88,7 +87,7 @@ def drop_area(cls):
             urls = event.mimeData().urls()
             contents = None
             if urls:
-                if sys.platform == "darwin":
+                if sgtk.util.is_macos():
                     # Fix for Yosemite and later, file paths are not actual file paths
                     # but weird /.file/id=6571367.18855673 values
                     # https://bugreports.qt-project.org/browse/QTBUG-24379

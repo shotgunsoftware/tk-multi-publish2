@@ -8,7 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-from StringIO import StringIO
+from tank_vendor.six import StringIO
 import tempfile
 import datetime
 
@@ -87,7 +87,7 @@ class TestPublishTree(PublishApiTestBase):
 
         bad_version = 99999999
         with self.assertRaisesRegex(
-            sgtk.TankError, "Unrecognized serialization version \(%s\)" % bad_version
+            sgtk.TankError, r"Unrecognized serialization version \(%s\)" % bad_version
         ):
             self.PublishTree.from_dict({"serialization_version": bad_version})
 

@@ -12,6 +12,7 @@ import traceback
 
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
+from tank_vendor import six
 
 from .api import PublishManager, PublishItem, PublishTask
 from .ui.dialog import Ui_Dialog
@@ -319,9 +320,9 @@ class AppDialog(QtGui.QWidget):
 
         # look at how many items are checked
         checked_top_items = 0
-        for context_index in xrange(self.ui.items_tree.topLevelItemCount()):
+        for context_index in range(self.ui.items_tree.topLevelItemCount()):
             context_item = self.ui.items_tree.topLevelItem(context_index)
-            for child_index in xrange(context_item.childCount()):
+            for child_index in range(context_item.childCount()):
                 child_item = context_item.child(child_index)
                 if child_item.checked:
                     checked_top_items += 1
@@ -472,7 +473,7 @@ class AppDialog(QtGui.QWidget):
         for task in selected_tasks:
             # The settings returned by the UI are actual value, not Settings objects, so apply each
             # value returned on the appropriate settings object.
-            for k, v in settings.iteritems():
+            for k, v in settings.items():
                 task.settings[k].value = v
 
     def _push_settings_into_ui(self, selected_tasks):
@@ -487,7 +488,7 @@ class AppDialog(QtGui.QWidget):
         tasks_settings = []
         for task in selected_tasks:
             settings_dict = {}
-            for k, v in task.settings.iteritems():
+            for k, v in task.settings.items():
                 settings_dict[k] = v.value
             tasks_settings.append(settings_dict)
 
@@ -724,7 +725,7 @@ class AppDialog(QtGui.QWidget):
         if len(current_contexts) == 1:
             # only one context being used by current items. prepopulate it in
             # the summary view's context widget
-            context_key = current_contexts.keys()[0]
+            context_key = list(current_contexts.keys())[0]
             self.ui.context_widget.set_context(current_contexts[context_key])
             context_label_text = "Task and Entity Link to apply to all items:"
         else:
@@ -805,12 +806,7 @@ class AppDialog(QtGui.QWidget):
         self._progress_handler.push("Processing external files...")
 
         # pyside gives us back unicode. Make sure we convert it to strings
-        str_files = []
-        for f in files:
-            if isinstance(f, unicode):
-                str_files.append(f.encode("utf-8"))
-            else:
-                str_files.append(f)
+        str_files = [six.ensure_str(f) for f in files]
 
         try:
             self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
@@ -954,7 +950,7 @@ class AppDialog(QtGui.QWidget):
         """
 
         def _check_r(parent):
-            for child_index in xrange(parent.childCount()):
+            for child_index in range(parent.childCount()):
                 child = parent.child(child_index)
                 child.checkbox.setChecked(checked)
                 _check_r(child)
@@ -969,7 +965,7 @@ class AppDialog(QtGui.QWidget):
         Clear the current progress icon recursively
         for the given tree node
         """
-        for child_index in xrange(parent.childCount()):
+        for child_index in range(parent.childCount()):
             child = parent.child(child_index)
             child.reset_progress()
             self._reset_tree_icon_r(child)
@@ -996,7 +992,7 @@ class AppDialog(QtGui.QWidget):
         # set all nodes to "ready to go"
         def _begin_process_r(parent):
             total_number_nodes = 0
-            for child_index in xrange(parent.childCount()):
+            for child_index in range(parent.childCount()):
                 child = parent.child(child_index)
                 if child.checked:
                     # child is ticked
@@ -1510,7 +1506,7 @@ class AppDialog(QtGui.QWidget):
             return
 
         all_items_selected_task = True
-        for context_index in xrange(self.ui.items_tree.topLevelItemCount()):
+        for context_index in range(self.ui.items_tree.topLevelItemCount()):
             context_item = self.ui.items_tree.topLevelItem(context_index)
 
             if hasattr(context_item, "context") and not context_item.context.task:
@@ -1623,8 +1619,11 @@ class _TaskSelection(object):
         """
         return self._items == other._items
 
-    def __nonzero__(self):
+    def __bool__(self):
         """
         :returns: ``True`` is the selection is not empty, ``False`` otherwise.
         """
         return bool(self._items)
+
+    # To maintain Python 2 compatibility, define __nonzero__ as well as __bool__
+    __nonzero__ = __bool__

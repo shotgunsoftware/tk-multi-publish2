@@ -8,6 +8,8 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import os
+
 from publish_api_test_base import PublishApiTestBase
 from tank_test.tank_test_base import setUpModule  # noqa
 
@@ -19,8 +21,8 @@ class TestManager(PublishApiTestBase):
         """
         Ensures files are collected only once.
         """
-        A_PNG = "/a/b/c.png"
-        D_PNG = "/a/b/d.png"
+        A_PNG = os.path.normpath("/a/b/c.png")
+        D_PNG = os.path.normpath("/a/b/d.png")
 
         # Collecting one file should result in one collected file
         collected_files = self.manager.collect_files([A_PNG])

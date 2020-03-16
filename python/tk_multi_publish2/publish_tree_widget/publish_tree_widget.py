@@ -8,7 +8,6 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-import sys
 import sgtk
 from collections import defaultdict
 from sgtk.platform.qt import QtCore, QtGui
@@ -50,7 +49,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         # make sure that we cannot drop items on the root item
         self.invisibleRootItem().setFlags(QtCore.Qt.ItemIsEnabled)
 
-        # 20 px indent for items
+        # 28 px indent for items
         self.setIndentation(28)
         # no indentation for the top level items
         self.setRootIsDecorated(False)
@@ -66,16 +65,49 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         # forward double clicks on items to the items themselves
         self.itemDoubleClicked.connect(lambda i, c: i.double_clicked(c))
 
+        # Capture the native expand toggles and update the button state.
+        self.itemExpanded.connect(self.on_item_expand_state_change)
+        self.itemCollapsed.connect(self.on_item_expand_state_change)
+
         # workaround to make the scrollbar work properly for QT versions < 5 on macOS
         # This look like a bug tracked on the QT side
         # ( https://bugreports.qt.io/browse/QTBUG-27043 )
         # ( https://stackoverflow.com/questions/15331256/qlistwidget-with-custom-widget-does-not-scroll-properly-in-mac-os )
-        if QtCore.__version__.startswith("4.") and sys.platform == "darwin":
+        if QtCore.__version__.startswith("4.") and sgtk.util.is_macos():
             self.verticalScrollBar().actionTriggered.connect(
                 self.updateEditorGeometries
             )
             self.verticalScrollBar().sliderMoved.connect(self.updateEditorGeometries)
             self.verticalScrollBar().rangeChanged.connect(self.updateEditorGeometries)
+
+    def on_item_expand_state_change(self, item):
+        # Since the item can be expanded/collapsed via the custom expand button
+        # but also via the invisible native expand button (which can still be clicked),
+        # we should capture the events and update the custom button expand state.
+        # Not all items have an expand state, so check first.
+        if hasattr(item, "_check_expand_state"):
+            item._check_expand_state()
+
+    def drawBranches(self, painter, rect, index):
+        """
+        Overrides drawing of the branches - The bit that sits to the left of the item and usually contains
+         the native expand collapse button.
+         This feels a bit hacky, but since we are providing our own button, and we don't want to show the native
+         branches area, we are shifting the items along to sit over the top of it in the style.qss
+         (see #items_tree::item). However the selection box does not shift, so we are overriding this method
+         to paint in the remainder of the selection box covering the branch area.
+        """
+        # First draw the default visuals for the branch.
+        super(PublishTreeWidget, self).drawBranches(painter, rect, index)
+
+        if index in self.selectedIndexes():
+            # Draw the selection boarder around the shifted item.
+            # The provided QRec instance will cover everything from the far left to the beginning of the item
+            # but since we only to draw the selection box around the item in the branch area, we should shift the
+            # start point in in line with the item shift in the style sheet.
+            rect.setX(rect.x() + rect.width() - 28)
+            color = QtGui.QColor(self._bundle.style_constants["SG_HIGHLIGHT_COLOR"])
+            painter.fillRect(rect, color)
 
     def set_publish_manager(self, publish_manager):
         """
@@ -152,7 +184,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         #
         top_level_items_in_tree = []
         items_to_move = []
-        for top_level_index in xrange(self.topLevelItemCount()):
+        for top_level_index in range(self.topLevelItemCount()):
             top_level_item = self.topLevelItem(top_level_index)
 
             if not isinstance(top_level_item, TreeNodeContext):
@@ -221,7 +253,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         """
         # first find the right context
         context_tree_node = None
-        for context_index in xrange(self.topLevelItemCount()):
+        for context_index in range(self.topLevelItemCount()):
             context_item = self.topLevelItem(context_index)
             if isinstance(context_item, TreeNodeContext) and str(
                 context_item.context
@@ -306,7 +338,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
         child_items = []
 
-        for child_index in reversed(xrange(widget_item.childCount())):
+        for child_index in reversed(range(widget_item.childCount())):
             child = widget_item.child(child_index)
             widget_item.takeChild(child_index)
             if not isinstance(child, TreeNodeTask):
@@ -345,7 +377,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         """
         summary = []
         num_items = 0
-        for context_index in xrange(self.topLevelItemCount()):
+        for context_index in range(self.topLevelItemCount()):
             context_item = self.topLevelItem(context_index)
             summary.extend(context_item.create_summary())
             tasks = self._summarize_tasks_r(context_item)
@@ -354,7 +386,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             # how many items there are for each type
             num_items += sum(tasks.values())
             # iterate over dictionary and build histogram
-            for task_name, num_tasks in tasks.iteritems():
+            for task_name, num_tasks in tasks.items():
                 if num_tasks == 1:
                     summary.append("&ndash; %s: 1 item<br>" % task_name)
                 else:
@@ -377,7 +409,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             value represents the number of instances of that task.
         """
         tasks = defaultdict(int)
-        for child_index in xrange(node.childCount()):
+        for child_index in range(node.childCount()):
             child = node.child(child_index)
             if isinstance(child, TreeNodeTask) and child.checked:
                 task_obj = child.task
@@ -385,7 +417,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             else:
                 # process children
                 child_tasks = self._summarize_tasks_r(child)
-                for task_name, num_task_instances in child_tasks.iteritems():
+                for task_name, num_task_instances in child_tasks.items():
                     tasks[task_name] += num_task_instances
         return tasks
 
@@ -410,9 +442,9 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         else:
             # summary hidden. select first item instead.
             first_item = None
-            for context_index in xrange(1, self.topLevelItemCount()):
+            for context_index in range(1, self.topLevelItemCount()):
                 context_item = self.topLevelItem(context_index)
-                for child_index in xrange(context_item.childCount()):
+                for child_index in range(context_item.childCount()):
                     first_item = context_item.child(child_index)
                     break
             if first_item:
@@ -431,7 +463,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         logger.debug("Setting state %d for all plugin %s" % (state, plugin))
 
         def _check_r(parent):
-            for child_index in xrange(parent.childCount()):
+            for child_index in range(parent.childCount()):
                 child = parent.child(child_index)
                 if isinstance(child, TreeNodeTask) and child.task.plugin == plugin:
                     child.set_check_state(state)
@@ -528,7 +560,7 @@ def _init_item_r(parent_item):
         parent_item.update_expand_indicator()
 
     # do this for all children of the supplied item recursively
-    for child_index in xrange(parent_item.childCount()):
+    for child_index in range(parent_item.childCount()):
         child = parent_item.child(child_index)
         if isinstance(child, TreeNodeTask):
             # maintain visibility setting after re-init (usually drop)

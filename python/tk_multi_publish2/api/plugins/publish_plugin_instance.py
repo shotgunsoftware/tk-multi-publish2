@@ -288,7 +288,8 @@ class PublishPluginInstance(PluginInstanceBase):
             if success_msg:
                 self._logger.debug(success_msg)
         finally:
-            if not sgtk.platform.current_engine().has_ui:
+            if sgtk.platform.current_engine().has_ui:
+                # If we have a UI process the events so that the UI can update mid operation.
                 from sgtk.platform.qt import QtCore
 
                 QtCore.QCoreApplication.processEvents()

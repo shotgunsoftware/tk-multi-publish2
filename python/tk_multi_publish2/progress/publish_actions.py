@@ -28,18 +28,14 @@ def show_folder(path):
     # make sure we have a folder
     launch_path = os.path.dirname(path) if not os.path.isdir(path) else path
 
-    # get the setting
-    system = sys.platform
-
-    # run the app
-    if system == "linux2":
+    if sgtk.util.is_linux():
         cmd = 'xdg-open "%s"' % launch_path
-    elif system == "darwin":
+    elif sgtk.util.is_macos():
         cmd = 'open "%s"' % launch_path
-    elif system == "win32":
+    elif sgtk.util.is_windows():
         cmd = 'cmd.exe /C start "Folder" "%s"' % launch_path
     else:
-        logger.error("Don't know how to launch browser for '%s'." % (system,))
+        logger.error("Don't know how to launch browser for '%s'." % (sys.platform,))
         return
 
     exit_code = os.system(cmd)

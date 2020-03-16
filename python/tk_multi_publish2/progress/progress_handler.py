@@ -310,7 +310,7 @@ class ProgressHandler(object):
                 # now calculate the number of errors for this node by aggregating the
                 # error counts for all children
                 parent_errors = 0
-                for child_index in xrange(self._logging_parent_item.childCount()):
+                for child_index in range(self._logging_parent_item.childCount()):
                     child_item = self._logging_parent_item.child(child_index)
                     parent_errors += child_item.data(0, self._NUM_ERRORS_ROLE)
 

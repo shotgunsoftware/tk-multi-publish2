@@ -141,7 +141,7 @@ class PublishItem(object):
         )
 
         # local
-        for (k, prop_dict) in item_dict["local_properties"].iteritems():
+        for (k, prop_dict) in item_dict["local_properties"].items():
             new_item._local_properties[k] = PublishData.from_dict(prop_dict)
 
         new_item._parent = parent
@@ -225,7 +225,7 @@ class PublishItem(object):
         """
 
         converted_local_properties = {}
-        for (k, prop) in self._local_properties.iteritems():
+        for (k, prop) in self._local_properties.items():
             converted_local_properties[k] = prop.to_dict()
 
         context_value = None
