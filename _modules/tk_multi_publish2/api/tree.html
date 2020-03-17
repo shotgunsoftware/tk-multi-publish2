@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.api.tree &mdash; tk-multi-publish2 v2.4.1 documentation</title>
+  <title>tk_multi_publish2.api.tree &mdash; tk-multi-publish2 v2.5.0 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.4.1 documentation" href="../../../index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.5.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -117,7 +117,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.4.1.<br>
+    <b>tk-multi-publish2</b> v2.5.0.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -181,6 +181,7 @@
 <span class="c1"># agreement to the Shotgun Pipeline Toolkit Source Code License. All rights</span>
 <span class="c1"># not expressly granted therein are reserved by Shotgun Software Inc.</span>
 
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
 <span class="kn">import</span> <span class="nn">traceback</span>
 
 <span class="kn">import</span> <span class="nn">json</span>
@@ -278,7 +279,9 @@
         <span class="c1"># handled after initial release. Once that happens, this should be</span>
         <span class="c1"># altered to handle the various versions separately with this as the</span>
         <span class="c1"># fallback when the serialization version is not recognized.</span>
-        <span class="n">serialization_version</span> <span class="o">=</span> <span class="n">tree_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;serialization_version&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;missing version&gt;&quot;</span><span class="p">)</span>
+        <span class="n">serialization_version</span> <span class="o">=</span> <span class="n">tree_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;serialization_version&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;missing version&gt;&quot;</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">serialization_version</span> <span class="o">!=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">SERIALIZATION_VERSION</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">TankError</span><span class="p">(</span>
                 <span class="s2">&quot;Unrecognized serialization version (</span><span class="si">%s</span><span class="s2">) for serialized publish &quot;</span>
@@ -289,8 +292,7 @@
 
         <span class="n">new_tree</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
         <span class="n">new_tree</span><span class="o">.</span><span class="n">_root_item</span> <span class="o">=</span> <span class="n">PublishItem</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span>
-            <span class="n">tree_dict</span><span class="p">[</span><span class="s2">&quot;root_item&quot;</span><span class="p">],</span>
-            <span class="n">serialization_version</span>
+            <span class="n">tree_dict</span><span class="p">[</span><span class="s2">&quot;root_item&quot;</span><span class="p">],</span> <span class="n">serialization_version</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">new_tree</span>
@@ -308,9 +310,10 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tree_file_obj</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">PublishTree</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">tree_file_obj</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="s2">&quot;Error trying to load publish tree from file &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                    <span class="s2">&quot;Error trying to load publish tree from file &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
                 <span class="p">)</span>
                 <span class="k">raise</span></div>
 
@@ -329,10 +332,9 @@
             <span class="k">return</span> <span class="n">PublishTree</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span>
                 <span class="n">sgtk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">object_hook</span><span class="o">=</span><span class="n">_json_to_objects</span><span class="p">)</span>
             <span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;Error loading publish tree: </span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
-                <span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
+                <span class="s2">&quot;Error loading publish tree: </span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
             <span class="p">)</span>
             <span class="k">raise</span>
 
@@ -342,12 +344,7 @@
         <span class="c1"># The root item is the sole parent of all top level publish items. It</span>
         <span class="c1"># has no use other than organization and provides an easy interface for</span>
         <span class="c1"># beginning iteration and accessing all top level items.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_root_item</span> <span class="o">=</span> <span class="n">PublishItem</span><span class="p">(</span>
-            <span class="s2">&quot;__root__&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;__root__&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;__root__&quot;</span><span class="p">,</span>
-            <span class="n">parent</span><span class="o">=</span><span class="bp">None</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_root_item</span> <span class="o">=</span> <span class="n">PublishItem</span><span class="p">(</span><span class="s2">&quot;__root__&quot;</span><span class="p">,</span> <span class="s2">&quot;__root__&quot;</span><span class="p">,</span> <span class="s2">&quot;__root__&quot;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Iterates over the tree, depth first.&quot;&quot;&quot;</span>
@@ -407,7 +404,7 @@
 <span class="sd">              [task] Upload Media</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">print</span> <span class="bp">self</span><span class="o">.</span><span class="n">pformat</span><span class="p">()</span></div>
+        <span class="k">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pformat</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="PublishTree.remove_item"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishTree.remove_item">[docs]</a>    <span class="k">def</span> <span class="nf">remove_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -431,10 +428,8 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_obj</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">file_obj</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="s2">&quot;Error saving the publish tree to disk: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="p">,)</span>
-                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error saving the publish tree to disk: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="p">,))</span>
                 <span class="k">raise</span></div>
 
     <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">):</span>
@@ -451,12 +446,11 @@
                 <span class="n">ensure_ascii</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
                 <span class="c1"># Use a custom JSON encoder to certain Toolkit objects are converted into a</span>
                 <span class="c1"># JSON</span>
-                <span class="bp">cls</span><span class="o">=</span><span class="n">_PublishTreeEncoder</span>
+                <span class="bp">cls</span><span class="o">=</span><span class="n">_PublishTreeEncoder</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;Error saving publish tree: </span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
-                <span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
+                <span class="s2">&quot;Error saving publish tree: </span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
             <span class="p">)</span>
             <span class="k">raise</span>
 
@@ -467,7 +461,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;root_item&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_item</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
-            <span class="s2">&quot;serialization_version&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">SERIALIZATION_VERSION</span>
+            <span class="s2">&quot;serialization_version&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">SERIALIZATION_VERSION</span><span class="p">,</span>
         <span class="p">}</span>
 
     <span class="nd">@property</span>
@@ -503,8 +497,7 @@
 
             <span class="c1"># now do the item&#39;s tasks</span>
             <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">tasks</span><span class="p">:</span>
-                <span class="n">tree_str</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">[task] </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
-                    <span class="p">((</span><span class="n">depth</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">task</span><span class="p">))</span>
+                <span class="n">tree_str</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">[task] </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(((</span><span class="n">depth</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">task</span><span class="p">))</span>
 
             <span class="c1"># process the children as well</span>
             <span class="n">tree_str</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_format_tree</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),)</span>
@@ -516,14 +509,12 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements the json encoder interface for custom publish tree serialization.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">PublishTree</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">Template</span><span class="p">):</span>
-            <span class="k">return</span> <span class="p">{</span>
-                <span class="s2">&quot;_sgtk_custom_type&quot;</span><span class="p">:</span> <span class="s2">&quot;sgtk.Template&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">name</span>
-            <span class="p">}</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;_sgtk_custom_type&quot;</span><span class="p">:</span> <span class="s2">&quot;sgtk.Template&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">_PublishTreeEncoder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
@@ -541,7 +532,9 @@
     <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_sgtk_custom_type&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;sgtk.Template&quot;</span><span class="p">:</span>
         <span class="n">templates</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span><span class="o">.</span><span class="n">sgtk</span><span class="o">.</span><span class="n">templates</span>
         <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">templates</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">TankError</span><span class="p">(</span><span class="s2">&quot;Template &#39;{0}&#39; was not found in templates.yml.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]))</span>
+            <span class="k">raise</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">TankError</span><span class="p">(</span>
+                <span class="s2">&quot;Template &#39;{0}&#39; was not found in templates.yml.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">templates</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span>
     <span class="k">return</span> <span class="n">data</span>
 </pre></div>
@@ -555,7 +548,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Autodesk.
+        &copy; Copyright 2020, Autodesk.
 
     </p>
   </div> 
@@ -576,7 +569,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'v2.4.1',
+            VERSION:'v2.5.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

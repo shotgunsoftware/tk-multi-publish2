@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.api.task &mdash; tk-multi-publish2 v2.4.1 documentation</title>
+  <title>tk_multi_publish2.api.task &mdash; tk-multi-publish2 v2.5.0 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.4.1 documentation" href="../../../index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.5.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -117,7 +117,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.4.1.<br>
+    <b>tk-multi-publish2</b> v2.5.0.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -208,7 +208,7 @@
         <span class="s2">&quot;_settings&quot;</span><span class="p">,</span>
         <span class="s2">&quot;_active&quot;</span><span class="p">,</span>
         <span class="s2">&quot;_visible&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_enabled&quot;</span>
+        <span class="s2">&quot;_enabled&quot;</span><span class="p">,</span>
     <span class="p">]</span>
 
     <span class="nd">@classmethod</span>
@@ -238,12 +238,12 @@
         <span class="n">new_task</span><span class="o">.</span><span class="n">_enabled</span> <span class="o">=</span> <span class="n">task_dict</span><span class="p">[</span><span class="s2">&quot;enabled&quot;</span><span class="p">]</span>
 
         <span class="c1"># create all the setting instances from the data</span>
-        <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">setting</span><span class="p">)</span> <span class="ow">in</span> <span class="n">task_dict</span><span class="p">[</span><span class="s2">&quot;settings&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">setting</span><span class="p">)</span> <span class="ow">in</span> <span class="n">task_dict</span><span class="p">[</span><span class="s2">&quot;settings&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">new_setting</span> <span class="o">=</span> <span class="n">PluginSetting</span><span class="p">(</span>
                 <span class="n">setting</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
                 <span class="n">setting</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span>
                 <span class="n">setting</span><span class="p">[</span><span class="s2">&quot;default_value&quot;</span><span class="p">],</span>
-                <span class="n">setting</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
+                <span class="n">setting</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">],</span>
             <span class="p">)</span>
             <span class="n">new_setting</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">setting</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
             <span class="n">new_task</span><span class="o">.</span><span class="n">_settings</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_setting</span>
@@ -257,8 +257,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_item</span> <span class="o">=</span> <span class="n">item</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_plugin</span> <span class="o">=</span> <span class="n">plugin</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="bp">None</span> <span class="c1"># task name override of plugin name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_description</span> <span class="o">=</span> <span class="bp">None</span> <span class="c1"># task description override of plugin desc.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c1"># task name override of plugin name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_description</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c1"># task description override of plugin desc.</span>
 
         <span class="c1"># need to make a deep copy of the settings as they may be modified</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span> <span class="o">=</span> <span class="p">{}</span>
@@ -279,7 +279,7 @@
 
         <span class="c1"># Convert each of the settings to a dictionary.</span>
         <span class="n">converted_settings</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">setting</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">setting</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">converted_settings</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">setting</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
 
         <span class="c1"># build the full dictionary representation of this task</span>
@@ -463,7 +463,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Autodesk.
+        &copy; Copyright 2020, Autodesk.
 
     </p>
   </div> 
@@ -484,7 +484,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'v2.4.1',
+            VERSION:'v2.5.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

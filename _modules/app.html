@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>app &mdash; tk-multi-publish2 v2.4.1 documentation</title>
+  <title>app &mdash; tk-multi-publish2 v2.5.0 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.4.1 documentation" href="../index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.5.0 documentation" href="../index.html"/>
         <link rel="up" title="Module code" href="index.html"/> 
 
   
@@ -117,7 +117,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.4.1.<br>
+    <b>tk-multi-publish2</b> v2.5.0.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -182,9 +182,10 @@
 <span class="c1"># not expressly granted therein are reserved by Shotgun Software Inc.</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sgtk</span>
-<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">tank.util</span> <span class="kn">import</span> <span class="n">sgre</span> <span class="k">as</span> <span class="n">re</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
 
 <div class="viewcode-block" id="MultiPublish2"><a class="viewcode-back" href="../application.html#app.MultiPublish2">[docs]</a><span class="k">class</span> <span class="nc">MultiPublish2</span><span class="p">(</span><span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">Application</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -214,7 +215,7 @@
         <span class="c1"># &quot;Publish Render&quot; ---&gt; publish_render</span>
         <span class="n">command_name</span> <span class="o">=</span> <span class="n">display_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="c1"># replace all non alphanumeric characters by &#39;_&#39;</span>
-        <span class="n">command_name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;[^0-9a-zA-Z]+&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">command_name</span><span class="p">)</span>
+        <span class="n">command_name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^0-9a-zA-Z]+&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">command_name</span><span class="p">)</span>
 
         <span class="c1"># register command</span>
         <span class="n">cb</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">tk_multi_publish2</span><span class="o">.</span><span class="n">show_dialog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -224,10 +225,8 @@
             <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Publishing of data to Shotgun&quot;</span><span class="p">,</span>
             <span class="c1"># dark themed icon for engines that recognize this format</span>
             <span class="s2">&quot;icons&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;dark&quot;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="s2">&quot;png&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">disk_location</span><span class="p">,</span> <span class="s2">&quot;icon_256_dark.png&quot;</span><span class="p">)</span>
-                <span class="p">}</span>
-            <span class="p">}</span>
+                <span class="s2">&quot;dark&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;png&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">disk_location</span><span class="p">,</span> <span class="s2">&quot;icon_256_dark.png&quot;</span><span class="p">)}</span>
+            <span class="p">},</span>
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">register_command</span><span class="p">(</span><span class="n">menu_caption</span><span class="p">,</span> <span class="n">cb</span><span class="p">,</span> <span class="n">menu_options</span><span class="p">)</span>
 
@@ -307,7 +306,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Autodesk.
+        &copy; Copyright 2020, Autodesk.
 
     </p>
   </div> 
@@ -328,7 +327,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'v2.4.1',
+            VERSION:'v2.5.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

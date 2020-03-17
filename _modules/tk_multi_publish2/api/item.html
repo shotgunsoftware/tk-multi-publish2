@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.api.item &mdash; tk-multi-publish2 v2.4.1 documentation</title>
+  <title>tk_multi_publish2.api.item &mdash; tk-multi-publish2 v2.5.0 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.4.1 documentation" href="../../../index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.5.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -117,7 +117,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.4.1.<br>
+    <b>tk-multi-publish2</b> v2.5.0.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -213,16 +213,22 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># We can fail importing if the engine doesn&#39;t even support Qt.</span>
         <span class="kn">from</span> <span class="nn">sgtk.platform.qt</span> <span class="kn">import</span> <span class="n">QtGui</span>
+
         <span class="c1"># We can also fail at using the QPixmap object in an engine like tk-shell</span>
         <span class="c1"># that exposes a mocked-Qt module.</span>
         <span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not import QtGui.QPixmap. Thumbnail validation will not be available: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;Could not import QtGui.QPixmap. Thumbnail validation will not be available: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">e</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">_qt_pixmap_is_usable</span> <span class="o">=</span> <span class="bp">False</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># If QApplication is not available, we can&#39;t create QPixmap objects.</span>
         <span class="k">if</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;QApplication does not exist. Thumbnail validation will not be available.&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;QApplication does not exist. Thumbnail validation will not be available.&quot;</span>
+            <span class="p">)</span>
             <span class="n">_qt_pixmap_is_usable</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">_qt_pixmap_is_usable</span> <span class="o">=</span> <span class="bp">True</span>
@@ -259,7 +265,7 @@
         <span class="s2">&quot;_thumbnail_path&quot;</span><span class="p">,</span>
         <span class="s2">&quot;_thumbnail_pixmap&quot;</span><span class="p">,</span>
         <span class="s2">&quot;_type_display&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_type_spec&quot;</span>
+        <span class="s2">&quot;_type_spec&quot;</span><span class="p">,</span>
     <span class="p">]</span>
 
     <span class="nd">@classmethod</span>
@@ -278,9 +284,7 @@
 
         <span class="c1"># create the instance</span>
         <span class="n">new_item</span> <span class="o">=</span> <span class="n">PublishItem</span><span class="p">(</span>
-            <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
-            <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;type_spec&quot;</span><span class="p">],</span>
-            <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;type_display&quot;</span><span class="p">]</span>
+            <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;type_spec&quot;</span><span class="p">],</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;type_display&quot;</span><span class="p">]</span>
         <span class="p">)</span>
 
         <span class="c1"># populate all the instance data from the dictionary</span>
@@ -298,9 +302,7 @@
         <span class="k">for</span> <span class="n">child_dict</span> <span class="ow">in</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;children&quot;</span><span class="p">]:</span>
             <span class="n">new_item</span><span class="o">.</span><span class="n">_children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">PublishItem</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span>
-                    <span class="n">child_dict</span><span class="p">,</span>
-                    <span class="n">serialization_version</span><span class="p">,</span>
-                    <span class="n">parent</span><span class="o">=</span><span class="n">new_item</span>
+                    <span class="n">child_dict</span><span class="p">,</span> <span class="n">serialization_version</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">new_item</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
@@ -308,10 +310,11 @@
 
         <span class="c1"># global</span>
         <span class="n">new_item</span><span class="o">.</span><span class="n">_global_properties</span> <span class="o">=</span> <span class="n">PublishData</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span>
-            <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;global_properties&quot;</span><span class="p">])</span>
+            <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;global_properties&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
 
         <span class="c1"># local</span>
-        <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">prop_dict</span><span class="p">)</span> <span class="ow">in</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;local_properties&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">prop_dict</span><span class="p">)</span> <span class="ow">in</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;local_properties&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">new_item</span><span class="o">.</span><span class="n">_local_properties</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">PublishData</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">prop_dict</span><span class="p">)</span>
 
         <span class="n">new_item</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="n">parent</span>
@@ -320,18 +323,13 @@
         <span class="c1"># set the context</span>
         <span class="k">if</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;context&quot;</span><span class="p">]:</span>
             <span class="n">new_item</span><span class="o">.</span><span class="n">_context</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">Context</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span>
-                <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_bundle</span><span class="p">()</span><span class="o">.</span><span class="n">sgtk</span><span class="p">,</span>
-                <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;context&quot;</span><span class="p">]</span>
+                <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_bundle</span><span class="p">()</span><span class="o">.</span><span class="n">sgtk</span><span class="p">,</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;context&quot;</span><span class="p">]</span>
             <span class="p">)</span>
 
         <span class="c1"># finally, create any tasks for this item</span>
         <span class="k">for</span> <span class="n">task_dict</span> <span class="ow">in</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;tasks&quot;</span><span class="p">]:</span>
             <span class="n">new_item</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="n">PublishTask</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span>
-                    <span class="n">task_dict</span><span class="p">,</span>
-                    <span class="n">serialization_version</span><span class="p">,</span>
-                    <span class="n">item</span><span class="o">=</span><span class="n">new_item</span>
-                <span class="p">)</span>
+                <span class="n">PublishTask</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">task_dict</span><span class="p">,</span> <span class="n">serialization_version</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="n">new_item</span><span class="p">)</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">new_item</span>
@@ -386,7 +384,7 @@
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">temp_file</span><span class="p">):</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">temp_file</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                         <span class="s2">&quot;Could not remove temporary file &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">temp_file</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
                     <span class="p">)</span>
@@ -400,7 +398,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">converted_local_properties</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">prop</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_properties</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">prop</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_properties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">converted_local_properties</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
 
         <span class="n">context_value</span> <span class="o">=</span> <span class="bp">None</span>
@@ -517,12 +515,7 @@
 <span class="sd">            item name in a DCC or a file name.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">child_item</span> <span class="o">=</span> <span class="n">PublishItem</span><span class="p">(</span>
-            <span class="n">name</span><span class="p">,</span>
-            <span class="n">type_spec</span><span class="p">,</span>
-            <span class="n">type_display</span><span class="p">,</span>
-            <span class="n">parent</span><span class="o">=</span><span class="bp">self</span>
-        <span class="p">)</span>
+        <span class="n">child_item</span> <span class="o">=</span> <span class="n">PublishItem</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">type_spec</span><span class="p">,</span> <span class="n">type_display</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child_item</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">child_item</span></div>
@@ -582,9 +575,7 @@
             <span class="k">return</span> <span class="bp">None</span>
 
         <span class="n">temp_path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span>
-            <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.jpg&quot;</span><span class="p">,</span>
-            <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;sgtk_thumb&quot;</span><span class="p">,</span>
-            <span class="n">delete</span><span class="o">=</span><span class="bp">False</span>
+            <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.jpg&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;sgtk_thumb&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="bp">False</span>
         <span class="p">)</span><span class="o">.</span><span class="n">name</span>
         <span class="n">success</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">thumbnail</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">temp_path</span><span class="p">)</span>
 
@@ -682,9 +673,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">icon</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="s2">&quot;</span><span class="si">%r</span><span class="s2">: Could not load icon &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%r</span><span class="s2">: Could not load icon &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
             <span class="k">return</span> <span class="bp">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">None</span> <span class="k">if</span> <span class="n">icon</span><span class="o">.</span><span class="n">isNull</span><span class="p">()</span> <span class="k">else</span> <span class="n">path</span>
@@ -881,10 +870,17 @@
             <span class="n">get_pixmap</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_icon_pixmap</span><span class="p">,</span>
             <span class="n">set_pixmap</span><span class="o">=</span><span class="k">lambda</span> <span class="n">pixmap</span><span class="p">:</span> <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_icon_pixmap&quot;</span><span class="p">,</span> <span class="n">pixmap</span><span class="p">),</span>
             <span class="n">get_parent_pixmap</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">icon</span><span class="p">,</span>
-            <span class="n">default_image_path</span><span class="o">=</span><span class="s2">&quot;:/tk_multi_publish2/item.png&quot;</span>
+            <span class="n">default_image_path</span><span class="o">=</span><span class="s2">&quot;:/tk_multi_publish2/item.png&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_get_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get_img_path</span><span class="p">,</span> <span class="n">get_pixmap</span><span class="p">,</span> <span class="n">set_pixmap</span><span class="p">,</span> <span class="n">get_parent_pixmap</span><span class="p">,</span> <span class="n">default_image_path</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_image</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">get_img_path</span><span class="p">,</span>
+        <span class="n">get_pixmap</span><span class="p">,</span>
+        <span class="n">set_pixmap</span><span class="p">,</span>
+        <span class="n">get_parent_pixmap</span><span class="p">,</span>
+        <span class="n">default_image_path</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the image for the icon or thumbnail of this item.</span>
 
@@ -911,10 +907,9 @@
             <span class="c1"># we have a path but haven&#39;t yet created the pixmap. create it</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">set_pixmap</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span><span class="p">(</span><span class="n">get_img_path</span><span class="p">()))</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="s2">&quot;</span><span class="si">%r</span><span class="s2">: Could not load icon &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
-                    <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get_img_path</span><span class="p">(),</span> <span class="n">e</span><span class="p">)</span>
+                    <span class="s2">&quot;</span><span class="si">%r</span><span class="s2">: Could not load icon &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get_img_path</span><span class="p">(),</span> <span class="n">e</span><span class="p">)</span>
                 <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">get_pixmap</span><span class="p">():</span>
@@ -1026,8 +1021,7 @@
         <span class="c1"># It&#39;s not a crime to turn persistence off, so raise an error when</span>
         <span class="c1"># actually trying it on an invalid item.</span>
         <span class="k">if</span> <span class="n">is_persistent</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">is_root</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">TankError</span><span class="p">(</span>
-                <span class="s2">&quot;Only top-level tree items can be made persistent.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">TankError</span><span class="p">(</span><span class="s2">&quot;Only top-level tree items can be made persistent.&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_persistent</span> <span class="o">=</span> <span class="n">is_persistent</span>
 
@@ -1087,7 +1081,7 @@
             <span class="n">get_pixmap</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thumbnail_pixmap</span><span class="p">,</span>
             <span class="n">set_pixmap</span><span class="o">=</span><span class="k">lambda</span> <span class="n">pixmap</span><span class="p">:</span> <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_thumbnail_pixmap&quot;</span><span class="p">,</span> <span class="n">pixmap</span><span class="p">),</span>
             <span class="n">get_parent_pixmap</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">thumbnail</span><span class="p">,</span>
-            <span class="n">default_image_path</span><span class="o">=</span><span class="bp">None</span>
+            <span class="n">default_image_path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="nd">@thumbnail.setter</span>
@@ -1214,13 +1208,13 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">hook_object</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
                 <span class="s2">&quot;Could not determine the current publish plugin when accessing &quot;</span>
-                <span class="s2">&quot;an item&#39;s local properties. Item: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,))</span>
+                <span class="s2">&quot;an item&#39;s local properties. Item: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,)</span>
+            <span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">hook_object</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">hook_object</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
                 <span class="s2">&quot;Could not determine the id for this publish plugin. This is &quot;</span>
-                <span class="s2">&quot;required for storing local properties. Plugin: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
-                <span class="p">(</span><span class="n">hook_object</span><span class="p">,)</span>
+                <span class="s2">&quot;required for storing local properties. Plugin: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">hook_object</span><span class="p">,)</span>
             <span class="p">)</span>
 
         <span class="n">plugin_id</span> <span class="o">=</span> <span class="n">hook_object</span><span class="o">.</span><span class="n">id</span>
@@ -1253,7 +1247,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Autodesk.
+        &copy; Copyright 2020, Autodesk.
 
     </p>
   </div> 
@@ -1274,7 +1268,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'v2.4.1',
+            VERSION:'v2.5.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

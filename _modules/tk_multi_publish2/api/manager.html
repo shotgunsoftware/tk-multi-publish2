@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.api.manager &mdash; tk-multi-publish2 v2.4.1 documentation</title>
+  <title>tk_multi_publish2.api.manager &mdash; tk-multi-publish2 v2.5.0 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.4.1 documentation" href="../../../index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.5.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -117,7 +117,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.4.1.<br>
+    <b>tk-multi-publish2</b> v2.5.0.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -195,13 +195,14 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class is used for managing and executing publishes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s2">&quot;_bundle&quot;</span><span class="p">,</span>
         <span class="s2">&quot;_logger&quot;</span><span class="p">,</span>
         <span class="s2">&quot;_tree&quot;</span><span class="p">,</span>
         <span class="s2">&quot;_collector_instance&quot;</span><span class="p">,</span>
         <span class="s2">&quot;_processed_contexts&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_post_phase_hook&quot;</span>
+        <span class="s2">&quot;_post_phase_hook&quot;</span><span class="p">,</span>
     <span class="p">]</span>
 
     <span class="c1">############################################################################</span>
@@ -260,10 +261,10 @@
         <span class="c1"># load the phose phase hook</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loading post phase hook...&quot;</span><span class="p">)</span>
         <span class="n">post_phase_hook_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_POST_PHASE_HOOK_PATH</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_POST_PHASE_HOOK_PATH</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_post_phase_hook</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">create_hook_instance</span><span class="p">(</span>
-            <span class="n">post_phase_hook_path</span><span class="p">,</span>
-            <span class="n">base_class</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">base_hooks</span><span class="o">.</span><span class="n">PostPhaseHook</span>
+            <span class="n">post_phase_hook_path</span><span class="p">,</span> <span class="n">base_class</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">base_hooks</span><span class="o">.</span><span class="n">PostPhaseHook</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="PublishManager.collect_files"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishManager.collect_files">[docs]</a>    <span class="k">def</span> <span class="nf">collect_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_paths</span><span class="p">):</span>
@@ -290,8 +291,7 @@
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path_already_collected</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="s2">&quot;Skipping previously collected file path: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span>
-                    <span class="p">(</span><span class="n">file_path</span><span class="p">,)</span>
+                    <span class="s2">&quot;Skipping previously collected file path: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">file_path</span><span class="p">,)</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Collecting file path: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">file_path</span><span class="p">,))</span>
@@ -299,8 +299,7 @@
                 <span class="c1"># we supply the root item of the tree for parenting of items</span>
                 <span class="c1"># that are collected.</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_collector_instance</span><span class="o">.</span><span class="n">run_process_file</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">root_item</span><span class="p">,</span>
-                    <span class="n">file_path</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">root_item</span><span class="p">,</span> <span class="n">file_path</span>
                 <span class="p">)</span>
 
             <span class="c1"># get a list of all items in the tree after collection</span>
@@ -319,8 +318,7 @@
                 <span class="k">if</span> <span class="n">file_item</span><span class="o">.</span><span class="n">parent</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">root_item</span><span class="p">:</span>
                     <span class="c1"># only top-level items can be marked as persistent</span>
                     <span class="n">file_item</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="bp">True</span>
-                <span class="n">file_item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">PROPERTY_KEY_COLLECTED_FILE_PATH</span><span class="p">]</span> <span class="o">=</span> \
-                    <span class="n">file_path</span>
+                <span class="n">file_item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">PROPERTY_KEY_COLLECTED_FILE_PATH</span><span class="p">]</span> <span class="o">=</span> <span class="n">file_path</span>
 
             <span class="c1"># attach the appropriate plugins to the new items</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_attach_plugins</span><span class="p">(</span><span class="n">new_file_items</span><span class="p">)</span>
@@ -352,8 +350,7 @@
 
         <span class="c1"># we supply the root item of the tree for parenting of items that</span>
         <span class="c1"># are collected.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_collector_instance</span><span class="o">.</span><span class="n">run_process_current_session</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">root_item</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collector_instance</span><span class="o">.</span><span class="n">run_process_current_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">root_item</span><span class="p">)</span>
 
         <span class="c1"># get a list of all items in the tree after collection</span>
         <span class="n">items_after</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">)</span>
@@ -403,7 +400,7 @@
         <span class="c1"># get the first task</span>
         <span class="n">task</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">task</span> <span class="o">=</span> <span class="n">task_generator</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+            <span class="n">task</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">task_generator</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
             <span class="k">pass</span>
 
@@ -466,7 +463,7 @@
             <span class="c1"># being processed.</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">is_valid</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">is_valid</span> <span class="o">=</span> <span class="bp">False</span>
                 <span class="n">error</span> <span class="o">=</span> <span class="n">e</span>
 
@@ -480,9 +477,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_process_tasks</span><span class="p">(</span><span class="n">task_generator</span><span class="p">,</span> <span class="n">task_cb</span><span class="p">)</span>
 
         <span class="c1"># execute the post validate method of the phase phase hook</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_post_phase_hook</span><span class="o">.</span><span class="n">post_validate</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_post_phase_hook</span><span class="o">.</span><span class="n">post_validate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">,)</span>
 
         <span class="k">return</span> <span class="n">failed_to_validate</span></div>
 
@@ -582,7 +577,8 @@
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">persistent_items</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">PROPERTY_KEY_COLLECTED_FILE_PATH</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">:</span>
                 <span class="n">collected_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">PROPERTY_KEY_COLLECTED_FILE_PATH</span><span class="p">])</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">PROPERTY_KEY_COLLECTED_FILE_PATH</span><span class="p">]</span>
+                <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">collected_paths</span>
 
@@ -614,8 +610,8 @@
 
             <span class="n">context_plugins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_publish_plugins</span><span class="p">(</span><span class="n">item_context</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="s2">&quot;Offering </span><span class="si">%s</span><span class="s2"> plugins for context: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
-                <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">context_plugins</span><span class="p">),</span> <span class="n">item_context</span><span class="p">)</span>
+                <span class="s2">&quot;Offering </span><span class="si">%s</span><span class="s2"> plugins for context: </span><span class="si">%s</span><span class="s2">&quot;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">context_plugins</span><span class="p">),</span> <span class="n">item_context</span><span class="p">)</span>
             <span class="p">)</span>
 
             <span class="k">for</span> <span class="n">context_plugin</span> <span class="ow">in</span> <span class="n">context_plugins</span><span class="p">:</span>
@@ -652,15 +648,15 @@
             <span class="k">if</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">type_spec</span><span class="p">,</span> <span class="n">item_filter</span><span class="p">):</span>
                 <span class="c1"># there is a match!</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="s2">&quot;Item </span><span class="si">%s</span><span class="s2"> with spec &#39;</span><span class="si">%s</span><span class="s2">&#39; matches plugin filters: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span>
-                    <span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">type_spec</span><span class="p">,</span> <span class="n">item_filter</span><span class="p">)</span>
+                    <span class="s2">&quot;Item </span><span class="si">%s</span><span class="s2"> with spec &#39;</span><span class="si">%s</span><span class="s2">&#39; matches plugin filters: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">type_spec</span><span class="p">,</span> <span class="n">item_filter</span><span class="p">)</span>
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="bp">True</span>
 
         <span class="c1"># no filters match the item&#39;s type</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="s2">&quot;Item </span><span class="si">%s</span><span class="s2"> with spec &#39;</span><span class="si">%s</span><span class="s2">&#39; does not match any plugin filters: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span>
-            <span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">type_spec</span><span class="p">,</span> <span class="n">publish_plugin</span><span class="o">.</span><span class="n">item_filters</span><span class="p">)</span>
+            <span class="s2">&quot;Item </span><span class="si">%s</span><span class="s2"> with spec &#39;</span><span class="si">%s</span><span class="s2">&#39; does not match any plugin filters: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">type_spec</span><span class="p">,</span> <span class="n">publish_plugin</span><span class="o">.</span><span class="n">item_filters</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">False</span>
 
@@ -669,15 +665,11 @@
 <span class="sd">        Load the collector plugin for the current bundle configuration/context.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">collector_hook_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_COLLECTOR_HOOK_PATH</span><span class="p">)</span>
-        <span class="n">collector_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_COLLECTOR_SETTINGS</span><span class="p">)</span>
+        <span class="n">collector_hook_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_COLLECTOR_HOOK_PATH</span><span class="p">)</span>
+        <span class="n">collector_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_COLLECTOR_SETTINGS</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_collector_instance</span> <span class="o">=</span> <span class="n">CollectorPluginInstance</span><span class="p">(</span>
-            <span class="n">collector_hook_path</span><span class="p">,</span>
-            <span class="n">collector_settings</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
+            <span class="n">collector_hook_path</span><span class="p">,</span> <span class="n">collector_settings</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_load_publish_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
@@ -695,22 +687,22 @@
         <span class="k">if</span> <span class="n">context</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">context</span><span class="p">:</span>
             <span class="c1"># if the context matches the bundle, we don&#39;t need to do any extra</span>
             <span class="c1"># work since the settings are already accessible</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="s2">&quot;Finding publish plugin settings for context: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">context</span><span class="p">,))</span>
-            <span class="n">plugin_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_PLUGIN_DEFINITIONS</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Finding publish plugin settings for context: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">context</span><span class="p">,))</span>
+            <span class="n">plugin_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_PLUGIN_DEFINITIONS</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># load the plugins from the supplied context. this means executing</span>
             <span class="c1"># the pick environment hook and reading from disk. this is why we</span>
             <span class="c1"># cache the plugins.</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="s2">&quot;Finding publish plugin settings via pick_environment for context: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">context</span><span class="p">,))</span>
+                <span class="s2">&quot;Finding publish plugin settings via pick_environment for context: </span><span class="si">%s</span><span class="s2">&quot;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="n">context</span><span class="p">,)</span>
+            <span class="p">)</span>
             <span class="n">context_settings</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">find_app_settings</span><span class="p">(</span>
                 <span class="n">engine</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">sgtk</span><span class="p">,</span>
                 <span class="n">context</span><span class="p">,</span>
-                <span class="n">engine_instance_name</span><span class="o">=</span><span class="n">engine</span><span class="o">.</span><span class="n">instance_name</span>
+                <span class="n">engine_instance_name</span><span class="o">=</span><span class="n">engine</span><span class="o">.</span><span class="n">instance_name</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="n">app_settings</span> <span class="o">=</span> <span class="bp">None</span>
@@ -729,8 +721,8 @@
                 <span class="n">plugin_settings</span> <span class="o">=</span> <span class="n">app_settings</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_PLUGIN_DEFINITIONS</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="s2">&quot;Could not find publish plugin settings for context: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
-                    <span class="p">(</span><span class="n">context</span><span class="p">,)</span>
+                    <span class="s2">&quot;Could not find publish plugin settings for context: </span><span class="si">%s</span><span class="s2">&quot;</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="n">context</span><span class="p">,)</span>
                 <span class="p">)</span>
                 <span class="n">plugin_settings</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -750,7 +742,7 @@
                 <span class="n">publish_plugin_instance_name</span><span class="p">,</span>
                 <span class="n">publish_plugin_hook_path</span><span class="p">,</span>
                 <span class="n">publish_plugin_settings</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">plugins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plugin_instance</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Created publish plugin: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">plugin_instance</span><span class="p">,))</span>
@@ -770,8 +762,7 @@
         <span class="c1"># the supplied path, then the path has already been collected.</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">persistent_items</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">PROPERTY_KEY_COLLECTED_FILE_PATH</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">:</span>
-                <span class="n">collected_path</span> <span class="o">=</span> \
-                    <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">PROPERTY_KEY_COLLECTED_FILE_PATH</span><span class="p">]</span>
+                <span class="n">collected_path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">PROPERTY_KEY_COLLECTED_FILE_PATH</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">collected_path</span> <span class="o">==</span> <span class="n">file_path</span><span class="p">:</span>
                     <span class="k">return</span> <span class="bp">True</span>
 
@@ -791,14 +782,12 @@
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">:</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="s2">&quot;Skipping item &#39;</span><span class="si">%s</span><span class="s2">&#39; because it is inactive&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">item</span><span class="p">,))</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Skipping item &#39;</span><span class="si">%s</span><span class="s2">&#39; because it is inactive&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">item</span><span class="p">,))</span>
                 <span class="k">continue</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">tasks</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="s2">&quot;Skipping item &#39;</span><span class="si">%s</span><span class="s2">&#39; because it has no tasks attached.&quot;</span> <span class="o">%</span>
-                    <span class="p">(</span><span class="n">item</span><span class="p">,)</span>
+                    <span class="s2">&quot;Skipping item &#39;</span><span class="si">%s</span><span class="s2">&#39; because it has no tasks attached.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">item</span><span class="p">,)</span>
                 <span class="p">)</span>
                 <span class="k">continue</span>
 
@@ -809,7 +798,7 @@
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Skipping inactive task: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">task</span><span class="p">,))</span>
                     <span class="k">continue</span>
 
-                <span class="n">status</span> <span class="o">=</span> <span class="p">(</span><span class="k">yield</span> <span class="n">task</span><span class="p">)</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">task</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Task </span><span class="si">%s</span><span class="s2"> status: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">status</span><span class="p">))</span></div>
 </pre></div>
 
@@ -822,7 +811,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Autodesk.
+        &copy; Copyright 2020, Autodesk.
 
     </p>
   </div> 
@@ -843,7 +832,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'v2.4.1',
+            VERSION:'v2.5.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

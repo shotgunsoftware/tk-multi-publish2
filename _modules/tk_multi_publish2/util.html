@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.util &mdash; tk-multi-publish2 v2.4.1 documentation</title>
+  <title>tk_multi_publish2.util &mdash; tk-multi-publish2 v2.5.0 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.4.1 documentation" href="../../index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.5.0 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -117,7 +117,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.4.1.<br>
+    <b>tk-multi-publish2</b> v2.5.0.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -192,6 +192,7 @@
 
 <span class="c1"># ---- file/path util functions</span>
 
+
 <div class="viewcode-block" id="get_version_path"><a class="viewcode-back" href="../../utility.html#tk_multi_publish2.util.get_version_path">[docs]</a><span class="k">def</span> <span class="nf">get_version_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a path without a version number, return the path with the supplied</span>
@@ -212,10 +213,7 @@
     <span class="c1"># collector/publisher hook implementations.</span>
     <span class="n">publisher</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_bundle</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">publisher</span><span class="o">.</span><span class="n">execute_hook_method</span><span class="p">(</span>
-        <span class="s2">&quot;path_info&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;get_version_path&quot;</span><span class="p">,</span>
-        <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="n">version</span>
+        <span class="s2">&quot;path_info&quot;</span><span class="p">,</span> <span class="s2">&quot;get_version_path&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span>
     <span class="p">)</span></div>
 
 
@@ -240,9 +238,7 @@
     <span class="c1"># collector/publisher hook implementations.</span>
     <span class="n">publisher</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_bundle</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">publisher</span><span class="o">.</span><span class="n">execute_hook_method</span><span class="p">(</span>
-        <span class="s2">&quot;path_info&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;get_next_version_path&quot;</span><span class="p">,</span>
-        <span class="n">path</span><span class="o">=</span><span class="n">path</span>
+        <span class="s2">&quot;path_info&quot;</span><span class="p">,</span> <span class="s2">&quot;get_next_version_path&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span>
     <span class="p">)</span></div>
 
 
@@ -295,17 +291,9 @@
             <span class="c1"># prevent extension = &quot;&quot;</span>
             <span class="n">extension</span> <span class="o">=</span> <span class="bp">None</span>
 
-    <span class="n">file_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-        <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
-        <span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">,</span>
-        <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span>
-        <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="n">file_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">,)</span>
 
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-        <span class="s2">&quot;Extracted components from path &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
-        <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">file_info</span><span class="p">)</span>
-    <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Extracted components from path &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">file_info</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">file_info</span></div>
 
@@ -328,10 +316,7 @@
     <span class="c1"># collector/publisher hook implementations.</span>
     <span class="n">publisher</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_bundle</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">publisher</span><span class="o">.</span><span class="n">execute_hook_method</span><span class="p">(</span>
-        <span class="s2">&quot;path_info&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;get_frame_sequence_path&quot;</span><span class="p">,</span>
-        <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
-        <span class="n">frame_spec</span><span class="o">=</span><span class="n">frame_spec</span>
+        <span class="s2">&quot;path_info&quot;</span><span class="p">,</span> <span class="s2">&quot;get_frame_sequence_path&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">frame_spec</span><span class="o">=</span><span class="n">frame_spec</span>
     <span class="p">)</span></div>
 
 
@@ -386,7 +371,7 @@
         <span class="s2">&quot;get_frame_sequences&quot;</span><span class="p">,</span>
         <span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">,</span>
         <span class="n">extensions</span><span class="o">=</span><span class="n">extensions</span><span class="p">,</span>
-        <span class="n">frame_spec</span><span class="o">=</span><span class="n">frame_spec</span>
+        <span class="n">frame_spec</span><span class="o">=</span><span class="n">frame_spec</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -416,10 +401,7 @@
     <span class="c1"># collector/publisher hook implementations.</span>
     <span class="n">publisher</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_bundle</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">publisher</span><span class="o">.</span><span class="n">execute_hook_method</span><span class="p">(</span>
-        <span class="s2">&quot;path_info&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;get_publish_name&quot;</span><span class="p">,</span>
-        <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
-        <span class="n">sequence</span><span class="o">=</span><span class="n">sequence</span>
+        <span class="s2">&quot;path_info&quot;</span><span class="p">,</span> <span class="s2">&quot;get_publish_name&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">sequence</span><span class="o">=</span><span class="n">sequence</span>
     <span class="p">)</span></div>
 
 
@@ -446,14 +428,11 @@
     <span class="c1"># clients from having to call other hooks directly in their</span>
     <span class="c1"># collector/publisher hook implementations.</span>
     <span class="n">publisher</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_bundle</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">publisher</span><span class="o">.</span><span class="n">execute_hook_method</span><span class="p">(</span>
-        <span class="s2">&quot;path_info&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;get_version_number&quot;</span><span class="p">,</span>
-        <span class="n">path</span><span class="o">=</span><span class="n">path</span>
-    <span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">publisher</span><span class="o">.</span><span class="n">execute_hook_method</span><span class="p">(</span><span class="s2">&quot;path_info&quot;</span><span class="p">,</span> <span class="s2">&quot;get_version_number&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">)</span></div>
 
 
 <span class="c1"># ---- publish util functions</span>
+
 
 <span class="k">def</span> <span class="nf">get_conflicting_publishes</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">publish_name</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -478,8 +457,8 @@
     <span class="n">publisher</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_bundle</span><span class="p">()</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-        <span class="s2">&quot;Getting conflicting publishes for context: </span><span class="si">%s</span><span class="s2">, path: </span><span class="si">%s</span><span class="s2">, name: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
-        <span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">publish_name</span><span class="p">)</span>
+        <span class="s2">&quot;Getting conflicting publishes for context: </span><span class="si">%s</span><span class="s2">, path: </span><span class="si">%s</span><span class="s2">, name: </span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="o">%</span> <span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">publish_name</span><span class="p">)</span>
     <span class="p">)</span>
 
     <span class="c1"># ask core to do a dry_run of a publish with the supplied criteria. this is</span>
@@ -489,12 +468,7 @@
     <span class="c1"># those by their path field. Once we have the ability in SG to filter by</span>
     <span class="c1"># path, we can replace this whole method with a simple call to find().</span>
     <span class="n">publish_data</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">register_publish</span><span class="p">(</span>
-        <span class="n">publisher</span><span class="o">.</span><span class="n">sgtk</span><span class="p">,</span>
-        <span class="n">context</span><span class="p">,</span>
-        <span class="n">path</span><span class="p">,</span>
-        <span class="n">publish_name</span><span class="p">,</span>
-        <span class="n">version_number</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-        <span class="n">dry_run</span><span class="o">=</span><span class="bp">True</span>
+        <span class="n">publisher</span><span class="o">.</span><span class="n">sgtk</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">publish_name</span><span class="p">,</span> <span class="n">version_number</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="bp">True</span>
     <span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Publish dry run data: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">publish_data</span><span class="p">,))</span>
 
@@ -505,11 +479,7 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Build publish filters: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">publish_filters</span><span class="p">,))</span>
 
     <span class="c1"># run the</span>
-    <span class="n">publishes</span> <span class="o">=</span> <span class="n">publisher</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
-        <span class="s2">&quot;PublishedFile&quot;</span><span class="p">,</span>
-        <span class="n">publish_filters</span><span class="p">,</span>
-        <span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
-    <span class="p">)</span>
+    <span class="n">publishes</span> <span class="o">=</span> <span class="n">publisher</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;PublishedFile&quot;</span><span class="p">,</span> <span class="n">publish_filters</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">])</span>
 
     <span class="c1"># ensure the path is normalized for comparison</span>
     <span class="n">normalized_path</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">ShotgunPath</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
@@ -523,8 +493,7 @@
         <span class="n">publish_path</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">resolve_publish_path</span><span class="p">(</span><span class="n">publisher</span><span class="o">.</span><span class="n">sgtk</span><span class="p">,</span> <span class="n">publish</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">publish_path</span><span class="p">:</span>
             <span class="c1"># ensure the published path is normalized for comparison</span>
-            <span class="n">normalized_publish_path</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">ShotgunPath</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span>
-                <span class="n">publish_path</span><span class="p">)</span>
+            <span class="n">normalized_publish_path</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">ShotgunPath</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">publish_path</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">normalized_path</span> <span class="o">==</span> <span class="n">normalized_publish_path</span><span class="p">:</span>
                 <span class="n">matching_publishes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">publish</span><span class="p">)</span>
 
@@ -560,10 +529,7 @@
 
     <span class="c1"># get a list of all publishes matching this criteria</span>
     <span class="n">publishes</span> <span class="o">=</span> <span class="n">get_conflicting_publishes</span><span class="p">(</span>
-        <span class="n">context</span><span class="p">,</span>
-        <span class="n">path</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">,</span>
-        <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sg_status_list&quot;</span><span class="p">,</span> <span class="s2">&quot;is_not&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span>
+        <span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sg_status_list&quot;</span><span class="p">,</span> <span class="s2">&quot;is_not&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span>
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">publishes</span><span class="p">:</span>
@@ -580,18 +546,17 @@
             <span class="k">continue</span>
 
         <span class="c1"># add the update info to the batch data list</span>
-        <span class="n">batch_data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-            <span class="s2">&quot;request_type&quot;</span><span class="p">:</span> <span class="s2">&quot;update&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;entity_type&quot;</span><span class="p">:</span> <span class="n">publish</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span>
-            <span class="s2">&quot;entity_id&quot;</span><span class="p">:</span> <span class="n">publish</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
-            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;sg_status_list&quot;</span><span class="p">:</span> <span class="bp">None</span><span class="p">}</span>  <span class="c1"># will clear the status</span>
-        <span class="p">})</span>
+        <span class="n">batch_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;request_type&quot;</span><span class="p">:</span> <span class="s2">&quot;update&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;entity_type&quot;</span><span class="p">:</span> <span class="n">publish</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;entity_id&quot;</span><span class="p">:</span> <span class="n">publish</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;sg_status_list&quot;</span><span class="p">:</span> <span class="bp">None</span><span class="p">},</span>  <span class="c1"># will clear the status</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">batch_data</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="s2">&quot;Batch updating publish data: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
-            <span class="p">(</span><span class="n">pprint</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span><span class="n">batch_data</span><span class="p">),)</span>
-        <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Batch updating publish data: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pprint</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span><span class="n">batch_data</span><span class="p">),))</span>
 
         <span class="c1"># execute all the updates!</span>
         <span class="n">publisher</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_data</span><span class="p">)</span>
@@ -606,7 +571,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Autodesk.
+        &copy; Copyright 2020, Autodesk.
 
     </p>
   </div> 
@@ -627,7 +592,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'v2.4.1',
+            VERSION:'v2.5.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
