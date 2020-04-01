@@ -194,3 +194,32 @@ class TestPublishTree(PublishApiTestBase):
                 sgtk.TankError, "Template 'shot_root' was not found"
             ):
                 new_tree = tree.load_file(temp_file_path)
+
+    def test_parent_partially_checked(self):
+        """
+            If we have a bunch of active tasks followed by a bunch of inactive tasks, the addition
+            of the inactive tasks does not trigger an update of the parent's checkbox (because the update
+            relies on the checkbox.state_changed and the default is unchecked, so inactive tasks do not
+            trigger a state change). Test that we are forcing a recalculation to keep the parent's check_state
+            correct in all situations
+        """
+        tree = self.manager.tree
+        item = tree.root_item.create_item("item.parent", "Parent", "Parent")
+        publish_plugins = self.manager._load_publish_plugins(item.context)
+
+        item.add_task(publish_plugins[0])
+        item.add_task(publish_plugins[0])
+
+        item.tasks[0]._active = True
+        item.tasks[1]._active = False
+
+        tree_widget = self.PublishTreeWidget(None)
+        tree_widget.set_publish_manager(self.manager)
+        tree_widget.build_tree()
+
+        project_item = tree_widget.topLevelItem(1)
+        parent_item = project_item.child(0)
+
+        from sgtk.platform.qt import QtCore
+
+        self.assertEqual(parent_item.check_state, QtCore.Qt.PartiallyChecked)

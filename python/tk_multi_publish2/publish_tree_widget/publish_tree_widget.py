@@ -165,6 +165,13 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         if not item.checked:
             ui_item.set_check_state(QtCore.Qt.Unchecked)
 
+        # If we have a bunch of active tasks followed by a bunch of inactive tasks, the addition
+        # of the inactive tasks does not trigger an update of the parent's checkbox (because the update
+        # relies on the checkbox.state_changed and the default is unchecked, so inactive tasks do not
+        # trigger a state change). Force a recalculation to keep the parent's check_state
+        # correct in all situation
+        ui_item.recompute_check_state()
+
         return ui_item
 
     def build_tree(self):
