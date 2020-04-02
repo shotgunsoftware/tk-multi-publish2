@@ -223,3 +223,30 @@ class TestPublishTree(PublishApiTestBase):
         from sgtk.platform.qt import QtCore
 
         self.assertEqual(parent_item.check_state, QtCore.Qt.PartiallyChecked)
+
+    def test_parent_checked_children_unchecked(self):
+        """
+            If a parent item is active and only has inactive tasks, make sure that when the
+            tree is built the parent item's check_state is valid and is set to unchecked
+        """
+        tree = self.manager.tree
+        item = tree.root_item.create_item("item.parent", "Parent", "Parent")
+        publish_plugins = self.manager._load_publish_plugins(item.context)
+
+        item.add_task(publish_plugins[0])
+        item.add_task(publish_plugins[0])
+
+        item._active = True
+        item.tasks[0]._active = False
+        item.tasks[1]._active = False
+
+        tree_widget = self.PublishTreeWidget(None)
+        tree_widget.set_publish_manager(self.manager)
+        tree_widget.build_tree()
+
+        project_item = tree_widget.topLevelItem(1)
+        parent_item = project_item.child(0)
+
+        from sgtk.platform.qt import QtCore
+
+        self.assertEqual(parent_item.check_state, QtCore.Qt.Unchecked)
