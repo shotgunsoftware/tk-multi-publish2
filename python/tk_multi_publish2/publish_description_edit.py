@@ -19,6 +19,8 @@ class PublishDescriptionEdit(QtGui.QPlainTextEdit):
     Widget that holds the summary description
     """
 
+    editing_finished = QtCore.Signal()
+
     def __init__(self, parent):
         """
         Constructor
@@ -35,8 +37,8 @@ class PublishDescriptionEdit(QtGui.QPlainTextEdit):
 
     def paintEvent(self, paint_event):
         """
-       Paints the line plain text editor and adds a placeholder on bottom right corner when multiple values are detected.
-       """
+        Paints the line plain text editor and adds a placeholder on bottom right corner when multiple values are detected.
+        """
 
         # If the box does not have focus, draw <multiple values> placeholder when self._show_placeholder is true, even if the widget has text
         if not self.hasFocus() and self._show_placeholder == True:
@@ -55,3 +57,17 @@ class PublishDescriptionEdit(QtGui.QPlainTextEdit):
 
         else:
             QtGui.QPlainTextEdit.paintEvent(self, paint_event)
+
+    def keyPressEvent(self, event):
+        """
+        Make return and enter keys emit the editing finished command.
+
+        :param event: A :class:`QtGui.QKeyEvent' event.
+        """
+        if (
+            event.key() in (QtCore.Qt.Key_Return, QtCore.Qt.Key_Enter)
+            and event.modifiers() == QtCore.Qt.NoModifier
+        ):
+            self.editing_finished.emit()
+            return
+        super(PublishDescriptionEdit, self).keyPressEvent(event)

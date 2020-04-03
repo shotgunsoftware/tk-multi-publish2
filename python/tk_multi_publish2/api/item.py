@@ -93,6 +93,7 @@ class PublishItem(object):
         "_thumbnail_pixmap",
         "_type_display",
         "_type_spec",
+        "_inherit_description",
     ]
 
     @classmethod
@@ -124,6 +125,7 @@ class PublishItem(object):
         new_item._thumbnail_enabled = item_dict["thumbnail_enabled"]
         new_item._thumbnail_explicit = item_dict["thumbnail_explicit"]
         new_item._thumbnail_path = item_dict["thumbnail_path"]
+        new_item._inherit_description = item_dict["inherit_description"]
 
         # create the children of this item
         for child_dict in item_dict["children"]:
@@ -200,6 +202,7 @@ class PublishItem(object):
         self._thumbnail_pixmap = None
         self._type_display = type_display
         self._type_spec = type_spec
+        self._inherit_description = True
 
     def __del__(self):
         """
@@ -256,6 +259,7 @@ class PublishItem(object):
             "thumbnail_path": self._thumbnail_path,
             "type_display": self.type_display,
             "type_spec": self.type_spec,
+            "inherit_description": self.inherit_description
         }
 
     def __repr__(self):
@@ -637,6 +641,8 @@ class PublishItem(object):
         The description of the item if it has been explicitly set, ``None``
         otherwise.
         """
+        if self._inherit_description and self.parent:
+            return self.parent.description
         return self._description
 
     @description.setter
@@ -1010,6 +1016,20 @@ class PublishItem(object):
     def display_type(self, new_type_display):
         """DEPRECATED setter."""
         self.type_display = new_type_display
+
+    @property
+    def inherit_description(self):
+        """
+        Whether to inherit the description from this item's parent.
+
+        :rtype: :class:`bool`
+        """
+        return self._inherit_description
+
+    @inherit_description.setter
+    def inherit_description(self, inherit):
+        """Set the inheritance value for descriptions."""
+        self._inherit_description = inherit
 
     ############################################################################
     # internal methods
