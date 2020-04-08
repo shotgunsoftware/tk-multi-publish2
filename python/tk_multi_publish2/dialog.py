@@ -137,7 +137,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.items_tree.status_clicked.connect(self._on_publish_status_clicked)
 
         # when the description is updated
-        self.ui.item_comments.editing_finished.connect(self._on_item_comment_change)
+        self.ui.item_comments.textChanged.connect(self._on_item_comment_change)
 
         # selection in tree view
         self.ui.items_tree.itemSelectionChanged.connect(
@@ -553,7 +553,9 @@ class AppDialog(QtGui.QWidget):
             # Also if the comment is empty, set self.ui.item_comments
             if not comments:
                 self._current_item.inherit_description = True
+                self.ui.item_comments.blockSignals(True)
                 self.ui.item_comments.setPlainText(self._current_item.description)
+                self.ui.item_comments.blockSignals(False)
             else:
                 self._current_item.inherit_description = False
 
@@ -617,7 +619,9 @@ class AppDialog(QtGui.QWidget):
             self.ui.item_thumbnail.hide()
 
         self.ui.item_description_label.setText("Description")
+        self.ui.item_comments.blockSignals(True)
         self.ui.item_comments.setPlainText(item.description)
+        self.ui.item_comments.blockSignals(False)
         font = self.ui.item_comments.font()
         font.setItalic(item.inherit_description)
         self.ui.item_comments.setFont(font)

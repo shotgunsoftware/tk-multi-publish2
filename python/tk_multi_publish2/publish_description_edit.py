@@ -19,8 +19,6 @@ class PublishDescriptionEdit(QtGui.QPlainTextEdit):
     Widget that holds the summary description
     """
 
-    editing_finished = QtCore.Signal()
-
     def __init__(self, parent):
         """
         Constructor
@@ -57,17 +55,3 @@ class PublishDescriptionEdit(QtGui.QPlainTextEdit):
 
         else:
             QtGui.QPlainTextEdit.paintEvent(self, paint_event)
-
-    def keyPressEvent(self, event):
-        """
-        Make return and enter keys emit the editing finished command.
-
-        :param event: A :class:`QtGui.QKeyEvent' event.
-        """
-        if (
-            event.key() in (QtCore.Qt.Key_Return, QtCore.Qt.Key_Enter)
-            and event.modifiers() == QtCore.Qt.NoModifier
-        ):
-            self.editing_finished.emit()
-            return
-        super(PublishDescriptionEdit, self).keyPressEvent(event)
