@@ -62,3 +62,35 @@ class TestPublishTreeWidget(PublishApiTestBase):
         project_item = tree_widget.topLevelItem(1)
         parent_item = project_item.child(0)
         self.assertEqual(parent_item.check_state, self.QtCore.Qt.Unchecked)
+
+    def test_next_check_state(self):
+        """
+                Make sure the tristate checkbox on an item goes from Partially checked to
+                Checked to Unchecked every time it is clicked
+            """
+        tree = self.manager.tree
+        item = tree.root_item.create_item("item.parent", "Parent", "Parent")
+        publish_plugins = self.manager._load_publish_plugins(item.context)
+
+        item.add_task(publish_plugins[0])
+        item.add_task(publish_plugins[0])
+
+        item._active = True
+        item.tasks[0]._active = False
+        item.tasks[1]._active = True
+
+        tree_widget = self.PublishTreeWidget(None)
+        tree_widget.set_publish_manager(self.manager)
+        tree_widget.build_tree()
+
+        project_item = tree_widget.topLevelItem(1)
+        parent_item = project_item.child(0)
+
+        from sgtk.platform.qt import QtCore
+
+        # Make sure the states go PartiallyChecked -> Checked -> Unchecked
+        self.assertEqual(parent_item.check_state, QtCore.Qt.PartiallyChecked)
+        parent_item._embedded_widget.ui.checkbox.nextCheckState()
+        self.assertEqual(parent_item.check_state, QtCore.Qt.Checked)
+        parent_item._embedded_widget.ui.checkbox.nextCheckState()
+        self.assertEqual(parent_item.check_state, QtCore.Qt.Unchecked)
