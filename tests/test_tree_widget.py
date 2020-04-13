@@ -65,9 +65,10 @@ class TestPublishTreeWidget(PublishApiTestBase):
 
     def test_next_check_state(self):
         """
-                Make sure the tristate checkbox on an item goes from Partially checked to
-                Checked to Unchecked every time it is clicked
-            """
+            Make sure the tristate checkbox on an item goes from Partially checked to
+            Checked to Unchecked every time it is clicked
+        """
+
         tree = self.manager.tree
         item = tree.root_item.create_item("item.parent", "Parent", "Parent")
         publish_plugins = self.manager._load_publish_plugins(item.context)
