@@ -154,7 +154,7 @@ class PublishPluginInstance(PluginInstanceBase):
             )
             return {"accepted": False}
         finally:
-            if not sgtk.platform.current_engine().has_ui:
+            if sgtk.platform.current_engine().has_ui:
                 from sgtk.platform.qt import QtCore
 
                 QtCore.QCoreApplication.processEvents()
