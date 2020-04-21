@@ -13,3 +13,5 @@ Shotgun site. You can use any site.
 
 The app itself has a few plugins that pretend to operate on items found in a
 scene.
+
+Install tk-toolchain and use pytest to run the tests

@@ -74,6 +74,11 @@ class PublishApiTestBase(TankTestBase):
         self.PublishManager = self.api.PublishManager
         self.PublishPluginInstance = self.api.plugins.PublishPluginInstance
 
+        publish_tree_widget = self.app.import_module(
+            "tk_multi_publish2"
+        ).publish_tree_widget
+        self.PublishTreeWidget = publish_tree_widget.PublishTreeWidget
+
         self.image_path = os.path.join(repo_root, "icon_256.png")
         self.dark_image_path = os.path.join(repo_root, "icon_256_dark.png")
 
