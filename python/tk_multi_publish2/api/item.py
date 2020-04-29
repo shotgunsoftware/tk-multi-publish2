@@ -642,7 +642,7 @@ class PublishItem(object):
         otherwise.
         """
         if self._inherit_description and self.parent:
-            return self.parent.description
+            return self.parent.description or self._description
         return self._description
 
     @description.setter
