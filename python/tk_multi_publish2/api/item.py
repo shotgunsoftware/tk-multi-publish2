@@ -259,7 +259,7 @@ class PublishItem(object):
             "thumbnail_path": self._thumbnail_path,
             "type_display": self.type_display,
             "type_spec": self.type_spec,
-            "inherit_description": self.inherit_description
+            "inherit_description": self.inherit_description,
         }
 
     def __repr__(self):

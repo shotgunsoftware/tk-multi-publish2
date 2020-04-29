@@ -551,13 +551,13 @@ class AppDialog(QtGui.QWidget):
             # Set whether the descrition is to be inherited.
             # If the comment is empty, then it should inherit.
             # Also if the comment is empty, set self.ui.item_comments
-            if not comments:
+            if comments:
+                self._current_item.inherit_description = False
+            else:
                 self._current_item.inherit_description = True
                 self.ui.item_comments.blockSignals(True)
                 self.ui.item_comments.setPlainText(self._current_item.description)
                 self.ui.item_comments.blockSignals(False)
-            else:
-                self._current_item.inherit_description = False
 
         font = self.ui.item_comments.font()
         font.setItalic(self._current_item.inherit_description)
