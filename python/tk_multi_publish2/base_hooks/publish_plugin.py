@@ -480,7 +480,7 @@ class PublishPlugin(HookBaseClass):
         # custom UI to show up in the app
         return {}
 
-    def set_ui_settings(self, widget, settings):
+    def set_ui_settings(self, widget, settings, items):
         """
         Allows the custom UI to populate its fields with the settings from the
         currently selected tasks.
@@ -518,6 +518,7 @@ class PublishPlugin(HookBaseClass):
         :param widget: The widget that was created by `create_settings_widget`
         :param settings: a list of dictionaries of settings for each selected
             task.
+        :param items: a list of :class:`PublishItem` for each selected task.
         """
 
         # the default implementation does not show any editable widgets, so this

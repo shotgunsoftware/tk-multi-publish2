@@ -1605,7 +1605,9 @@ class _TaskSelection(object):
         :param settings: List of settings for all tasks.
         """
         if self._items:
-            self._items[0].plugin.run_set_ui_settings(widget, settings)
+            # Parse the list of items to retrieve the PublishItem instance associated to each selected task
+            item_list = [i.item for i in self._items]
+            self._items[0].plugin.run_set_ui_settings(widget, settings, item_list)
 
     def __iter__(self):
         """

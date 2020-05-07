@@ -242,7 +242,7 @@ class PublishPluginInstance(PluginInstanceBase):
         with self._handle_plugin_error(None, "Error reading settings from UI: %s"):
             return self._hook_instance.get_ui_settings(parent)
 
-    def run_set_ui_settings(self, parent, settings):
+    def run_set_ui_settings(self, parent, settings, items):
         """
         Provides a list of settings from the custom UI. It is the responsibility of the UI
         handle different values for the same setting.
@@ -252,6 +252,7 @@ class PublishPluginInstance(PluginInstanceBase):
         :param parent: Parent widget
         :type parent: :class:`QtGui.QWidget`
         :param settings: List of dictionary of settings as python literals.
+        :param items: List of :class:`PublishItem`.
         """
 
         # nothing to do if running without a UI
@@ -259,7 +260,11 @@ class PublishPluginInstance(PluginInstanceBase):
             return None
 
         with self._handle_plugin_error(None, "Error writing settings to UI: %s"):
-            self._hook_instance.set_ui_settings(parent, settings)
+            try:
+                self._hook_instance.set_ui_settings(parent, settings, items)
+            except TypeError as e:
+                # for backward compatibility, we need to run the hook with the old signature
+                self._hook_instance.set_ui_settings(parent, settings)
 
     @contextmanager
     def _handle_plugin_error(self, success_msg, error_msg):
