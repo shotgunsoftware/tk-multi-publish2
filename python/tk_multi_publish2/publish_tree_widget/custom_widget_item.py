@@ -25,7 +25,7 @@ class CustomTreeWidgetItem(CustomTreeWidgetBase):
     Each item has got the following associated properties:
 
     - An area which can either be a checkbox for selection
-      or a "dot" which signals progress udpates
+      or a "dot" which signals progress updates
 
     - An icon
 

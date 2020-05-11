@@ -376,6 +376,19 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             publish_item, checked=True, level=0, tree_parent=context_tree_node
         )
 
+    def root_items(self):
+        """
+        A generator that yields the root collected items in the tree.
+        These are stored under a top level context_item.
+        # TODO is this true about the return item?
+        :return: TreeNodeItem
+        """
+        # The first item is always the summary even if it is hidden so skip that.
+        for context_index in range(1, self.topLevelItemCount()):
+            context_item = self.topLevelItem(context_index)
+            for child_index in range(context_item.childCount()):
+                yield context_item.child(child_index)
+
     def get_full_summary(self):
         """
         Compute a full summary report.
@@ -448,12 +461,8 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
         else:
             # summary hidden. select first item instead.
-            first_item = None
-            for context_index in range(1, self.topLevelItemCount()):
-                context_item = self.topLevelItem(context_index)
-                for child_index in range(context_item.childCount()):
-                    first_item = context_item.child(child_index)
-                    break
+            # get the first item from the root_items generator.
+            first_item = next(self.root_items(), None)
             if first_item:
                 self.setCurrentItem(first_item)
                 logger.debug("No summary node present. Selecting %s" % first_item)

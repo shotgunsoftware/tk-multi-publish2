@@ -532,7 +532,7 @@ image sequences</string>
               <item>
                <widget class="QStackedWidget" name="details_stack">
                 <property name="currentIndex">
-                 <number>1</number>
+                 <number>0</number>
                 </property>
                 <widget class="QWidget" name="details_item">
                  <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,1,1,1,1,5,1,5">
@@ -631,17 +631,17 @@ image sequences</string>
                   </item>
                   <item>
                    <layout class="QGridLayout" name="gridLayout_3">
+                    <item row="0" column="2">
+                     <widget class="QLabel" name="item_thumbnail_label">
+                      <property name="text">
+                       <string>Thumbnail:</string>
+                      </property>
+                     </widget>
+                    </item>
                     <item row="0" column="1">
                      <widget class="QLabel" name="item_description_label">
                       <property name="text">
                        <string>Description:</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="item_thumbnail_label">
-                      <property name="text">
-                       <string>Thumbnail:</string>
                       </property>
                      </widget>
                     </item>
@@ -667,7 +667,7 @@ image sequences</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="1" column="0">
+                    <item row="1" column="2">
                      <widget class="Thumbnail" name="item_thumbnail">
                       <property name="minimumSize">
                        <size>
@@ -695,6 +695,13 @@ image sequences</string>
                       </property>
                      </widget>
                     </item>
+                    <item row="2" column="1">
+                     <widget class="QLabel" name="item_inherited_item_label">
+                      <property name="text">
+                       <string>TextLabel</string>
+                      </property>
+                     </widget>
+                    </item>
                    </layout>
                   </item>
                   <item>
@@ -717,8 +724,8 @@ image sequences</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>98</width>
-                       <height>32</height>
+                       <width>408</width>
+                       <height>91</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_10" stretch="0,1">
@@ -1309,6 +1316,11 @@ Please select a single task.</string>
  </widget>
  <customwidgets>
   <customwidget>
+   <class>ProgressStatusLabel</class>
+   <extends>QLabel</extends>
+   <header>..progress_status_label</header>
+  </customwidget>
+  <customwidget>
    <class>DropAreaFrame</class>
    <extends>QFrame</extends>
    <header>..drop_area</header>
@@ -1335,11 +1347,6 @@ Please select a single task.</string>
    <class>PublishTreeWidget</class>
    <extends>QTreeWidget</extends>
    <header>..publish_tree_widget</header>
-  </customwidget>
-  <customwidget>
-   <class>ProgressStatusLabel</class>
-   <extends>QLabel</extends>
-   <header>..progress_status_label</header>
   </customwidget>
   <customwidget>
    <class>ContextWidget</class>

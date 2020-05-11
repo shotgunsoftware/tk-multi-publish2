@@ -37,6 +37,8 @@ class TreeNodeItem(TreeNodeBase):
         self._expanded_icon = QtGui.QIcon(":/tk_multi_publish2/down_arrow.png")
         self._collapsed_icon = QtGui.QIcon(":/tk_multi_publish2/right_arrow.png")
 
+        self._inherit_description = True
+
     def _create_widget(self, parent):
         """
         Create the widget that is used to visualise the node
@@ -105,6 +107,26 @@ class TreeNodeItem(TreeNodeBase):
         Associated item instance
         """
         return self._item
+
+    @property
+    def inherit_description(self):
+        return self._inherit_description
+
+    @inherit_description.setter
+    def inherit_description(self, value):
+        self._inherit_description = value
+
+    def set_description(self, description):
+        self._item.description = description
+        # Now set all child items descriptions if they are set to inherit
+        for i in range(self.childCount()):
+            child_node_item = self.child(i)
+            if (
+                isinstance(child_node_item, TreeNodeItem)
+                and child_node_item.inherit_description == True
+            ):
+                # This is a recursive call until we hit an item that does not inherit or is the leaf item.
+                child_node_item.set_description(description)
 
     def get_publish_instance(self):
         """

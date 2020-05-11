@@ -517,17 +517,21 @@ class AppDialog(QtGui.QWidget):
         Callback when someone types in the
         publish comments box in the overview details pane
         """
+        tree_widget = self.ui.items_tree
         comments = self.ui.item_comments.toPlainText()
         # if this is the summary description...
         if self._current_item is None:
             if self._summary_comment != comments:
                 self._summary_comment = comments
 
-                # this is the summary item - so update all top level items and their children!
-                for top_level_item in self._publish_manager.tree.root_item.children:
-                    top_level_item.description = self._summary_comment
-                    for item in top_level_item.descendants:
-                        item.description = comments
+                for node_item in tree_widget.root_items():
+                    # TODO: maybe there is no need to check if the root items are TreeNodeItems?
+                    if (
+                        isinstance(node_item, TreeNodeItem)
+                        and node_item.inherit_description == True
+                    ):
+                        # This will recursively set all child item that inherit the description.
+                        node_item.set_description(comments)
 
                 # all tasks have same description now, so set <multiple values> indicator to false
                 self._summary_comment_multiple_values = False
@@ -538,7 +542,20 @@ class AppDialog(QtGui.QWidget):
 
         # the "else" below means if this is a publish item
         else:
-            self._current_item.description = comments
+            # To make the comparison fair, treat a None type description as an empty string.
+            item_desc = (
+                self._current_item.description
+                if self._current_item.description is not None
+                else ""
+            )
+            if item_desc != comments:
+                # TODO test is selected items is a good way to gather this info
+                items = tree_widget.selectedItems()
+                for node_item in items:
+                    node_item.inherit_description = False
+                    # This will set this item to not inherit the description, and set all child
+                    # items that inherit descriptions to the same description
+                    node_item.set_description(comments)
 
             # <multiple values> placeholder text should not appear for individual items
             self.ui.item_comments._show_placeholder = False
