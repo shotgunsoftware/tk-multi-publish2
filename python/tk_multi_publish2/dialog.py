@@ -138,6 +138,10 @@ class AppDialog(QtGui.QWidget):
 
         # when the description is updated
         self.ui.item_comments.textChanged.connect(self._on_item_comment_change)
+        self.ui.item_comments.finished_editing.connect(
+            self._on_item_comment_finish_edit
+        )
+        self.ui.item_comments.started_editing.connect(self._on_item_comment_start_edit)
 
         # selection in tree view
         self.ui.items_tree.itemSelectionChanged.connect(
@@ -215,6 +219,11 @@ class AppDialog(QtGui.QWidget):
 
         # currently displayed item
         self._current_item = None
+        # This is slightly different to the current item, it is used to track
+        # the item that the description started to be edited on,
+        # so that the finished editing description operation can know if the
+        # current item is different to the item we started editing.
+        self.__current_edit_item = None
 
         # Currently selected tasks. If a selection is created in the GUI that
         # contains multiple task types or even other tree item types, then,
@@ -311,6 +320,30 @@ class AppDialog(QtGui.QWidget):
 
         # ensure the context widget's recent contexts are saved
         self.ui.context_widget.save_recent_contexts()
+
+    def _get_inherited_description_item(self, item):
+        """
+        Recursively looks up the tree to find the item that the passed item
+        should inherit the description from.
+        If this item doesn't inherit then it will return None.
+        It only consider parents, and so will not return the summary item even if
+        that's what the description should ultimately inherit from.
+        :return:
+        """
+        if not item.inherit_description:
+            return None
+
+        def _get_parent_item(item):
+            if item is None:
+                # We have reached the top of the tree without finding an item that doesn't inherit a description.
+                return None
+            elif not isinstance(item, TreeNodeItem) or item.inherit_description:
+                return _get_parent_item(item.parent())
+            else:
+                # We've found an item that doesn't inherit its description so use this.
+                return item
+
+        return _get_parent_item(item.parent())
 
     def _update_details_from_selection(self):
         """
@@ -512,6 +545,42 @@ class AppDialog(QtGui.QWidget):
         # make sure the progress widget is shown
         self._progress_handler.select_last_message(task_or_item)
 
+    def _on_item_comment_start_edit(self):
+        print("start edit")
+        if self._current_item is not None:
+            self.__current_edit_item = self._current_item
+            if self._current_item.description is not None:
+
+                tree_widget = self.ui.items_tree
+                # TODO test is selected items is a good way to gather this info
+                items = tree_widget.selectedItems()
+                for node_item in items:
+                    if node_item.inherit_description:
+                        # Block the signals so that the _on_item_comment_change doesn't get
+                        # triggered
+                        # self.ui.item_comments.blockSignals(True)
+                        self.ui.item_comments.setPlainText("")
+                        # self.ui.item_comments.blockSignals(False)
+
+    def _on_item_comment_finish_edit(self):
+        print("finish edit")
+        # TODO: this may no longer apply if the finished edit was triggered by selecting a different item
+
+        if (
+            self._current_item is not None
+            and self.__current_edit_item == self._current_item
+        ):
+            if self._current_item.description is not None:
+
+                tree_widget = self.ui.items_tree
+                # TODO test is selected items is a good way to gather this info
+                items = tree_widget.selectedItems()
+                for node_item in items:
+                    if node_item.inherit_description:
+                        # self.ui.item_comments.blockSignals(True)
+                        self.ui.item_comments.setPlainText(self._summary_comment)
+                        # self.ui.item_comments.blockSignals(False)
+
     def _on_item_comment_change(self):
         """
         Callback when someone types in the
@@ -552,16 +621,38 @@ class AppDialog(QtGui.QWidget):
                 # TODO test is selected items is a good way to gather this info
                 items = tree_widget.selectedItems()
                 for node_item in items:
-                    node_item.inherit_description = False
-                    # This will set this item to not inherit the description, and set all child
-                    # items that inherit descriptions to the same description
-                    node_item.set_description(comments)
 
-            # <multiple values> placeholder text should not appear for individual items
+                    if comments == "":
+                        # The description has been cleared from the box, so we should retrieve the inherited
+                        # description.
+                        print("setting inheritance true", self._current_item)
+                        node_item.inherit_description = True
+                        inherited_desc_item = self._get_inherited_description_item(
+                            node_item
+                        )
+                        if inherited_desc_item:
+                            description = (
+                                inherited_desc_item.get_published_instance().description
+                            )
+                        else:
+                            # There is no parent item found in the tree that doesn't inherit, so we should grab the
+                            # description from the summary.
+                            description = self._summary_comment
+                    else:
+                        # The user has entered the description on this item so we no longer want to
+                        # inherit (if it was before).
+                        node_item.inherit_description = False
+                        description = comments
+
+                    # This will set all child items that inherit descriptions to the same description.
+                    node_item.set_description(description)
+                    self._set_description_inheritance_ui(node_item)
+
+            # <multiple values> placeholder text should not appear for individual items.
             self.ui.item_comments._show_placeholder = False
 
             # if at least one task has a comment that is different than the summary description, set
-            # <multiple values> indicator to true
+            # <multiple values> indicator to true.
             if self._summary_comment != comments:
                 self._summary_comment_multiple_values = True
 
@@ -588,6 +679,22 @@ class AppDialog(QtGui.QWidget):
             # specify that the new thumbnail overrides the one inherited from
             # summary
             self._current_item.thumbnail_explicit = True
+
+    def _set_description_inheritance_ui(self, tree_item):
+        if tree_item.inherit_description:
+            self.ui.item_inherited_item_label.show()
+            desc_item = self._get_inherited_description_item(tree_item)
+            if desc_item:
+                name = desc_item.get_publish_instance().name
+                self.ui.item_inherited_item_label.setText(name)
+            elif self._summary_comment:
+                # If the description is not inherited from another item, then it is inherited from the
+                # summary
+                self.ui.item_inherited_item_label.setText("Summary")
+            else:
+                self.ui.item_inherited_item_label.hide()
+        else:
+            self.ui.item_inherited_item_label.hide()
 
     def _create_item_details(self, tree_item):
         """
@@ -622,6 +729,11 @@ class AppDialog(QtGui.QWidget):
 
         self.ui.item_description_label.setText("Description")
         self.ui.item_comments.setPlainText(item.description)
+
+        # Clear the focus so that the inherited text (if any) is shown.
+        self.ui.item_comments.clearFocus()
+        # Check if the description is inherited and if it is show where it is inherited from.
+        self._set_description_inheritance_ui(tree_item)
 
         # if summary thumbnail is defined, item thumbnail should inherit it
         # unless item thumbnail was set after summary thumbnail

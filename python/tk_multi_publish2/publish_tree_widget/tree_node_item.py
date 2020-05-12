@@ -181,12 +181,12 @@ class TreeNodeItem(TreeNodeBase):
             if isinstance(child_item, TreeNodeTask):
                 if child_item.task.visible:
                     show_indicator = True
-                    # we know there's somethign to show. short-circuit
+                    # we know there's something to show. short-circuit
                     break
             else:
                 # there is a sub item. definitely show expand indicator
                 show_indicator = True
-                # we know there's somethign to show. short-circuit
+                # we know there's something to show. short-circuit
                 break
 
         self.show_expand_indicator(show_indicator)

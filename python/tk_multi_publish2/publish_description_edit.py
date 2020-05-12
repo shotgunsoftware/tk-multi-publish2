@@ -19,6 +19,12 @@ class PublishDescriptionEdit(QtGui.QPlainTextEdit):
     Widget that holds the summary description
     """
 
+    # Signal emitted when the user starts editing the text box
+    started_editing = QtCore.Signal()
+
+    # Signal emitted when the user finishes editing the text box
+    finished_editing = QtCore.Signal()
+
     def __init__(self, parent):
         """
         Constructor
@@ -33,10 +39,21 @@ class PublishDescriptionEdit(QtGui.QPlainTextEdit):
         # placeholder text won't be hidden behind the scroll bar that is automatically added when the text is too long
         self._placeholder_text = "<multiple values>"
 
+    def focusInEvent(self, event):
+        # self.started_editing.emit()
+        if event.reason() != QtCore.Qt.FocusReason.ActiveWindowFocusReason:
+            self.started_editing.emit()
+        return super(PublishDescriptionEdit, self).focusInEvent(event)
+
+    def focusOutEvent(self, event):
+        if event.reason() != QtCore.Qt.FocusReason.ActiveWindowFocusReason:
+            self.finished_editing.emit()
+        return super(PublishDescriptionEdit, self).focusOutEvent(event)
+
     def paintEvent(self, paint_event):
         """
-       Paints the line plain text editor and adds a placeholder on bottom right corner when multiple values are detected.
-       """
+        Paints the line plain text editor and adds a placeholder on bottom right corner when multiple values are detected.
+        """
 
         # If the box does not have focus, draw <multiple values> placeholder when self._show_placeholder is true, even if the widget has text
         if not self.hasFocus() and self._show_placeholder == True:
