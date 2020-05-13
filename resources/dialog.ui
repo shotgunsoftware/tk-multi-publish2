@@ -697,8 +697,23 @@ image sequences</string>
                     </item>
                     <item row="2" column="1">
                      <widget class="QLabel" name="item_inherited_item_label">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="text">
-                       <string>TextLabel</string>
+                       <string>Inherited from: &lt;a href=&quot;https://stackoverflow.com&quot; /&gt;test&lt;/a&gt;</string>
+                      </property>
+                      <property name="wordWrap">
+                       <bool>true</bool>
+                      </property>
+                      <property name="openExternalLinks">
+                       <bool>false</bool>
+                      </property>
+                      <property name="textInteractionFlags">
+                       <set>Qt::LinksAccessibleByMouse</set>
                       </property>
                      </widget>
                     </item>
@@ -758,6 +773,9 @@ image sequences</string>
                        <widget class="QLabel" name="expander_label">
                         <property name="text">
                          <string/>
+                        </property>
+                        <property name="openExternalLinks">
+                         <bool>false</bool>
                         </property>
                        </widget>
                       </item>

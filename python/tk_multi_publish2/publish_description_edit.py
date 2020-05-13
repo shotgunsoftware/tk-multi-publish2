@@ -14,7 +14,7 @@ from sgtk.platform.qt import QtCore, QtGui
 logger = sgtk.platform.get_logger(__name__)
 
 
-class PublishDescriptionEdit(QtGui.QPlainTextEdit):
+class PublishDescriptionEdit(QtGui.QTextEdit):
     """
     Widget that holds the summary description
     """
@@ -31,7 +31,7 @@ class PublishDescriptionEdit(QtGui.QPlainTextEdit):
 
         :param parent: QT parent object
         """
-        QtGui.QPlainTextEdit.__init__(self, parent)
+        super(PublishDescriptionEdit, self).__init__(parent)
 
         self._show_placeholder = False
 
@@ -40,12 +40,17 @@ class PublishDescriptionEdit(QtGui.QPlainTextEdit):
         self._placeholder_text = "<multiple values>"
 
     def focusInEvent(self, event):
-        # self.started_editing.emit()
+        """
+        Used to detect whether we've started editing the description.
+        """
         if event.reason() != QtCore.Qt.FocusReason.ActiveWindowFocusReason:
             self.started_editing.emit()
         return super(PublishDescriptionEdit, self).focusInEvent(event)
 
     def focusOutEvent(self, event):
+        """
+        Used to detect whether we've stopped editing the description.
+        """
         if event.reason() != QtCore.Qt.FocusReason.ActiveWindowFocusReason:
             self.finished_editing.emit()
         return super(PublishDescriptionEdit, self).focusOutEvent(event)
@@ -71,4 +76,4 @@ class PublishDescriptionEdit(QtGui.QPlainTextEdit):
             )
 
         else:
-            QtGui.QPlainTextEdit.paintEvent(self, paint_event)
+            super(PublishDescriptionEdit, self).paintEvent(paint_event)

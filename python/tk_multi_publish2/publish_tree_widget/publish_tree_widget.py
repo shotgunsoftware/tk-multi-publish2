@@ -389,6 +389,10 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             for child_index in range(context_item.childCount()):
                 yield context_item.child(child_index)
 
+    @property
+    def summary_node(self):
+        return self._summary_node
+
     def get_full_summary(self):
         """
         Compute a full summary report.
