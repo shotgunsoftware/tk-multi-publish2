@@ -703,6 +703,9 @@ image sequences</string>
                         <verstretch>0</verstretch>
                        </sizepolicy>
                       </property>
+                      <property name="styleSheet">
+                       <string notr="true">color: #d0aeff;</string>
+                      </property>
                       <property name="text">
                        <string>Inherited from: &lt;a href=&quot;https://stackoverflow.com&quot; /&gt;test&lt;/a&gt;</string>
                       </property>
@@ -871,8 +874,8 @@ image sequences</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>408</width>
-                       <height>432</height>
+                       <width>98</width>
+                       <height>28</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_13" stretch="0,10">

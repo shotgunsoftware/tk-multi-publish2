@@ -19,12 +19,6 @@ class PublishDescriptionEdit(QtGui.QTextEdit):
     Widget that holds the summary description
     """
 
-    # Signal emitted when the user starts editing the text box
-    started_editing = QtCore.Signal()
-
-    # Signal emitted when the user finishes editing the text box
-    finished_editing = QtCore.Signal()
-
     def __init__(self, parent):
         """
         Constructor
@@ -38,22 +32,6 @@ class PublishDescriptionEdit(QtGui.QTextEdit):
         # this is the placeholder text to be displayed in the bottom right corner of the widget. The spaces afterwards were added so that the
         # placeholder text won't be hidden behind the scroll bar that is automatically added when the text is too long
         self._placeholder_text = "<multiple values>"
-
-    def focusInEvent(self, event):
-        """
-        Used to detect whether we've started editing the description.
-        """
-        if event.reason() != QtCore.Qt.FocusReason.ActiveWindowFocusReason:
-            self.started_editing.emit()
-        return super(PublishDescriptionEdit, self).focusInEvent(event)
-
-    def focusOutEvent(self, event):
-        """
-        Used to detect whether we've stopped editing the description.
-        """
-        if event.reason() != QtCore.Qt.FocusReason.ActiveWindowFocusReason:
-            self.finished_editing.emit()
-        return super(PublishDescriptionEdit, self).focusOutEvent(event)
 
     def paintEvent(self, paint_event):
         """

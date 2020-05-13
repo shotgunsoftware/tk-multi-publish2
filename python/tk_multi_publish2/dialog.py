@@ -138,11 +138,6 @@ class AppDialog(QtGui.QWidget):
 
         # Description
         self.ui.item_comments.textChanged.connect(self._on_item_comment_change)
-        self.ui.item_comments.finished_editing.connect(
-            self._on_item_comment_finish_edit
-        )
-        self.ui.item_comments.started_editing.connect(self._on_item_comment_start_edit)
-
         self.ui.item_inherited_item_label.linkActivated.connect(
             self._on_description_inherited_link_activated
         )
@@ -334,8 +329,6 @@ class AppDialog(QtGui.QWidget):
         that's what the description should ultimately inherit from.
         :return: TreeNodeItem or None
         """
-        if not item.inherit_description:
-            return None
 
         def _get_parent_item(item):
             if item is None:
@@ -563,33 +556,6 @@ class AppDialog(QtGui.QWidget):
         # make sure the progress widget is shown
         self._progress_handler.select_last_message(task_or_item)
 
-    def _on_item_comment_start_edit(self):
-        if self._current_item is not None:
-            self.__current_edit_item = self._current_item
-            if self._current_item.description is not None:
-
-                tree_widget = self.ui.items_tree
-                # TODO test is selected items is a good way to gather this info
-                items = tree_widget.selectedItems()
-                for node_item in items:
-                    if node_item.inherit_description:
-                        self._set_item_description("", False)
-
-    def _on_item_comment_finish_edit(self):
-        if (
-            self._current_item is not None
-            and self.__current_edit_item == self._current_item
-        ):
-            if self._current_item.description is not None:
-
-                tree_widget = self.ui.items_tree
-                # TODO test is selected items is a good way to gather this info
-                items = tree_widget.selectedItems()
-                for node_item in items:
-                    if node_item.inherit_description:
-                        description = self._get_inherited_description(node_item)
-                        self._set_item_description(description, True)
-
     def _on_item_comment_change(self):
         """
         Callback when someone types in the
@@ -701,6 +667,7 @@ class AppDialog(QtGui.QWidget):
         :return:
         """
         if tree_item.inherit_description:
+            self.ui.item_comments.setStyleSheet("""border: 1px solid #d0aeff;""")
 
             lbl_prefix = (
                 'Description inherited from: <a href="inherited description">{0}</a>'
@@ -716,16 +683,11 @@ class AppDialog(QtGui.QWidget):
                 # summary
                 self.ui.item_inherited_item_label.setText(lbl_prefix.format("Summary"))
             else:
+                self.ui.item_comments.setStyleSheet("""border: 0px solid #d0aeff;""")
                 self.ui.item_inherited_item_label.hide()
         else:
+            self.ui.item_comments.setStyleSheet("""border: 0px solid #d0aeff;""")
             self.ui.item_inherited_item_label.hide()
-
-    def _set_item_description(self, description, inherited):
-        if inherited:
-            self.ui.item_comments.setFontItalic(True)
-        else:
-            self.ui.item_comments.setFontItalic(False)
-        self.ui.item_comments.setPlainText(description)
 
     def _create_item_details(self, tree_item):
         """
@@ -760,7 +722,21 @@ class AppDialog(QtGui.QWidget):
 
         self.ui.item_description_label.setText("Description")
 
-        self._set_item_description(item.description, tree_item.inherit_description)
+        if tree_item.inherit_description:
+            self.ui.item_comments.setText("")
+            self.ui.item_comments.setPlaceholderText(item.description)
+            self.ui.item_comments.setStyleSheet("""border: 1px solid #d0aeff;""")
+        else:
+            self.ui.item_comments.setStyleSheet("""border: 0px solid #d0aeff;""")
+            self.ui.item_comments.setText(item.description)
+
+            parent_item = self._get_inherited_description_item(tree_item)
+            if parent_item:
+                self.ui.item_comments.setPlaceholderText(
+                    parent_item.get_publish_instance().description
+                )
+            else:
+                self.ui.item_comments.setPlaceholderText(self._summary_comment)
 
         # Clear the focus so that the inherited text (if any) is shown.
         self.ui.item_comments.clearFocus()
@@ -860,7 +836,10 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_thumbnail.setEnabled(True)
 
         self.ui.item_description_label.setText("Description for all items")
-        self._set_item_description(self._summary_comment, False)
+        self.ui.item_comments.setStyleSheet("""border: 0px solid #d0aeff;""")
+        self.ui.item_comments.setText(self._summary_comment)
+        self.ui.item_comments.setPlaceholderText("")
+        self.ui.item_inherited_item_label.hide()
 
         # the item_comments PublishDescriptionFocus won't display placeholder text if it is in focus
         # so clearing the focus from that widget in order to see the <multiple values> warning once
