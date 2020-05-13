@@ -218,11 +218,6 @@ class AppDialog(QtGui.QWidget):
 
         # currently displayed item
         self._current_item = None
-        # This is slightly different to the current item, it is used to track
-        # the item that the description started to be edited on,
-        # so that the finished editing description operation can know if the
-        # current item is different to the item we started editing.
-        self.__current_edit_item = None
 
         # Currently selected tasks. If a selection is created in the GUI that
         # contains multiple task types or even other tree item types, then,
