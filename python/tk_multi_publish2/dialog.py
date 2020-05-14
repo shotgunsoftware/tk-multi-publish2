@@ -581,13 +581,16 @@ class AppDialog(QtGui.QWidget):
 
         # the "else" below means if this is a publish item
         else:
+            # Define a new variable as we might redefine the comments if the
+            # comments are empty we will get the inherited comments.
+            description = comments
             # To make the comparison fair, treat a None type description as an empty string.
             item_desc = (
                 self._current_item.description
                 if self._current_item.description is not None
                 else ""
             )
-            if item_desc != comments:
+            if item_desc != description:
                 # TODO test is selected items is a good way to gather this info
                 items = tree_widget.selectedItems()
                 for node_item in items:
@@ -601,19 +604,17 @@ class AppDialog(QtGui.QWidget):
                         # The user has entered the description on this item so we no longer want to
                         # inherit (if it was before).
                         node_item.inherit_description = False
-                        description = comments
 
                     # This will set all child items that inherit descriptions to the same description.
                     node_item.set_description(description)
                     self._set_description_inheritance_ui(node_item)
 
-            # <multiple values> placeholder text should not appear for individual items.
-            self.ui.item_comments._show_placeholder = False
-
             # if at least one task has a comment that is different than the summary description, set
             # <multiple values> indicator to true.
-            if self._summary_comment != comments:
+            if self._summary_comment != description:
                 self._summary_comment_multiple_values = True
+            else:
+                self._summary_comment_multiple_values = False
 
     def _on_description_inherited_link_activated(self, _link):
         """
@@ -737,6 +738,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_comments.clearFocus()
         # Check if the description is inherited and if it is show where it is inherited from.
         self._set_description_inheritance_ui(tree_item)
+        self.ui.item_comments._show_placeholder = False
 
         # if summary thumbnail is defined, item thumbnail should inherit it
         # unless item thumbnail was set after summary thumbnail
