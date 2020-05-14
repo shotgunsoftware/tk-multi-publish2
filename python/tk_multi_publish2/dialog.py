@@ -662,28 +662,40 @@ class AppDialog(QtGui.QWidget):
         :param tree_item:
         :return:
         """
-        if tree_item.inherit_description:
-            self.ui.item_comments.setStyleSheet("""border: 1px solid #d0aeff;""")
+        self.ui.item_inherited_item_label.show()
+        highlight_color = self._bundle.style_constants["SG_HIGHLIGHT_COLOR"]
+        base_lbl = '<span style=" font-size:10pt;">{0}</span>'
 
-            lbl_prefix = (
-                'Description inherited from: <a href="inherited description">{0}</a>'
+        if isinstance(tree_item, TreeNodeItem) and tree_item.inherit_description:
+            self.ui.item_comments.setStyleSheet(
+                "border: 1px solid {0};".format(highlight_color)
             )
 
-            self.ui.item_inherited_item_label.show()
+            lbl_prefix = base_lbl.format(
+                'Description inherited from: <a href="inherited description" style="color: {0}">{1}</a>'
+            )
+
             desc_item = self._get_inherited_description_item(tree_item)
             if desc_item:
                 name = desc_item.get_publish_instance().name
-                self.ui.item_inherited_item_label.setText(lbl_prefix.format(name))
+                self.ui.item_inherited_item_label.setText(
+                    lbl_prefix.format(highlight_color, name)
+                )
+                return
             elif self._summary_comment:
                 # If the description is not inherited from another item, then it is inherited from the
                 # summary
-                self.ui.item_inherited_item_label.setText(lbl_prefix.format("Summary"))
-            else:
-                self.ui.item_comments.setStyleSheet("""border: 0px solid #d0aeff;""")
-                self.ui.item_inherited_item_label.hide()
-        else:
-            self.ui.item_comments.setStyleSheet("""border: 0px solid #d0aeff;""")
-            self.ui.item_inherited_item_label.hide()
+                self.ui.item_inherited_item_label.setText(
+                    lbl_prefix.format(highlight_color, "Summary")
+                )
+                return
+
+        self.ui.item_comments.setStyleSheet(
+            "border: 0px solid {0};".format(highlight_color)
+        )
+        self.ui.item_inherited_item_label.setText(
+            base_lbl.format("Description not inherited")
+        )
 
     def _create_item_details(self, tree_item):
         """
@@ -721,9 +733,17 @@ class AppDialog(QtGui.QWidget):
         if tree_item.inherit_description:
             self.ui.item_comments.setText("")
             self.ui.item_comments.setPlaceholderText(item.description)
-            self.ui.item_comments.setStyleSheet("""border: 1px solid #d0aeff;""")
+            self.ui.item_comments.setStyleSheet(
+                "border: 1px solid {0};".format(
+                    self._bundle.style_constants["SG_HIGHLIGHT_COLOR"]
+                )
+            )
         else:
-            self.ui.item_comments.setStyleSheet("""border: 0px solid #d0aeff;""")
+            self.ui.item_comments.setStyleSheet(
+                "border: 0px solid {0};".format(
+                    self._bundle.style_constants["SG_HIGHLIGHT_COLOR"]
+                )
+            )
             self.ui.item_comments.setText(item.description)
 
             parent_item = self._get_inherited_description_item(tree_item)
@@ -833,10 +853,9 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_thumbnail.setEnabled(True)
 
         self.ui.item_description_label.setText("Description for all items")
-        self.ui.item_comments.setStyleSheet("""border: 0px solid #d0aeff;""")
+        self.ui.item_inherited_item_label.hide()
         self.ui.item_comments.setText(self._summary_comment)
         self.ui.item_comments.setPlaceholderText("")
-        self.ui.item_inherited_item_label.hide()
 
         # the item_comments PublishDescriptionFocus won't display placeholder text if it is in focus
         # so clearing the focus from that widget in order to see the <multiple values> warning once

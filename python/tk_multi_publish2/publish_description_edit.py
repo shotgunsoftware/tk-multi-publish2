@@ -33,6 +33,11 @@ class PublishDescriptionEdit(QtGui.QTextEdit):
         # placeholder text won't be hidden behind the scroll bar that is automatically added when the text is too long
         self._placeholder_text = "<multiple values>"
 
+        # Get the color we will use to draw the placeholder with.
+        self._highlight = sgtk.platform.current_bundle().style_constants[
+            "SG_HIGHLIGHT_COLOR"
+        ]
+
     def paintEvent(self, paint_event):
         """
         Paints the line plain text editor and adds a placeholder on bottom right corner when multiple values are detected.
@@ -43,7 +48,7 @@ class PublishDescriptionEdit(QtGui.QTextEdit):
             p = QtGui.QPainter(self.viewport())
 
             # right placeholder note in blue
-            col = QtGui.QColor(24, 167, 227)  # blue
+            col = QtGui.QColor(self._highlight)  # blue
             p.setPen(QtGui.QPen(col))
             p.setBrush(QtGui.QBrush(col))
 

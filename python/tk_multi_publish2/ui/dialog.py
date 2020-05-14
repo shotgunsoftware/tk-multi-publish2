@@ -242,8 +242,9 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.item_inherited_item_label.sizePolicy().hasHeightForWidth())
         self.item_inherited_item_label.setSizePolicy(sizePolicy)
-        self.item_inherited_item_label.setStyleSheet("color: #d0aeff;")
+        self.item_inherited_item_label.setStyleSheet("")
         self.item_inherited_item_label.setWordWrap(True)
+        self.item_inherited_item_label.setIndent(5)
         self.item_inherited_item_label.setOpenExternalLinks(False)
         self.item_inherited_item_label.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse)
         self.item_inherited_item_label.setObjectName("item_inherited_item_label")
@@ -281,7 +282,7 @@ class Ui_Dialog(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 418, 81))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 408, 97))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.verticalLayout_10 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_10.setSpacing(0)
@@ -537,7 +538,7 @@ class Ui_Dialog(object):
         self.text_below_item_tree.setText(QtGui.QApplication.translate("Dialog", "Drag and drop items here to add them. ", None, QtGui.QApplication.UnicodeUTF8))
         self.item_name.setText(QtGui.QApplication.translate("Dialog", "Item name", None, QtGui.QApplication.UnicodeUTF8))
         self.item_type.setText(QtGui.QApplication.translate("Dialog", "Item type", None, QtGui.QApplication.UnicodeUTF8))
-        self.item_inherited_item_label.setText(QtGui.QApplication.translate("Dialog", "<html><head/><body><p>Inherited from: test</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.item_inherited_item_label.setText(QtGui.QApplication.translate("Dialog", "<html><head/><body><p><span style=\" font-size:10pt;\">Inherited from: test</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.item_thumbnail_label.setText(QtGui.QApplication.translate("Dialog", "Thumbnail:", None, QtGui.QApplication.UnicodeUTF8))
         self.item_thumbnail.setToolTip(QtGui.QApplication.translate("Dialog", "Click to take a screenshot.", None, QtGui.QApplication.UnicodeUTF8))
         self.item_description_label.setText(QtGui.QApplication.translate("Dialog", "Description:", None, QtGui.QApplication.UnicodeUTF8))
@@ -574,4 +575,5 @@ from ..publish_tree_widget import PublishTreeWidget
 from ..settings_widget import SettingsWidget
 from ..drop_area import DropAreaFrame
 from ..qtwidgets import ElidedLabel, ContextWidget
+from . import resources_rc
 from . import resources_rc

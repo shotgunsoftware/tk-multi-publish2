@@ -646,13 +646,16 @@ image sequences</string>
                        </sizepolicy>
                       </property>
                       <property name="styleSheet">
-                       <string notr="true">color: #d0aeff;</string>
+                       <string notr="true"/>
                       </property>
                       <property name="text">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Inherited from: test&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Inherited from: test&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                       </property>
                       <property name="wordWrap">
                        <bool>true</bool>
+                      </property>
+                      <property name="indent">
+                       <number>5</number>
                       </property>
                       <property name="openExternalLinks">
                        <bool>false</bool>
@@ -748,8 +751,8 @@ image sequences</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>418</width>
-                       <height>81</height>
+                       <width>408</width>
+                       <height>97</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_10" stretch="0,1">
