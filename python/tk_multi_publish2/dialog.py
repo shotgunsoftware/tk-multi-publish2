@@ -315,42 +315,6 @@ class AppDialog(QtGui.QWidget):
         # ensure the context widget's recent contexts are saved
         self.ui.context_widget.save_recent_contexts()
 
-    def _get_inherited_description_item(self, item):
-        """
-        Recursively looks up the tree to find the item that the passed item
-        should inherit the description from.
-        If this item doesn't inherit then it will return None.
-        It only consider parents, and so will not return the summary item even if
-        that's what the description should ultimately inherit from.
-        :return: TreeNodeItem or None
-        """
-
-        def _get_parent_item(item):
-            if item is None:
-                # We have reached the top of the tree without finding an item that doesn't inherit a description.
-                return None
-            elif not isinstance(item, TreeNodeItem) or item.inherit_description:
-                return _get_parent_item(item.parent())
-            else:
-                # We've found an item that doesn't inherit its description so use this.
-                return item
-
-        return _get_parent_item(item.parent())
-
-    def _get_inherited_description(self, node_item):
-        """
-        For a given item it will search recursively through it's parents to find a description.
-        :param node_item: TreeNodeItem
-        :return: str
-        """
-        inherited_desc_item = self._get_inherited_description_item(node_item)
-        if inherited_desc_item:
-            return inherited_desc_item.get_publish_instance().description
-        else:
-            # There is no parent item found in the tree that doesn't inherit, so we should grab the
-            # description from the summary.
-            return self._summary_comment
-
     def _update_details_from_selection(self):
         """
         Makes sure that the right hand side details section reflects the selected item in the left
@@ -564,7 +528,6 @@ class AppDialog(QtGui.QWidget):
                 self._summary_comment = comments
 
                 for node_item in tree_widget.root_items():
-                    # TODO: maybe there is no need to check if the root items are TreeNodeItems?
                     if (
                         isinstance(node_item, TreeNodeItem)
                         and node_item.inherit_description == True
@@ -591,23 +554,23 @@ class AppDialog(QtGui.QWidget):
                 else ""
             )
             if item_desc != description:
-                # TODO test is selected items is a good way to gather this info
-                items = tree_widget.selectedItems()
-                for node_item in items:
+                # Whilst you can select more than one item, the item description box is not set to show
+                # so there can be only one selected item when changing the description.
+                node_item = tree_widget.selectedItems()[0]
 
-                    if comments == "":
-                        # The description has been cleared from the box, so we should retrieve the inherited
-                        # description.
-                        node_item.inherit_description = True
-                        description = self._get_inherited_description(node_item)
-                    else:
-                        # The user has entered the description on this item so we no longer want to
-                        # inherit (if it was before).
-                        node_item.inherit_description = False
+                if comments == "":
+                    # The description has been cleared from the box, so we should retrieve the inherited
+                    # description.
+                    node_item.inherit_description = True
+                    description = self._get_inherited_description(node_item)
+                else:
+                    # The user has entered the description on this item so we no longer want to
+                    # inherit (if it was before).
+                    node_item.inherit_description = False
 
-                    # This will set all child items that inherit descriptions to the same description.
-                    node_item.set_description(description)
-                    self._set_description_inheritance_ui(node_item)
+                # This will set all child items that inherit descriptions to the same description.
+                node_item.set_description(description)
+                self._set_description_inheritance_ui(node_item)
 
             # if at least one task has a comment that is different than the summary description, set
             # <multiple values> indicator to true.
@@ -656,47 +619,6 @@ class AppDialog(QtGui.QWidget):
             # summary
             self._current_item.thumbnail_explicit = True
 
-    def _set_description_inheritance_ui(self, tree_item):
-        """
-        Sets up the UI based on the selected item's description inheritance state.
-        :param tree_item:
-        :return:
-        """
-        self.ui.item_inherited_item_label.show()
-        highlight_color = self._bundle.style_constants["SG_HIGHLIGHT_COLOR"]
-        base_lbl = '<span style=" font-size:10pt;">{0}</span>'
-
-        if isinstance(tree_item, TreeNodeItem) and tree_item.inherit_description:
-            self.ui.item_comments.setStyleSheet(
-                "border: 1px solid {0};".format(highlight_color)
-            )
-
-            lbl_prefix = base_lbl.format(
-                'Description inherited from: <a href="inherited description" style="color: {0}">{1}</a>'
-            )
-
-            desc_item = self._get_inherited_description_item(tree_item)
-            if desc_item:
-                name = desc_item.get_publish_instance().name
-                self.ui.item_inherited_item_label.setText(
-                    lbl_prefix.format(highlight_color, name)
-                )
-                return
-            elif self._summary_comment:
-                # If the description is not inherited from another item, then it is inherited from the
-                # summary
-                self.ui.item_inherited_item_label.setText(
-                    lbl_prefix.format(highlight_color, "Summary")
-                )
-                return
-
-        self.ui.item_comments.setStyleSheet(
-            "border: 0px solid {0};".format(highlight_color)
-        )
-        self.ui.item_inherited_item_label.setText(
-            base_lbl.format("Description not inherited")
-        )
-
     def _create_item_details(self, tree_item):
         """
         Render details pane for a given item
@@ -730,34 +652,23 @@ class AppDialog(QtGui.QWidget):
 
         self.ui.item_description_label.setText("Description")
 
+        # Sets up the UI around the description based on the inheritance state
+        self._set_description_inheritance_ui(tree_item)
+
         if tree_item.inherit_description:
             self.ui.item_comments.setText("")
             self.ui.item_comments.setPlaceholderText(item.description)
-            self.ui.item_comments.setStyleSheet(
-                "border: 1px solid {0};".format(
-                    self._bundle.style_constants["SG_HIGHLIGHT_COLOR"]
-                )
-            )
         else:
-            self.ui.item_comments.setStyleSheet(
-                "border: 0px solid {0};".format(
-                    self._bundle.style_constants["SG_HIGHLIGHT_COLOR"]
-                )
-            )
+            # We are not inheriting the description so we should set the
+            # text box to display the item's description, but we'll also look
+            # up what the inherited description would be in case the user clears
+            # the box, and it displays the placeholder text.
             self.ui.item_comments.setText(item.description)
 
-            parent_item = self._get_inherited_description_item(tree_item)
-            if parent_item:
-                self.ui.item_comments.setPlaceholderText(
-                    parent_item.get_publish_instance().description
-                )
-            else:
-                self.ui.item_comments.setPlaceholderText(self._summary_comment)
+            inherited_desc = self._get_inherited_description(tree_item)
+            self.ui.item_comments.setPlaceholderText(inherited_desc)
 
-        # Clear the focus so that the inherited text (if any) is shown.
-        self.ui.item_comments.clearFocus()
-        # Check if the description is inherited and if it is show where it is inherited from.
-        self._set_description_inheritance_ui(tree_item)
+        # Hides the multiple values overlay, as it is only for the summary item.
         self.ui.item_comments._show_placeholder = False
 
         # if summary thumbnail is defined, item thumbnail should inherit it
@@ -1062,6 +973,47 @@ class AppDialog(QtGui.QWidget):
             item = it.value()
             if isinstance(item, TopLevelTreeNodeItem):
                 item.setExpanded(expanded)
+
+    def _set_description_inheritance_ui(self, tree_item):
+        """
+        Sets up the UI based on the selected item's description inheritance state.
+        :param tree_item:
+        :return:
+        """
+        self.ui.item_inherited_item_label.show()
+        highlight_color = self._bundle.style_constants["SG_HIGHLIGHT_COLOR"]
+        base_lbl = '<span style=" font-size:10pt;">{0}</span>'
+
+        if isinstance(tree_item, TreeNodeItem) and tree_item.inherit_description:
+            self.ui.item_comments.setStyleSheet(
+                "border: 1px solid {0};".format(highlight_color)
+            )
+
+            lbl_prefix = base_lbl.format(
+                'Description inherited from: <a href="inherited description" style="color: {0}">{1}</a>'
+            )
+
+            desc_item = self._get_inherited_description_item(tree_item)
+            if desc_item:
+                name = desc_item.get_publish_instance().name
+                self.ui.item_inherited_item_label.setText(
+                    lbl_prefix.format(highlight_color, name)
+                )
+                return
+            elif self._summary_comment:
+                # If the description is not inherited from another item, then it is inherited from the
+                # summary
+                self.ui.item_inherited_item_label.setText(
+                    lbl_prefix.format(highlight_color, "Summary")
+                )
+                return
+
+        self.ui.item_comments.setStyleSheet(
+            "border: 0px solid {0};".format(highlight_color)
+        )
+        self.ui.item_inherited_item_label.setText(
+            base_lbl.format("Description not inherited")
+        )
 
     def _delete_selected(self):
         """
@@ -1380,6 +1332,42 @@ class AppDialog(QtGui.QWidget):
 
         # reset the validation flag
         self._validation_run = False
+
+    def _get_inherited_description_item(self, item):
+        """
+        Recursively looks up the tree to find the item that the passed item
+        should inherit the description from.
+        If this item doesn't inherit then it will return None.
+        It only consider parents, and so will not return the summary item even if
+        that's what the description should ultimately inherit from.
+        :return: TreeNodeItem or None
+        """
+
+        def _get_parent_item(item):
+            if item is None:
+                # We have reached the top of the tree without finding an item that doesn't inherit a description.
+                return None
+            elif not isinstance(item, TreeNodeItem) or item.inherit_description:
+                return _get_parent_item(item.parent())
+            else:
+                # We've found an item that doesn't inherit its description so use this.
+                return item
+
+        return _get_parent_item(item.parent())
+
+    def _get_inherited_description(self, node_item):
+        """
+        For a given item it will search recursively through it's parents to find a description.
+        :param node_item: TreeNodeItem
+        :return: str
+        """
+        inherited_desc_item = self._get_inherited_description_item(node_item)
+        if inherited_desc_item:
+            return inherited_desc_item.get_publish_instance().description
+        else:
+            # There is no parent item found in the tree that doesn't inherit, so we should grab the
+            # description from the summary.
+            return self._summary_comment
 
     def _get_tree_items(self):
         """
