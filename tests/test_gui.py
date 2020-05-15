@@ -26,7 +26,7 @@ except ImportError:
 def context():
     # A task in Big Buck Bunny which we're going to use
     # for the current context.
-    return {"type": "Project", "id": 65}
+    return {"type": "Project", "id": 70}
 
 
 # This fixture will launch tk-run-app on first usage
@@ -120,15 +120,15 @@ class AppDialogAppWrapper(object):
 
 def test_app(app_dialog):
     # Make sure items are showing up
-    assert (
-        app_dialog.root.captions["Drag and drop files or folders here"].exists()
-    ), "Drag and drop files or folders here text is missing."
-    assert (
-        app_dialog.root.buttons["Browse files to publish"].exists()
-    ), "Browse files to publish button is missing."
-    assert (
-        app_dialog.root.buttons["Browse sequences to publish"].exists()
-    ), "Browse folders to publish image sequences button is missing."
+    assert app_dialog.root.captions[
+        "Drag and drop files or folders here"
+    ].exists(), "Drag and drop files or folders here text is missing."
+    assert app_dialog.root.buttons[
+        "Browse files to publish"
+    ].exists(), "Browse files to publish button is missing."
+    assert app_dialog.root.buttons[
+        "Browse sequences to publish"
+    ].exists(), "Browse folders to publish image sequences button is missing."
 
 
 def test_click(app_dialog):
@@ -139,8 +139,12 @@ def test_click(app_dialog):
 
     # Click on Browse folders to publish and image sequences then close the file explorer window
     app_dialog.root.buttons["Browse sequences to publish"].mouseClick()
-    app_dialog.root.dialogs["Browse folders to publish image sequences"].waitExist(timeout=30)
-    app_dialog.root.dialogs["Browse folders to publish image sequences"].buttons["Cancel"].mouseClick()
+    app_dialog.root.dialogs["Browse folders to publish image sequences"].waitExist(
+        timeout=30
+    )
+    app_dialog.root.dialogs["Browse folders to publish image sequences"].buttons[
+        "Cancel"
+    ].mouseClick()
 
 
 def test_file_publish(app_dialog):
@@ -150,29 +154,41 @@ def test_file_publish(app_dialog):
     app_dialog.root.dialogs["Browse files to publish"].waitIdle(timeout=30)
 
     # Get image path to be published
-    image_path = os.path.expandvars("${SHOTGUN_CURRENT_REPO_ROOT}/tests/fixtures/files/images/achmed.JPG")
+    image_path = os.path.expandvars(
+        "${SHOTGUN_CURRENT_REPO_ROOT}/tests/fixtures/files/images/achmed.JPG"
+    )
 
     # Type in image path
-    app_dialog.root.dialogs["Browse files to publish"].textfields["File name:"].mouseClick()
-    app_dialog.root.dialogs["Browse files to publish"].textfields["File name:"].pasteIn(image_path)
-    app_dialog.root.dialogs["Browse files to publish"].textfields["File name:"].waitIdle(timeout=30)
-    app_dialog.root.dialogs["Browse files to publish"].textfields["File name:"].typeIn("{ENTER}")
+    app_dialog.root.dialogs["Browse files to publish"].textfields[
+        "File name:"
+    ].mouseClick()
+    app_dialog.root.dialogs["Browse files to publish"].textfields["File name:"].pasteIn(
+        image_path
+    )
+    app_dialog.root.dialogs["Browse files to publish"].textfields[
+        "File name:"
+    ].waitIdle(timeout=30)
+    app_dialog.root.dialogs["Browse files to publish"].textfields["File name:"].typeIn(
+        "{ENTER}"
+    )
 
     # Validate file to publish is there and the right project is selected
     app_dialog.root.captions["achmed.JPG"].waitExist(timeout=30)
-    assert (
-        app_dialog.root.captions["*Big Buck Bunny"].exists()
-    ), "Context is not set to Big Buck Bunne project."
+    assert app_dialog.root.captions[
+        "*Demo: Animation"
+    ].exists(), "Context is not set to Demo: Animation project."
 
     # Click on validate button
     app_dialog.root.buttons["Validate"].mouseClick()
-    assert (
-        app_dialog.root.captions["Validation Complete. All checks passed."].exists()
-    ), "Validation didn't complete successfully"
+    assert app_dialog.root.captions[
+        "Validation Complete. All checks passed."
+    ].exists(), "Validation didn't complete successfully"
 
     # Publish
     app_dialog.root.buttons["Publish"].mouseClick()
-    app_dialog.root.captions["Publish Complete! For details, click here."].waitExist(timeout=30)
-    assert (
-        app_dialog.root.captions["Publish Complete! For details, click here."].exists()
-    ), "Publish failed."
+    app_dialog.root.captions["Publish Complete! For details, click here."].waitExist(
+        timeout=30
+    )
+    assert app_dialog.root.captions[
+        "Publish Complete! For details, click here."
+    ].exists(), "Publish failed."
