@@ -205,7 +205,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.browse.setPopupMode(QtGui.QToolButton.DelayedPopup)
 
         # drop area browse button. Note, not using the actions created above
-        # because making the buttons look right when they're usingt he action's
+        # because making the buttons look right when they're using he action's
         # text/icon proved difficult. Instead, the button text/icon are defined
         # in the designer file. So as a note, if you want to change the text or
         # icon, you'll need to do it above and in designer.
@@ -226,10 +226,6 @@ class AppDialog(QtGui.QWidget):
         self._current_tasks = _TaskSelection()
 
         self._summary_comment = ""
-
-        # this boolean indicates that at least one child has a description that
-        # is different than the summary.
-        self._summary_comment_multiple_values = False
 
         # set up progress reporting
         self._progress_handler = ProgressHandler(
@@ -532,15 +528,8 @@ class AppDialog(QtGui.QWidget):
                         isinstance(node_item, TreeNodeItem)
                         and node_item.inherit_description == True
                     ):
-                        # This will recursively set all child item that inherit the description.
+                        # This will recursively set all child items that inherit the description.
                         node_item.set_description(comments)
-
-                # all tasks have same description now, so set <multiple values> indicator to false
-                self._summary_comment_multiple_values = False
-
-            self.ui.item_comments._show_placeholder = (
-                self._summary_comment_multiple_values
-            )
 
         # the "else" below means if this is a publish item
         else:
@@ -571,13 +560,6 @@ class AppDialog(QtGui.QWidget):
                 # This will set all child items that inherit descriptions to the same description.
                 node_item.set_description(description)
                 self._set_description_inheritance_ui(node_item)
-
-            # if at least one task has a comment that is different than the summary description, set
-            # <multiple values> indicator to true.
-            if self._summary_comment != description:
-                self._summary_comment_multiple_values = True
-            else:
-                self._summary_comment_multiple_values = False
 
     def _on_description_inherited_link_activated(self, _link):
         """
@@ -739,20 +721,31 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_thumbnail.show()
 
         thumbnail_has_multiple_values = False
+        description_had_multiple_values = False
         for top_level_item in self._publish_manager.tree.root_item.children:
             if top_level_item.thumbnail_explicit:
                 thumbnail_has_multiple_values = True
+
+            if top_level_item.description not in [None, self._summary_comment]:
+                description_had_multiple_values = True
+
+            if description_had_multiple_values and thumbnail_has_multiple_values:
                 break
 
             for descendant in top_level_item.descendants:
                 if descendant.thumbnail_explicit:
                     # shortcut if one descendant has an explicit thumbnail
                     thumbnail_has_multiple_values = True
+
+                if descendant.description not in [None, self._summary_comment]:
+                    description_had_multiple_values = True
+
+                if description_had_multiple_values and thumbnail_has_multiple_values:
                     break
 
-            # break out of this loop if an explicit thumbnail was found for
-            # this top level item
-            if thumbnail_has_multiple_values:
+            # break out of this loop if an explicit thumbnail and different description
+            # was found for a descendant of the top level item.
+            if thumbnail_has_multiple_values and description_had_multiple_values:
                 break
 
         self.ui.item_thumbnail._set_multiple_values_indicator(
@@ -772,7 +765,7 @@ class AppDialog(QtGui.QWidget):
         # so clearing the focus from that widget in order to see the <multiple values> warning once
         # the master summary details page is opened
         self.ui.item_comments.clearFocus()
-        self.ui.item_comments._show_placeholder = self._summary_comment_multiple_values
+        self.ui.item_comments._show_placeholder = description_had_multiple_values
 
         # for the summary, attempt to display the appropriate context in the
         # context widget. if all publish items have the same context, display
