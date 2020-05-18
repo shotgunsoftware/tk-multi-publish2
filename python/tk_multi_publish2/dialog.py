@@ -526,7 +526,7 @@ class AppDialog(QtGui.QWidget):
                 for node_item in tree_widget.root_items():
                     if (
                         isinstance(node_item, TreeNodeItem)
-                        and node_item.inherit_description == True
+                        and node_item.inherit_description is True
                     ):
                         # This will recursively set all child items that inherit the description.
                         node_item.set_description(comments)

@@ -123,7 +123,7 @@ class TreeNodeItem(TreeNodeBase):
             child_node_item = self.child(i)
             if (
                 isinstance(child_node_item, TreeNodeItem)
-                and child_node_item.inherit_description == True
+                and child_node_item.inherit_description is True
             ):
                 # This is a recursive call until we hit an item that does not inherit or is the leaf item.
                 child_node_item.set_description(description)
