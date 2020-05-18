@@ -380,7 +380,6 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         """
         A generator that yields the root collected items in the tree.
         These are stored under a top level context_item.
-        # TODO is this true about the return item?
         :return: TreeNodeItem
         """
         # The first item is always the summary even if it is hidden so skip that.

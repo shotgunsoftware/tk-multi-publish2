@@ -1405,7 +1405,6 @@ Please select a single task.</string>
  </tabstops>
  <resources>
   <include location="resources.qrc"/>
-  <include location="../../../.designer/backup/resources.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -576,4 +576,3 @@ from ..settings_widget import SettingsWidget
 from ..drop_area import DropAreaFrame
 from ..qtwidgets import ElidedLabel, ContextWidget
 from . import resources_rc
-from . import resources_rc
