@@ -391,6 +391,10 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
     @property
     def summary_node(self):
+        """
+        Returns the summary node item in the tree.
+        :return: TreeNodeSummary instance.
+        """
         return self._summary_node
 
     def get_full_summary(self):
