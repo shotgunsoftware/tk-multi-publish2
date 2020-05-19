@@ -44,7 +44,7 @@ class PublishDescriptionEditBase(QtGui.QTextEdit):
         """
 
         # If the box does not have focus, draw <multiple values> placeholder when self._show_placeholder is true, even if the widget has text
-        if not self.hasFocus() and self._show_multiple_values == True:
+        if not self.hasFocus() and self._show_multiple_values is True:
             p = QtGui.QPainter(self.viewport())
 
             # right placeholder note in blue
