@@ -651,7 +651,7 @@ class AppDialog(QtGui.QWidget):
             self.ui.item_comments.setPlaceholderText(inherited_desc)
 
         # Hides the multiple values overlay, as it is only for the summary item.
-        self.ui.item_comments._show_placeholder = False
+        self.ui.item_comments._show_multiple_values = False
 
         # if summary thumbnail is defined, item thumbnail should inherit it
         # unless item thumbnail was set after summary thumbnail
@@ -765,7 +765,7 @@ class AppDialog(QtGui.QWidget):
         # so clearing the focus from that widget in order to see the <multiple values> warning once
         # the master summary details page is opened
         self.ui.item_comments.clearFocus()
-        self.ui.item_comments._show_placeholder = description_had_multiple_values
+        self.ui.item_comments._show_multiple_values = description_had_multiple_values
 
         # for the summary, attempt to display the appropriate context in the
         # context widget. if all publish items have the same context, display
