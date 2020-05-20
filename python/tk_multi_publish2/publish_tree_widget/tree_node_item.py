@@ -110,13 +110,27 @@ class TreeNodeItem(TreeNodeBase):
 
     @property
     def inherit_description(self):
+        """
+        Returns the state of whether this item's description is inherited or not.
+        :return: bool
+        """
         return self._inherit_description
 
     @inherit_description.setter
     def inherit_description(self, value):
+        """
+        Allows setting the state of whether the item's description is inherited or not.
+        """
         self._inherit_description = value
 
     def set_description(self, description):
+        """
+        Sets the description on the API item associated with the tree node item.
+        It also sets the description on the child items if they also inherit. This in effect creates
+        a recursive loop over the child node items setting the description, until it hits the
+        end or an item that doesn't inherit.
+        :param description: str
+        """
         self._item.description = description
         # Now set all child items descriptions if they are set to inherit
         for i in range(self.childCount()):

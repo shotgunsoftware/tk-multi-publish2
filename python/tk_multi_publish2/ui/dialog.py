@@ -516,7 +516,7 @@ class Ui_Dialog(object):
 
         self.retranslateUi(Dialog)
         self.main_stack.setCurrentIndex(1)
-        self.details_stack.setCurrentIndex(0)
+        self.details_stack.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
         Dialog.setTabOrder(self.validate, self.publish)
         Dialog.setTabOrder(self.publish, self.items_tree)

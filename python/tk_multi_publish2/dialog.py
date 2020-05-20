@@ -551,7 +551,7 @@ class AppDialog(QtGui.QWidget):
                     # The description has been cleared from the box, so we should retrieve the inherited
                     # description.
                     node_item.inherit_description = True
-                    description = self._get_inherited_description(node_item)
+                    description = self._find_inherited_description(node_item)
                 else:
                     # The user has entered the description on this item so we no longer want to
                     # inherit (if it was before).
@@ -569,7 +569,7 @@ class AppDialog(QtGui.QWidget):
         :param link: The activated URL, we don't need to use this.
         """
         selected_item = self.ui.items_tree.selectedItems()[0]
-        item = self._get_inherited_description_item(selected_item)
+        item = self._find_inherited_description_item(selected_item)
         if item:
             item.setSelected(True)
         else:
@@ -647,7 +647,7 @@ class AppDialog(QtGui.QWidget):
             # the box, and it displays the placeholder text.
             self.ui.item_comments.setText(item.description)
 
-            inherited_desc = self._get_inherited_description(tree_item)
+            inherited_desc = self._find_inherited_description(tree_item)
             self.ui.item_comments.setPlaceholderText(inherited_desc)
 
         # Hides the multiple values overlay, as it is only for the summary item.
@@ -986,7 +986,7 @@ class AppDialog(QtGui.QWidget):
                 'Description inherited from: <a href="inherited description" style="color: {0}">{1}</a>'
             )
 
-            desc_item = self._get_inherited_description_item(tree_item)
+            desc_item = self._find_inherited_description_item(tree_item)
             if desc_item:
                 name = desc_item.get_publish_instance().name
                 self.ui.item_inherited_item_label.setText(
@@ -1326,7 +1326,7 @@ class AppDialog(QtGui.QWidget):
         # reset the validation flag
         self._validation_run = False
 
-    def _get_inherited_description_item(self, item):
+    def _find_inherited_description_item(self, item):
         """
         Recursively looks up the tree to find the item that the passed item
         should inherit the description from.
@@ -1348,13 +1348,13 @@ class AppDialog(QtGui.QWidget):
 
         return _get_parent_item(item.parent())
 
-    def _get_inherited_description(self, node_item):
+    def _find_inherited_description(self, node_item):
         """
         For a given item it will search recursively through it's parents to find a description.
         :param node_item: TreeNodeItem
         :return: str
         """
-        inherited_desc_item = self._get_inherited_description_item(node_item)
+        inherited_desc_item = self._find_inherited_description_item(node_item)
         if inherited_desc_item:
             return inherited_desc_item.get_publish_instance().description
         else:
