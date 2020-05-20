@@ -1331,7 +1331,7 @@ class AppDialog(QtGui.QWidget):
         Recursively looks up the tree to find the item that the passed item
         should inherit the description from.
         If this item doesn't inherit then it will return None.
-        It only consider parents, and so will not return the summary item even if
+        It only considers parents, and so will not return the summary item even if
         that's what the description should ultimately inherit from.
         :return: TreeNodeItem or None
         """
