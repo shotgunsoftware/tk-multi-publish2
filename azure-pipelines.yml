@@ -4,7 +4,7 @@ resources:
     - repository: templates
       type: github
       name: shotgunsoftware/tk-ci-tools
-      ref: refs/heads/ui_automation_on_azure
+      ref: refs/heads/master
       endpoint: shotgunsoftware
 
 # We want builds to trigger for 3 reasons:
@@ -32,8 +32,8 @@ jobs:
 - template: build-pipeline.yml@templates
   parameters:
     has_ui_tests: true
-    has_unit_tests: false
-    tk_toolchain_ref: ui_automation_on_azure
+    has_unit_tests: true
+    tk_toolchain_ref: master
     additional_repositories:
     - name: tk-framework-qtwidgets
       ref: master

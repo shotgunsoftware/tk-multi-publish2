@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Shotgun Software Inc.
+# Copyright (c) 2020 Shotgun Software Inc.
 #
 # CONFIDENTIAL AND PROPRIETARY
 #
@@ -17,7 +17,6 @@ import sgtk
 
 try:
     from MA.UI import topwindows
-    from MA.UI import first
 except ImportError:
     pytestmark = pytest.mark.skip()
 
@@ -118,8 +117,11 @@ class AppDialogAppWrapper(object):
         self.root.buttons["Close"].mouseClick()
 
 
-def test_app(app_dialog):
-    # Make sure items are showing up
+def test_browse_buttons(app_dialog):
+    """
+    Ensure app dialog items are availible and that browse to publish buttons are opening file browser dialogs.
+    """
+    # Make sure items are available
     assert app_dialog.root.captions[
         "Drag and drop files or folders here"
     ].exists(), "Drag and drop files or folders here text is missing."
@@ -130,8 +132,6 @@ def test_app(app_dialog):
         "Browse sequences to publish"
     ].exists(), "Browse folders to publish image sequences button is missing."
 
-
-def test_click(app_dialog):
     # Click on Browse file to publish and then close the file explorer window
     app_dialog.root.buttons["Browse files to publish"].mouseClick()
     app_dialog.root.dialogs["Browse files to publish"].waitExist(timeout=30)
@@ -148,15 +148,16 @@ def test_click(app_dialog):
 
 
 def test_file_publish(app_dialog):
+    """
+    Ensure you can publish an image file successfully.
+    """
     # Click on Browse file to publish and then select the file to publish
     app_dialog.root.buttons["Browse files to publish"].mouseClick()
     app_dialog.root.dialogs["Browse files to publish"].waitExist(timeout=30)
     app_dialog.root.dialogs["Browse files to publish"].waitIdle(timeout=30)
 
     # Get image path to be published
-    image_path = os.path.expandvars(
-        "${SHOTGUN_CURRENT_REPO_ROOT}/tests/fixtures/files/images/achmed.JPG"
-    )
+    image_path = os.path.expandvars("${TK_TEST_FIXTURES}/files/images/achmed.JPG")
 
     # Type in image path
     app_dialog.root.dialogs["Browse files to publish"].textfields[
