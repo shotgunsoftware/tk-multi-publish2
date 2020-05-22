@@ -32,7 +32,6 @@ jobs:
 - template: build-pipeline.yml@templates
   parameters:
     has_ui_tests: true
-    has_unit_tests: true
     tk_toolchain_ref: master
     additional_repositories:
     - name: tk-framework-qtwidgets
