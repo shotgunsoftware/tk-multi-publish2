@@ -845,6 +845,8 @@ class AppDialog(QtGui.QWidget):
         # make sure the ui is up to date
         self._synchronize_tree()
 
+        self._summary_comment = ""
+
         # select summary
         self.ui.items_tree.select_first_item()
 
