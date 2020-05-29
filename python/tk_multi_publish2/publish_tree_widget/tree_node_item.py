@@ -57,6 +57,14 @@ class TreeNodeItem(TreeNodeBase):
 
         return widget
 
+    def set_check_state(self, state):
+        """
+        Called when the check state of the item changes.
+        """
+        # Ensure that the item's check state matches the GUIs.
+        self._item.checked = state != QtCore.Qt.Unchecked
+        super(TreeNodeItem, self).set_check_state(state)
+
     def __repr__(self):
         return "<TreeNodeItem %s>" % str(self)
 
