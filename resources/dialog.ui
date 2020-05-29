@@ -631,43 +631,48 @@ image sequences</string>
                   </item>
                   <item>
                    <layout class="QGridLayout" name="gridLayout_3">
-                    <item row="0" column="1">
-                     <widget class="QLabel" name="item_description_label">
+                    <property name="sizeConstraint">
+                     <enum>QLayout::SetDefaultConstraint</enum>
+                    </property>
+                    <property name="verticalSpacing">
+                     <number>1</number>
+                    </property>
+                    <item row="2" column="1">
+                     <widget class="QLabel" name="item_inherited_item_label">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true"/>
+                      </property>
                       <property name="text">
-                       <string>Description:</string>
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Inherited from: test&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="wordWrap">
+                       <bool>true</bool>
+                      </property>
+                      <property name="indent">
+                       <number>5</number>
+                      </property>
+                      <property name="openExternalLinks">
+                       <bool>false</bool>
+                      </property>
+                      <property name="textInteractionFlags">
+                       <set>Qt::LinksAccessibleByMouse</set>
                       </property>
                      </widget>
                     </item>
-                    <item row="0" column="0">
+                    <item row="0" column="2">
                      <widget class="QLabel" name="item_thumbnail_label">
                       <property name="text">
                        <string>Thumbnail:</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="1" column="1">
-                     <widget class="PublishDescriptionEdit" name="item_comments">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="minimumSize">
-                       <size>
-                        <width>0</width>
-                        <height>90</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>16777215</width>
-                        <height>90</height>
-                       </size>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="0">
+                    <item row="1" column="2">
                      <widget class="Thumbnail" name="item_thumbnail">
                       <property name="minimumSize">
                        <size>
@@ -695,6 +700,35 @@ image sequences</string>
                       </property>
                      </widget>
                     </item>
+                    <item row="0" column="1">
+                     <widget class="QLabel" name="item_description_label">
+                      <property name="text">
+                       <string>Description:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="PublishDescriptionEdit" name="item_comments">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>90</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>90</height>
+                       </size>
+                      </property>
+                     </widget>
+                    </item>
                    </layout>
                   </item>
                   <item>
@@ -717,8 +751,8 @@ image sequences</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>98</width>
-                       <height>32</height>
+                       <width>408</width>
+                       <height>97</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_10" stretch="0,1">
@@ -751,6 +785,9 @@ image sequences</string>
                        <widget class="QLabel" name="expander_label">
                         <property name="text">
                          <string/>
+                        </property>
+                        <property name="openExternalLinks">
+                         <bool>false</bool>
                         </property>
                        </widget>
                       </item>
@@ -846,8 +883,8 @@ image sequences</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>408</width>
-                       <height>432</height>
+                       <width>98</width>
+                       <height>28</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_13" stretch="0,10">
@@ -1309,6 +1346,11 @@ Please select a single task.</string>
  </widget>
  <customwidgets>
   <customwidget>
+   <class>ProgressStatusLabel</class>
+   <extends>QLabel</extends>
+   <header>..progress_status_label</header>
+  </customwidget>
+  <customwidget>
    <class>DropAreaFrame</class>
    <extends>QFrame</extends>
    <header>..drop_area</header>
@@ -1326,20 +1368,9 @@ Please select a single task.</string>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>PublishDescriptionEdit</class>
-   <extends>QPlainTextEdit</extends>
-   <header>..publish_description_edit</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>PublishTreeWidget</class>
    <extends>QTreeWidget</extends>
    <header>..publish_tree_widget</header>
-  </customwidget>
-  <customwidget>
-   <class>ProgressStatusLabel</class>
-   <extends>QLabel</extends>
-   <header>..progress_status_label</header>
   </customwidget>
   <customwidget>
    <class>ContextWidget</class>
@@ -1358,9 +1389,13 @@ Please select a single task.</string>
    <header>..custom_settings_widget</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>PublishDescriptionEdit</class>
+   <extends>QTextEdit</extends>
+   <header>..publish_description_edit</header>
+  </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>item_comments</tabstop>
   <tabstop>validate</tabstop>
   <tabstop>publish</tabstop>
   <tabstop>items_tree</tabstop>
