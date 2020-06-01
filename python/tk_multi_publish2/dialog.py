@@ -136,8 +136,11 @@ class AppDialog(QtGui.QWidget):
         # settings
         self.ui.items_tree.status_clicked.connect(self._on_publish_status_clicked)
 
-        # when the description is updated
+        # Description
         self.ui.item_comments.textChanged.connect(self._on_item_comment_change)
+        self.ui.item_inherited_item_label.linkActivated.connect(
+            self._on_description_inherited_link_activated
+        )
 
         # selection in tree view
         self.ui.items_tree.itemSelectionChanged.connect(
@@ -202,7 +205,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.browse.setPopupMode(QtGui.QToolButton.DelayedPopup)
 
         # drop area browse button. Note, not using the actions created above
-        # because making the buttons look right when they're usingt he action's
+        # because making the buttons look right when they're using he action's
         # text/icon proved difficult. Instead, the button text/icon are defined
         # in the designer file. So as a note, if you want to change the text or
         # icon, you'll need to do it above and in designer.
@@ -223,10 +226,6 @@ class AppDialog(QtGui.QWidget):
         self._current_tasks = _TaskSelection()
 
         self._summary_comment = ""
-
-        # this boolean indicates that at least one child has a description that
-        # is different than the summary.
-        self._summary_comment_multiple_values = False
 
         # set up progress reporting
         self._progress_handler = ProgressHandler(
@@ -517,36 +516,66 @@ class AppDialog(QtGui.QWidget):
         Callback when someone types in the
         publish comments box in the overview details pane
         """
+        tree_widget = self.ui.items_tree
         comments = self.ui.item_comments.toPlainText()
         # if this is the summary description...
         if self._current_item is None:
             if self._summary_comment != comments:
                 self._summary_comment = comments
 
-                # this is the summary item - so update all top level items and their children!
-                for top_level_item in self._publish_manager.tree.root_item.children:
-                    top_level_item.description = self._summary_comment
-                    for item in top_level_item.descendants:
-                        item.description = comments
-
-                # all tasks have same description now, so set <multiple values> indicator to false
-                self._summary_comment_multiple_values = False
-
-            self.ui.item_comments._show_placeholder = (
-                self._summary_comment_multiple_values
-            )
+                for node_item in tree_widget.root_items():
+                    if (
+                        isinstance(node_item, TreeNodeItem)
+                        and node_item.inherit_description is True
+                    ):
+                        # This will recursively set all child items that inherit the description.
+                        node_item.set_description(comments)
 
         # the "else" below means if this is a publish item
         else:
-            self._current_item.description = comments
+            # Define a new variable as we might redefine the comments if the
+            # comments are empty we will get the inherited comments.
+            description = comments
+            # To make the comparison fair, treat a None type description as an empty string.
+            item_desc = (
+                self._current_item.description
+                if self._current_item.description is not None
+                else ""
+            )
+            if item_desc != description:
+                # Whilst you can select more than one item, the item description box is not set to show
+                # so there can be only one selected item when changing the description.
+                node_item = tree_widget.selectedItems()[0]
 
-            # <multiple values> placeholder text should not appear for individual items
-            self.ui.item_comments._show_placeholder = False
+                if comments == "":
+                    # The description has been cleared from the box, so we should retrieve the inherited
+                    # description.
+                    node_item.inherit_description = True
+                    description = self._find_inherited_description(node_item)
+                else:
+                    # The user has entered the description on this item so we no longer want to
+                    # inherit (if it was before).
+                    node_item.inherit_description = False
 
-            # if at least one task has a comment that is different than the summary description, set
-            # <multiple values> indicator to true
-            if self._summary_comment != comments:
-                self._summary_comment_multiple_values = True
+                # This will set all child items that inherit descriptions to the same description.
+                node_item.set_description(description)
+                self._set_description_inheritance_ui(node_item)
+
+    def _on_description_inherited_link_activated(self, _link):
+        """
+        When the user activates the link in the inherited from label
+        this method will be called. The method selects the item in the tree
+        that the current item inherits its description from.
+        :param link: The activated URL, we don't need to use this.
+        """
+        selected_item = self.ui.items_tree.selectedItems()[0]
+        item = self._find_inherited_description_item(selected_item)
+        if item:
+            item.setSelected(True)
+        else:
+            self.ui.items_tree.summary_node.setSelected(True)
+        # Now deselect the item that was selected before clicking the link.
+        selected_item.setSelected(False)
 
     def _update_item_thumbnail(self, pixmap):
         """
@@ -604,7 +633,25 @@ class AppDialog(QtGui.QWidget):
             self.ui.item_thumbnail.hide()
 
         self.ui.item_description_label.setText("Description")
-        self.ui.item_comments.setPlainText(item.description)
+
+        # Sets up the UI around the description based on the inheritance state
+        self._set_description_inheritance_ui(tree_item)
+
+        if tree_item.inherit_description:
+            self.ui.item_comments.setText("")
+            self.ui.item_comments.setPlaceholderText(item.description)
+        else:
+            # We are not inheriting the description so we should set the
+            # text box to display the item's description, but we'll also look
+            # up what the inherited description would be in case the user clears
+            # the box, and it displays the placeholder text.
+            self.ui.item_comments.setText(item.description)
+
+            inherited_desc = self._find_inherited_description(tree_item)
+            self.ui.item_comments.setPlaceholderText(inherited_desc)
+
+        # Hides the multiple values overlay, as it is only for the summary item.
+        self.ui.item_comments._show_multiple_values = False
 
         # if summary thumbnail is defined, item thumbnail should inherit it
         # unless item thumbnail was set after summary thumbnail
@@ -674,20 +721,31 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_thumbnail.show()
 
         thumbnail_has_multiple_values = False
+        description_had_multiple_values = False
         for top_level_item in self._publish_manager.tree.root_item.children:
             if top_level_item.thumbnail_explicit:
                 thumbnail_has_multiple_values = True
+
+            if top_level_item.description not in [None, self._summary_comment]:
+                description_had_multiple_values = True
+
+            if description_had_multiple_values and thumbnail_has_multiple_values:
                 break
 
             for descendant in top_level_item.descendants:
                 if descendant.thumbnail_explicit:
                     # shortcut if one descendant has an explicit thumbnail
                     thumbnail_has_multiple_values = True
+
+                if descendant.description not in [None, self._summary_comment]:
+                    description_had_multiple_values = True
+
+                if description_had_multiple_values and thumbnail_has_multiple_values:
                     break
 
-            # break out of this loop if an explicit thumbnail was found for
-            # this top level item
-            if thumbnail_has_multiple_values:
+            # break out of this loop if an explicit thumbnail and different description
+            # was found for a descendant of the top level item.
+            if thumbnail_has_multiple_values and description_had_multiple_values:
                 break
 
         self.ui.item_thumbnail._set_multiple_values_indicator(
@@ -699,13 +757,15 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_thumbnail.setEnabled(True)
 
         self.ui.item_description_label.setText("Description for all items")
-        self.ui.item_comments.setPlainText(self._summary_comment)
+        self.ui.item_inherited_item_label.hide()
+        self.ui.item_comments.setText(self._summary_comment)
+        self.ui.item_comments.setPlaceholderText("")
 
         # the item_comments PublishDescriptionFocus won't display placeholder text if it is in focus
         # so clearing the focus from that widget in order to see the <multiple values> warning once
         # the master summary details page is opened
         self.ui.item_comments.clearFocus()
-        self.ui.item_comments._show_placeholder = self._summary_comment_multiple_values
+        self.ui.item_comments._show_multiple_values = description_had_multiple_values
 
         # for the summary, attempt to display the appropriate context in the
         # context widget. if all publish items have the same context, display
@@ -784,6 +844,8 @@ class AppDialog(QtGui.QWidget):
 
         # make sure the ui is up to date
         self._synchronize_tree()
+
+        self._summary_comment = ""
 
         # select summary
         self.ui.items_tree.select_first_item()
@@ -906,6 +968,47 @@ class AppDialog(QtGui.QWidget):
             item = it.value()
             if isinstance(item, TopLevelTreeNodeItem):
                 item.setExpanded(expanded)
+
+    def _set_description_inheritance_ui(self, tree_item):
+        """
+        Sets up the UI based on the selected item's description inheritance state.
+        :param tree_item:
+        :return:
+        """
+        self.ui.item_inherited_item_label.show()
+        highlight_color = self._bundle.style_constants["SG_HIGHLIGHT_COLOR"]
+        base_lbl = '<span style=" font-size:10pt;">{0}</span>'
+
+        if isinstance(tree_item, TreeNodeItem) and tree_item.inherit_description:
+            self.ui.item_comments.setStyleSheet(
+                "border: 1px solid {0};".format(highlight_color)
+            )
+
+            lbl_prefix = base_lbl.format(
+                'Description inherited from: <a href="inherited description" style="color: {0}">{1}</a>'
+            )
+
+            desc_item = self._find_inherited_description_item(tree_item)
+            if desc_item:
+                name = desc_item.get_publish_instance().name
+                self.ui.item_inherited_item_label.setText(
+                    lbl_prefix.format(highlight_color, name)
+                )
+                return
+            elif self._summary_comment:
+                # If the description is not inherited from another item, then it is inherited from the
+                # summary
+                self.ui.item_inherited_item_label.setText(
+                    lbl_prefix.format(highlight_color, "Summary")
+                )
+                return
+
+        self.ui.item_comments.setStyleSheet(
+            "border: 0px solid {0};".format(highlight_color)
+        )
+        self.ui.item_inherited_item_label.setText(
+            base_lbl.format("Description not inherited")
+        )
 
     def _delete_selected(self):
         """
@@ -1224,6 +1327,42 @@ class AppDialog(QtGui.QWidget):
 
         # reset the validation flag
         self._validation_run = False
+
+    def _find_inherited_description_item(self, item):
+        """
+        Recursively looks up the tree to find the item that the passed item
+        should inherit the description from.
+        If this item doesn't inherit then it will return None.
+        It only considers parents, and so will not return the summary item even if
+        that's what the description should ultimately inherit from.
+        :return: TreeNodeItem or None
+        """
+
+        def _get_parent_item(item):
+            if item is None:
+                # We have reached the top of the tree without finding an item that doesn't inherit a description.
+                return None
+            elif not isinstance(item, TreeNodeItem) or item.inherit_description:
+                return _get_parent_item(item.parent())
+            else:
+                # We've found an item that doesn't inherit its description so use this.
+                return item
+
+        return _get_parent_item(item.parent())
+
+    def _find_inherited_description(self, node_item):
+        """
+        For a given item it will search recursively through it's parents to find a description.
+        :param node_item: TreeNodeItem
+        :return: str
+        """
+        inherited_desc_item = self._find_inherited_description_item(node_item)
+        if inherited_desc_item:
+            return inherited_desc_item.get_publish_instance().description
+        else:
+            # There is no parent item found in the tree that doesn't inherit, so we should grab the
+            # description from the summary.
+            return self._summary_comment
 
     def _get_tree_items(self):
         """
