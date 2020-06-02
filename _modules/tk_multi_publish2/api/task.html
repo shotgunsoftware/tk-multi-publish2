@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.api.task &mdash; tk-multi-publish2 v2.5.2 documentation</title>
+  <title>tk_multi_publish2.api.task &mdash; tk-multi-publish2 v2.5.3 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.5.2 documentation" href="../../../index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.5.3 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -117,7 +117,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.5.2.<br>
+    <b>tk-multi-publish2</b> v2.5.3.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -212,7 +212,7 @@
     <span class="p">]</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">task_dict</span><span class="p">,</span> <span class="n">serialization_version</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">task_dict</span><span class="p">,</span> <span class="n">serialization_version</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns an instance of a PublishTask from serialized data.</span>
 
@@ -250,15 +250,15 @@
 
         <span class="k">return</span> <span class="n">new_task</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">visible</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">enabled</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">checked</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">visible</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">checked</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the task.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_item</span> <span class="o">=</span> <span class="n">item</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_plugin</span> <span class="o">=</span> <span class="n">plugin</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c1"># task name override of plugin name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_description</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c1"># task description override of plugin desc.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># task name override of plugin name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_description</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># task description override of plugin desc.</span>
 
         <span class="c1"># need to make a deep copy of the settings as they may be modified</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span> <span class="o">=</span> <span class="p">{}</span>
@@ -345,7 +345,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_active</span>
 
-    <span class="nd">@active.setter</span>
+    <span class="nd">@active</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">active</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">active_state</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Explicitly set the active state.</span>
@@ -382,7 +382,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visible</span>
 
-    <span class="nd">@visible.setter</span>
+    <span class="nd">@visible</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_visible</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the visibility state.</span>
@@ -400,7 +400,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enabled</span>
 
-    <span class="nd">@enabled.setter</span>
+    <span class="nd">@enabled</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_enabled</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the enabled state.</span>
@@ -418,7 +418,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_description</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">description</span>
 
-    <span class="nd">@description.setter</span>
+    <span class="nd">@description</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_description</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Sets a new description for the task with the given string.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_description</span> <span class="o">=</span> <span class="n">new_description</span>
@@ -433,7 +433,7 @@
         <span class="sd">&quot;&quot;&quot;The display name of the task.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">name</span>
 
-    <span class="nd">@name.setter</span>
+    <span class="nd">@name</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Sets a new display name for the task with the given string.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">new_name</span>
@@ -484,7 +484,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'v2.5.2',
+            VERSION:'v2.5.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

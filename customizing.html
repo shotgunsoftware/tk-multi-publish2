@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Publish Customization &mdash; tk-multi-publish2 v2.5.2 documentation</title>
+  <title>Publish Customization &mdash; tk-multi-publish2 v2.5.3 documentation</title>
   
 
   
@@ -32,9 +32,9 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.5.2 documentation" href="index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.5.3 documentation" href="index.html"/>
         <link rel="next" title="Publish API" href="api.html"/>
-        <link rel="prev" title="Shotgun Publisher API reference, v2.5.2" href="index.html"/> 
+        <link rel="prev" title="Shotgun Publisher API reference, v2.5.3" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -129,7 +129,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.5.2.<br>
+    <b>tk-multi-publish2</b> v2.5.3.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -196,7 +196,7 @@ and presented to the user.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">For more information on how to take over, subclass, and manage hooks,
-see the <a class="reference external" href="http://developer.shotgunsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.19.6)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
+see the <a class="reference external" href="http://developer.shotgunsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.19.10)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="collector-hook-api">
@@ -254,7 +254,7 @@ as <code class="docutils literal"><span class="pre">hook</span></code>, <code cl
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;Work Template&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;template&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;A work file template required by this collector.&quot;</span>
         <span class="p">},</span>
         <span class="s2">&quot;Exclude Objects&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -310,7 +310,7 @@ instance of the publish app.</p>
 <p>Example Maya implementation:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process_current_session</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">parent_item</span><span class="p">):</span>
 
-    <span class="n">path</span> <span class="o">=</span> <span class="n">cmds</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">sn</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">cmds</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">session_item</span> <span class="o">=</span> <span class="n">parent_item</span><span class="o">.</span><span class="n">create_item</span><span class="p">(</span>
         <span class="s2">&quot;maya.session&quot;</span><span class="p">,</span>
@@ -429,7 +429,7 @@ custom publish plugin UI.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">For more information on how to take over, subclass, and manage hooks,
-see the <a class="reference external" href="http://developer.shotgunsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.19.6)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
+see the <a class="reference external" href="http://developer.shotgunsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.19.10)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="publish-plugin-api">
@@ -558,7 +558,7 @@ as <code class="docutils literal"><span class="pre">hook</span></code>, <code cl
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;Publish Template&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;template&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;The output path template for this plugin.&quot;</span>
         <span class="p">},</span>
         <span class="s2">&quot;Resolution&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -650,7 +650,7 @@ inform the acceptance logic.</p>
 <p>Example implementation:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 
-    <span class="n">accept</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">accept</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="c1"># get the path for the item as set during collection</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
@@ -659,7 +659,7 @@ inform the acceptance logic.</p>
     <span class="n">size_in_bytes</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">st_stize</span>
     <span class="k">if</span> <span class="n">size_in_bytes</span> <span class="o">&gt;</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">9</span><span class="p">):</span> <span class="c1"># 1 GB</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;File is too big (&gt; 1 GB)!&quot;</span><span class="p">)</span>
-        <span class="n">accept</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">accept</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;accepted&quot;</span><span class="p">:</span> <span class="n">accepted</span><span class="p">}</span>
 </pre></div>
@@ -698,13 +698,13 @@ tooltip on the task as well as in the logging view of the publisher.</p>
 <p>Simple implementation example for a Maya session item validation:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 
-     <span class="n">path</span> <span class="o">=</span> <span class="n">cmds</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">sn</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+     <span class="n">path</span> <span class="o">=</span> <span class="n">cmds</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
      <span class="c1"># ensure the file has been saved</span>
      <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;The Maya session has not been saved.&quot;</span><span class="p">)</span>
 
-     <span class="k">return</span> <span class="bp">True</span>
+     <span class="k">return</span> <span class="kc">True</span>
 </pre></div>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
@@ -739,7 +739,7 @@ the publisher will stop execution.</p>
 
     <span class="c1"># ensure the session is saved</span>
     <span class="n">cmds</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="n">rename</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
-    <span class="n">cmds</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="n">save</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">cmds</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># the hook&#39;s parent is the publisher</span>
     <span class="n">publisher</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span>
@@ -797,7 +797,7 @@ and the publisher will stop execution.</p>
 
     <span class="c1"># save to the next version path</span>
     <span class="n">cmds</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="n">rename</span><span class="o">=</span><span class="n">next_version_path</span><span class="p">)</span>
-    <span class="n">cmds</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="n">save</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">cmds</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1061,7 +1061,7 @@ the items to be published.</td>
         <a href="api.html" class="btn btn-neutral float-right" title="Publish API" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="Shotgun Publisher API reference, v2.5.2" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral" title="Shotgun Publisher API reference, v2.5.3" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1091,7 +1091,7 @@ the items to be published.</td>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'v2.5.2',
+            VERSION:'v2.5.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

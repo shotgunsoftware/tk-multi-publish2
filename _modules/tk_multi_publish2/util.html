@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.util &mdash; tk-multi-publish2 v2.5.2 documentation</title>
+  <title>tk_multi_publish2.util &mdash; tk-multi-publish2 v2.5.3 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.5.2 documentation" href="../../index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.5.3 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -117,7 +117,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.5.2.<br>
+    <b>tk-multi-publish2</b> v2.5.3.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -281,7 +281,7 @@
 
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
         <span class="c1"># folder</span>
-        <span class="n">extension</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">extension</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># file. extract the extension and remove the &quot;.&quot;</span>
         <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">extension</span><span class="p">)</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
@@ -289,7 +289,7 @@
             <span class="n">extension</span> <span class="o">=</span> <span class="n">extension</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># prevent extension = &quot;&quot;</span>
-            <span class="n">extension</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">extension</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">file_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">,)</span>
 
@@ -298,7 +298,7 @@
     <span class="k">return</span> <span class="n">file_info</span></div>
 
 
-<div class="viewcode-block" id="get_frame_sequence_path"><a class="viewcode-back" href="../../utility.html#tk_multi_publish2.util.get_frame_sequence_path">[docs]</a><span class="k">def</span> <span class="nf">get_frame_sequence_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">frame_spec</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_frame_sequence_path"><a class="viewcode-back" href="../../utility.html#tk_multi_publish2.util.get_frame_sequence_path">[docs]</a><span class="k">def</span> <span class="nf">get_frame_sequence_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">frame_spec</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a path with a frame number, return the sequence path where the frame</span>
 <span class="sd">    number is replaced with a given frame specification such as ``{FRAME}`` or</span>
@@ -320,7 +320,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_frame_sequences"><a class="viewcode-back" href="../../utility.html#tk_multi_publish2.util.get_frame_sequences">[docs]</a><span class="k">def</span> <span class="nf">get_frame_sequences</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">frame_spec</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_frame_sequences"><a class="viewcode-back" href="../../utility.html#tk_multi_publish2.util.get_frame_sequences">[docs]</a><span class="k">def</span> <span class="nf">get_frame_sequences</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">frame_spec</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a folder, inspect the contained files to find what appear to be</span>
 <span class="sd">    files with frame numbers.</span>
@@ -375,7 +375,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_publish_name"><a class="viewcode-back" href="../../utility.html#tk_multi_publish2.util.get_publish_name">[docs]</a><span class="k">def</span> <span class="nf">get_publish_name</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">sequence</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="get_publish_name"><a class="viewcode-back" href="../../utility.html#tk_multi_publish2.util.get_publish_name">[docs]</a><span class="k">def</span> <span class="nf">get_publish_name</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">sequence</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a file path, return the display name to use for publishing.</span>
 
@@ -434,7 +434,7 @@
 <span class="c1"># ---- publish util functions</span>
 
 
-<span class="k">def</span> <span class="nf">get_conflicting_publishes</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">publish_name</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">get_conflicting_publishes</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">publish_name</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a list of SG published file dicts for any existing publishes that</span>
 <span class="sd">    match the supplied context, path, and publish_name.</span>
@@ -468,7 +468,7 @@
     <span class="c1"># those by their path field. Once we have the ability in SG to filter by</span>
     <span class="c1"># path, we can replace this whole method with a simple call to find().</span>
     <span class="n">publish_data</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">register_publish</span><span class="p">(</span>
-        <span class="n">publisher</span><span class="o">.</span><span class="n">sgtk</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">publish_name</span><span class="p">,</span> <span class="n">version_number</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="bp">True</span>
+        <span class="n">publisher</span><span class="o">.</span><span class="n">sgtk</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">publish_name</span><span class="p">,</span> <span class="n">version_number</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Publish dry run data: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">publish_data</span><span class="p">,))</span>
 
@@ -529,7 +529,7 @@
 
     <span class="c1"># get a list of all publishes matching this criteria</span>
     <span class="n">publishes</span> <span class="o">=</span> <span class="n">get_conflicting_publishes</span><span class="p">(</span>
-        <span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sg_status_list&quot;</span><span class="p">,</span> <span class="s2">&quot;is_not&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span>
+        <span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sg_status_list&quot;</span><span class="p">,</span> <span class="s2">&quot;is_not&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">publishes</span><span class="p">:</span>
@@ -551,7 +551,7 @@
                 <span class="s2">&quot;request_type&quot;</span><span class="p">:</span> <span class="s2">&quot;update&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;entity_type&quot;</span><span class="p">:</span> <span class="n">publish</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span>
                 <span class="s2">&quot;entity_id&quot;</span><span class="p">:</span> <span class="n">publish</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
-                <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;sg_status_list&quot;</span><span class="p">:</span> <span class="bp">None</span><span class="p">},</span>  <span class="c1"># will clear the status</span>
+                <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;sg_status_list&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>  <span class="c1"># will clear the status</span>
             <span class="p">}</span>
         <span class="p">)</span>
 
@@ -592,7 +592,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'v2.5.2',
+            VERSION:'v2.5.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

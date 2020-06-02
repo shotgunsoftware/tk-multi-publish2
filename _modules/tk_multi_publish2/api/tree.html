@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.api.tree &mdash; tk-multi-publish2 v2.5.2 documentation</title>
+  <title>tk_multi_publish2.api.tree &mdash; tk-multi-publish2 v2.5.3 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.5.2 documentation" href="../../../index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.5.3 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -117,7 +117,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.5.2.<br>
+    <b>tk-multi-publish2</b> v2.5.3.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -344,7 +344,7 @@
         <span class="c1"># The root item is the sole parent of all top level publish items. It</span>
         <span class="c1"># has no use other than organization and provides an easy interface for</span>
         <span class="c1"># beginning iteration and accessing all top level items.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_root_item</span> <span class="o">=</span> <span class="n">PublishItem</span><span class="p">(</span><span class="s2">&quot;__root__&quot;</span><span class="p">,</span> <span class="s2">&quot;__root__&quot;</span><span class="p">,</span> <span class="s2">&quot;__root__&quot;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_root_item</span> <span class="o">=</span> <span class="n">PublishItem</span><span class="p">(</span><span class="s2">&quot;__root__&quot;</span><span class="p">,</span> <span class="s2">&quot;__root__&quot;</span><span class="p">,</span> <span class="s2">&quot;__root__&quot;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Iterates over the tree, depth first.&quot;&quot;&quot;</span>
@@ -354,7 +354,7 @@
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root_item</span><span class="o">.</span><span class="n">descendants</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">item</span>
 
-<div class="viewcode-block" id="PublishTree.clear"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishTree.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clear_persistent</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="PublishTree.clear"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishTree.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clear_persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clears the tree of all items.</span>
 
@@ -404,7 +404,7 @@
 <span class="sd">              [task] Upload Media</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pformat</span><span class="p">())</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pformat</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="PublishTree.remove_item"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishTree.remove_item">[docs]</a>    <span class="k">def</span> <span class="nf">remove_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -443,7 +443,7 @@
                 <span class="n">file_obj</span><span class="p">,</span>
                 <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
                 <span class="c1"># all non-ASCII characters in the output are escaped with \uXXXX sequences</span>
-                <span class="n">ensure_ascii</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="c1"># Use a custom JSON encoder to certain Toolkit objects are converted into a</span>
                 <span class="c1"># JSON</span>
                 <span class="bp">cls</span><span class="o">=</span><span class="n">_PublishTreeEncoder</span><span class="p">,</span>
@@ -533,7 +533,7 @@
         <span class="n">templates</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span><span class="o">.</span><span class="n">sgtk</span><span class="o">.</span><span class="n">templates</span>
         <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">templates</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">TankError</span><span class="p">(</span>
-                <span class="s2">&quot;Template &#39;{0}&#39; was not found in templates.yml.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+                <span class="s2">&quot;Template &#39;</span><span class="si">{0}</span><span class="s2">&#39; was not found in templates.yml.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">templates</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span>
     <span class="k">return</span> <span class="n">data</span>
@@ -569,7 +569,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'v2.5.2',
+            VERSION:'v2.5.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
