@@ -270,7 +270,7 @@ class PublishPluginInstance(PluginInstanceBase):
                 self._hook_instance.set_ui_settings(parent, settings, items)
             except TypeError:
                 # Items is a newer attribute, which an older version of the hook
-                # might not implement, so fallback to passing just the parent.
+                # might not implement, so fallback to passing just the parent and settings.
                 self._hook_instance.set_ui_settings(parent, settings)
 
     @contextmanager
