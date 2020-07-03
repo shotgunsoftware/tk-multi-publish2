@@ -208,7 +208,7 @@ class PublishPluginInstance(PluginInstanceBase):
     ############################################################################
     # ui methods
 
-    def run_create_settings_widget(self, parent):
+    def run_create_settings_widget(self, parent, items):
         """
         Creates a custom widget to edit a plugin's settings.
 
@@ -216,6 +216,7 @@ class PublishPluginInstance(PluginInstanceBase):
 
         :param parent: Parent widget
         :type parent: :class:`QtGui.QWidget`
+        :param items: A list of PublishItems the selected tasks are parented to.
         """
 
         # nothing to do if running without a UI
@@ -223,7 +224,12 @@ class PublishPluginInstance(PluginInstanceBase):
             return None
 
         with self._handle_plugin_error(None, "Error laying out widgets: %s"):
-            return self._hook_instance.create_settings_widget(parent)
+            try:
+                return self._hook_instance.create_settings_widget(parent, items)
+            except TypeError:
+                # Items is a newer attribute, which an older version of the hook
+                # might not implement, so fallback to passing just the parent.
+                return self._hook_instance.create_settings_widget(parent)
 
     def run_get_ui_settings(self, parent):
         """
@@ -242,7 +248,7 @@ class PublishPluginInstance(PluginInstanceBase):
         with self._handle_plugin_error(None, "Error reading settings from UI: %s"):
             return self._hook_instance.get_ui_settings(parent)
 
-    def run_set_ui_settings(self, parent, settings):
+    def run_set_ui_settings(self, parent, settings, items):
         """
         Provides a list of settings from the custom UI. It is the responsibility of the UI
         handle different values for the same setting.
@@ -252,6 +258,7 @@ class PublishPluginInstance(PluginInstanceBase):
         :param parent: Parent widget
         :type parent: :class:`QtGui.QWidget`
         :param settings: List of dictionary of settings as python literals.
+        :param items: A list of PublishItems the selected tasks are parented to.
         """
 
         # nothing to do if running without a UI
@@ -259,7 +266,12 @@ class PublishPluginInstance(PluginInstanceBase):
             return None
 
         with self._handle_plugin_error(None, "Error writing settings to UI: %s"):
-            self._hook_instance.set_ui_settings(parent, settings)
+            try:
+                self._hook_instance.set_ui_settings(parent, settings, items)
+            except TypeError:
+                # Items is a newer attribute, which an older version of the hook
+                # might not implement, so fallback to passing just the parent.
+                self._hook_instance.set_ui_settings(parent, settings)
 
     @contextmanager
     def _handle_plugin_error(self, success_msg, error_msg):
