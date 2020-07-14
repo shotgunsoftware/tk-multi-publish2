@@ -229,7 +229,7 @@ class PluginWithUi(HookBaseClass):
             ),
         )
 
-    def get_ui_settings(self, controller):
+    def get_ui_settings(self, controller, items):
         """
         Returns the modified settings.
         """
