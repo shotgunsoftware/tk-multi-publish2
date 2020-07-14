@@ -11,6 +11,14 @@
 from contextlib import contextmanager
 import traceback
 
+try:
+    # In Python 3 the interface changed, getargspec is now deprecated.
+    # getfullargspec was deprecated in 3.5, but that was reversed in 3.6.
+    from inspect import getfullargspec as getargspec
+except ImportError:
+    # Fallback for Python 2
+    from inspect import getargspec
+
 import sgtk
 from .instance_base import PluginInstanceBase
 
@@ -224,14 +232,15 @@ class PublishPluginInstance(PluginInstanceBase):
             return None
 
         with self._handle_plugin_error(None, "Error laying out widgets: %s"):
-            try:
-                return self._hook_instance.create_settings_widget(parent, items)
-            except TypeError:
+
+            if "items" in getargspec(self._hook_instance.create_settings_widget):
+                self._hook_instance.create_settings_widget(parent, items)
+            else:
                 # Items is a newer attribute, which an older version of the hook
                 # might not implement, so fallback to passing just the parent.
-                return self._hook_instance.create_settings_widget(parent)
+                self._hook_instance.create_settings_widget(parent)
 
-    def run_get_ui_settings(self, parent):
+    def run_get_ui_settings(self, parent, items):
         """
         Retrieves the settings from the custom UI.
 
@@ -246,7 +255,13 @@ class PublishPluginInstance(PluginInstanceBase):
             return None
 
         with self._handle_plugin_error(None, "Error reading settings from UI: %s"):
-            return self._hook_instance.get_ui_settings(parent)
+
+            if "items" in getargspec(self._hook_instance.get_ui_settings):
+                self._hook_instance.get_ui_settings(parent, items)
+            else:
+                # Items is a newer attribute, which an older version of the hook
+                # might not implement, so fallback to passing just the parent.
+                self._hook_instance.get_ui_settings(parent)
 
     def run_set_ui_settings(self, parent, settings, items):
         """
@@ -266,9 +281,10 @@ class PublishPluginInstance(PluginInstanceBase):
             return None
 
         with self._handle_plugin_error(None, "Error writing settings to UI: %s"):
-            try:
+
+            if "items" in getargspec(self._hook_instance.set_ui_settings):
                 self._hook_instance.set_ui_settings(parent, settings, items)
-            except TypeError:
+            else:
                 # Items is a newer attribute, which an older version of the hook
                 # might not implement, so fallback to passing just the parent and settings.
                 self._hook_instance.set_ui_settings(parent, settings)

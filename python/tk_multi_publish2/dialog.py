@@ -1732,7 +1732,9 @@ class _TaskSelection(object):
         :returns: Dictionary of settings as regular Python literals.
         """
         if self._items:
-            return self._items[0].plugin.run_get_ui_settings(widget)
+            # Get the publish items associated with the selected tasks.
+            publish_items = self.get_task_items()
+            return self._items[0].plugin.run_get_ui_settings(widget, publish_items)
         else:
             return {}
 
@@ -1743,10 +1745,9 @@ class _TaskSelection(object):
         :param widget: Custom UI's widget.
         :param settings: List of settings for all tasks.
         """
-
-        # Get the publish items associated with the selected tasks.
-        publish_items = self.get_task_items()
         if self._items:
+            # Get the publish items associated with the selected tasks.
+            publish_items = self.get_task_items()
             self._items[0].plugin.run_set_ui_settings(widget, settings, publish_items)
 
     def get_task_items(self):
