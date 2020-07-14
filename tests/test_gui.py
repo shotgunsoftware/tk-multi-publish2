@@ -193,3 +193,92 @@ def test_file_publish(app_dialog):
     assert app_dialog.root.captions[
         "Publish Complete! For details, click here."
     ].exists(), "Publish failed."
+
+    # Return to the main dialog
+    app_dialog.root.captions["To publish again, click here"].mouseClick()
+
+    # make sure you're on the main dialog
+    assert app_dialog.root.captions[
+        "Drag and drop files or folders here"
+    ].exists(), "Drag and drop files or folders here text is missing."
+    assert app_dialog.root.buttons[
+        "Browse files to publish"
+    ].exists(), "Browse files to publish button is missing."
+    assert app_dialog.root.buttons[
+        "Browse sequences to publish"
+    ].exists(), "Browse folders to publish image sequences button is missing."
+
+
+def test_description_inheritance(app_dialog):
+    """
+    Ensure summary description inheritance is working fine.
+    """
+    # Click on Browse file to publish and then select the file to publish
+    app_dialog.root.buttons["Browse files to publish"].mouseClick()
+    app_dialog.root.dialogs["Browse files to publish"].waitExist(timeout=30)
+    app_dialog.root.dialogs["Browse files to publish"].waitIdle(timeout=30)
+
+    # Get images path to be published
+    image_path = os.path.expandvars("${TK_TEST_FIXTURES}/files/images/\"achmed.JPG\" \"attarder.jpg\"")
+
+    # Type in image path
+    app_dialog.root.dialogs["Browse files to publish"].textfields[
+        "File name:"
+    ].mouseClick()
+    app_dialog.root.dialogs["Browse files to publish"].textfields["File name:"].pasteIn(
+        image_path
+    )
+    app_dialog.root.dialogs["Browse files to publish"].textfields[
+        "File name:"
+    ].waitIdle(timeout=30)
+    app_dialog.root.dialogs["Browse files to publish"].textfields["File name:"].typeIn(
+        "{ENTER}"
+    )
+
+    # Validate file to publish is there and the right project is selected
+    app_dialog.root.captions["Publish Summary"].waitExist(timeout=30)
+    app_dialog.root.captions["4 tasks to execute"].waitExist(timeout=30)
+    assert app_dialog.root.captions[
+        "*Demo: Animation"
+    ].exists(), "Context is not set to Demo: Animation project."
+
+    # Add a summary description and make sure all items inherited it
+    app_dialog.root.textfields.typeIn("Description Summary")
+    # Make sure first item inherited the summary description
+    app_dialog.root.outlineitems[2].mouseClick()
+    assert app_dialog.root.captions[
+        "Description inherited from: Summary"
+    ].exists(), "Description should be inherited"
+    # Make sure second item inherited the summary description
+    app_dialog.root.outlineitems[5].mouseClick()
+    assert app_dialog.root.captions[
+        "Description inherited from: Summary"
+    ].exists(), "Description should be inherited"
+
+    # Add description for the first image
+    app_dialog.root.outlineitems[2].mouseClick()
+    # Make sure it is the right item
+    assert app_dialog.root.captions[
+        "achmed.JPG"
+    ].exists(), "Not the right tree item selected"
+    app_dialog.root.textfields.typeIn("Description for item 1")
+    # Make sure description is not inherited
+    assert app_dialog.root.captions[
+        "Description not inherited"
+    ].exists(), "Description should not be inherited"
+
+    # Add descriptions for the second image
+    app_dialog.root.outlineitems[5].mouseClick()
+    # Make sure it is the right item
+    assert app_dialog.root.captions[
+        "attarder.jpg"
+    ].exists(), "Not the right tree item selected"
+    # Make sure description is still inherited for item 2
+    assert app_dialog.root.captions[
+        "Description inherited from: Summary"
+    ].exists(), "Description should be inherited"
+    app_dialog.root.textfields[1].typeIn("Description for item 2")
+    # Make sure description is no more inherited
+    assert app_dialog.root.captions[
+        "Description not inherited"
+    ].exists(), "Description should not be inherited"
