@@ -415,7 +415,7 @@ class PublishPlugin(HookBaseClass):
     # allows clients to write their own publish plugins while deferring custom
     # UI settings implementations until needed.
 
-    def create_settings_widget(self, parent, items):
+    def create_settings_widget(self, parent, items=None):
         """
         Creates a Qt widget, for the supplied parent widget (a container widget
         on the right side of the publish UI).
@@ -450,7 +450,7 @@ class PublishPlugin(HookBaseClass):
         # return the description group box as the widget to display
         return description_group_box
 
-    def get_ui_settings(self, widget):
+    def get_ui_settings(self, widget, items=None):
         """
         Invoked by the Publisher when the selection changes. This method gathers the settings
         on the previously selected task, so that they can be later used to repopulate the
@@ -481,7 +481,7 @@ class PublishPlugin(HookBaseClass):
         # custom UI to show up in the app
         return {}
 
-    def set_ui_settings(self, widget, settings, items):
+    def set_ui_settings(self, widget, settings, items=None):
         """
         Allows the custom UI to populate its fields with the settings from the
         currently selected tasks.

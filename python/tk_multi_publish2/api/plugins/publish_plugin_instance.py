@@ -233,12 +233,12 @@ class PublishPluginInstance(PluginInstanceBase):
 
         with self._handle_plugin_error(None, "Error laying out widgets: %s"):
 
-            if "items" in getargspec(self._hook_instance.create_settings_widget):
-                self._hook_instance.create_settings_widget(parent, items)
+            if len(getargspec(self._hook_instance.create_settings_widget).args) == 3:
+                return self._hook_instance.create_settings_widget(parent, items)
             else:
                 # Items is a newer attribute, which an older version of the hook
                 # might not implement, so fallback to passing just the parent.
-                self._hook_instance.create_settings_widget(parent)
+                return self._hook_instance.create_settings_widget(parent)
 
     def run_get_ui_settings(self, parent, items):
         """
@@ -256,12 +256,12 @@ class PublishPluginInstance(PluginInstanceBase):
 
         with self._handle_plugin_error(None, "Error reading settings from UI: %s"):
 
-            if "items" in getargspec(self._hook_instance.get_ui_settings):
-                self._hook_instance.get_ui_settings(parent, items)
+            if len(getargspec(self._hook_instance.get_ui_settings).args) == 3:
+                return self._hook_instance.get_ui_settings(parent, items)
             else:
                 # Items is a newer attribute, which an older version of the hook
                 # might not implement, so fallback to passing just the parent.
-                self._hook_instance.get_ui_settings(parent)
+                return self._hook_instance.get_ui_settings(parent)
 
     def run_set_ui_settings(self, parent, settings, items):
         """
@@ -282,7 +282,7 @@ class PublishPluginInstance(PluginInstanceBase):
 
         with self._handle_plugin_error(None, "Error writing settings to UI: %s"):
 
-            if "items" in getargspec(self._hook_instance.set_ui_settings):
+            if len(getargspec(self._hook_instance.set_ui_settings).args) == 4:
                 self._hook_instance.set_ui_settings(parent, settings, items)
             else:
                 # Items is a newer attribute, which an older version of the hook
