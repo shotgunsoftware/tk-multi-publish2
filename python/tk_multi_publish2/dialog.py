@@ -1656,8 +1656,18 @@ class AppDialog(QtGui.QWidget):
             # disable buttons
             self.ui.publish.setEnabled(False)
             self.ui.validate.setEnabled(False)
-            # change task label color to RED
-            self.ui.context_widget.ui.task_label.setStyleSheet("color: red")
+            # change task label color to SG_ALERT_COLOR
+            self.ui.context_widget.ui.task_label.setStyleSheet(
+                "color: " + sgtk.platform.current_bundle().style_constants["SG_ALERT_COLOR"]
+            )
+            # Also change the text and color of the parent label
+            self.ui.context_widget.ui.label.setText(
+                "Task Required is turned ON in your configuration."
+                "Please select a Task to continue."
+            )
+            self.ui.context_widget.ui.label.setStyleSheet(
+                "color: " + sgtk.platform.current_bundle().style_constants["SG_HIGHLIGHT_COLOR"]
+            )
         else:
             # enable buttons
             self.ui.publish.setEnabled(True)
