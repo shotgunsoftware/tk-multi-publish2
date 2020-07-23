@@ -153,6 +153,8 @@ class TestPublishPluginInstance(PublishApiTestBase):
     # We're not using proper return values, as we are only testing that the API handles
     # passing the correct amount of arguments.
 
+    # Both create and get methods accept the same args, so we don't need
+    # separate testing methods.
     def _mock_get_create_w_items(self, parent, items):
         return "passed"
 
@@ -175,6 +177,9 @@ class TestPublishPluginInstance(PublishApiTestBase):
         """
 
         # Create hook instances for the UI methods that accept the items arg
+        # We are not using lambdas for these, since the API checks for the
+        # number of arguments on the method, and there wouldn't be a `self`
+        # arg with a lambda.
         create_hook_instance.return_value = MagicMock(
             create_settings_widget=self._mock_get_create_w_items,
             get_ui_settings=self._mock_get_create_w_items,
