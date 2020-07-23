@@ -470,7 +470,7 @@ class AppDialog(QtGui.QWidget):
 
         # Update the values in all the tasks.
         for task in selected_tasks:
-            # The settings returned by the UI are actual value, not Settings objects, so apply each
+            # The settings returned by the UI are actual values, not Settings objects, so apply each
             # value returned on the appropriate settings object.
             for k, v in settings.items():
                 task.settings[k].value = v
