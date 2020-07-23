@@ -169,6 +169,9 @@ class TestPublishPluginInstance(PublishApiTestBase):
     def test_plugin_ui_methods(self, create_hook_instance):
         """
         Ensure that the custom UI methods receive the correct number of arguments.
+        Previously the custom ui Methods didn't get passed items, so this test makes sure
+        that the API can handle calling the hooks when they either implement or don't
+        implement the items.
         """
 
         # Create hook instances for the UI methods that accept the items arg
