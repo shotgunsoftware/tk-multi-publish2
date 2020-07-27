@@ -1673,9 +1673,12 @@ class AppDialog(QtGui.QWidget):
             self.ui.publish.setEnabled(True)
             self.ui.validate.setEnabled(True)
 
-            # change task label color to the default value
+            # change task label color and text back to the default values
             self.ui.context_widget.ui.task_label.setStyleSheet("")
-
+            self.ui.context_widget.ui.label.setText(
+                "Task and Entity Link to apply to the selected item:"
+            )
+            self.ui.context_widget.ui.label.setStyleSheet("")
 
 class _TaskSelection(object):
     """
