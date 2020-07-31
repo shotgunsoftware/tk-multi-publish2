@@ -58,7 +58,7 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         tree_widget.setItemWidget(self, 0, self._embedded_widget)
 
         # Set the items text for accessibility reasons, this text won't actually be shown.
-        self.setText(self._embedded_widget.header)
+        self.setText(0, self._embedded_widget.header)
 
     def _create_widget(self):
         """
