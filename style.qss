@@ -223,6 +223,10 @@ CustomTreeWidgetContext {
     padding-top: 10px;
     border-bottom: 1px solid #494C4F;
 
+    /*This is set to the same color as the tree widget background
+    so that the default item text gets blocked out.*/
+    background-color: #292929;
+
     /* make sure we push it all the way in to compensate for the -28px margin of the widget, see #items_tree::item*/
     margin-left: 28px;
 }

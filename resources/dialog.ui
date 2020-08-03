@@ -13,24 +13,21 @@
   <property name="windowTitle">
    <string>Shotgun Publish</string>
   </property>
+  <property name="accessibleName">
+   <string>publish dialog</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_7">
    <property name="spacing">
     <number>0</number>
    </property>
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>0</number>
    </property>
    <item>
     <widget class="QStackedWidget" name="main_stack">
+     <property name="accessibleName">
+      <string>stackedwidget</string>
+     </property>
      <property name="currentIndex">
       <number>1</number>
      </property>
@@ -48,16 +45,7 @@
           <enum>QFrame::Raised</enum>
          </property>
          <layout class="QGridLayout" name="gridLayout_2" rowstretch="3,0,4" columnstretch="1,0,1">
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
+          <property name="margin">
            <number>0</number>
           </property>
           <property name="spacing">
@@ -420,26 +408,23 @@ image sequences</string>
       </layout>
      </widget>
      <widget class="QWidget" name="main_ui_frame">
+      <property name="accessibleName">
+       <string>Main publish frame</string>
+      </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <property name="spacing">
         <number>2</number>
        </property>
        <item>
         <widget class="QWidget" name="main_frame" native="true">
+         <property name="accessibleName">
+          <string>Upper frame</string>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_9">
           <property name="spacing">
            <number>0</number>
           </property>
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
+          <property name="margin">
            <number>0</number>
           </property>
           <item>
@@ -450,10 +435,16 @@ image sequences</string>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="accessibleName">
+             <string>splitter</string>
+            </property>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
             <widget class="DropAreaFrame" name="frame">
+             <property name="accessibleName">
+              <string>tree frame</string>
+             </property>
              <property name="frameShape">
               <enum>QFrame::StyledPanel</enum>
              </property>
@@ -464,22 +455,16 @@ image sequences</string>
               <property name="spacing">
                <number>0</number>
               </property>
-              <property name="leftMargin">
-               <number>2</number>
-              </property>
-              <property name="topMargin">
-               <number>2</number>
-              </property>
-              <property name="rightMargin">
-               <number>2</number>
-              </property>
-              <property name="bottomMargin">
+              <property name="margin">
                <number>2</number>
               </property>
               <item>
                <widget class="PublishTreeWidget" name="items_tree">
                 <property name="acceptDrops">
                  <bool>true</bool>
+                </property>
+                <property name="accessibleName">
+                 <string>collected items tree</string>
                 </property>
                 <property name="dragEnabled">
                  <bool>true</bool>
@@ -513,28 +498,28 @@ image sequences</string>
              </layout>
             </widget>
             <widget class="QFrame" name="details_frame">
+             <property name="accessibleName">
+              <string>details frame</string>
+             </property>
              <layout class="QVBoxLayout" name="verticalLayout_5">
               <property name="spacing">
                <number>0</number>
               </property>
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
+              <property name="margin">
                <number>0</number>
               </property>
               <item>
                <widget class="QStackedWidget" name="details_stack">
+                <property name="accessibleName">
+                 <string>details stacked widget</string>
+                </property>
                 <property name="currentIndex">
                  <number>1</number>
                 </property>
                 <widget class="QWidget" name="details_item">
+                 <property name="accessibleName">
+                  <string>item details</string>
+                 </property>
                  <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,1,1,1,1,5,1,5">
                   <property name="spacing">
                    <number>8</number>
@@ -566,6 +551,9 @@ image sequences</string>
                         <width>60</width>
                         <height>60</height>
                        </size>
+                      </property>
+                      <property name="accessibleName">
+                       <string>item icon</string>
                       </property>
                       <property name="text">
                        <string/>
@@ -621,13 +609,20 @@ image sequences</string>
                   </item>
                   <item>
                    <widget class="Line" name="item_divider_1">
+                    <property name="accessibleName">
+                     <string>divider</string>
+                    </property>
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="ContextWidget" name="context_widget" native="true"/>
+                   <widget class="ContextWidget" name="context_widget" native="true">
+                    <property name="accessibleName">
+                     <string>context picker widget</string>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <layout class="QGridLayout" name="gridLayout_3">
@@ -689,6 +684,9 @@ image sequences</string>
                       <property name="toolTip">
                        <string>Click to take a screenshot.</string>
                       </property>
+                      <property name="accessibleName">
+                       <string>item thumbnail</string>
+                      </property>
                       <property name="text">
                        <string/>
                       </property>
@@ -727,6 +725,9 @@ image sequences</string>
                         <height>90</height>
                        </size>
                       </property>
+                      <property name="accessibleName">
+                       <string>item description</string>
+                      </property>
                      </widget>
                     </item>
                    </layout>
@@ -743,6 +744,9 @@ image sequences</string>
                   </item>
                   <item>
                    <widget class="QScrollArea" name="scrollArea">
+                    <property name="accessibleName">
+                     <string>summary scroll area</string>
+                    </property>
                     <property name="widgetResizable">
                      <bool>true</bool>
                     </property>
@@ -752,23 +756,17 @@ image sequences</string>
                        <x>0</x>
                        <y>0</y>
                        <width>408</width>
-                       <height>97</height>
+                       <height>101</height>
                       </rect>
+                     </property>
+                     <property name="accessibleName">
+                      <string>summary contents holder</string>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_10" stretch="0,1">
                       <property name="spacing">
                        <number>0</number>
                       </property>
-                      <property name="leftMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="topMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="rightMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="bottomMargin">
+                      <property name="margin">
                        <number>0</number>
                       </property>
                       <item>
@@ -783,6 +781,9 @@ image sequences</string>
                       </item>
                       <item>
                        <widget class="QLabel" name="expander_label">
+                        <property name="accessibleName">
+                         <string>expander label</string>
+                        </property>
                         <property name="text">
                          <string/>
                         </property>
@@ -797,6 +798,9 @@ image sequences</string>
                   </item>
                   <item>
                    <widget class="QLabel" name="item_settings_label">
+                    <property name="accessibleName">
+                     <string/>
+                    </property>
                     <property name="text">
                      <string>Settings:</string>
                     </property>
@@ -813,11 +817,17 @@ image sequences</string>
                       <verstretch>0</verstretch>
                      </sizepolicy>
                     </property>
+                    <property name="accessibleName">
+                     <string>item settings</string>
+                    </property>
                    </widget>
                   </item>
                  </layout>
                 </widget>
                 <widget class="QWidget" name="details_task">
+                 <property name="accessibleName">
+                  <string>task details</string>
+                 </property>
                  <layout class="QVBoxLayout" name="verticalLayout_11">
                   <property name="spacing">
                    <number>8</number>
@@ -850,6 +860,9 @@ image sequences</string>
                         <height>60</height>
                        </size>
                       </property>
+                      <property name="accessibleName">
+                       <string>task icon</string>
+                      </property>
                       <property name="text">
                        <string/>
                       </property>
@@ -875,6 +888,9 @@ image sequences</string>
                   </item>
                   <item>
                    <widget class="QScrollArea" name="task_settings_scroll_area">
+                    <property name="accessibleName">
+                     <string>task settings scroll area</string>
+                    </property>
                     <property name="widgetResizable">
                      <bool>true</bool>
                     </property>
@@ -883,28 +899,26 @@ image sequences</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>98</width>
-                       <height>28</height>
+                       <width>408</width>
+                       <height>432</height>
                       </rect>
+                     </property>
+                     <property name="accessibleName">
+                      <string>task settings parent</string>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_13" stretch="0,10">
                       <property name="spacing">
                        <number>-1</number>
                       </property>
-                      <property name="leftMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="topMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="rightMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="bottomMargin">
+                      <property name="margin">
                        <number>0</number>
                       </property>
                       <item>
-                       <widget class="CustomSettingsWidget" name="task_settings" native="true"/>
+                       <widget class="CustomSettingsWidget" name="task_settings" native="true">
+                        <property name="accessibleName">
+                         <string>task settings</string>
+                        </property>
+                       </widget>
                       </item>
                       <item>
                        <spacer name="task_settings_spacer">
@@ -926,6 +940,9 @@ image sequences</string>
                  </layout>
                 </widget>
                 <widget class="QWidget" name="details_please_select">
+                 <property name="accessibleName">
+                  <string>unselected details</string>
+                 </property>
                  <layout class="QVBoxLayout" name="verticalLayout_8">
                   <property name="spacing">
                    <number>8</number>
@@ -955,6 +972,9 @@ image sequences</string>
                  </layout>
                 </widget>
                 <widget class="QWidget" name="details_multi_edit_not_supported">
+                 <property name="accessibleName">
+                  <string>non multi edit details</string>
+                 </property>
                  <layout class="QVBoxLayout" name="verticalLayout_15">
                   <property name="spacing">
                    <number>8</number>
@@ -1017,6 +1037,9 @@ Please select a single task.</string>
            <height>50</height>
           </size>
          </property>
+         <property name="accessibleName">
+          <string>Bottom frame</string>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -1041,20 +1064,14 @@ Please select a single task.</string>
           </property>
           <item>
            <widget class="QWidget" name="button_container" native="true">
+            <property name="accessibleName">
+             <string>button container</string>
+            </property>
             <layout class="QHBoxLayout" name="horizontalLayout_5">
              <property name="spacing">
               <number>4</number>
              </property>
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
+             <property name="margin">
               <number>0</number>
              </property>
              <item>

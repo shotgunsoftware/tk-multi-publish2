@@ -145,3 +145,62 @@ class TestPublishPluginInstance(PublishApiTestBase):
         handler.keyword = "Error running accept for"
         self.assertEqual(ppi.run_accept(None), {"accepted": True})
         self.assertFalse(handler.found)
+
+    # The following four methods are mock methods for the three UI customization methods.
+    # get_ui_settings
+    # set_ui_settings
+    # create_settings_widget
+    # We're not using proper return values, as we are only testing that the API handles
+    # passing the correct amount of arguments.
+
+    # Both create and get methods accept the same args, so we don't need
+    # separate testing methods.
+    def _mock_get_create_w_items(self, parent, items):
+        return "passed"
+
+    def _mock_get_create_wo_items(self, parent):
+        return "passed"
+
+    def _mock_set_settings_w_items(self, parent, settings, items):
+        pass
+
+    def _mock_set_settings_wo_items(self, parent, settings):
+        pass
+
+    @mock_publish_plugin_instance_hook_creation
+    def test_plugin_ui_methods(self, create_hook_instance):
+        """
+        Ensure that the custom UI methods receive the correct number of arguments.
+        Previously the custom ui Methods didn't get passed items, so this test makes sure
+        that the API can handle calling the hooks when they either implement or don't
+        implement the items.
+        """
+
+        # Create hook instances for the UI methods that accept the items arg
+        # We are not using lambdas for these, since the API checks for the
+        # number of arguments on the method, and there wouldn't be a `self`
+        # arg with a lambda.
+        create_hook_instance.return_value = MagicMock(
+            create_settings_widget=self._mock_get_create_w_items,
+            get_ui_settings=self._mock_get_create_w_items,
+            set_ui_settings=self._mock_set_settings_w_items,
+        )
+        ppi_w_items = self.PublishPluginInstance("test hook", None, {}, logger)
+
+        create_hook_instance.return_value = MagicMock(
+            create_settings_widget=self._mock_get_create_wo_items,
+            get_ui_settings=self._mock_get_create_wo_items,
+            set_ui_settings=self._mock_set_settings_wo_items,
+        )
+        ppi_wo_items = self.PublishPluginInstance("test hook", None, {}, logger)
+
+        for ppi in [ppi_w_items, ppi_wo_items]:
+
+            widget = ppi.run_create_settings_widget(None, [])
+            self.assertEqual(widget, "passed")
+
+            settings = ppi.run_get_ui_settings(None, [])
+            self.assertEqual(settings, "passed")
+
+            # we're just checking this doesn't error, as it doesn't return anything
+            ppi.run_set_ui_settings(None, [], [])

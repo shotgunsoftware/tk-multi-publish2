@@ -67,6 +67,7 @@ class CustomTreeWidgetBase(QtGui.QFrame):
             ),
         }
         self._status_icon = None
+        self._header = ""
 
     @property
     def icon(self):
@@ -83,13 +84,19 @@ class CustomTreeWidgetBase(QtGui.QFrame):
         """
         self.ui.icon.setPixmap(pixmap)
 
+    @property
+    def header(self):
+        return self._header
+
     def set_header(self, title):
         """
         Set the title of the item
 
         :param title: Header text. Can be html.
         """
+        self._header = title
         self.ui.header.setText(title)
+        self.setAccessibleName(title)
 
     def set_checkbox_value(self, state):
         """
