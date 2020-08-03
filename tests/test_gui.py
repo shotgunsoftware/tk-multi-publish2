@@ -14,18 +14,35 @@ import time
 import os
 import sys
 import sgtk
+from tank_vendor import shotgun_api3
 
 try:
     from MA.UI import topwindows
+    from MA.UI import first
 except ImportError:
     pytestmark = pytest.mark.skip()
 
 
 @pytest.fixture(scope="session")
 def context():
-    # A task in Big Buck Bunny which we're going to use
+    # A task in Toolkit UI Automation project which we're going to use
     # for the current context.
-    return {"type": "Project", "id": 70}
+    # Get crendentials from TK_TOOLCHAIN env vars
+    sg = shotgun_api3.Shotgun(os.environ["TK_TOOLCHAIN_HOST"], login=os.environ["TK_TOOLCHAIN_USER_LOGIN"], password=os.environ["TK_TOOLCHAIN_USER_PASSWORD"])
+    # Make sure there is not already an automation project created
+    filters = [["name", "is", "Toolkit UI Automation"]]
+    existed_project = sg.find_one('Project', filters)
+    if existed_project is not None:
+        sg.delete(existed_project["type"], existed_project["id"])
+
+    # Create a new project with the Animation Template
+    data = {
+    "sg_description": "Project Created by Automation",
+    "name": "Toolkit UI Automation",
+    "layout_project": {"type":"Project", "id":89}
+    }
+    new_project = sg.create('Project', data)
+    return new_project
 
 
 # This fixture will launch tk-run-app on first usage
@@ -56,6 +73,8 @@ def host_application(context):
             context["type"],
             "--context-entity-id",
             str(context["id"]),
+            "--config",
+            "tests/fixtures/configInheritance",
         ]
     )
     try:
@@ -174,28 +193,31 @@ def test_file_publish(app_dialog):
     )
 
     # Validate file to publish is there and the right project is selected
-    app_dialog.root.captions["achmed.JPG"].waitExist(timeout=30)
-    assert app_dialog.root.captions[
-        "*Demo: Animation"
-    ].exists(), "Context is not set to Demo: Animation project."
+    app_dialog.root["item details"].captions["achmed.JPG"].waitExist(timeout=30)
+    assert app_dialog.root["context picker widget"].captions[
+        "*Toolkit UI Automation"
+    ].exists(), "Context is not set to Toolkit UI Automation."
 
     # Click on validate button
-    app_dialog.root.buttons["Validate"].mouseClick()
-    assert app_dialog.root.captions[
+    app_dialog.root["Bottom frame"].buttons["Validate"].mouseClick()
+    assert app_dialog.root["Bottom frame"].captions[
         "Validation Complete. All checks passed."
     ].exists(), "Validation didn't complete successfully"
 
     # Publish
-    app_dialog.root.buttons["Publish"].mouseClick()
+    app_dialog.root["Bottom frame"].buttons["Publish"].mouseClick()
     app_dialog.root.captions["Publish Complete! For details, click here."].waitExist(
         timeout=30
     )
-    assert app_dialog.root.captions[
+    assert app_dialog.root["Bottom frame"].captions[
         "Publish Complete! For details, click here."
+    ].exists(), "Publish failed."
+    assert app_dialog.root["Upper frame"].captions[
+        "Publish*Complete"
     ].exists(), "Publish failed."
 
     # Return to the main dialog
-    app_dialog.root.captions["To publish again, click here"].mouseClick()
+    app_dialog.root["Upper frame"].captions["To publish again, click here"].mouseClick()
 
     # make sure you're on the main dialog
     assert app_dialog.root.captions[
@@ -236,49 +258,160 @@ def test_description_inheritance(app_dialog):
     )
 
     # Validate file to publish is there and the right project is selected
-    app_dialog.root.captions["Publish Summary"].waitExist(timeout=30)
-    app_dialog.root.captions["4 tasks to execute"].waitExist(timeout=30)
-    assert app_dialog.root.captions[
-        "*Demo: Animation"
-    ].exists(), "Context is not set to Demo: Animation project."
+    app_dialog.root["item details"].captions["Publish Summary"].waitExist(timeout=30)
+    app_dialog.root["item details"].captions["6 tasks to execute"].waitExist(timeout=30)
+    assert app_dialog.root["context picker widget"].captions[
+        "*Toolkit UI Automation"
+    ].exists(), "Context is not set to Toolkit UI Automation project."
 
     # Add a summary description and make sure all items inherited it
     app_dialog.root.textfields.typeIn("Description Summary")
-    # Make sure first item inherited the summary description
-    app_dialog.root.outlineitems[2].mouseClick()
-    assert app_dialog.root.captions[
+    # Make sure first parent item inherited the summary description
+    app_dialog.root["collected items tree"].outlineitems["*achmed.JPG*"].mouseClick()
+    assert app_dialog.root["item details"].captions[
         "Description inherited from: Summary"
     ].exists(), "Description should be inherited"
+    # Make sure first child of the first parent item inherited the summary description
+    app_dialog.root["collected items tree"].outlineitems["*achmed.JPG_sub*"].mouseClick()
+    assert app_dialog.root["item details"].captions[
+        "Description inherited from: Summary"
+    ].exists(), "Description should be inherited"
+    # Make sure second child of the first parent item inherited the summary description
+    app_dialog.root["collected items tree"].outlineitems["*achmed.JPG_evenmoresub*"].mouseClick()
+    assert app_dialog.root["item details"].captions[
+        "Description inherited from: Summary"
+    ].exists(), "Description should be inherited"
+    # Scroll down to make sure to have all second items showing up
+    activityScrollBar = first(app_dialog.root.scrollbars)
+    width, height = activityScrollBar.size
+    app_dialog.root.scrollbars.mouseSlide()
+    activityScrollBar.mouseDrag(width * 0, height * 1)
     # Make sure second item inherited the summary description
-    app_dialog.root.outlineitems[5].mouseClick()
-    assert app_dialog.root.captions[
+    app_dialog.root["collected items tree"].outlineitems["*attarder.jpg*"].mouseClick()
+    assert app_dialog.root["item details"].captions[
+        "Description inherited from: Summary"
+    ].exists(), "Description should be inherited"
+    # Make sure first child of the second item inherited the summary description
+    app_dialog.root["collected items tree"].outlineitems["*attarder.jpg_sub*"].mouseClick()
+    assert app_dialog.root["item details"].captions[
+        "Description inherited from: Summary"
+    ].exists(), "Description should be inherited"
+    # Make sure second child of the second item inherited the summary description
+    app_dialog.root["collected items tree"].outlineitems["*attarder.jpg_evenmoresub*"].mouseClick()
+    assert app_dialog.root["item details"].captions[
         "Description inherited from: Summary"
     ].exists(), "Description should be inherited"
 
     # Add description for the first image
-    app_dialog.root.outlineitems[2].mouseClick()
+    # Scroll up to make sure to have all first items showing up
+    activityScrollBar = first(app_dialog.root.scrollbars)
+    width, height = activityScrollBar.size
+    app_dialog.root.scrollbars.mouseSlide()
+    activityScrollBar.mouseDrag(width * 0, height * 0)
+    # Select the first parent item
+    app_dialog.root["collected items tree"].outlineitems["*achmed.JPG*"].mouseClick()
     # Make sure it is the right item
-    assert app_dialog.root.captions[
+    assert app_dialog.root["item details"].captions[
         "achmed.JPG"
     ].exists(), "Not the right tree item selected"
-    app_dialog.root.textfields.typeIn("Description for item 1")
+    app_dialog.root["item details"].textfields["item description"].typeIn("Description for item 1")
     # Make sure description is not inherited
-    assert app_dialog.root.captions[
+    assert app_dialog.root["item details"].captions[
         "Description not inherited"
     ].exists(), "Description should not be inherited"
+    # Make sure first child of the first parent item inherited the summary description
+    app_dialog.root["collected items tree"].outlineitems["*achmed.JPG_sub*"].mouseClick()
+    assert app_dialog.root["item details"].captions[
+        "Description inherited from: achmed.JPG"
+    ].exists(), "Description should be inherited"
+    # Make sure second child of the first parent item inherited the summary description
+    app_dialog.root["collected items tree"].outlineitems["*achmed.JPG_evenmoresub*"].mouseClick()
+    assert app_dialog.root["item details"].captions[
+        "Description inherited from: achmed.JPG"
+    ].exists(), "Description should be inherited"
 
     # Add descriptions for the second image
-    app_dialog.root.outlineitems[5].mouseClick()
+    # Scroll down to make sure to have all second items showing up
+    activityScrollBar = first(app_dialog.root.scrollbars)
+    width, height = activityScrollBar.size
+    app_dialog.root.scrollbars.mouseSlide()
+    activityScrollBar.mouseDrag(width * 0, height * 1)
+    # Select the second parent item
+    app_dialog.root["collected items tree"].outlineitems["*attarder.jpg*"].mouseClick()
     # Make sure it is the right item
-    assert app_dialog.root.captions[
+    assert app_dialog.root["item details"].captions[
         "attarder.jpg"
     ].exists(), "Not the right tree item selected"
     # Make sure description is still inherited for item 2
-    assert app_dialog.root.captions[
+    assert app_dialog.root["item details"].captions[
         "Description inherited from: Summary"
     ].exists(), "Description should be inherited"
-    app_dialog.root.textfields[1].typeIn("Description for item 2")
+    app_dialog.root["item details"].textfields["item description"].typeIn("Description for item 2")
     # Make sure description is no more inherited
-    assert app_dialog.root.captions[
+    assert app_dialog.root["item details"].captions[
         "Description not inherited"
     ].exists(), "Description should not be inherited"
+    # Make sure first child of the second item inherited the summary description
+    app_dialog.root["collected items tree"].outlineitems["*attarder.jpg_sub*"].mouseClick()
+    assert app_dialog.root["item details"].captions[
+        "Description inherited from: attarder.jpg"
+    ].exists(), "Description should be inherited"
+    # Make sure second child of the second item inherited the summary description
+    app_dialog.root["collected items tree"].outlineitems["*attarder.jpg_evenmoresub*"].mouseClick()
+    assert app_dialog.root["item details"].captions[
+        "Description inherited from: attarder.jpg"
+    ].exists(), "Description should be inherited"
+
+    # Add description for the first child of the first image
+    # Scroll up to make sure to have all first items showing up
+    activityScrollBar = first(app_dialog.root.scrollbars)
+    width, height = activityScrollBar.size
+    app_dialog.root.scrollbars.mouseSlide()
+    activityScrollBar.mouseDrag(width * 0, height * 0)
+    # Select the first child of the first item
+    app_dialog.root["collected items tree"].outlineitems["*achmed.JPG_sub*"].mouseClick()
+    # Make sure it is the right item
+    assert app_dialog.root["item details"].captions[
+        "achmed.JPG_sub"
+    ].exists(), "Not the right tree item selected"
+    # Make sure description is still inherited for item 1 first child
+    assert app_dialog.root["item details"].captions[
+        "Description inherited from: achmed.JPG"
+    ].exists(), "Description should be inherited"
+    app_dialog.root["item details"].textfields["item description"].typeIn("Description of the first child for item 1")
+    # Make sure description is not inherited
+    assert app_dialog.root["item details"].captions[
+        "Description not inherited"
+    ].exists(), "Description should not be inherited"
+    # Make sure second child of the first parent item inherited the first child description
+    app_dialog.root["collected items tree"].outlineitems["*achmed.JPG_evenmoresub*"].mouseClick()
+    assert app_dialog.root["item details"].captions[
+        "Description inherited from: achmed.JPG_sub"
+    ].exists(), "Description should be inherited"
+
+   # Add descriptions for the first child of the second image
+    # Scroll down to make sure to have all second items showing up
+    activityScrollBar = first(app_dialog.root.scrollbars)
+    width, height = activityScrollBar.size
+    app_dialog.root.scrollbars.mouseSlide()
+    activityScrollBar.mouseDrag(width * 0, height * 1)
+    # Select the second parent item
+    app_dialog.root["collected items tree"].outlineitems["*attarder.jpg_sub*"].mouseClick()
+    # Make sure it is the right item
+    assert app_dialog.root["item details"].captions[
+        "attarder.jpg_sub"
+    ].exists(), "Not the right tree item selected"
+    # Make sure description is still inherited for item 2 first child
+    assert app_dialog.root["item details"].captions[
+        "Description inherited from: attarder.jpg"
+    ].exists(), "Description should be inherited"
+    app_dialog.root["item details"].textfields["item description"].typeIn("Description of the first child for item 2")
+    # Make sure description is no more inherited
+    assert app_dialog.root["item details"].captions[
+        "Description not inherited"
+    ].exists(), "Description should not be inherited"
+    # Make sure second child of the second item inherited the summary description
+    app_dialog.root["collected items tree"].outlineitems["*attarder.jpg_evenmoresub*"].mouseClick()
+    assert app_dialog.root["item details"].captions[
+        "Description inherited from: attarder.jpg_sub"
+    ].exists(), "Description should be inherited"
