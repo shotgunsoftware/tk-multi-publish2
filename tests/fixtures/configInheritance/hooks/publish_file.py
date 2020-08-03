@@ -20,19 +20,16 @@ HookBaseClass = sgtk.get_hook_baseclass()
 
 
 class BasicFilePublishPlugin(HookBaseClass):
-
     def create_settings_widget(self, parent, items):
         # Create our custom widget and return it.
         # It is actually a collection of widgets parented to a single widget.
         self.review_widget = ReviewWidget(parent, self.parent.shotgun)
         return self.review_widget
 
-
     def get_ui_settings(self, widget, items):
         # This will get called when the selection changes in the UI.
         # We need to gather the settings from the UI and return them
         return {}
-
 
     def set_ui_settings(self, widget, settings, items):
         # The plugin task has just been selected in the UI, so we must set the UI state given the settings.
@@ -45,7 +42,6 @@ class BasicFilePublishPlugin(HookBaseClass):
 
 
 class ReviewWidget(QtGui.QWidget):
-
     def __init__(self, parent, sg):
         super(ReviewWidget, self).__init__(parent)
         self.__setup_ui()

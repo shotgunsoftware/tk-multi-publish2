@@ -240,7 +240,9 @@ class BasicSceneCollector(HookBaseClass):
         sub_item.set_icon_from_path(item_info["icon_path"])
         sub_item.properties["path"] = evaluated_path
         # Collect a sub item
-        subsub_item = sub_item.create_item(item_type, type_display, display_name + "_evenmoresub")
+        subsub_item = sub_item.create_item(
+            item_type, type_display, display_name + "_evenmoresub"
+        )
         subsub_item.set_icon_from_path(item_info["icon_path"])
         subsub_item.properties["path"] = evaluated_path
 
