@@ -104,7 +104,7 @@ class PublishLogWrapper(object):
         # to get plugin info in for example the maya console.
         # more importantly, it will appear in the shotgun engine
         # in a dialog window after app exit which is non-ideal.
-        self._logger.propagate = False
+        self._logger.propagate = True
 
         self._handler = PublishLogHandler(progress_widget)
 
