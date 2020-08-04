@@ -38,14 +38,17 @@ def context():
     existed_project = sg.find_one("Project", filters)
     if existed_project is not None:
         sg.delete(existed_project["type"], existed_project["id"])
-    # Get the animation template project id to be passed in the project creation
-    filters = [["name", "is", "Animation Template"]]
+    # Get the Film VFX Template project id to be passed in the project creation
+    filters = [["name", "is", "Film VFX Template"]]
     template_project = sg.find_one("Project", filters)
-    # Create a new project with the Animation Template
+    # Create a new project with the Film VFX Template
     data = {
         "sg_description": "Project Created by Automation",
         "name": "Toolkit UI Automation",
-        "layout_project": {"type": template_project["type"], "id": template_project["id"]},
+        "layout_project": {
+            "type": template_project["type"],
+            "id": template_project["id"],
+        },
     }
     new_project = sg.create("Project", data)
     return new_project
