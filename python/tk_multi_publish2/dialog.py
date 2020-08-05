@@ -1658,7 +1658,8 @@ class AppDialog(QtGui.QWidget):
             self.ui.validate.setEnabled(False)
             # change task label color to SG_ALERT_COLOR
             self.ui.context_widget.ui.task_label.setStyleSheet(
-                "color: " + sgtk.platform.current_bundle().style_constants["SG_ALERT_COLOR"]
+                "color: "
+                + sgtk.platform.current_bundle().style_constants["SG_ALERT_COLOR"]
             )
             # Also change the text and color of the parent label
             self.ui.context_widget.ui.label.setText(
@@ -1666,7 +1667,8 @@ class AppDialog(QtGui.QWidget):
                 "Please select a Task to continue."
             )
             self.ui.context_widget.ui.label.setStyleSheet(
-                "color: " + sgtk.platform.current_bundle().style_constants["SG_HIGHLIGHT_COLOR"]
+                "color: "
+                + sgtk.platform.current_bundle().style_constants["SG_HIGHLIGHT_COLOR"]
             )
         else:
             # enable buttons
@@ -1679,6 +1681,7 @@ class AppDialog(QtGui.QWidget):
                 "Task and Entity Link to apply to the selected item:"
             )
             self.ui.context_widget.ui.label.setStyleSheet("")
+
 
 class _TaskSelection(object):
     """
