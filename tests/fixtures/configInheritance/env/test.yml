@@ -22,8 +22,11 @@ engines:
       tk-multi-run-this-app:
         collector: "{config}/collector.py"
         publish_plugins:
-          - name: Publish to Shotgun
-            hook: "{self}/publish_file.py:{config}/publish_file.py"
+          - name: Publish to Shotgun with items
+            hook: "{self}/publish_file.py:{config}/publish_file_ui_w_items.py"
+            settings: {}
+          - name: Publish to Shotgun without items
+            hook: "{self}/publish_file.py:{config}/publish_file_ui_wo_items.py"
             settings: {}
         location:
           type: path

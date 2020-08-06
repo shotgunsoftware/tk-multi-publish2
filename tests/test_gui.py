@@ -19,6 +19,8 @@ from tank_vendor import shotgun_api3
 try:
     from MA.UI import topwindows
     from MA.UI import first
+    from MA.UI import holdKeys
+    from MA.UI import Mouse
 except ImportError:
     pytestmark = pytest.mark.skip()
 
@@ -209,6 +211,84 @@ def test_file_publish(app_dialog):
         .exists()
     ), "Context is not set to Toolkit UI Automation."
 
+    # Validation of the Publish to Shotgun with items plugin
+    # Select plugin Publish to Shotgun with items of the first item
+    app_dialog.root["collected items tree"].outlineitems[
+        "Publish to Shotgun with items"
+    ].mouseClick()
+    # Make sure the checkbox is check
+    if (
+        app_dialog.root["details frame"].checkboxes["Set task to in review"].checked
+        is False
+    ):
+        app_dialog.root["details frame"].checkboxes[
+            "Set task to in review"
+        ].mouseClick()
+    # Select plugin Publish to Shotgun with items of the second item
+    app_dialog.root["collected items tree"].outlineitems[
+        "Publish to Shotgun with items"
+    ][1].mouseClick()
+    # Make sure the checkbox is unchecked
+    if (
+        app_dialog.root["details frame"].checkboxes["Set task to in review"].checked
+        is True
+    ):
+        app_dialog.root["details frame"].checkboxes[
+            "Set task to in review"
+        ].mouseClick()
+    # Do a multiple plugins selection of item 1 and 2
+    with holdKeys("{CONTROL}"):
+        app_dialog.root["collected items tree"].outlineitems[
+            "Publish to Shotgun with items"
+        ].mouseSlide()
+        Mouse.click()
+    # Validate that the set_in_review value is the right one for both items
+    assert (
+        app_dialog.root["details frame"]
+        .tables.rows["1"]
+        .cells["*'set_in_review': False}"]
+        .exists()
+    ), "set_in_review should be False"
+    assert (
+        app_dialog.root["details frame"]
+        .tables.rows["2"]
+        .cells["*'set_in_review': True}"]
+        .exists()
+    ), "set_in_review should be True"
+
+    # Validation of the Publish to Shotgun without items plugin
+    # Select Publish to Shotgun without items of the first item
+    app_dialog.root["collected items tree"].outlineitems[
+        "Publish to Shotgun without items"
+    ].mouseClick()
+    # Make sure the checkbox is check
+    if (
+        app_dialog.root["details frame"].checkboxes["Set task to in review"].checked
+        is False
+    ):
+        app_dialog.root["details frame"].checkboxes[
+            "Set task to in review"
+        ].mouseClick()
+    # Select Publish to Shotgun without items of the second item
+    app_dialog.root["collected items tree"].outlineitems[
+        "Publish to Shotgun without items"
+    ][1].mouseClick()
+    # Make sure the checkbox is unchecked
+    if (
+        app_dialog.root["details frame"].checkboxes["Set task to in review"].checked
+        is True
+    ):
+        app_dialog.root["details frame"].checkboxes[
+            "Set task to in review"
+        ].mouseClick()
+    # Go back the Publish to Shotgun without items plugin of the first item and make sure checkbox is still checked
+    app_dialog.root["collected items tree"].outlineitems[
+        "Publish to Shotgun without items"
+    ].mouseClick()
+    assert (
+        app_dialog.root["details frame"].checkboxes["Set task to in review"].checked
+    ), "Checkbox should be checked"
+
     # Click on validate button
     app_dialog.root["Bottom frame"].buttons["Validate"].mouseClick()
     assert (
@@ -276,7 +356,9 @@ def test_description_inheritance(app_dialog):
 
     # Validate file to publish is there and the right project is selected
     app_dialog.root["item details"].captions["Publish Summary"].waitExist(timeout=30)
-    app_dialog.root["item details"].captions["6 tasks to execute"].waitExist(timeout=30)
+    app_dialog.root["item details"].captions["12 tasks to execute"].waitExist(
+        timeout=30
+    )
     assert (
         app_dialog.root["context picker widget"]
         .captions["*Toolkit UI Automation"]
