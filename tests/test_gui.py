@@ -260,7 +260,8 @@ def test_file_publish(app_dialog):
     # Select Publish to Shotgun without items of the first item
     app_dialog.root["collected items tree"].outlineitems[
         "Publish to Shotgun without items"
-    ].mouseClick()
+    ].mouseSlide()
+    Mouse.click()
     # Make sure the checkbox is check
     if (
         app_dialog.root["details frame"].checkboxes["Set task to in review"].checked
