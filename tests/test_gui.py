@@ -245,24 +245,36 @@ def test_file_publish(app_dialog):
 
     # Validate that items and set_in_review values are the right ones for each rows
     expected_results = [
-    ["achmed.JPG_sub", "*'set_in_review': False}"],
-    ["achmed.JPG", "*'set_in_review': True}"],
+        ["achmed.JPG_sub", "*'set_in_review': False}"],
+        ["achmed.JPG", "*'set_in_review': True}"],
     ]
     row_number = 0
     for row_number, (name, state) in enumerate(expected_results):
-        row_number += 1 # This is to skip the first row which is used for headers.
+        row_number += 1  # This is to skip the first row which is used for headers.
         assert (
             app_dialog.root["details frame"]
             .tables.rows[row_number]
             .cells[name]
             .exists()
-        ), "Not the right item for row " + str(row_number) + ". " + str(name) + " isn't not the expected one."
+        ), (
+            "Not the right item for row "
+            + str(row_number)
+            + ". "
+            + str(name)
+            + " isn't the expected one."
+        )
         assert (
             app_dialog.root["details frame"]
             .tables.rows[row_number]
             .cells[state]
             .exists()
-        ), "Not the right state for row " + str(row_number) + ". " + str(state) + " isn't not the expected one."
+        ), (
+            "Not the right state for row "
+            + str(row_number)
+            + ". "
+            + str(state)
+            + " isn't the expected one."
+        )
 
     # Validation of the Publish to Shotgun without items plugin
     # Select Publish to Shotgun without items of the first item

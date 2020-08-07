@@ -20,7 +20,6 @@ HookBaseClass = sgtk.get_hook_baseclass()
 
 
 class BasicFilePublishPlugin(HookBaseClass):
-
     @property
     def settings(self):
         settings = super(BasicFilePublishPlugin, self).settings or {}
@@ -29,15 +28,14 @@ class BasicFilePublishPlugin(HookBaseClass):
         settings["set_in_review"] = {
             "type": "string",
             "default": None,
-            "description": "Whether the task's status will be set to in review."
+            "description": "Whether the task's status will be set to in review.",
         }
         settings["reviewer"] = {
             "type": "dict",
             "default": None,
-            "description": "The reviewer that will be set on the task."
+            "description": "The reviewer that will be set on the task.",
         }
         return settings
-
 
     def create_settings_widget(self, parent, items):
         # Create our custom widget and return it.
@@ -45,13 +43,10 @@ class BasicFilePublishPlugin(HookBaseClass):
         self.review_widget = ReviewWidget(parent, self.parent.shotgun)
         return self.review_widget
 
-
     def get_ui_settings(self, widget, items):
         # This will get called when the selection changes in the UI.
         # We need to gather the settings from the UI and return them
-        return {"set_in_review": widget.review_status,
-                "reviewer": widget.reviewer}
-
+        return {"set_in_review": widget.review_status, "reviewer": widget.reviewer}
 
     def set_ui_settings(self, widget, settings, items):
         # The plugin task has just been selected in the UI, so we must set the UI state given the settings.
@@ -75,7 +70,6 @@ class BasicFilePublishPlugin(HookBaseClass):
             else:
                 # If no setting is found previously set a default value
                 widget.reviewer = "Leave unchanged"
-
 
     def finalize(self, settings, item):
         """
@@ -103,32 +97,43 @@ class BasicFilePublishPlugin(HookBaseClass):
             # set task status in review if chosen
             if in_review and in_review.value == True:
                 self.logger.debug("Setting Task status to in review")
-                batch_data.append({"request_type": "update",
-                                   "entity_type": "Task",
-                                   "entity_id": item.context.task["id"],
-                                   "data": {"sg_status_list": "rev"}})
+                batch_data.append(
+                    {
+                        "request_type": "update",
+                        "entity_type": "Task",
+                        "entity_id": item.context.task["id"],
+                        "data": {"sg_status_list": "rev"},
+                    }
+                )
 
             # set the reviewer if chosen
             if reviewer and reviewer.value is not None:
                 self.logger.debug("Adding Task reviewer: %s" % reviewer.value)
-                batch_data.append({"request_type": "update",
-                                   "entity_type": "Task",
-                                   "entity_id": item.context.task["id"],
-                                   "data": {"task_reviewers": [reviewer.value]},
-                                   "multi_entity_update_modes":{"task_reviewers": "add"}})
+                batch_data.append(
+                    {
+                        "request_type": "update",
+                        "entity_type": "Task",
+                        "entity_id": item.context.task["id"],
+                        "data": {"task_reviewers": [reviewer.value]},
+                        "multi_entity_update_modes": {"task_reviewers": "add"},
+                    }
+                )
 
             if batch_data:
                 sg.batch(batch_data)
 
         else:
             if in_review and in_review.value == True:
-                self.logger.warning("Set to in review chosen, but no Task has been set, skipping.")
+                self.logger.warning(
+                    "Set to in review chosen, but no Task has been set, skipping."
+                )
             if reviewer and reviewer.value is not None:
-                self.logger.warning("Reviewer chosen, but no Task has been set, skipping.")
+                self.logger.warning(
+                    "Reviewer chosen, but no Task has been set, skipping."
+                )
 
 
 class ReviewWidget(QtGui.QWidget):
-
     def __init__(self, parent, sg):
 
         super(ReviewWidget, self).__init__(parent)
@@ -142,7 +147,7 @@ class ReviewWidget(QtGui.QWidget):
         Populates a table with the items and their settings.
         """
         # Add a small check to make sure we have settings for all the items.
-        assert(len(items) == len(settings))
+        assert len(items) == len(settings)
 
         self.items_table.clearContents()
         self.items_table.setRowCount(len(items))
@@ -193,7 +198,7 @@ class ReviewWidget(QtGui.QWidget):
         layout.setAlignment(QtCore.Qt.AlignLeft)
         self.setLayout(layout)
 
-        self.items_table = QtGui.QTableWidget(1,2,self)
+        self.items_table = QtGui.QTableWidget(1, 2, self)
         self.items_table.setHorizontalHeaderLabels(["items", "settings"])
 
         # Create a check box to hold the state of whether we should set the task in review.
@@ -231,9 +236,9 @@ class ReviewWidget(QtGui.QWidget):
         # You could define available reviewers in a different way.
         filters = [
             # Only find users in the reviewer Group (id 6).
-            ["groups", "is", {"type":"Group", "id": 6}],
+            ["groups", "is", {"type": "Group", "id": 6}],
             # Limit it to showing only reviewers that can see the current project.
-            ["projects", "is", current_context.project]
+            ["projects", "is", current_context.project],
         ]
         reviewers = sg.find("HumanUser", filters, ["name"])
 
