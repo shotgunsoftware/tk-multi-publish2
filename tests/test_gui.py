@@ -44,7 +44,7 @@ def context():
     filters = [["name", "is", "Film VFX Template"]]
     template_project = sg.find_one("Project", filters)
     # Create a new project with the Film VFX Template
-    data = {
+    project_data = {
         "sg_description": "Project Created by Automation",
         "name": "Toolkit UI Automation",
         "layout_project": {
@@ -52,7 +52,30 @@ def context():
             "id": template_project["id"],
         },
     }
-    new_project = sg.create("Project", data)
+    new_project = sg.create("Project", project_data)
+
+    # Create a Sequence to be used by the Shot creation
+    sequence_data = {
+        "project": {"type": new_project["type"], "id": new_project["id"]},
+        "code": "seq_001",
+        "sg_status_list": "ip",
+    }
+    new_sequence = sg.create("Sequence", sequence_data)
+
+    # Get the Animation - Shot task template id to be passed in the shot creation
+    filters = [["code", "is", "Animation - Shot"]]
+    task_template = sg.find_one("TaskTemplate", filters)
+
+    # Create a new shot
+    shot_data = {
+        "project": {"type": new_project["type"], "id": new_project["id"]},
+        "sg_sequence": {"type": new_sequence["type"], "id": new_sequence["id"]},
+        "code": "shot_001",
+        "sg_status_list": "ip",
+        "task_template": {"type": task_template["type"], "id": task_template["id"]},
+    }
+    sg.create("Shot", shot_data)
+
     return new_project
 
 
@@ -211,6 +234,82 @@ def test_file_publish(app_dialog):
         .exists()
     ), "Context is not set to Toolkit UI Automation."
 
+    # Change context to use a comp task from shot_001
+    # Select a shot
+    app_dialog.root["context picker widget"].captions[
+        "*Toolkit UI Automation"
+    ].mouseClick()
+    app_dialog.root["context picker widget"].textfields.typeIn("Shot")
+    topwindows.listitems["Shot_001"].get().mouseClick()
+    app_dialog.root["context picker widget"].captions["*Shot_001"].waitExist(timeout=30)
+    # Select the comp task from the dropdown menu
+    app_dialog.root["context picker widget"].checkboxes.mouseClick()
+    topwindows.listitems["*Comp"].get().mouseClick()
+    app_dialog.root["context picker widget"].captions["*Comp"].waitExist(timeout=30)
+
+    # Click on validate button
+    app_dialog.root["Bottom frame"].buttons["Validate"].mouseClick()
+    assert (
+        app_dialog.root["Bottom frame"]
+        .captions["Validation Complete. All checks passed."]
+        .exists()
+    ), "Validation didn't complete successfully"
+
+    # Publish
+    app_dialog.root["Bottom frame"].buttons["Publish"].mouseClick()
+    app_dialog.root.captions["Publish Complete! For details, click here."].waitExist(
+        timeout=30
+    )
+    assert (
+        app_dialog.root["Bottom frame"]
+        .captions["Publish Complete! For details, click here."]
+        .exists()
+    ), "Publish failed."
+    assert (
+        app_dialog.root["Upper frame"].captions["Publish*Complete"].exists()
+    ), "Publish failed."
+
+    # Return to the main dialog
+    app_dialog.root["Upper frame"].captions["To publish again, click here"].mouseClick()
+
+    # make sure you're on the main dialog
+    assert app_dialog.root.captions[
+        "Drag and drop files or folders here"
+    ].exists(), "Drag and drop files or folders here text is missing."
+    assert app_dialog.root.buttons[
+        "Browse files to publish"
+    ].exists(), "Browse files to publish button is missing."
+    assert app_dialog.root.buttons[
+        "Browse sequences to publish"
+    ].exists(), "Browse folders to publish image sequences button is missing."
+
+
+def test_custom_plugin(app_dialog):
+    """
+    Ensure you can publish an image file successfully.
+    """
+    # Click on Browse file to publish and then select the file to publish
+    app_dialog.root.buttons["Browse files to publish"].mouseClick()
+    app_dialog.root.dialogs["Browse files to publish"].waitExist(timeout=30)
+    app_dialog.root.dialogs["Browse files to publish"].waitIdle(timeout=30)
+
+    # Get image path to be published
+    image_path = os.path.expandvars("${TK_TEST_FIXTURES}/files/images/achmed.JPG")
+
+    # Type in image path
+    app_dialog.root.dialogs["Browse files to publish"].textfields[
+        "File name:"
+    ].mouseClick()
+    app_dialog.root.dialogs["Browse files to publish"].textfields["File name:"].pasteIn(
+        image_path
+    )
+    app_dialog.root.dialogs["Browse files to publish"].textfields[
+        "File name:"
+    ].waitIdle(timeout=30)
+    app_dialog.root.dialogs["Browse files to publish"].textfields["File name:"].typeIn(
+        "{ENTER}"
+    )
+
     # Validation of the Publish to Shotgun with items plugin
     # Select plugin Publish to Shotgun with items of the first item
     app_dialog.root["collected items tree"].outlineitems[
@@ -318,22 +417,10 @@ def test_file_publish(app_dialog):
         .exists()
     ), "Validation didn't complete successfully"
 
-    # Publish
-    app_dialog.root["Bottom frame"].buttons["Publish"].mouseClick()
-    app_dialog.root.captions["Publish Complete! For details, click here."].waitExist(
-        timeout=30
-    )
-    assert (
-        app_dialog.root["Bottom frame"]
-        .captions["Publish Complete! For details, click here."]
-        .exists()
-    ), "Publish failed."
-    assert (
-        app_dialog.root["Upper frame"].captions["Publish*Complete"].exists()
-    ), "Publish failed."
-
     # Return to the main dialog
-    app_dialog.root["Upper frame"].captions["To publish again, click here"].mouseClick()
+    app_dialog.root["collected items tree"].outlineitems["*achmed.JPG*"].mouseClick()
+    app_dialog.root["Bottom frame"].buttons[3].mouseClick()
+    app_dialog.root.dialogs["Remove items?"].buttons["OK"].mouseClick()
 
     # make sure you're on the main dialog
     assert app_dialog.root.captions[
