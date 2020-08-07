@@ -242,32 +242,27 @@ def test_file_publish(app_dialog):
             "Publish to Shotgun with items"
         ].mouseSlide()
         Mouse.click()
-    # Validate that the set_in_review value is the right one for both items
-    assert (
-        app_dialog.root["details frame"]
-        .tables.rows["1"]
-        .cells["*'set_in_review': False}"]
-        .exists()
-    ), "set_in_review should be False"
-    assert (
-        app_dialog.root["details frame"]
-        .tables.rows["2"]
-        .cells["*'set_in_review': True}"]
-        .exists()
-    ), "set_in_review should be True"
-    # Validate that the right item is showing up in the right row
-    assert (
-        app_dialog.root["details frame"]
-        .tables.rows["1"]
-        .cells["achmed.JPG_sub"]
-        .exists()
-    ), "Not the right item for row 1. Should be achmed.JPG_sub"
-    assert (
-        app_dialog.root["details frame"]
-        .tables.rows["2"]
-        .cells["achmed.JPG"]
-        .exists()
-    ), "Not the right item for row 2. Should be achmed.JPG"
+
+    # Validate that items and set_in_review values are the right ones for each rows
+    expected_results = [
+    ["achmed.JPG_sub", "*'set_in_review': False}"],
+    ["achmed.JPG", "*'set_in_review': True}"],
+    ]
+    row_number = 0
+    for row_number, (name, state) in enumerate(expected_results):
+        row_number += 1 # This is to skip the first row which is used for headers.
+        assert (
+            app_dialog.root["details frame"]
+            .tables.rows[row_number]
+            .cells[name]
+            .exists()
+        ), "Not the right item for row " + str(row_number) + ". " + str(name) + " isn't not the expected one."
+        assert (
+            app_dialog.root["details frame"]
+            .tables.rows[row_number]
+            .cells[state]
+            .exists()
+        ), "Not the right state for row " + str(row_number) + ". " + str(state) + " isn't not the expected one."
 
     # Validation of the Publish to Shotgun without items plugin
     # Select Publish to Shotgun without items of the first item
