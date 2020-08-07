@@ -255,6 +255,19 @@ def test_file_publish(app_dialog):
         .cells["*'set_in_review': True}"]
         .exists()
     ), "set_in_review should be True"
+    # Validate that the right item is showing up in the right row
+    assert (
+        app_dialog.root["details frame"]
+        .tables.rows["1"]
+        .cells["achmed.JPG_sub"]
+        .exists()
+    ), "Not the right item for row 1. Should be achmed.JPG_sub"
+    assert (
+        app_dialog.root["details frame"]
+        .tables.rows["2"]
+        .cells["achmed.JPG"]
+        .exists()
+    ), "Not the right item for row 2. Should be achmed.JPG"
 
     # Validation of the Publish to Shotgun without items plugin
     # Select Publish to Shotgun without items of the first item
