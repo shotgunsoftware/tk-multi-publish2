@@ -8,12 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-import os
-import pprint
-import traceback
-
 import sgtk
-from sgtk.util.filesystem import copy_file, ensure_folder_exists
 from sgtk.platform.qt import QtGui, QtCore
 
 HookBaseClass = sgtk.get_hook_baseclass()
@@ -95,7 +90,7 @@ class BasicFilePublishPlugin(HookBaseClass):
             batch_data = []
 
             # set task status in review if chosen
-            if in_review and in_review.value == True:
+            if in_review and in_review.value is True:
                 self.logger.debug("Setting Task status to in review")
                 batch_data.append(
                     {
@@ -123,7 +118,7 @@ class BasicFilePublishPlugin(HookBaseClass):
                 sg.batch(batch_data)
 
         else:
-            if in_review and in_review.value == True:
+            if in_review and in_review.value is True:
                 self.logger.warning(
                     "Set to in review chosen, but no Task has been set, skipping."
                 )
