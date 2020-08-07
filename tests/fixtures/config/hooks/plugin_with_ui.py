@@ -214,7 +214,7 @@ class PluginWithUi(HookBaseClass):
     Plugin for creating generic publishes in Shotgun
     """
 
-    def create_settings_widget(self, parent):
+    def create_settings_widget(self, parent, items):
         """
         Creates a QT widget, parented below the given parent object, to
         provide viewing and editing capabilities for the given settings.
@@ -224,10 +224,12 @@ class PluginWithUi(HookBaseClass):
         """
         return CustomWidgetController(
             parent,
-            description_widget=super(PluginWithUi, self).create_settings_widget(parent),
+            description_widget=super(PluginWithUi, self).create_settings_widget(
+                parent, items
+            ),
         )
 
-    def get_ui_settings(self, controller):
+    def get_ui_settings(self, controller, items):
         """
         Returns the modified settings.
         """
@@ -257,7 +259,7 @@ class PluginWithUi(HookBaseClass):
             is False
         )
 
-    def set_ui_settings(self, controller, tasks_settings):
+    def set_ui_settings(self, controller, tasks_settings, items):
         """
         Updates the UI with the list of settings.
         """
