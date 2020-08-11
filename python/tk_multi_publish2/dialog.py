@@ -668,9 +668,30 @@ class AppDialog(QtGui.QWidget):
             self.ui.context_widget.show()
 
             if item.context_change_allowed:
-                self.ui.context_widget.enable_editing(
-                    True, "<p>Task and Entity Link to apply to the selected item:</p>"
-                )
+                # Check for task_required and change UI accordingly
+                if self._bundle.get_setting("task_required"):
+                    if hasattr(item, "context") and not item.context.task:
+                        # change task label color to SG_ALERT_COLOR
+                        self.ui.context_widget.ui.task_label.setStyleSheet(
+                            "color: "
+                            + sgtk.platform.current_bundle().style_constants["SG_ALERT_COLOR"]
+                        )
+                        # Also change the text and color of the parent label
+                        self.ui.context_widget.enable_editing(
+                            True,
+                            "Task Required is <b>True</b> in your configuration. "
+                            "Please select a Task to continue."
+                        )
+                        self.ui.context_widget.ui.label.setStyleSheet(
+                            "color: "
+                            + sgtk.platform.current_bundle().style_constants["SG_HIGHLIGHT_COLOR"]
+                        )
+                    else:
+                        self.ui.context_widget.enable_editing(
+                            True, "<p>Task and Entity Link to apply to the selected item:</p>"
+                        )
+                        self.ui.context_widget.ui.task_label.setStyleSheet("")
+                        self.ui.context_widget.ui.label.setStyleSheet("")
             else:
                 self.ui.context_widget.enable_editing(
                     False,
@@ -1656,31 +1677,10 @@ class AppDialog(QtGui.QWidget):
             # disable buttons
             self.ui.publish.setEnabled(False)
             self.ui.validate.setEnabled(False)
-            # change task label color to SG_ALERT_COLOR
-            self.ui.context_widget.ui.task_label.setStyleSheet(
-                "color: "
-                + sgtk.platform.current_bundle().style_constants["SG_ALERT_COLOR"]
-            )
-            # Also change the text and color of the parent label
-            self.ui.context_widget.ui.label.setText(
-                "Task Required is turned ON in your configuration."
-                "Please select a Task to continue."
-            )
-            self.ui.context_widget.ui.label.setStyleSheet(
-                "color: "
-                + sgtk.platform.current_bundle().style_constants["SG_HIGHLIGHT_COLOR"]
-            )
         else:
             # enable buttons
             self.ui.publish.setEnabled(True)
             self.ui.validate.setEnabled(True)
-
-            # change task label color and text back to the default values
-            self.ui.context_widget.ui.task_label.setStyleSheet("")
-            self.ui.context_widget.ui.label.setText(
-                "Task and Entity Link to apply to the selected item:"
-            )
-            self.ui.context_widget.ui.label.setStyleSheet("")
 
 
 class _TaskSelection(object):
