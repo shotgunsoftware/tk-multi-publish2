@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.base_hooks.publish_plugin &mdash; tk-multi-publish2 v2.5.3 documentation</title>
+  <title>tk_multi_publish2.base_hooks.publish_plugin &mdash; tk-multi-publish2 v2.5.4 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.5.3 documentation" href="../../../index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.5.4 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -117,7 +117,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.5.3.<br>
+    <b>tk-multi-publish2</b> v2.5.4.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -362,7 +362,7 @@
 <span class="sd">        parameter in the :meth:`accept`, :meth:`validate`, :meth:`publish`, and</span>
 <span class="sd">        :meth:`finalize` methods.</span>
 
-<span class="sd">        The values also drive the custom UI defined by the plugin whick allows</span>
+<span class="sd">        The values also drive the custom UI defined by the plugin which allows</span>
 <span class="sd">        artists to manipulate the settings at runtime. See the</span>
 <span class="sd">        :meth:`create_settings_widget`, :meth:`set_ui_settings`, and</span>
 <span class="sd">        :meth:`get_ui_settings` for additional information.</span>
@@ -588,12 +588,13 @@
     <span class="c1"># allows clients to write their own publish plugins while deferring custom</span>
     <span class="c1"># UI settings implementations until needed.</span>
 
-<div class="viewcode-block" id="PublishPlugin.create_settings_widget"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PublishPlugin.create_settings_widget">[docs]</a>    <span class="k">def</span> <span class="nf">create_settings_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+<div class="viewcode-block" id="PublishPlugin.create_settings_widget"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PublishPlugin.create_settings_widget">[docs]</a>    <span class="k">def</span> <span class="nf">create_settings_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a Qt widget, for the supplied parent widget (a container widget</span>
 <span class="sd">        on the right side of the publish UI).</span>
 
-<span class="sd">        :param parent: The parent to use for the widget being created</span>
+<span class="sd">        :param parent: The parent to use for the widget being created.</span>
+<span class="sd">        :param items: A list of PublishItems the selected publish tasks are parented to.</span>
 <span class="sd">        :return: A QtGui.QWidget or subclass that displays information about</span>
 <span class="sd">            the plugin and/or editable widgets for modifying the plugin&#39;s</span>
 <span class="sd">            settings.</span>
@@ -622,7 +623,7 @@
         <span class="c1"># return the description group box as the widget to display</span>
         <span class="k">return</span> <span class="n">description_group_box</span></div>
 
-<div class="viewcode-block" id="PublishPlugin.get_ui_settings"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PublishPlugin.get_ui_settings">[docs]</a>    <span class="k">def</span> <span class="nf">get_ui_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+<div class="viewcode-block" id="PublishPlugin.get_ui_settings"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PublishPlugin.get_ui_settings">[docs]</a>    <span class="k">def</span> <span class="nf">get_ui_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Invoked by the Publisher when the selection changes. This method gathers the settings</span>
 <span class="sd">        on the previously selected task, so that they can be later used to repopulate the</span>
@@ -653,7 +654,7 @@
         <span class="c1"># custom UI to show up in the app</span>
         <span class="k">return</span> <span class="p">{}</span></div>
 
-<div class="viewcode-block" id="PublishPlugin.set_ui_settings"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PublishPlugin.set_ui_settings">[docs]</a>    <span class="k">def</span> <span class="nf">set_ui_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
+<div class="viewcode-block" id="PublishPlugin.set_ui_settings"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PublishPlugin.set_ui_settings">[docs]</a>    <span class="k">def</span> <span class="nf">set_ui_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Allows the custom UI to populate its fields with the settings from the</span>
 <span class="sd">        currently selected tasks.</span>
@@ -688,9 +689,10 @@
 <span class="sd">        there is more than one item in the list and the publisher will inform</span>
 <span class="sd">        the user than only one task of that type can be edited at a time.</span>
 
-<span class="sd">        :param widget: The widget that was created by `create_settings_widget`</span>
+<span class="sd">        :param widget: The widget that was created by `create_settings_widget`.</span>
 <span class="sd">        :param settings: a list of dictionaries of settings for each selected</span>
 <span class="sd">            task.</span>
+<span class="sd">        :param items: A list of PublishItems the selected publish tasks are parented to.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># the default implementation does not show any editable widgets, so this</span>
@@ -729,7 +731,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'v2.5.3',
+            VERSION:'v2.5.4',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Publish Customization &mdash; tk-multi-publish2 v2.5.3 documentation</title>
+  <title>Publish Customization &mdash; tk-multi-publish2 v2.5.4 documentation</title>
   
 
   
@@ -32,9 +32,9 @@
   
 
   
-    <link rel="top" title="tk-multi-publish2 v2.5.3 documentation" href="index.html"/>
+    <link rel="top" title="tk-multi-publish2 v2.5.4 documentation" href="index.html"/>
         <link rel="next" title="Publish API" href="api.html"/>
-        <link rel="prev" title="Shotgun Publisher API reference, v2.5.3" href="index.html"/> 
+        <link rel="prev" title="Shotgun Publisher API reference, v2.5.4" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -129,7 +129,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.5.3.<br>
+    <b>tk-multi-publish2</b> v2.5.4.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -196,7 +196,7 @@ and presented to the user.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">For more information on how to take over, subclass, and manage hooks,
-see the <a class="reference external" href="http://developer.shotgunsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.19.10)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
+see the <a class="reference external" href="http://developer.shotgunsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.19.14)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="collector-hook-api">
@@ -429,7 +429,7 @@ custom publish plugin UI.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">For more information on how to take over, subclass, and manage hooks,
-see the <a class="reference external" href="http://developer.shotgunsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.19.10)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
+see the <a class="reference external" href="http://developer.shotgunsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.19.14)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="publish-plugin-api">
@@ -583,7 +583,7 @@ configuration. Example:</p>
 <p>The values configured for the plugin will be supplied via settings
 parameter in the <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.accept" title="tk_multi_publish2.base_hooks.PublishPlugin.accept"><code class="xref py py-meth docutils literal"><span class="pre">accept()</span></code></a>, <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.validate" title="tk_multi_publish2.base_hooks.PublishPlugin.validate"><code class="xref py py-meth docutils literal"><span class="pre">validate()</span></code></a>, <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.publish" title="tk_multi_publish2.base_hooks.PublishPlugin.publish"><code class="xref py py-meth docutils literal"><span class="pre">publish()</span></code></a>, and
 <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.finalize" title="tk_multi_publish2.base_hooks.PublishPlugin.finalize"><code class="xref py py-meth docutils literal"><span class="pre">finalize()</span></code></a> methods.</p>
-<p>The values also drive the custom UI defined by the plugin whick allows
+<p>The values also drive the custom UI defined by the plugin which allows
 artists to manipulate the settings at runtime. See the
 <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.create_settings_widget" title="tk_multi_publish2.base_hooks.PublishPlugin.create_settings_widget"><code class="xref py py-meth docutils literal"><span class="pre">create_settings_widget()</span></code></a>, <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.set_ui_settings" title="tk_multi_publish2.base_hooks.PublishPlugin.set_ui_settings"><code class="xref py py-meth docutils literal"><span class="pre">set_ui_settings()</span></code></a>, and
 <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.get_ui_settings" title="tk_multi_publish2.base_hooks.PublishPlugin.get_ui_settings"><code class="xref py py-meth docutils literal"><span class="pre">get_ui_settings()</span></code></a> for additional information.</p>
@@ -818,18 +818,23 @@ in the <a class="reference internal" href="#tk_multi_publish2.base_hooks.Publish
 
 <dl class="method">
 <dt id="tk_multi_publish2.base_hooks.PublishPlugin.create_settings_widget">
-<code class="descname">create_settings_widget</code><span class="sig-paren">(</span><em>parent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/publish_plugin.html#PublishPlugin.create_settings_widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin.create_settings_widget" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create_settings_widget</code><span class="sig-paren">(</span><em>parent</em>, <em>items=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/publish_plugin.html#PublishPlugin.create_settings_widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin.create_settings_widget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a Qt widget, for the supplied parent widget (a container widget
 on the right side of the publish UI).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>parent</strong> &#8211; The parent to use for the widget being created</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>parent</strong> &#8211; The parent to use for the widget being created.</li>
+<li><strong>items</strong> &#8211; A list of PublishItems the selected publish tasks are parented to.</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A QtGui.QWidget or subclass that displays information about
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A QtGui.QWidget or subclass that displays information about
 the plugin and/or editable widgets for modifying the plugin&#8217;s
-settings.</td>
+settings.</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -837,7 +842,7 @@ settings.</td>
 
 <dl class="method">
 <dt id="tk_multi_publish2.base_hooks.PublishPlugin.get_ui_settings">
-<code class="descname">get_ui_settings</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/publish_plugin.html#PublishPlugin.get_ui_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin.get_ui_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_ui_settings</code><span class="sig-paren">(</span><em>widget</em>, <em>items=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/publish_plugin.html#PublishPlugin.get_ui_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin.get_ui_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Invoked by the Publisher when the selection changes. This method gathers the settings
 on the previously selected task, so that they can be later used to repopulate the
 custom UI if the task gets selected again. They will also be passed to the accept, validate,
@@ -868,7 +873,7 @@ when multiple tasks have been selected.</p>
 
 <dl class="method">
 <dt id="tk_multi_publish2.base_hooks.PublishPlugin.set_ui_settings">
-<code class="descname">set_ui_settings</code><span class="sig-paren">(</span><em>widget</em>, <em>settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/publish_plugin.html#PublishPlugin.set_ui_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin.set_ui_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descname">set_ui_settings</code><span class="sig-paren">(</span><em>widget</em>, <em>settings</em>, <em>items=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/publish_plugin.html#PublishPlugin.set_ui_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin.set_ui_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Allows the custom UI to populate its fields with the settings from the
 currently selected tasks.</p>
 <p>The widget is the widget created and returned by
@@ -902,9 +907,10 @@ the user than only one task of that type can be edited at a time.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>widget</strong> &#8211; The widget that was created by <cite>create_settings_widget</cite></li>
+<li><strong>widget</strong> &#8211; The widget that was created by <cite>create_settings_widget</cite>.</li>
 <li><strong>settings</strong> &#8211; a list of dictionaries of settings for each selected
 task.</li>
+<li><strong>items</strong> &#8211; A list of PublishItems the selected publish tasks are parented to.</li>
 </ul>
 </td>
 </tr>
@@ -1061,7 +1067,7 @@ the items to be published.</td>
         <a href="api.html" class="btn btn-neutral float-right" title="Publish API" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="Shotgun Publisher API reference, v2.5.3" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral" title="Shotgun Publisher API reference, v2.5.4" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1091,7 +1097,7 @@ the items to be published.</td>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'v2.5.3',
+            VERSION:'v2.5.4',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
