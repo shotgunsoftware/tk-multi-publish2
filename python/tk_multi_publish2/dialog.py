@@ -674,21 +674,26 @@ class AppDialog(QtGui.QWidget):
                         # change task label color to SG_ALERT_COLOR
                         self.ui.context_widget.ui.task_label.setStyleSheet(
                             "color: "
-                            + sgtk.platform.current_bundle().style_constants["SG_ALERT_COLOR"]
+                            + sgtk.platform.current_bundle().style_constants[
+                                "SG_ALERT_COLOR"
+                            ]
                         )
                         # Also change the text and color of the parent label
                         self.ui.context_widget.enable_editing(
                             True,
-                            "Task Required is <b>True</b> in your configuration. "
-                            "Please select a Task to continue."
+                            "<p>Task Required is <b>True</b> in your configuration. "
+                            "Please select a Task to continue.</p>",
                         )
                         self.ui.context_widget.ui.label.setStyleSheet(
                             "color: "
-                            + sgtk.platform.current_bundle().style_constants["SG_HIGHLIGHT_COLOR"]
+                            + sgtk.platform.current_bundle().style_constants[
+                                "SG_HIGHLIGHT_COLOR"
+                            ]
                         )
                     else:
                         self.ui.context_widget.enable_editing(
-                            True, "<p>Task and Entity Link to apply to the selected item:</p>"
+                            True,
+                            "<p>Task and Entity Link to apply to the selected item:</p>",
                         )
                         self.ui.context_widget.ui.task_label.setStyleSheet("")
                         self.ui.context_widget.ui.label.setStyleSheet("")
