@@ -668,35 +668,36 @@ class AppDialog(QtGui.QWidget):
             self.ui.context_widget.show()
 
             if item.context_change_allowed:
-                # Check for task_required and change UI accordingly
-                if self._bundle.get_setting("task_required"):
-                    if hasattr(item, "context") and not item.context.task:
-                        # change task label color to SG_ALERT_COLOR
-                        self.ui.context_widget.ui.task_label.setStyleSheet(
-                            "color: "
-                            + sgtk.platform.current_bundle().style_constants[
-                                "SG_ALERT_COLOR"
-                            ]
-                        )
-                        # Also change the text and color of the parent label
-                        self.ui.context_widget.enable_editing(
-                            True,
-                            "<p>Task Required is <b>True</b> in your configuration. "
-                            "Please select a Task to continue.</p>",
-                        )
-                        self.ui.context_widget.ui.label.setStyleSheet(
-                            "color: "
-                            + sgtk.platform.current_bundle().style_constants[
-                                "SG_HIGHLIGHT_COLOR"
-                            ]
-                        )
-                    else:
-                        self.ui.context_widget.enable_editing(
-                            True,
-                            "<p>Task and Entity Link to apply to the selected item:</p>",
-                        )
-                        self.ui.context_widget.ui.task_label.setStyleSheet("")
-                        self.ui.context_widget.ui.label.setStyleSheet("")
+                # Check for task_required and change UI styling accordingly
+                if not self._validate_task_required():
+                    # Change task label color to SG_ALERT_COLOR
+                    self.ui.context_widget.ui.task_label.setStyleSheet(
+                        "color: "
+                        + sgtk.platform.current_bundle().style_constants[
+                            "SG_ALERT_COLOR"
+                        ]
+                    )
+                    # Also change the text and color of the label
+                    # Use SG_HIGHLIGHT_COLOR for better readability
+                    self.ui.context_widget.enable_editing(
+                        True,
+                        "<p>Task Required is <b>True</b> in your configuration. "
+                        "Please select a Task to continue.</p>",
+                    )
+                    self.ui.context_widget.ui.label.setStyleSheet(
+                        "color: "
+                        + sgtk.platform.current_bundle().style_constants[
+                            "SG_HIGHLIGHT_COLOR"
+                        ]
+                    )
+                else:
+                    self.ui.context_widget.enable_editing(
+                        True,
+                        "<p>Task and Entity Link to apply to the selected item:</p>",
+                    )
+                    # Ensure styling overrides are cleared
+                    self.ui.context_widget.ui.task_label.setStyleSheet("")
+                    self.ui.context_widget.ui.label.setStyleSheet("")
             else:
                 self.ui.context_widget.enable_editing(
                     False,
@@ -813,8 +814,15 @@ class AppDialog(QtGui.QWidget):
             # the summary view's context widget
             context_key = list(current_contexts.keys())[0]
             self.ui.context_widget.set_context(current_contexts[context_key])
-            # Check on task_required for the summary styling
+            # Check for task_required and change UI styling accordingly
             if not self._validate_task_required():
+                # Change task label color to SG_ALERT_COLOR
+                self.ui.context_widget.ui.task_label.setStyleSheet(
+                    "color: "
+                    + sgtk.platform.current_bundle().style_constants["SG_ALERT_COLOR"]
+                )
+                # Also change the text and color of the label
+                # Use SG_HIGHLIGHT_COLOR for better readability
                 context_label_text = (
                     "<p>Task Required is <b>True</b> in your configuration. "
                     "Please confirm all Tasks are assigned to continue.</p>"
@@ -825,12 +833,9 @@ class AppDialog(QtGui.QWidget):
                         "SG_HIGHLIGHT_COLOR"
                     ]
                 )
-                self.ui.context_widget.ui.task_label.setStyleSheet(
-                    "color: "
-                    + sgtk.platform.current_bundle().style_constants["SG_ALERT_COLOR"]
-                )
             else:
                 context_label_text = "Task and Entity Link to apply to all items:"
+                # Ensure styling overrides are cleared
                 self.ui.context_widget.ui.label.setStyleSheet("")
                 self.ui.context_widget.ui.task_label.setStyleSheet("")
         else:
@@ -839,8 +844,15 @@ class AppDialog(QtGui.QWidget):
                 task_display_override=" -- Multiple values -- ",
                 link_display_override=" -- Multiple values -- ",
             )
-            # Check on task_required for the summary styling
+            # Check for task_required and change UI styling accordingly
             if not self._validate_task_required():
+                # Change task label color to SG_ALERT_COLOR
+                self.ui.context_widget.ui.task_label.setStyleSheet(
+                    "color: "
+                    + sgtk.platform.current_bundle().style_constants["SG_ALERT_COLOR"]
+                )
+                # Also change the text and color of the label
+                # Use SG_HIGHLIGHT_COLOR for better readability
                 context_label_text = (
                     "<p>Task Required is <b>True</b> in your configuration. "
                     "Please confirm all Tasks are assigned to continue.</p>"
@@ -851,15 +863,12 @@ class AppDialog(QtGui.QWidget):
                         "SG_HIGHLIGHT_COLOR"
                     ]
                 )
-                self.ui.context_widget.ui.task_label.setStyleSheet(
-                    "color: "
-                    + sgtk.platform.current_bundle().style_constants["SG_ALERT_COLOR"]
-                )
             else:
                 context_label_text = (
                     "Currently publishing items to %s contexts. "
                     "Override all items here:" % (len(current_contexts),)
                 )
+                # Ensure styling overrides are cleared
                 self.ui.context_widget.ui.label.setStyleSheet("")
                 self.ui.context_widget.ui.task_label.setStyleSheet("")
 
@@ -1618,7 +1627,7 @@ class AppDialog(QtGui.QWidget):
 
         # Make the task validation if the setting `task_required` exists and it's True
         self._validate_task_required()
-        # Re-draw the summary for styling application
+        # Re-draw the summary for styling updates
         self._create_master_summary_details()
 
     def _on_browse(self, folders=False):
@@ -1707,7 +1716,7 @@ class AppDialog(QtGui.QWidget):
         """
         # Avoid validation if the setting `task_required` is False or not exists
         if not self._bundle.get_setting("task_required"):
-            return
+            return True
 
         all_items_selected_task = True
         for context_index in range(self.ui.items_tree.topLevelItemCount()):
