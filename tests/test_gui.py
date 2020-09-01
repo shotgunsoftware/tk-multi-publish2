@@ -29,14 +29,14 @@ except ImportError:
 def context():
     # A task in Toolkit UI Automation project which we're going to use
     # for the current context.
-    # Get crendentials from TK_TOOLCHAIN env vars
+    # Get credentials from TK_TOOLCHAIN env vars
     sg = shotgun_api3.Shotgun(
         os.environ["TK_TOOLCHAIN_HOST"],
         login=os.environ["TK_TOOLCHAIN_USER_LOGIN"],
         password=os.environ["TK_TOOLCHAIN_USER_PASSWORD"],
     )
     # Make sure there is not already an automation project created
-    filters = [["name", "is", "Toolkit UI Automation"]]
+    filters = [["name", "is", "Toolkit Publish2 UI Automation"]]
     existed_project = sg.find_one("Project", filters)
     if existed_project is not None:
         sg.delete(existed_project["type"], existed_project["id"])
@@ -46,7 +46,7 @@ def context():
     # Create a new project with the Film VFX Template
     project_data = {
         "sg_description": "Project Created by Automation",
-        "name": "Toolkit UI Automation",
+        "name": "Toolkit Publish2 UI Automation",
         "layout_project": {
             "type": template_project["type"],
             "id": template_project["id"],
@@ -230,14 +230,14 @@ def test_file_publish(app_dialog):
     app_dialog.root["item details"].captions["achmed.JPG"].waitExist(timeout=30)
     assert (
         app_dialog.root["context picker widget"]
-        .captions["*Toolkit UI Automation"]
+        .captions["*Toolkit Publish2 UI Automation"]
         .exists()
-    ), "Context is not set to Toolkit UI Automation."
+    ), "Context is not set to Toolkit Publish2 UI Automation."
 
     # Change context to use a comp task from shot_001
     # Select a shot
     app_dialog.root["context picker widget"].captions[
-        "*Toolkit UI Automation"
+        "*Toolkit Publish2 UI Automation"
     ].mouseClick()
     app_dialog.root["context picker widget"].textfields.typeIn("Shot")
     topwindows.listitems["Shot_001"].get().mouseClick()
@@ -469,9 +469,9 @@ def test_description_inheritance(app_dialog):
     )
     assert (
         app_dialog.root["context picker widget"]
-        .captions["*Toolkit UI Automation"]
+        .captions["*Toolkit Publish2 UI Automation"]
         .exists()
-    ), "Context is not set to Toolkit UI Automation project."
+    ), "Context is not set to Toolkit Publish2 UI Automation project."
 
     # Add a summary description and make sure all items inherited it
     app_dialog.root.textfields.typeIn("Description Summary")
