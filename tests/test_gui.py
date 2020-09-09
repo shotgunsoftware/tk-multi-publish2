@@ -265,6 +265,40 @@ def test_file_publish(app_dialog):
         app_dialog.root["Upper frame"].captions["Publish*Complete"].exists()
     ), "Publish failed."
 
+    # Validate the Progress Details view
+    app_dialog.root["Upper frame"].captions[
+        "For more details, click here."
+    ].mouseClick()
+    app_dialog.root["Upper frame"].captions["Progress Details"].waitExist(timeout=30)
+    # Validate Copy to clipboard button
+    assert (
+        app_dialog.root["Upper frame"].buttons["Copy to Clipboard"].exists()
+    ), "Copy to Clipboard button is missing."
+    app_dialog.root["Upper frame"].buttons["Copy to Clipboard"].mouseClick()
+    # Validate the plugin is showing up. Needs to strip out the file path because of Windows backslashes :(
+    assert (
+        app_dialog.root["Upper frame"]
+        .outlineitems["File publisher plugin accepted: C:*achmed.JPG"]
+        .exists()
+    ), "Missing File Publisher plugins"
+    # Scroll down to make sure to have all second items showing up
+    activityScrollBar = first(app_dialog.root.scrollbars)
+    width, height = activityScrollBar.size
+    app_dialog.root.scrollbars.mouseSlide(width * 0.5, height * 0.1)
+    activityScrollBar.mouseDrag(width * 0, height * 1)
+    # Validate the finalizing pass
+    assert (
+        app_dialog.root["Upper frame"].outlineitems["Running finalizing pass"].exists()
+    ), "Running finalizing pass is missing"
+    assert (
+        app_dialog.root["Upper frame"].outlineitems["Running finalizing pass"].exists()
+    ), "Publish Complete! For details, click here is missing"
+    # Close Progress Details view
+    app_dialog.root["Upper frame"].buttons["Close"].mouseClick()
+    app_dialog.root["Upper frame"].captions["To publish again, click here"].waitExist(
+        timeout=30
+    )
+
     # Return to the main dialog
     app_dialog.root["Upper frame"].captions["To publish again, click here"].mouseClick()
 
