@@ -275,10 +275,10 @@ def test_file_publish(app_dialog):
         app_dialog.root["Upper frame"].buttons["Copy to Clipboard"].exists()
     ), "Copy to Clipboard button is missing."
     app_dialog.root["Upper frame"].buttons["Copy to Clipboard"].mouseClick()
-    # Validate the plugin is showing up. Needs to strip out the file path because of Windows backslashes :(
+    # Validate the plugin is showing up.
     assert (
         app_dialog.root["Upper frame"]
-        .outlineitems["File publisher plugin accepted: C:*achmed.JPG"]
+        .outlineitems["File publisher plugin accepted: *achmed.JPG"]
         .exists()
     ), "Missing File Publisher plugins"
     # Scroll down to make sure to have all second items showing up
