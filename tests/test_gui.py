@@ -32,22 +32,28 @@ def context():
     # Get credentials from TK_TOOLCHAIN
     sg = get_toolkit_user().create_sg_connection()
 
+    # Create or update the integration_tests local storage with the current test run
+    storage_name = "Publisher UI Tests"
+    local_storage = sg.find_one(
+        "LocalStorage", [["code", "is", storage_name]], ["code"]
+    )
+    if local_storage is None:
+        local_storage = sg.create("LocalStorage", {"code": storage_name})
+    # Always update local storage path
+    local_storage["path"] = os.path.expandvars("${SHOTGUN_CURRENT_REPO_ROOT}")
+    sg.update(
+        "LocalStorage", local_storage["id"], {"windows_path": local_storage["path"]}
+    )
+
     # Make sure there is not already an automation project created
     filters = [["name", "is", "Toolkit Publish2 UI Automation"]]
     existed_project = sg.find_one("Project", filters)
     if existed_project is not None:
         sg.delete(existed_project["type"], existed_project["id"])
-    # Get the Film VFX Template project id to be passed in the project creation
-    filters = [["name", "is", "Film VFX Template"]]
-    template_project = sg.find_one("Project", filters)
-    # Create a new project with the Film VFX Template
+    # Create a new project
     project_data = {
         "sg_description": "Project Created by Automation",
         "name": "Toolkit Publish2 UI Automation",
-        "layout_project": {
-            "type": template_project["type"],
-            "id": template_project["id"],
-        },
     }
     new_project = sg.create("Project", project_data)
 
@@ -59,17 +65,12 @@ def context():
     }
     new_sequence = sg.create("Sequence", sequence_data)
 
-    # Get the Animation - Shot task template id to be passed in the shot creation
-    filters = [["code", "is", "Animation - Shot"]]
-    task_template = sg.find_one("TaskTemplate", filters)
-
     # Create a new shot
     shot_data = {
         "project": {"type": new_project["type"], "id": new_project["id"]},
         "sg_sequence": {"type": new_sequence["type"], "id": new_sequence["id"]},
         "code": "shot_001",
         "sg_status_list": "ip",
-        "task_template": {"type": task_template["type"], "id": task_template["id"]},
     }
     sg.create("Shot", shot_data)
 
@@ -241,8 +242,6 @@ def test_file_publish(app_dialog):
     app_dialog.root["context picker widget"].captions["*Shot_001"].waitExist(timeout=30)
     # Select the comp task from the dropdown menu
     app_dialog.root["context picker widget"].checkboxes.mouseClick()
-    topwindows.listitems["*Comp"].get().mouseClick()
-    app_dialog.root["context picker widget"].captions["*Comp"].waitExist(timeout=30)
 
     # Click on validate button
     app_dialog.root["Bottom frame"].buttons["Validate"].mouseClick()

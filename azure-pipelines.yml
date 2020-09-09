@@ -1,4 +1,14 @@
-# Imports the shared Azure CI tools from the master branch of shotgunsoftware/tk-ci-tools
+# Copyright (c) 2020 Shotgun Software Inc.
+#
+# CONFIDENTIAL AND PROPRIETARY
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
+# Source Code License included in this distribution package. See LICENSE.
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
+# not expressly granted therein are reserved by Shotgun Software Inc.
+
+# Imports the shared Azure CI tools
 resources:
   repositories:
     - repository: templates
@@ -32,11 +42,7 @@ jobs:
 - template: build-pipeline.yml@templates
   parameters:
     has_ui_tests: true
-    tk_toolchain_ref: master
     additional_repositories:
     - name: tk-framework-qtwidgets
-      ref: master
     - name: tk-framework-shotgunutils
-      ref: master
     - name: tk-shell
-      ref: master
