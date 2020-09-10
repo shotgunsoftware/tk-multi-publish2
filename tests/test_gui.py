@@ -288,10 +288,14 @@ def test_file_publish(app_dialog):
     activityScrollBar.mouseDrag(width * 0, height * 1)
     # Validate the finalizing pass
     assert (
-        app_dialog.root["Upper frame"].outlineitems["DEBUG: Executing post finalize hook method..."].exists()
+        app_dialog.root["Upper frame"]
+        .outlineitems["DEBUG: Executing post finalize hook method..."]
+        .exists()
     ), "Post finalizing hook is missing"
     assert (
-        app_dialog.root["Upper frame"].outlineitems["Publish Complete! For details, click here."].exists()
+        app_dialog.root["Upper frame"]
+        .outlineitems["Publish Complete! For details, click here."]
+        .exists()
     ), "Publish Complete! For details, click here is missing"
     # Close Progress Details view
     app_dialog.root["Upper frame"].buttons["Close"].mouseClick()
