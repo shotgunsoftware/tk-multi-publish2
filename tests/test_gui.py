@@ -284,14 +284,14 @@ def test_file_publish(app_dialog):
     # Scroll down to make sure to have all second items showing up
     activityScrollBar = first(app_dialog.root.scrollbars)
     width, height = activityScrollBar.size
-    app_dialog.root.scrollbars.mouseSlide(width * 0.5, height * 0.1)
+    app_dialog.root.scrollbars.mouseSlide(width * 0.5, height * 0.05)
     activityScrollBar.mouseDrag(width * 0, height * 1)
     # Validate the finalizing pass
     assert (
-        app_dialog.root["Upper frame"].outlineitems["Running finalizing pass"].exists()
-    ), "Running finalizing pass is missing"
+        app_dialog.root["Upper frame"].outlineitems["DEBUG: Executing post finalize hook method..."].exists()
+    ), "Post finalizing hook is missing"
     assert (
-        app_dialog.root["Upper frame"].outlineitems["Running finalizing pass"].exists()
+        app_dialog.root["Upper frame"].outlineitems["Publish Complete! For details, click here."].exists()
     ), "Publish Complete! For details, click here is missing"
     # Close Progress Details view
     app_dialog.root["Upper frame"].buttons["Close"].mouseClick()
@@ -533,7 +533,7 @@ def test_description_inheritance(app_dialog):
     # Scroll down to make sure to have all second items showing up
     activityScrollBar = first(app_dialog.root.scrollbars)
     width, height = activityScrollBar.size
-    app_dialog.root.scrollbars.mouseSlide()
+    app_dialog.root.scrollbars.mouseSlide(width * 0.5, height * 0.1)
     activityScrollBar.mouseDrag(width * 0, height * 1)
     # Make sure second item inherited the summary description
     app_dialog.root["collected items tree"].outlineitems["*attarder.jpg*"].mouseClick()
@@ -565,7 +565,7 @@ def test_description_inheritance(app_dialog):
     # Scroll up to make sure to have all first items showing up
     activityScrollBar = first(app_dialog.root.scrollbars)
     width, height = activityScrollBar.size
-    app_dialog.root.scrollbars.mouseSlide()
+    app_dialog.root.scrollbars.mouseSlide(width * 0.5, height * 0.75)
     activityScrollBar.mouseDrag(width * 0, height * 0)
     # Select the first parent item
     app_dialog.root["collected items tree"].outlineitems["*achmed.JPG*"].mouseClick()
@@ -603,7 +603,7 @@ def test_description_inheritance(app_dialog):
     # Scroll down to make sure to have all second items showing up
     activityScrollBar = first(app_dialog.root.scrollbars)
     width, height = activityScrollBar.size
-    app_dialog.root.scrollbars.mouseSlide()
+    app_dialog.root.scrollbars.mouseSlide(width * 0.5, height * 0.1)
     activityScrollBar.mouseDrag(width * 0, height * 1)
     # Select the second parent item
     app_dialog.root["collected items tree"].outlineitems["*attarder.jpg*"].mouseClick()
@@ -647,7 +647,7 @@ def test_description_inheritance(app_dialog):
     # Scroll up to make sure to have all first items showing up
     activityScrollBar = first(app_dialog.root.scrollbars)
     width, height = activityScrollBar.size
-    app_dialog.root.scrollbars.mouseSlide()
+    app_dialog.root.scrollbars.mouseSlide(width * 0.5, height * 0.75)
     activityScrollBar.mouseDrag(width * 0, height * 0)
     # Select the first child of the first item
     app_dialog.root["collected items tree"].outlineitems[
@@ -684,7 +684,7 @@ def test_description_inheritance(app_dialog):
     # Scroll down to make sure to have all second items showing up
     activityScrollBar = first(app_dialog.root.scrollbars)
     width, height = activityScrollBar.size
-    app_dialog.root.scrollbars.mouseSlide()
+    app_dialog.root.scrollbars.mouseSlide(width * 0.5, height * 0.1)
     activityScrollBar.mouseDrag(width * 0, height * 1)
     # Select the second parent item
     app_dialog.root["collected items tree"].outlineitems[
