@@ -284,7 +284,7 @@ def test_file_publish(app_dialog):
     # Scroll down to make sure to have all second items showing up
     activityScrollBar = first(app_dialog.root.scrollbars)
     width, height = activityScrollBar.size
-    app_dialog.root.scrollbars.mouseSlide(width * 0.5, height * 0.05)
+    app_dialog.root["Upper frame"].scrollbars.indicators["Position"].mouseSlide()
     activityScrollBar.mouseDrag(width * 0, height * 1)
     # Validate the finalizing pass
     assert (
@@ -537,7 +537,9 @@ def test_description_inheritance(app_dialog):
     # Scroll down to make sure to have all second items showing up
     activityScrollBar = first(app_dialog.root.scrollbars)
     width, height = activityScrollBar.size
-    app_dialog.root.scrollbars.mouseSlide(width * 0.5, height * 0.1)
+    app_dialog.root["collected items tree"].scrollbars.indicators[
+        "Position"
+    ].mouseSlide()
     activityScrollBar.mouseDrag(width * 0, height * 1)
     # Make sure second item inherited the summary description
     app_dialog.root["collected items tree"].outlineitems["*attarder.jpg*"].mouseClick()
@@ -569,7 +571,9 @@ def test_description_inheritance(app_dialog):
     # Scroll up to make sure to have all first items showing up
     activityScrollBar = first(app_dialog.root.scrollbars)
     width, height = activityScrollBar.size
-    app_dialog.root.scrollbars.mouseSlide(width * 0.5, height * 0.75)
+    app_dialog.root["collected items tree"].scrollbars.indicators[
+        "Position"
+    ].mouseSlide()
     activityScrollBar.mouseDrag(width * 0, height * 0)
     # Select the first parent item
     app_dialog.root["collected items tree"].outlineitems["*achmed.JPG*"].mouseClick()
@@ -607,7 +611,9 @@ def test_description_inheritance(app_dialog):
     # Scroll down to make sure to have all second items showing up
     activityScrollBar = first(app_dialog.root.scrollbars)
     width, height = activityScrollBar.size
-    app_dialog.root.scrollbars.mouseSlide(width * 0.5, height * 0.1)
+    app_dialog.root["collected items tree"].scrollbars.indicators[
+        "Position"
+    ].mouseSlide()
     activityScrollBar.mouseDrag(width * 0, height * 1)
     # Select the second parent item
     app_dialog.root["collected items tree"].outlineitems["*attarder.jpg*"].mouseClick()
@@ -651,7 +657,9 @@ def test_description_inheritance(app_dialog):
     # Scroll up to make sure to have all first items showing up
     activityScrollBar = first(app_dialog.root.scrollbars)
     width, height = activityScrollBar.size
-    app_dialog.root.scrollbars.mouseSlide(width * 0.5, height * 0.75)
+    app_dialog.root["collected items tree"].scrollbars.indicators[
+        "Position"
+    ].mouseSlide()
     activityScrollBar.mouseDrag(width * 0, height * 0)
     # Select the first child of the first item
     app_dialog.root["collected items tree"].outlineitems[
@@ -688,7 +696,9 @@ def test_description_inheritance(app_dialog):
     # Scroll down to make sure to have all second items showing up
     activityScrollBar = first(app_dialog.root.scrollbars)
     width, height = activityScrollBar.size
-    app_dialog.root.scrollbars.mouseSlide(width * 0.5, height * 0.1)
+    app_dialog.root["collected items tree"].scrollbars.indicators[
+        "Position"
+    ].mouseSlide()
     activityScrollBar.mouseDrag(width * 0, height * 1)
     # Select the second parent item
     app_dialog.root["collected items tree"].outlineitems[
