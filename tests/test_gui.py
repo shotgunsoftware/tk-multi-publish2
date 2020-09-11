@@ -501,11 +501,11 @@ def test_description_inheritance(app_dialog):
     app_dialog.root["item details"].captions["12 tasks to execute"].waitExist(
         timeout=30
     )
-    assert (
-        app_dialog.root["context picker widget"]
-        .captions["*Toolkit Publish2 UI Automation"]
-        .exists()
-    ), "Context is not set to Toolkit Publish2 UI Automation project."
+    # assert (
+    #     app_dialog.root["context picker widget"]
+    #     .captions["*Toolkit Publish2 UI Automation"]
+    #     .exists()
+    # ), "Context is not set to Toolkit Publish2 UI Automation project."
 
     # # Add a summary description and make sure all items inherited it
     # app_dialog.root.textfields.typeIn("Description Summary")
