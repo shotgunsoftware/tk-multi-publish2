@@ -468,6 +468,7 @@ def test_custom_plugin(app_dialog):
     ].exists(), "Browse folders to publish image sequences button is missing."
 
 
+@pytest.mark.skip()
 def test_description_inheritance(app_dialog):
     """
     Ensure summary description inheritance is working fine.
