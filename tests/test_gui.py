@@ -496,11 +496,11 @@ def test_description_inheritance(app_dialog):
         "{ENTER}"
     )
 
-    # Validate file to publish is there and the right project is selected
-    app_dialog.root["item details"].captions["Publish Summary"].waitExist(timeout=30)
-    app_dialog.root["item details"].captions["12 tasks to execute"].waitExist(
-        timeout=30
-    )
+    # # Validate file to publish is there and the right project is selected
+    # app_dialog.root["item details"].captions["Publish Summary"].waitExist(timeout=30)
+    # app_dialog.root["item details"].captions["12 tasks to execute"].waitExist(
+    #     timeout=30
+    # )
     # assert (
     #     app_dialog.root["context picker widget"]
     #     .captions["*Toolkit Publish2 UI Automation"]
