@@ -478,13 +478,13 @@ def test_description_inheritance(app_dialog):
     app_dialog.root.dialogs["Browse files to publish"].waitIdle(timeout=30)
 
     # Get images path to be published
-    # This is commented out because it is not working on Azure!
-    image_path = os.path.normpath(
-        os.path.expandvars(
-        '${TK_TEST_FIXTURES}/files/images/"achmed.JPG" "attarder.jpg"'
-        )
-    )
-    # image_path = os.path.expandvars("${TK_TEST_FIXTURES}/files/images/achmed.JPG")
+    # # This is commented out because it is not working on Azure!
+    # image_path = os.path.normpath(
+    #     os.path.expandvars(
+    #         '${TK_TEST_FIXTURES}/files/images/"achmed.JPG" "attarder.jpg"'
+    #     )
+    # )
+    image_path = os.path.expandvars("${TK_TEST_FIXTURES}/files/images/achmed.JPG")
 
     # Type in image path
     app_dialog.root.dialogs["Browse files to publish"].textfields[
@@ -499,25 +499,25 @@ def test_description_inheritance(app_dialog):
     app_dialog.root.dialogs["Browse files to publish"].textfields["File name:"].typeIn(
         "{ENTER}"
     )
-    # app_dialog.root["item details"].captions["achmed.JPG"].waitExist(timeout=30)
+    app_dialog.root["item details"].captions["achmed.JPG"].waitExist(timeout=30)
 
-    # # Open the Browse file to publish and then select the second file to publish
-    # app_dialog.root["button container"].navIndexes("0").mouseClick()
-    # # Get images path to be published
-    # image_path = os.path.expandvars("${TK_TEST_FIXTURES}/files/images/attarder.jpg")
-    # # Type in image path
-    # app_dialog.root.dialogs["Browse files to publish"].textfields[
-    #     "File name:"
-    # ].mouseClick()
-    # app_dialog.root.dialogs["Browse files to publish"].textfields["File name:"].pasteIn(
-    #     image_path
-    # )
-    # app_dialog.root.dialogs["Browse files to publish"].textfields[
-    #     "File name:"
-    # ].waitIdle(timeout=30)
-    # app_dialog.root.dialogs["Browse files to publish"].textfields["File name:"].typeIn(
-    #     "{ENTER}"
-    # )
+    # Open the Browse file to publish and then select the second file to publish
+    app_dialog.root["button container"].navIndexes("0").mouseClick()
+    # Get images path to be published
+    image_path = os.path.expandvars("${TK_TEST_FIXTURES}/files/images/attarder.jpg")
+    # Type in image path
+    app_dialog.root.dialogs["Browse files to publish"].textfields[
+        "File name:"
+    ].mouseClick()
+    app_dialog.root.dialogs["Browse files to publish"].textfields["File name:"].pasteIn(
+        image_path
+    )
+    app_dialog.root.dialogs["Browse files to publish"].textfields[
+        "File name:"
+    ].waitIdle(timeout=30)
+    app_dialog.root.dialogs["Browse files to publish"].textfields["File name:"].typeIn(
+        "{ENTER}"
+    )
 
     # Validate file to publish is there and the right project is selected
     app_dialog.root["item details"].captions["Publish Summary"].waitExist(timeout=30)
