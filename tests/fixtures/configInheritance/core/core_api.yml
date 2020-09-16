@@ -7,14 +7,10 @@
 # By accessing, using, copying or modifying this work you indicate your
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
-#
-# coverage configuration - used by https://coveralls.io/ integration
-#
-#
-[run]
-source=.
-omit=tests/*
 
-[report]
-exclude_lines =
-    raise NotImplementedError
+# this configuration file defines which version of the toolkit
+# core API that should be used at runtime.
+
+location:
+  type: path
+  path: $SHOTGUN_REPOS_ROOT/tk-core
