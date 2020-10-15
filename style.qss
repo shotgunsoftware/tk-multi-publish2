@@ -27,7 +27,7 @@ QWidget {
     font-style: Regular;
 }
 
-/* need this to kick QT into 'style mode' for labels otherwise things are not formatted correctly */
+/* Need this to kick QT into 'style mode' for labels otherwise things are not formatted correctly */
 QLabel {
     margin-top: 1px;
 }
@@ -326,7 +326,6 @@ ProgressDetailsWidget #log_tree::item {
 
 #progress_bar {
     border: none;
-    background-color: none;
     margin: 3px;
 }
 
