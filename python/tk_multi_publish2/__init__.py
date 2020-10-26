@@ -9,6 +9,7 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import sgtk
+from sgtk.platform.qt import QtGui
 
 from .api import PublishManager  # noqa
 from . import base_hooks  # noqa
@@ -27,5 +28,26 @@ def show_dialog(app):
 
     display_name = sgtk.platform.current_bundle().get_setting("display_name")
 
-    # start ui
-    app.engine.show_dialog(display_name, app, AppDialog)
+    # check for unsaved work and prompt the user if necessary
+    # do not allow the user to publish, until their work has been saved to Shotgun
+    show = True
+    if not app.engine.current_work_has_path():
+        answer = QtGui.QMessageBox.question(
+            None,
+            "Save Work",
+            "Do you want to save your work to continue to publish?",
+            defaultButton=QtGui.QMessageBox.Yes,
+        )
+
+        if answer == QtGui.QMessageBox.Yes:
+            app.engine.show_save_dialog()
+            show = app.engine.current_work_has_path()
+        else:
+            show = False
+
+    if show:
+        # start ui
+        if app.modal:
+            app.engine.show_modal(display_name, app, AppDialog)
+        else:
+            app.engine.show_dialog(display_name, app, AppDialog)

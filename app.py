@@ -44,6 +44,8 @@ class MultiPublish2(sgtk.platform.Application):
         # replace all non alphanumeric characters by '_'
         command_name = re.sub(r"[^0-9a-zA-Z]+", "_", command_name)
 
+        self.modal = self.get_setting("modal")
+
         # register command
         cb = lambda: tk_multi_publish2.show_dialog(self)
         menu_caption = "%s..." % display_name
