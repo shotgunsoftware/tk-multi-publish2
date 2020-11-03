@@ -45,6 +45,7 @@ class MultiPublish2(sgtk.platform.Application):
         command_name = re.sub(r"[^0-9a-zA-Z]+", "_", command_name)
 
         self.modal = self.get_setting("modal")
+        self.require_save = self.engine.get_setting("require_save_before_publish")
 
         # register command
         cb = lambda: tk_multi_publish2.show_dialog(self)

@@ -117,6 +117,7 @@ configuration:
           "If true the app dialog will be opened in modal window mode, else if
            false (default) the dialog will be opened in non-modal window mode."
 
+
 # the Shotgun fields that this app needs in order to operate correctly
 requires_shotgun_fields:
 

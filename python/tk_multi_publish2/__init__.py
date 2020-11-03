@@ -31,18 +31,28 @@ def show_dialog(app):
     # check for unsaved work and prompt the user if necessary
     # do not allow the user to publish, until their work has been saved to Shotgun
     show = True
-    if not app.engine.current_work_has_path():
-        answer = QtGui.QMessageBox.question(
-            None,
-            "Save Work",
-            "Do you want to save your work to continue to publish?",
-            defaultButton=QtGui.QMessageBox.Yes,
-        )
+    if app.require_save:
+        try:
+            if not app.engine.current_session_path():
+                answer = QtGui.QMessageBox.question(
+                    None,
+                    "Save Work",
+                    "Do you want to save your work to continue to publish?",
+                    defaultButton=QtGui.QMessageBox.Yes,
+                )
 
-        if answer == QtGui.QMessageBox.Yes:
-            app.engine.show_save_dialog()
-            show = app.engine.current_work_has_path()
-        else:
+                if answer == QtGui.QMessageBox.Yes:
+                    app.engine.show_save_dialog()
+                    show = app.engine.current_session_path()
+                else:
+                    show = False
+
+        except AttributeError as error:
+            error_msg = "Error: '%s'" % error
+            app.logger.error(error_msg)
+            QtGui.QMessageBox.critical(
+                QtGui.QApplication.activeWindow(), "File Save Error", error_msg
+            )
             show = False
 
     if show:
