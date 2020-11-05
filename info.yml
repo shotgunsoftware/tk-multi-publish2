@@ -48,6 +48,14 @@ configuration:
            identification, publish display name, image sequence paths, etc."
         default_value: "{self}/path_info.py"
 
+    pre_publish:
+        type: hook
+        description:
+          "This hook defines logic to be executed before showing the publish
+          dialog. There may be conditions that need to be checked before allowing
+          the user to proceed to publishing."
+        default_value: "{self}/pre_publish.py"
+
     task_required:
         type: bool
         description:
@@ -109,6 +117,14 @@ configuration:
            main dialog to drop files or folders. The user can also use the browse
            buttons to select files or folders. When false, the feature basically
            disable the user ability to add anything to the project."
+
+    modal:
+        type: bool
+        default_value: false
+        description:
+          "If true the app dialog will be opened in modal window mode, else if
+           false (default) the dialog will be opened in non-modal window mode."
+
 
 # the Shotgun fields that this app needs in order to operate correctly
 requires_shotgun_fields:

@@ -20,6 +20,8 @@ class MultiPublish2(sgtk.platform.Application):
     top-level publish2 interface.
     """
 
+    CONFIG_PRE_PUBLISH_HOOK_PATH = "pre_publish"
+
     def init_app(self):
         """
         Called as the application is being initialized
@@ -43,6 +45,11 @@ class MultiPublish2(sgtk.platform.Application):
         command_name = display_name.lower()
         # replace all non alphanumeric characters by '_'
         command_name = re.sub(r"[^0-9a-zA-Z]+", "_", command_name)
+
+        self.modal = self.get_setting("modal")
+
+        pre_publish_hook_path = self.get_setting(self.CONFIG_PRE_PUBLISH_HOOK_PATH)
+        self.pre_publish_hook = self.create_hook_instance(pre_publish_hook_path)
 
         # register command
         cb = lambda: tk_multi_publish2.show_dialog(self)
