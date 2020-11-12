@@ -107,11 +107,20 @@ class Thumbnail(QtGui.QLabel):
         """
         self._bundle.log_debug("Prompting for screenshot...")
 
-        self.window().hide()
+        # Hide the window containing this Thumbnail, unless it is Qt's QMainWindow which
+        # has the content to be screen captured.
+        window = self.window()
+        if isinstance(window, QtGui.QMainWindow):
+            hide = False
+        else:
+            hide = True
+            window.hide()
+
         try:
             pixmap = screen_grab.ScreenGrabber.screen_capture()
         finally:
-            self.window().show()
+            if hide:
+                self.window().show()
 
         if pixmap:
             self._bundle.log_debug(
