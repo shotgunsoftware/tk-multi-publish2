@@ -63,10 +63,10 @@ class CustomTreeWidgetItem(CustomTreeWidgetBase):
         """
         # Qt tri-state logic is a little odd. The default behaviour is to go from unchecked
         # to partially checked. We want it to go from unchecked to checked
-        if self.ui.checkbox.checkState() == QtCore.Qt.CheckState.Checked:
-            next_state = QtCore.Qt.CheckState.Unchecked
+        if self.ui.checkbox.checkState() == QtCore.Qt.Checked:
+            next_state = QtCore.Qt.Unchecked
         else:
-            next_state = QtCore.Qt.CheckState.Checked
+            next_state = QtCore.Qt.Checked
         self.ui.checkbox.setCheckState(next_state)
         self._tree_node.set_check_state(next_state)
 
