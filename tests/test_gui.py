@@ -46,14 +46,17 @@ def context():
     )
 
     # Make sure there is not already an automation project created
-    filters = [["name", "is", "Toolkit Publish2 UI Automation"]]
+    project_name = (
+        "Toolkit Publish2 UI Automation " + os.environ["SHOTGUN_TEST_ENTITY_SUFFIX"]
+    )
+    filters = [["name", "is", project_name]]
     existed_project = sg.find_one("Project", filters)
     if existed_project is not None:
         sg.delete(existed_project["type"], existed_project["id"])
     # Create a new project
     project_data = {
         "sg_description": "Project Created by Automation",
-        "name": "Toolkit Publish2 UI Automation",
+        "name": project_name,
     }
     new_project = sg.create("Project", project_data)
 
@@ -198,7 +201,7 @@ def test_browse_buttons(app_dialog):
     ].mouseClick()
 
 
-def test_file_publish(app_dialog):
+def test_file_publish(app_dialog, context):
     """
     Ensure you can publish an image file successfully.
     """
@@ -228,14 +231,14 @@ def test_file_publish(app_dialog):
     app_dialog.root["item details"].captions["svenFace.jpg"].waitExist(timeout=30)
     assert (
         app_dialog.root["context picker widget"]
-        .captions["*Toolkit Publish2 UI Automation"]
+        .captions["*" + str(context["name"])]
         .exists()
     ), "Context is not set to Toolkit Publish2 UI Automation."
 
     # Change context to use a comp task from shot_001
     # Select a shot
     app_dialog.root["context picker widget"].captions[
-        "*Toolkit Publish2 UI Automation"
+        "*" + str(context["name"])
     ].mouseClick()
     app_dialog.root["context picker widget"].textfields.typeIn("Shot")
     topwindows.listitems["Shot_001"].get().mouseClick()
@@ -468,7 +471,7 @@ def test_custom_plugin(app_dialog):
     ].exists(), "Browse folders to publish image sequences button is missing."
 
 
-def test_description_inheritance(app_dialog):
+def test_description_inheritance(app_dialog, context):
     """
     Ensure summary description inheritance is working fine.
     """
@@ -526,7 +529,7 @@ def test_description_inheritance(app_dialog):
     )
     assert (
         app_dialog.root["context picker widget"]
-        .captions["*Toolkit Publish2 UI Automation"]
+        .captions["*" + str(context["name"])]
         .exists()
     ), "Context is not set to Toolkit Publish2 UI Automation project."
 
