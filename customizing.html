@@ -15,48 +15,49 @@
 
   
   
+  
+  
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="tk-multi-publish2 v2.5.5 documentation" href="index.html"/>
-        <link rel="next" title="Publish API" href="api.html"/>
-        <link rel="prev" title="Shotgun Publisher API reference, v2.5.5" href="index.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Publish API" href="api.html" />
+    <link rel="prev" title="Shotgun Publisher API reference, v2.5.5" href="index.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
+   
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
     <a href='http://developer.shotgunsoftware.com'>
     
         <img style='width: 191px;
-                height: 60px; 
+                height: 60px;
                 margin: 2px;
-                border-radius: 0px; 
-                padding: 0px;' 
+                border-radius: 0px;
+                padding: 0px;'
             src='_static/logo@2x.png'/>
     
     </a>
@@ -89,7 +90,10 @@
     
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Publish Customization</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#collector-hook">Collector Hook</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#collector-hook-api">Collector Hook API</a></li>
@@ -116,16 +120,16 @@
     <div style='margin-top: 50px;
                 margin-left: 10px;
                 margin-right: 10px;
-                padding: 10px; 
-                color: #b3b3b3; 
+                padding: 10px;
+                color: #b3b3b3;
                 font-size: 70%;
                 border-radius: 3px;
                 background-color: #444;
                 line-height: 18px;
-                '>    
+                '>
     <style>
-        a.custom_post_menu { display: inline; 
-                             padding: 0px; 
+        a.custom_post_menu { display: inline;
+                             padding: 0px;
                              text-decoration: underline; }
     </style>
 
@@ -135,7 +139,7 @@
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
-    The code associated with this documentation can be found 
+    The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-multi-publish2'>here</a>.
 
     </div>
@@ -149,32 +153,52 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">tk-multi-publish2</a>
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">tk-multi-publish2</a>
+        
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>Publish Customization</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Publish Customization</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -196,7 +220,7 @@ and presented to the user.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">For more information on how to take over, subclass, and manage hooks,
-see the <a class="reference external" href="http://developer.shotgunsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.19.17)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
+see the <a class="reference external" href="http://developer.shotgunsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.19.18)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="collector-hook-api">
@@ -204,7 +228,7 @@ see the <a class="reference external" href="http://developer.shotgunsoftware.com
 <dl class="class">
 <dt id="tk_multi_publish2.base_hooks.CollectorPlugin">
 <em class="property">class </em><code class="descclassname">tk_multi_publish2.base_hooks.</code><code class="descname">CollectorPlugin</code><span class="sig-paren">(</span><em>parent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/collector.html#CollectorPlugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.CollectorPlugin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">tank.hook.Hook</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tank.hook.Hook</span></code></p>
 <p>This class defines the required interface for a collector plugin.
 Collectors are used to gather individual files that are loaded via the
 file browser or dragged and dropped into the Publish2 UI. It is also used
@@ -218,13 +242,13 @@ to gather items to be published within the current DCC session.</p>
 <dl class="attribute">
 <dt id="tk_multi_publish2.base_hooks.CollectorPlugin.settings">
 <code class="descname">settings</code><a class="headerlink" href="#tk_multi_publish2.base_hooks.CollectorPlugin.settings" title="Permalink to this definition">¶</a></dt>
-<dd><p>A <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> defining the configuration interface for this collector.</p>
+<dd><p>A <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> defining the configuration interface for this collector.</p>
 <p>The values configured for the collector will be supplied via settings
-parameter in the <a class="reference internal" href="#tk_multi_publish2.base_hooks.CollectorPlugin.process_current_session" title="tk_multi_publish2.base_hooks.CollectorPlugin.process_current_session"><code class="xref py py-func docutils literal"><span class="pre">process_current_session()</span></code></a> and
-<a class="reference internal" href="#tk_multi_publish2.base_hooks.CollectorPlugin.process_file" title="tk_multi_publish2.base_hooks.CollectorPlugin.process_file"><code class="xref py py-func docutils literal"><span class="pre">process_file()</span></code></a> methods.</p>
+parameter in the <a class="reference internal" href="#tk_multi_publish2.base_hooks.CollectorPlugin.process_current_session" title="tk_multi_publish2.base_hooks.CollectorPlugin.process_current_session"><code class="xref py py-func docutils literal notranslate"><span class="pre">process_current_session()</span></code></a> and
+<a class="reference internal" href="#tk_multi_publish2.base_hooks.CollectorPlugin.process_file" title="tk_multi_publish2.base_hooks.CollectorPlugin.process_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">process_file()</span></code></a> methods.</p>
 <p>The dictionary can include any number of settings required by the
 collector, and takes the form:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="o">&lt;</span><span class="n">setting_name</span><span class="o">&gt;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">type</span><span class="o">&gt;</span><span class="p">,</span>
         <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">default</span><span class="o">&gt;</span><span class="p">,</span>
@@ -242,14 +266,14 @@ collector, and takes the form:</p>
 <p>The keys in the dictionary represent the names of the settings. The
 values are a dictionary comprised of 3 additional key/value pairs.</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">type</span></code>: The type of the setting. This should correspond to one of
+<li><code class="docutils literal notranslate"><span class="pre">type</span></code>: The type of the setting. This should correspond to one of
 the data types that toolkit accepts for app and engine settings such
-as <code class="docutils literal"><span class="pre">hook</span></code>, <code class="docutils literal"><span class="pre">template</span></code>, <code class="docutils literal"><span class="pre">string</span></code>, etc.</li>
-<li><code class="docutils literal"><span class="pre">default</span></code>: The default value for the settings. This can be <code class="docutils literal"><span class="pre">None</span></code>.</li>
-<li><code class="docutils literal"><span class="pre">description</span></code>: A description of the setting as a string.</li>
+as <code class="docutils literal notranslate"><span class="pre">hook</span></code>, <code class="docutils literal notranslate"><span class="pre">template</span></code>, <code class="docutils literal notranslate"><span class="pre">string</span></code>, etc.</li>
+<li><code class="docutils literal notranslate"><span class="pre">default</span></code>: The default value for the settings. This can be <code class="docutils literal notranslate"><span class="pre">None</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">description</span></code>: A description of the setting as a string.</li>
 </ul>
 <p>Example implementation:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="nd">@property</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@property</span>
 <span class="k">def</span> <span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;Work Template&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -265,16 +289,16 @@ as <code class="docutils literal"><span class="pre">hook</span></code>, <code cl
     <span class="p">}</span>
 </pre></div>
 </div>
-<p>The settings are exposed via the <code class="docutils literal"><span class="pre">collector_settings</span></code> setting in the
-app&#8217;s configuration. Example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">collector_settings</span><span class="p">:</span>
+<p>The settings are exposed via the <code class="docutils literal notranslate"><span class="pre">collector_settings</span></code> setting in the
+app’s configuration. Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">collector_settings</span><span class="p">:</span>
     <span class="n">Work</span> <span class="n">Template</span><span class="p">:</span> <span class="n">my_work_template</span>
     <span class="n">Exclude</span> <span class="n">Objects</span><span class="p">:</span> <span class="p">[</span><span class="n">obj1</span><span class="p">,</span> <span class="n">obj4</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">See the hooks defined in the publisher app&#8217;s <code class="docutils literal"><span class="pre">hooks/</span></code> folder
+<p class="last">See the hooks defined in the publisher app’s <code class="docutils literal notranslate"><span class="pre">hooks/</span></code> folder
 for additional example implementations.</p>
 </div>
 </dd></dl>
@@ -287,7 +311,7 @@ of items for publishing.</p>
 <p>A typical implementation of this method would create an item that
 represents the current session (e.g. the current Maya file) or all open
 documents in a multi-document scenario (such as Photoshop). Top level
-items area created as children of the supplied <code class="docutils literal"><span class="pre">parent_item</span></code>
+items area created as children of the supplied <code class="docutils literal notranslate"><span class="pre">parent_item</span></code>
 (a <a class="reference internal" href="api.html#publish-api-item"><span class="std std-ref">PublishItem</span></a> instance).</p>
 <p>Any additional items, specific to the current session, can then be
 created as children of the session item. This is not a requirement
@@ -300,15 +324,15 @@ more publish tasks attached to them.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<p>The <code class="docutils literal"><span class="pre">settings</span></code> argument is a dictionary where the keys are the names
-of the settings defined by the <a class="reference internal" href="#tk_multi_publish2.base_hooks.CollectorPlugin.settings" title="tk_multi_publish2.base_hooks.CollectorPlugin.settings"><code class="xref py py-func docutils literal"><span class="pre">settings()</span></code></a> property and the values
+<p>The <code class="docutils literal notranslate"><span class="pre">settings</span></code> argument is a dictionary where the keys are the names
+of the settings defined by the <a class="reference internal" href="#tk_multi_publish2.base_hooks.CollectorPlugin.settings" title="tk_multi_publish2.base_hooks.CollectorPlugin.settings"><code class="xref py py-func docutils literal notranslate"><span class="pre">settings()</span></code></a> property and the values
 are <a class="reference internal" href="api.html#publish-api-setting"><span class="std std-ref">PluginSetting</span></a> instances as configured for this
 instance of the publish app.</p>
 <p>To create items within this method, use the
-<a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.create_item" title="tk_multi_publish2.api.PublishItem.create_item"><code class="xref py py-meth docutils literal"><span class="pre">create_item()</span></code></a> method available on the supplied
-<code class="docutils literal"><span class="pre">parent_item</span></code>.</p>
+<a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.create_item" title="tk_multi_publish2.api.PublishItem.create_item"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_item()</span></code></a> method available on the supplied
+<code class="docutils literal notranslate"><span class="pre">parent_item</span></code>.</p>
 <p>Example Maya implementation:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process_current_session</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">parent_item</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process_current_session</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">parent_item</span><span class="p">):</span>
 
     <span class="n">path</span> <span class="o">=</span> <span class="n">cmds</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -328,7 +352,7 @@ instance of the publish app.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">See the hooks defined in the publisher app&#8217;s <code class="docutils literal"><span class="pre">hooks/</span></code> folder
+<p class="last">See the hooks defined in the publisher app’s <code class="docutils literal notranslate"><span class="pre">hooks/</span></code> folder
 for additional example implementations.</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
@@ -336,9 +360,9 @@ for additional example implementations.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; A dictionary of configured
+<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dictionary of configured
 <a class="reference internal" href="api.html#publish-api-setting"><span class="std std-ref">PluginSetting</span></a> objects for this collector.</li>
-<li><strong>parent_item</strong> &#8211; The root <a class="reference internal" href="api.html#publish-api-item"><span class="std std-ref">PublishItem</span></a> instance to
+<li><strong>parent_item</strong> – The root <a class="reference internal" href="api.html#publish-api-item"><span class="std std-ref">PublishItem</span></a> instance to
 collect child items for.</li>
 </ul>
 </td>
@@ -360,15 +384,15 @@ path.</p>
 <p>A typical implementation of this method involves processing the supplied
 path to determine what type of file it is and how to display it before
 creating the item to publish.</p>
-<p>The <code class="docutils literal"><span class="pre">settings</span></code> argument is a dictionary where the keys are the names
-of the settings defined by the <a class="reference internal" href="#tk_multi_publish2.base_hooks.CollectorPlugin.settings" title="tk_multi_publish2.base_hooks.CollectorPlugin.settings"><code class="xref py py-func docutils literal"><span class="pre">settings()</span></code></a> property and the values
+<p>The <code class="docutils literal notranslate"><span class="pre">settings</span></code> argument is a dictionary where the keys are the names
+of the settings defined by the <a class="reference internal" href="#tk_multi_publish2.base_hooks.CollectorPlugin.settings" title="tk_multi_publish2.base_hooks.CollectorPlugin.settings"><code class="xref py py-func docutils literal notranslate"><span class="pre">settings()</span></code></a> property and the values
 are <a class="reference internal" href="api.html#publish-api-setting"><span class="std std-ref">PluginSetting</span></a> instances as
 configured for this instance of the publish app.</p>
 <p>To create items within this method, use the
-<a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.create_item" title="tk_multi_publish2.api.PublishItem.create_item"><code class="xref py py-meth docutils literal"><span class="pre">create_item()</span></code></a> method available on the supplied
-<code class="docutils literal"><span class="pre">parent_item</span></code>.</p>
+<a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.create_item" title="tk_multi_publish2.api.PublishItem.create_item"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_item()</span></code></a> method available on the supplied
+<code class="docutils literal notranslate"><span class="pre">parent_item</span></code>.</p>
 <p>Example implementation:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process_file</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">parent_item</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process_file</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">parent_item</span><span class="p">):</span>
 
     <span class="c1"># make sure the path is normalized. no trailing separator,</span>
     <span class="c1"># separators are appropriate for the current os, no double</span>
@@ -393,7 +417,7 @@ configured for this instance of the publish app.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">See the hooks defined in the publisher app&#8217;s <code class="docutils literal"><span class="pre">hooks/</span></code> folder
+<p class="last">See the hooks defined in the publisher app’s <code class="docutils literal notranslate"><span class="pre">hooks/</span></code> folder
 for additional example implementations.</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
@@ -401,9 +425,9 @@ for additional example implementations.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; A dictionary of configured
+<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dictionary of configured
 <a class="reference internal" href="api.html#publish-api-setting"><span class="std std-ref">PluginSetting</span></a> objects for this collector.</li>
-<li><strong>parent_item</strong> &#8211; The root <a class="reference internal" href="api.html#publish-api-item"><span class="std std-ref">PublishItem</span></a> instance to
+<li><strong>parent_item</strong> – The root <a class="reference internal" href="api.html#publish-api-item"><span class="std std-ref">PublishItem</span></a> instance to
 collect child items for.</li>
 </ul>
 </td>
@@ -422,14 +446,14 @@ collect child items for.</li>
 After all items have been collected, the Publisher attempts to match the items
 with the appropriate publish plugins. All matched plugins show up as child tasks
 within the publish item hierarchy.</p>
-<p>With <code class="docutils literal"><span class="pre">v2.0.0</span></code> of the publisher and higher, each plugin can define a custom UI
+<p>With <code class="docutils literal notranslate"><span class="pre">v2.0.0</span></code> of the publisher and higher, each plugin can define a custom UI
 that allows users to make changes to the publish settings prior to publishing.
 See the methods and properties section below for details on how to implement a
 custom publish plugin UI.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">For more information on how to take over, subclass, and manage hooks,
-see the <a class="reference external" href="http://developer.shotgunsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.19.17)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
+see the <a class="reference external" href="http://developer.shotgunsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.19.18)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="publish-plugin-api">
@@ -437,7 +461,7 @@ see the <a class="reference external" href="http://developer.shotgunsoftware.com
 <dl class="class">
 <dt id="tk_multi_publish2.base_hooks.PublishPlugin">
 <em class="property">class </em><code class="descclassname">tk_multi_publish2.base_hooks.</code><code class="descname">PublishPlugin</code><span class="sig-paren">(</span><em>parent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/publish_plugin.html#PublishPlugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">tank.hook.Hook</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tank.hook.Hook</span></code></p>
 <p>This class defines the required interface for a publish plugin. Publish
 plugins are responsible for operating on items collected by the collector
 plugin. Publish plugins define which items they will operate on as well as
@@ -452,7 +476,7 @@ the execution logic for each phase of the publish process.</p>
 <dt id="tk_multi_publish2.base_hooks.PublishPlugin.icon">
 <code class="descname">icon</code><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin.icon" title="Permalink to this definition">¶</a></dt>
 <dd><p>The path to an icon on disk that is representative of this plugin
-(<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></a>).</p>
+(<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>).</p>
 <p>The icon will be displayed on the left side of the task driven by this
 plugin, as shown in the image below.</p>
 <img alt="_images/task_icon.png" src="_images/task_icon.png" />
@@ -461,9 +485,9 @@ plugin, as shown in the image below.</p>
 </div>
 <p>Icons can be stored within the same bundle as the plugin itself and
 referenced relative to the disk location of the plugin, accessible via
-<code class="xref py py-meth docutils literal"><span class="pre">sgtk.Hook.disk_location()</span></code>.</p>
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">sgtk.Hook.disk_location()</span></code>.</p>
 <p>Example implementation:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="nd">@property</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@property</span>
 <span class="k">def</span> <span class="nf">icon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
@@ -476,8 +500,8 @@ referenced relative to the disk location of the plugin, accessible via
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Publish plugins drive the tasks that operate on publish items.
-It can be helpful to think of items as &#8220;things&#8221; and tasks as the
-&#8220;actions&#8221; that operate on those &#8220;things&#8221;. A publish icon that
+It can be helpful to think of items as “things” and tasks as the
+“actions” that operate on those “things”. A publish icon that
 represents some type of action can help artists understand the
 distinction between items and tasks in the interface.</p>
 </div>
@@ -486,27 +510,27 @@ distinction between items and tasks in the interface.</p>
 <dl class="attribute">
 <dt id="tk_multi_publish2.base_hooks.PublishPlugin.name">
 <code class="descname">name</code><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin.name" title="Permalink to this definition">¶</a></dt>
-<dd><p>The general name for this plugin (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></a>).</p>
+<dd><p>The general name for this plugin (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>).</p>
 <p>This value is not generally used for display. Instances of the plugin
-are defined within the app&#8217;s configuration and those instance names are
+are defined within the app’s configuration and those instance names are
 what is shown in the interface for the tasks.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="tk_multi_publish2.base_hooks.PublishPlugin.description">
 <code class="descname">description</code><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin.description" title="Permalink to this definition">¶</a></dt>
-<dd><p>Verbose, multi-line description of what the plugin does (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></a>).</p>
+<dd><p>Verbose, multi-line description of what the plugin does (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>).</p>
 <p>The string can contain html for formatting for display in the UI (any
-html tags supported by Qt&#8217;s rich text engine).</p>
-<p>The description is displayed via the plugin&#8217;s default
-<a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.create_settings_widget" title="tk_multi_publish2.base_hooks.PublishPlugin.create_settings_widget"><code class="xref py py-meth docutils literal"><span class="pre">create_settings_widget()</span></code></a> implementation, as shown in the image
+html tags supported by Qt’s rich text engine).</p>
+<p>The description is displayed via the plugin’s default
+<a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.create_settings_widget" title="tk_multi_publish2.base_hooks.PublishPlugin.create_settings_widget"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_settings_widget()</span></code></a> implementation, as shown in the image
 below:</p>
 <img alt="_images/plugin_description.png" src="_images/plugin_description.png" />
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
 <p>A simple implementation example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="nd">@property</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@property</span>
 <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="s1">&#39;&#39;&#39;</span>
@@ -525,10 +549,10 @@ below:</p>
 <dl class="attribute">
 <dt id="tk_multi_publish2.base_hooks.PublishPlugin.settings">
 <code class="descname">settings</code><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin.settings" title="Permalink to this definition">¶</a></dt>
-<dd><p>A <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> defining the configuration interface for this plugin.</p>
+<dd><p>A <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> defining the configuration interface for this plugin.</p>
 <p>The dictionary can include any number of settings required by the
 plugin, and takes the form:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="o">&lt;</span><span class="n">setting_name</span><span class="o">&gt;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">type</span><span class="o">&gt;</span><span class="p">,</span>
         <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">default</span><span class="o">&gt;</span><span class="p">,</span>
@@ -546,14 +570,14 @@ plugin, and takes the form:</p>
 <p>The keys in the dictionary represent the names of the settings. The
 values are a dictionary comprised of 3 additional key/value pairs.</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">type</span></code>: The type of the setting. This should correspond to one of
+<li><code class="docutils literal notranslate"><span class="pre">type</span></code>: The type of the setting. This should correspond to one of
 the data types that toolkit accepts for app and engine settings such
-as <code class="docutils literal"><span class="pre">hook</span></code>, <code class="docutils literal"><span class="pre">template</span></code>, <code class="docutils literal"><span class="pre">string</span></code>, etc.</li>
-<li><code class="docutils literal"><span class="pre">default</span></code>: The default value for the settings. This can be <code class="docutils literal"><span class="pre">None</span></code>.</li>
-<li><code class="docutils literal"><span class="pre">description</span></code>: A description of the setting as a string.</li>
+as <code class="docutils literal notranslate"><span class="pre">hook</span></code>, <code class="docutils literal notranslate"><span class="pre">template</span></code>, <code class="docutils literal notranslate"><span class="pre">string</span></code>, etc.</li>
+<li><code class="docutils literal notranslate"><span class="pre">default</span></code>: The default value for the settings. This can be <code class="docutils literal notranslate"><span class="pre">None</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">description</span></code>: A description of the setting as a string.</li>
 </ul>
 <p>Example implementation:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="nd">@property</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@property</span>
 <span class="k">def</span> <span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;Publish Template&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -569,10 +593,10 @@ as <code class="docutils literal"><span class="pre">hook</span></code>, <code cl
     <span class="p">}</span>
 </pre></div>
 </div>
-<p>The settings are exposed via the <code class="docutils literal"><span class="pre">settings</span></code> key as the plugins are
-configured via the <code class="docutils literal"><span class="pre">publish_plugins</span></code> setting in the app&#8217;s
+<p>The settings are exposed via the <code class="docutils literal notranslate"><span class="pre">settings</span></code> key as the plugins are
+configured via the <code class="docutils literal notranslate"><span class="pre">publish_plugins</span></code> setting in the app’s
 configuration. Example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">publish_plugins</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">publish_plugins</span><span class="p">:</span>
     <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">Export</span> <span class="ow">and</span> <span class="n">Publish</span>
       <span class="n">hook</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{config}</span><span class="s2">/export_and_publish.py&quot;</span>
       <span class="n">settings</span><span class="p">:</span>
@@ -581,15 +605,15 @@ configuration. Example:</p>
 </pre></div>
 </div>
 <p>The values configured for the plugin will be supplied via settings
-parameter in the <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.accept" title="tk_multi_publish2.base_hooks.PublishPlugin.accept"><code class="xref py py-meth docutils literal"><span class="pre">accept()</span></code></a>, <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.validate" title="tk_multi_publish2.base_hooks.PublishPlugin.validate"><code class="xref py py-meth docutils literal"><span class="pre">validate()</span></code></a>, <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.publish" title="tk_multi_publish2.base_hooks.PublishPlugin.publish"><code class="xref py py-meth docutils literal"><span class="pre">publish()</span></code></a>, and
-<a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.finalize" title="tk_multi_publish2.base_hooks.PublishPlugin.finalize"><code class="xref py py-meth docutils literal"><span class="pre">finalize()</span></code></a> methods.</p>
+parameter in the <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.accept" title="tk_multi_publish2.base_hooks.PublishPlugin.accept"><code class="xref py py-meth docutils literal notranslate"><span class="pre">accept()</span></code></a>, <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.validate" title="tk_multi_publish2.base_hooks.PublishPlugin.validate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">validate()</span></code></a>, <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.publish" title="tk_multi_publish2.base_hooks.PublishPlugin.publish"><code class="xref py py-meth docutils literal notranslate"><span class="pre">publish()</span></code></a>, and
+<a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.finalize" title="tk_multi_publish2.base_hooks.PublishPlugin.finalize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">finalize()</span></code></a> methods.</p>
 <p>The values also drive the custom UI defined by the plugin which allows
 artists to manipulate the settings at runtime. See the
-<a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.create_settings_widget" title="tk_multi_publish2.base_hooks.PublishPlugin.create_settings_widget"><code class="xref py py-meth docutils literal"><span class="pre">create_settings_widget()</span></code></a>, <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.set_ui_settings" title="tk_multi_publish2.base_hooks.PublishPlugin.set_ui_settings"><code class="xref py py-meth docutils literal"><span class="pre">set_ui_settings()</span></code></a>, and
-<a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.get_ui_settings" title="tk_multi_publish2.base_hooks.PublishPlugin.get_ui_settings"><code class="xref py py-meth docutils literal"><span class="pre">get_ui_settings()</span></code></a> for additional information.</p>
+<a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.create_settings_widget" title="tk_multi_publish2.base_hooks.PublishPlugin.create_settings_widget"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_settings_widget()</span></code></a>, <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.set_ui_settings" title="tk_multi_publish2.base_hooks.PublishPlugin.set_ui_settings"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_ui_settings()</span></code></a>, and
+<a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.get_ui_settings" title="tk_multi_publish2.base_hooks.PublishPlugin.get_ui_settings"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_ui_settings()</span></code></a> for additional information.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">See the hooks defined in the publisher app&#8217;s <code class="docutils literal"><span class="pre">hooks/</span></code> folder
+<p class="last">See the hooks defined in the publisher app’s <code class="docutils literal notranslate"><span class="pre">hooks/</span></code> folder
 for additional example implementations.</p>
 </div>
 </dd></dl>
@@ -597,17 +621,17 @@ for additional example implementations.</p>
 <dl class="attribute">
 <dt id="tk_multi_publish2.base_hooks.PublishPlugin.item_filters">
 <code class="descname">item_filters</code><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin.item_filters" title="Permalink to this definition">¶</a></dt>
-<dd><p>A <code class="xref py py-class docutils literal"><span class="pre">list</span></code> of item type wildcard <a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></a> objects that this
+<dd><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of item type wildcard <a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> objects that this
 plugin is interested in.</p>
 <p>As items are collected by the collector hook, they are given an item
-type string (see <a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.create_item" title="tk_multi_publish2.api.PublishItem.create_item"><code class="xref py py-meth docutils literal"><span class="pre">create_item()</span></code></a>). The strings
-provided by this property will be compared to each collected item&#8217;s
+type string (see <a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.create_item" title="tk_multi_publish2.api.PublishItem.create_item"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_item()</span></code></a>). The strings
+provided by this property will be compared to each collected item’s
 type.</p>
 <p>Only items with types matching entries in this list will be considered
-by the <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.accept" title="tk_multi_publish2.base_hooks.PublishPlugin.accept"><code class="xref py py-meth docutils literal"><span class="pre">accept()</span></code></a> method. As such, this method makes it possible to
+by the <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.accept" title="tk_multi_publish2.base_hooks.PublishPlugin.accept"><code class="xref py py-meth docutils literal notranslate"><span class="pre">accept()</span></code></a> method. As such, this method makes it possible to
 quickly identify which items the plugin may be interested in. Any
-sophisticated acceptance logic is deferred to the <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.accept" title="tk_multi_publish2.base_hooks.PublishPlugin.accept"><code class="xref py py-meth docutils literal"><span class="pre">accept()</span></code></a> method.</p>
-<p>Strings can contain glob patters such as <code class="docutils literal"><span class="pre">*</span></code>, for example <code class="docutils literal"><span class="pre">[&quot;maya.*&quot;,</span>
+sophisticated acceptance logic is deferred to the <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.accept" title="tk_multi_publish2.base_hooks.PublishPlugin.accept"><code class="xref py py-meth docutils literal notranslate"><span class="pre">accept()</span></code></a> method.</p>
+<p>Strings can contain glob patters such as <code class="docutils literal notranslate"><span class="pre">*</span></code>, for example <code class="docutils literal notranslate"><span class="pre">[&quot;maya.*&quot;,</span>
 <span class="pre">&quot;file.maya&quot;]</span></code>.</p>
 </dd></dl>
 
@@ -616,11 +640,11 @@ sophisticated acceptance logic is deferred to the <a class="reference internal" 
 <code class="descname">accept</code><span class="sig-paren">(</span><em>settings</em>, <em>item</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/publish_plugin.html#PublishPlugin.accept"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin.accept" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is called by the publisher to see if the plugin accepts the
 supplied item for processing.</p>
-<p>Only items matching the filters defined via the <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.item_filters" title="tk_multi_publish2.base_hooks.PublishPlugin.item_filters"><code class="xref py py-data docutils literal"><span class="pre">item_filters</span></code></a>
+<p>Only items matching the filters defined via the <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.item_filters" title="tk_multi_publish2.base_hooks.PublishPlugin.item_filters"><code class="xref py py-data docutils literal notranslate"><span class="pre">item_filters</span></code></a>
 property will be presented to this method.</p>
 <p>A publish task will be generated for each item accepted here.</p>
-<p>This method returns a <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> of the following form:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+<p>This method returns a <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> of the following form:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s2">&quot;accepted&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">bool</span><span class="o">&gt;</span><span class="p">,</span>
     <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">bool</span><span class="o">&gt;</span><span class="p">,</span>
     <span class="s2">&quot;visible&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">bool</span><span class="o">&gt;</span><span class="p">,</span>
@@ -631,24 +655,24 @@ property will be presented to this method.</p>
 <p>The keys correspond to the acceptance state of the supplied item. Not
 all keys are required. The keys are defined as follows:</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">accepted</span></code>: Indicates if the plugin is interested in this value at all.
-If <code class="docutils literal"><span class="pre">False</span></code>, no task will be created for this plugin. Required.</li>
-<li><code class="docutils literal"><span class="pre">enabled</span></code>: If <code class="docutils literal"><span class="pre">True</span></code>, the created task will be enabled in the UI,
+<li><code class="docutils literal notranslate"><span class="pre">accepted</span></code>: Indicates if the plugin is interested in this value at all.
+If <code class="docutils literal notranslate"><span class="pre">False</span></code>, no task will be created for this plugin. Required.</li>
+<li><code class="docutils literal notranslate"><span class="pre">enabled</span></code>: If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the created task will be enabled in the UI,
 otherwise it will be disabled (no interaction allowed). Optional,
-<code class="docutils literal"><span class="pre">True</span></code> by default.</li>
-<li><code class="docutils literal"><span class="pre">visible</span></code>: If <code class="docutils literal"><span class="pre">True</span></code>, the created task will be visible in the UI,
-otherwise it will be hidden. Optional, <code class="docutils literal"><span class="pre">True</span></code> by default.</li>
-<li><code class="docutils literal"><span class="pre">checked</span></code>: If <code class="docutils literal"><span class="pre">True</span></code>, the created task will be checked in the UI,
-otherwise it will be unchecked. Optional, <code class="docutils literal"><span class="pre">True</span></code> by default.</li>
+<code class="docutils literal notranslate"><span class="pre">True</span></code> by default.</li>
+<li><code class="docutils literal notranslate"><span class="pre">visible</span></code>: If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the created task will be visible in the UI,
+otherwise it will be hidden. Optional, <code class="docutils literal notranslate"><span class="pre">True</span></code> by default.</li>
+<li><code class="docutils literal notranslate"><span class="pre">checked</span></code>: If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the created task will be checked in the UI,
+otherwise it will be unchecked. Optional, <code class="docutils literal notranslate"><span class="pre">True</span></code> by default.</li>
 </ul>
 <p>In addition to the item, the configured settings for this plugin are
 supplied. The information provided by each of these arguments can be
 used to decide whether to accept the item.</p>
-<p>For example, the item&#8217;s <code class="docutils literal"><span class="pre">properties</span></code> <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a> may house meta data
+<p>For example, the item’s <code class="docutils literal notranslate"><span class="pre">properties</span></code> <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> may house meta data
 about the item, populated during collection. This data can be used to
 inform the acceptance logic.</p>
 <p>Example implementation:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 
     <span class="n">accept</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -669,10 +693,10 @@ inform the acceptance logic.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; The keys are strings, matching the keys returned
-in the <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.settings" title="tk_multi_publish2.base_hooks.PublishPlugin.settings"><code class="xref py py-data docutils literal"><span class="pre">settings</span></code></a> property. The values are
+<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – The keys are strings, matching the keys returned
+in the <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.settings" title="tk_multi_publish2.base_hooks.PublishPlugin.settings"><code class="xref py py-data docutils literal notranslate"><span class="pre">settings</span></code></a> property. The values are
 <a class="reference internal" href="api.html#publish-api-setting"><span class="std std-ref">PluginSetting</span></a> instances.</li>
-<li><strong>item</strong> &#8211; The <a class="reference internal" href="api.html#publish-api-item"><span class="std std-ref">PublishItem</span></a> instance to process for
+<li><strong>item</strong> – The <a class="reference internal" href="api.html#publish-api-item"><span class="std std-ref">PublishItem</span></a> instance to process for
 acceptance.</li>
 </ul>
 </td>
@@ -689,14 +713,14 @@ acceptance.</li>
 <code class="descname">validate</code><span class="sig-paren">(</span><em>settings</em>, <em>item</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/publish_plugin.html#PublishPlugin.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin.validate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validates the given item, ensuring it is ok to publish.</p>
 <p>Returns a boolean to indicate whether the item is ready to publish.
-Returning <code class="docutils literal"><span class="pre">True</span></code> will indicate that the item is ready to publish. If
-<code class="docutils literal"><span class="pre">False</span></code> is returned, the publisher will disallow publishing of the
+Returning <code class="docutils literal notranslate"><span class="pre">True</span></code> will indicate that the item is ready to publish. If
+<code class="docutils literal notranslate"><span class="pre">False</span></code> is returned, the publisher will disallow publishing of the
 item.</p>
 <p>An exception can also be raised to indicate validation failed.
 When an exception is raised, the error message will be displayed as a
 tooltip on the task as well as in the logging view of the publisher.</p>
 <p>Simple implementation example for a Maya session item validation:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 
      <span class="n">path</span> <span class="o">=</span> <span class="n">cmds</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -712,10 +736,10 @@ tooltip on the task as well as in the logging view of the publisher.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; The keys are strings, matching the keys returned
-in the <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.settings" title="tk_multi_publish2.base_hooks.PublishPlugin.settings"><code class="xref py py-data docutils literal"><span class="pre">settings</span></code></a> property. The values are
+<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – The keys are strings, matching the keys returned
+in the <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.settings" title="tk_multi_publish2.base_hooks.PublishPlugin.settings"><code class="xref py py-data docutils literal notranslate"><span class="pre">settings</span></code></a> property. The values are
 <a class="reference internal" href="api.html#publish-api-setting"><span class="std std-ref">PluginSetting</span></a> instances.</li>
-<li><strong>item</strong> &#8211; The <a class="reference internal" href="api.html#publish-api-item"><span class="std std-ref">PublishItem</span></a> instance to validate.</li>
+<li><strong>item</strong> – The <a class="reference internal" href="api.html#publish-api-item"><span class="std std-ref">PublishItem</span></a> instance to validate.</li>
 </ul>
 </td>
 </tr>
@@ -733,7 +757,7 @@ in the <a class="reference internal" href="#tk_multi_publish2.base_hooks.Publish
 <p>Any raised exceptions will indicate that the publish pass has failed and
 the publisher will stop execution.</p>
 <p>Simple implementation example for a Maya session item publish:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 
     <span class="n">path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
 
@@ -768,10 +792,10 @@ the publisher will stop execution.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; The keys are strings, matching the keys returned
-in the <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.settings" title="tk_multi_publish2.base_hooks.PublishPlugin.settings"><code class="xref py py-data docutils literal"><span class="pre">settings</span></code></a> property. The values are
+<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – The keys are strings, matching the keys returned
+in the <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.settings" title="tk_multi_publish2.base_hooks.PublishPlugin.settings"><code class="xref py py-data docutils literal notranslate"><span class="pre">settings</span></code></a> property. The values are
 <a class="reference internal" href="api.html#publish-api-setting"><span class="std std-ref">PluginSetting</span></a> instances.</li>
-<li><strong>item</strong> &#8211; The <a class="reference internal" href="api.html#publish-api-item"><span class="std std-ref">PublishItem</span></a> instance to publish.</li>
+<li><strong>item</strong> – The <a class="reference internal" href="api.html#publish-api-item"><span class="std std-ref">PublishItem</span></a> instance to publish.</li>
 </ul>
 </td>
 </tr>
@@ -788,7 +812,7 @@ publishing is complete.</p>
 <p>Any raised exceptions will indicate that the finalize pass has failed
 and the publisher will stop execution.</p>
 <p>Simple implementation example for a Maya session item finalization:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 
     <span class="n">path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
 
@@ -805,10 +829,10 @@ and the publisher will stop execution.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; The keys are strings, matching the keys returned
-in the <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.settings" title="tk_multi_publish2.base_hooks.PublishPlugin.settings"><code class="xref py py-data docutils literal"><span class="pre">settings</span></code></a> property. The values are
+<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – The keys are strings, matching the keys returned
+in the <a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin.settings" title="tk_multi_publish2.base_hooks.PublishPlugin.settings"><code class="xref py py-data docutils literal notranslate"><span class="pre">settings</span></code></a> property. The values are
 <a class="reference internal" href="api.html#publish-api-setting"><span class="std std-ref">PluginSetting</span></a> instances.</li>
-<li><strong>item</strong> &#8211; The <a class="reference internal" href="api.html#publish-api-item"><span class="std std-ref">PublishItem</span></a> instance to finalize.</li>
+<li><strong>item</strong> – The <a class="reference internal" href="api.html#publish-api-item"><span class="std std-ref">PublishItem</span></a> instance to finalize.</li>
 </ul>
 </td>
 </tr>
@@ -826,13 +850,13 @@ on the right side of the publish UI).</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>parent</strong> &#8211; The parent to use for the widget being created.</li>
-<li><strong>items</strong> &#8211; A list of PublishItems the selected publish tasks are parented to.</li>
+<li><strong>parent</strong> – The parent to use for the widget being created.</li>
+<li><strong>items</strong> – A list of PublishItems the selected publish tasks are parented to.</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A QtGui.QWidget or subclass that displays information about
-the plugin and/or editable widgets for modifying the plugin&#8217;s
+the plugin and/or editable widgets for modifying the plugin’s
 settings.</p>
 </td>
 </tr>
@@ -851,12 +875,12 @@ publish and finalize methods, so that the settings can be used to drive the publ
 <cite>create_settings_widget</cite>.</p>
 <p>The method returns a dictionary, where the key is the name of a
 setting that should be updated and the value is the new value of that
-setting. Note that it is up to you how you want to store the UI&#8217;s state as
-settings and you don&#8217;t have to necessarily to return all the values from
+setting. Note that it is up to you how you want to store the UI’s state as
+settings and you don’t have to necessarily to return all the values from
 the UI. This is to allow the publisher to update a subset of settings
 when multiple tasks have been selected.</p>
 <p>Example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
      <span class="s2">&quot;setting_a&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/a/file&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -865,7 +889,7 @@ when multiple tasks have been selected.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>widget</strong> &#8211; The widget that was created by <cite>create_settings_widget</cite></td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>widget</strong> – The widget that was created by <cite>create_settings_widget</cite></td>
 </tr>
 </tbody>
 </table>
@@ -883,7 +907,7 @@ values of the settings for selected tasks. The settings dictionaries
 correspond to the dictionaries returned by the settings property of the
 hook.</p>
 <p>Example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">settings</span> <span class="o">=</span> <span class="p">[</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">settings</span> <span class="o">=</span> <span class="p">[</span>
 <span class="p">{</span>
      <span class="s2">&quot;seeting_a&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/a/file&quot;</span>
      <span class="s2">&quot;setting_b&quot;</span><span class="p">:</span> <span class="kc">False</span>
@@ -899,7 +923,7 @@ environment file. Each task has its own copy of the settings.</p>
 <p>When invoked with multiple settings dictionaries, it is the
 responsibility of the custom UI to decide how to display the
 information. If you do not wish to implement the editing of multiple
-tasks at the same time, you can raise a <code class="docutils literal"><span class="pre">NotImplementedError</span></code> when
+tasks at the same time, you can raise a <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> when
 there is more than one item in the list and the publisher will inform
 the user than only one task of that type can be edited at a time.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -907,10 +931,10 @@ the user than only one task of that type can be edited at a time.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>widget</strong> &#8211; The widget that was created by <cite>create_settings_widget</cite>.</li>
-<li><strong>settings</strong> &#8211; a list of dictionaries of settings for each selected
+<li><strong>widget</strong> – The widget that was created by <cite>create_settings_widget</cite>.</li>
+<li><strong>settings</strong> – a list of dictionaries of settings for each selected
 task.</li>
-<li><strong>items</strong> &#8211; A list of PublishItems the selected publish tasks are parented to.</li>
+<li><strong>items</strong> – A list of PublishItems the selected publish tasks are parented to.</li>
 </ul>
 </td>
 </tr>
@@ -927,7 +951,7 @@ task.</li>
 <dl class="class">
 <dt id="tk_multi_publish2.base_hooks.PostPhaseHook">
 <em class="property">class </em><code class="descclassname">tk_multi_publish2.base_hooks.</code><code class="descname">PostPhaseHook</code><span class="sig-paren">(</span><em>parent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/post_phase.html#PostPhaseHook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.PostPhaseHook" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">tank.hook.Hook</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tank.hook.Hook</span></code></p>
 <p>This hook defines methods that are executed after each phase of a publish:
 validation, publish, and finalization. Each method receives the
 <a class="reference internal" href="api.html#publish-api-tree"><span class="std std-ref">PublishTree</span></a> tree instance being used by the publisher, giving
@@ -947,15 +971,15 @@ collectively. The instance can also be used to save the state of the
 tree to disk for execution later or on another machine.</p>
 <p>To glean information about the validation of particular items, you can
 iterate over the items in the tree and introspect their
-<a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.properties" title="tk_multi_publish2.api.PublishItem.properties"><code class="xref py py-attr docutils literal"><span class="pre">properties</span></code></a> dictionary. This requires
+<a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.properties" title="tk_multi_publish2.api.PublishItem.properties"><code class="xref py py-attr docutils literal notranslate"><span class="pre">properties</span></code></a> dictionary. This requires
 customizing your publish plugins to populate any specific validation
 information (failure/success) as well. You might, for example, set a
-<code class="docutils literal"><span class="pre">validation_failed</span></code> boolean in the item properties, indicating if any
-of the item&#8217;s tasks failed. You could then include validation error
-messages in a <code class="docutils literal"><span class="pre">validation_errors</span></code> list on the item, appending error
+<code class="docutils literal notranslate"><span class="pre">validation_failed</span></code> boolean in the item properties, indicating if any
+of the item’s tasks failed. You could then include validation error
+messages in a <code class="docutils literal notranslate"><span class="pre">validation_errors</span></code> list on the item, appending error
 messages during task execution. Then, this method might look something
 like this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">post_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_tree</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">post_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_tree</span><span class="p">):</span>
 
     <span class="n">all_errors</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -973,16 +997,16 @@ like this:</p>
 </div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">You will not be able to use the item&#8217;s
-<a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.local_properties" title="tk_multi_publish2.api.PublishItem.local_properties"><code class="xref py py-attr docutils literal"><span class="pre">local_properties</span></code></a> in this hook since
-<a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.local_properties" title="tk_multi_publish2.api.PublishItem.local_properties"><code class="xref py py-attr docutils literal"><span class="pre">local_properties</span></code></a> are only accessible
+<p class="last">You will not be able to use the item’s
+<a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.local_properties" title="tk_multi_publish2.api.PublishItem.local_properties"><code class="xref py py-attr docutils literal notranslate"><span class="pre">local_properties</span></code></a> in this hook since
+<a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.local_properties" title="tk_multi_publish2.api.PublishItem.local_properties"><code class="xref py py-attr docutils literal notranslate"><span class="pre">local_properties</span></code></a> are only accessible
 during the execution of a publish plugin.</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>publish_tree</strong> &#8211; The <a class="reference internal" href="api.html#publish-api-tree"><span class="std std-ref">PublishTree</span></a> instance representing
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>publish_tree</strong> – The <a class="reference internal" href="api.html#publish-api-tree"><span class="std std-ref">PublishTree</span></a> instance representing
 the items to be published.</td>
 </tr>
 </tbody>
@@ -999,21 +1023,21 @@ published is supplied as an argument. The tree can be traversed in this
 method to inspect the items and process them collectively.</p>
 <p>To glean information about the publish state of particular items, you
 can iterate over the items in the tree and introspect their
-<a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.properties" title="tk_multi_publish2.api.PublishItem.properties"><code class="xref py py-attr docutils literal"><span class="pre">properties</span></code></a> dictionary. This requires
+<a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.properties" title="tk_multi_publish2.api.PublishItem.properties"><code class="xref py py-attr docutils literal notranslate"><span class="pre">properties</span></code></a> dictionary. This requires
 customizing your publish plugins to populate any specific publish
 information that you want to process collectively here.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">You will not be able to use the item&#8217;s
-<a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.local_properties" title="tk_multi_publish2.api.PublishItem.local_properties"><code class="xref py py-attr docutils literal"><span class="pre">local_properties</span></code></a> in this hook since
-<a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.local_properties" title="tk_multi_publish2.api.PublishItem.local_properties"><code class="xref py py-attr docutils literal"><span class="pre">local_properties</span></code></a> are only accessible
+<p class="last">You will not be able to use the item’s
+<a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.local_properties" title="tk_multi_publish2.api.PublishItem.local_properties"><code class="xref py py-attr docutils literal notranslate"><span class="pre">local_properties</span></code></a> in this hook since
+<a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.local_properties" title="tk_multi_publish2.api.PublishItem.local_properties"><code class="xref py py-attr docutils literal notranslate"><span class="pre">local_properties</span></code></a> are only accessible
 during the execution of a publish plugin.</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>publish_tree</strong> &#8211; The <a class="reference internal" href="api.html#publish-api-tree"><span class="std std-ref">PublishTree</span></a> instance representing
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>publish_tree</strong> – The <a class="reference internal" href="api.html#publish-api-tree"><span class="std std-ref">PublishTree</span></a> instance representing
 the items to be published.</td>
 </tr>
 </tbody>
@@ -1031,21 +1055,21 @@ traversed in this method to inspect the items and process them
 collectively.</p>
 <p>To glean information about the finalize state of particular items, you
 can iterate over the items in the tree and introspect their
-<a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.properties" title="tk_multi_publish2.api.PublishItem.properties"><code class="xref py py-attr docutils literal"><span class="pre">properties</span></code></a> dictionary. This requires
+<a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.properties" title="tk_multi_publish2.api.PublishItem.properties"><code class="xref py py-attr docutils literal notranslate"><span class="pre">properties</span></code></a> dictionary. This requires
 customizing your publish plugins to populate any specific finalize
 information that you want to process collectively here.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">You will not be able to use the item&#8217;s
-<a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.local_properties" title="tk_multi_publish2.api.PublishItem.local_properties"><code class="xref py py-attr docutils literal"><span class="pre">local_properties</span></code></a> in this hook since
-<a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.local_properties" title="tk_multi_publish2.api.PublishItem.local_properties"><code class="xref py py-attr docutils literal"><span class="pre">local_properties</span></code></a> are only accessible
+<p class="last">You will not be able to use the item’s
+<a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.local_properties" title="tk_multi_publish2.api.PublishItem.local_properties"><code class="xref py py-attr docutils literal notranslate"><span class="pre">local_properties</span></code></a> in this hook since
+<a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.local_properties" title="tk_multi_publish2.api.PublishItem.local_properties"><code class="xref py py-attr docutils literal notranslate"><span class="pre">local_properties</span></code></a> are only accessible
 during the execution of a publish plugin.</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>publish_tree</strong> &#8211; The <a class="reference internal" href="api.html#publish-api-tree"><span class="std std-ref">PublishTree</span></a> instance representing
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>publish_tree</strong> – The <a class="reference internal" href="api.html#publish-api-tree"><span class="std std-ref">PublishTree</span></a> instance representing
 the items to be published.</td>
 </tr>
 </tbody>
@@ -1059,15 +1083,16 @@ the items to be published.</td>
 
 
            </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="api.html" class="btn btn-neutral float-right" title="Publish API" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="api.html" class="btn btn-neutral float-right" title="Publish API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="Shotgun Publisher API reference, v2.5.5" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Shotgun Publisher API reference, v2.5.5" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1076,7 +1101,7 @@ the items to be published.</td>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, Autodesk.
+        &copy; Copyright 2021, Autodesk
 
     </p>
   </div> 
@@ -1092,35 +1117,15 @@ the items to be published.</td>
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'v2.5.5',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
   
  
 
