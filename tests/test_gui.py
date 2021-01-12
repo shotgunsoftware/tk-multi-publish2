@@ -15,6 +15,7 @@ import os
 import sys
 import sgtk
 from tk_toolchain.authentication import get_toolkit_user
+from tk_toolchain.testing import create_unique_name
 
 try:
     from MA.UI import topwindows
@@ -46,9 +47,7 @@ def context():
     )
 
     # Make sure there is not already an automation project created
-    project_name = (
-        "Toolkit Publish2 UI Automation " + os.environ["SHOTGUN_TEST_ENTITY_SUFFIX"]
-    )
+    project_name = create_unique_name("Toolkit Publish2 UI Automation-")
     filters = [["name", "is", project_name]]
     existed_project = sg.find_one("Project", filters)
     if existed_project is not None:
