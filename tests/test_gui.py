@@ -47,7 +47,7 @@ def context():
     )
 
     # Make sure there is not already an automation project created
-    project_name = create_unique_name("Toolkit Publish2 UI Automation-")
+    project_name = create_unique_name("Toolkit Publish2 UI Automation")
     filters = [["name", "is", project_name]]
     existed_project = sg.find_one("Project", filters)
     if existed_project is not None:
