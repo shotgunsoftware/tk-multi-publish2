@@ -23,10 +23,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -225,10 +225,10 @@ These special action button types are detailed below:</p>
 </div>
 <p>The values in the <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> are:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">label</span></code>: The text to display on the button itself</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">tooltip</span></code>: The tooltip text to display when the mouse is over the button.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">callback</span></code>: The callable to execute when the button is clicked.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">args</span></code>: A dictionary to supply to the callback as keyword args.</p></li>
+<li><code class="docutils literal notranslate"><span class="pre">label</span></code>: The text to display on the button itself</li>
+<li><code class="docutils literal notranslate"><span class="pre">tooltip</span></code>: The tooltip text to display when the mouse is over the button.</li>
+<li><code class="docutils literal notranslate"><span class="pre">callback</span></code>: The callable to execute when the button is clicked.</li>
+<li><code class="docutils literal notranslate"><span class="pre">args</span></code>: A dictionary to supply to the callback as keyword args.</li>
 </ul>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
@@ -266,11 +266,11 @@ browser.</p>
 </div>
 <p>The values in the <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> are:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">label</span></code>: The text to display on the button itself. The default value is
-<code class="docutils literal notranslate"><span class="pre">&quot;Show</span> <span class="pre">Folder&quot;</span></code>. Optional.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">tooltip</span></code>: Optional tooltip text to display when the mouse is over the
-button. The default value is <code class="docutils literal notranslate"><span class="pre">&quot;Reveal</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">system's</span> <span class="pre">file</span> <span class="pre">browser.&quot;</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">path</span></code>: Required path to the file.</p></li>
+<li><code class="docutils literal notranslate"><span class="pre">label</span></code>: The text to display on the button itself. The default value is
+<code class="docutils literal notranslate"><span class="pre">&quot;Show</span> <span class="pre">Folder&quot;</span></code>. Optional.</li>
+<li><code class="docutils literal notranslate"><span class="pre">tooltip</span></code>: Optional tooltip text to display when the mouse is over the
+button. The default value is <code class="docutils literal notranslate"><span class="pre">&quot;Reveal</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">system's</span> <span class="pre">file</span> <span class="pre">browser.&quot;</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">path</span></code>: Required path to the file.</li>
 </ul>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
@@ -301,11 +301,11 @@ of the publish UI.</p>
 </div>
 <p>The values in the <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> are:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">label</span></code>: The text to display on the button itself. The default value is
-<code class="docutils literal notranslate"><span class="pre">&quot;Show</span> <span class="pre">Entity&quot;</span></code>. Optional.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">tooltip</span></code>: Optional tooltip text to display when the mouse is over the
-button. The default value is <code class="docutils literal notranslate"><span class="pre">&quot;Reveal</span> <span class="pre">the</span> <span class="pre">entity</span> <span class="pre">in</span> <span class="pre">Shotgun.&quot;</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">entity</span></code>: Required, standard Shotgun entity <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>.</p></li>
+<li><code class="docutils literal notranslate"><span class="pre">label</span></code>: The text to display on the button itself. The default value is
+<code class="docutils literal notranslate"><span class="pre">&quot;Show</span> <span class="pre">Entity&quot;</span></code>. Optional.</li>
+<li><code class="docutils literal notranslate"><span class="pre">tooltip</span></code>: Optional tooltip text to display when the mouse is over the
+button. The default value is <code class="docutils literal notranslate"><span class="pre">&quot;Reveal</span> <span class="pre">the</span> <span class="pre">entity</span> <span class="pre">in</span> <span class="pre">Shotgun.&quot;</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">entity</span></code>: Required, standard Shotgun entity <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>.</li>
 </ul>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
@@ -341,13 +341,13 @@ dialog.</p>
 </div>
 <p>The values in the <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> are:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">label</span></code>: The text to display on the button itself. The default value is
-<code class="docutils literal notranslate"><span class="pre">&quot;More</span> <span class="pre">Info...&quot;</span></code>. Optional.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">tooltip</span></code>: Optional tooltip text to display when the mouse is over the
-button. The default value is <code class="docutils literal notranslate"><span class="pre">&quot;Show</span> <span class="pre">additional</span> <span class="pre">logging</span> <span class="pre">info.&quot;</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">test</span></code>: Required, <a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> with additional information to display to
+<li><code class="docutils literal notranslate"><span class="pre">label</span></code>: The text to display on the button itself. The default value is
+<code class="docutils literal notranslate"><span class="pre">&quot;More</span> <span class="pre">Info...&quot;</span></code>. Optional.</li>
+<li><code class="docutils literal notranslate"><span class="pre">tooltip</span></code>: Optional tooltip text to display when the mouse is over the
+button. The default value is <code class="docutils literal notranslate"><span class="pre">&quot;Show</span> <span class="pre">additional</span> <span class="pre">logging</span> <span class="pre">info.&quot;</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">test</span></code>: Required, <a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> with additional information to display to
 the user. The text can contain html for formatting for display in the popup
-window (any html tags supported by Qt’s rich text engine).</p></li>
+window (any html tags supported by Qt’s rich text engine).</li>
 </ul>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -385,11 +385,11 @@ of the publish UI.</p>
 </div>
 <p>The values in the <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> are:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">label</span></code>: The text to display on the button itself. The default value is
-<code class="docutils literal notranslate"><span class="pre">&quot;Open</span> <span class="pre">URL&quot;</span></code>. Optional.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">tooltip</span></code>: Optional tooltip text to display when the mouse is over the
-button. The default value is <code class="docutils literal notranslate"><span class="pre">&quot;Opens</span> <span class="pre">a</span> <span class="pre">url</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">appropriate</span> <span class="pre">browser.&quot;</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">url</span></code>: The url to open.</p></li>
+<li><code class="docutils literal notranslate"><span class="pre">label</span></code>: The text to display on the button itself. The default value is
+<code class="docutils literal notranslate"><span class="pre">&quot;Open</span> <span class="pre">URL&quot;</span></code>. Optional.</li>
+<li><code class="docutils literal notranslate"><span class="pre">tooltip</span></code>: Optional tooltip text to display when the mouse is over the
+button. The default value is <code class="docutils literal notranslate"><span class="pre">&quot;Opens</span> <span class="pre">a</span> <span class="pre">url</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">appropriate</span> <span class="pre">browser.&quot;</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">url</span></code>: The url to open.</li>
 </ul>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
