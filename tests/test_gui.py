@@ -14,8 +14,6 @@ import time
 import os
 import sys
 import sgtk
-from tk_toolchain.authentication import get_toolkit_user
-from tk_toolchain.testing import create_unique_name
 
 try:
     from MA.UI import topwindows
@@ -26,63 +24,10 @@ except ImportError:
     pytestmark = pytest.mark.skip()
 
 
-@pytest.fixture(scope="session")
-def context():
-    # A task in Toolkit Publish2 UI Automation project which we're going to use
-    # for the current context.
-    # Get credentials from TK_TOOLCHAIN
-    sg = get_toolkit_user().create_sg_connection()
-
-    # Create or update the integration_tests local storage with the current test run
-    storage_name = "Publisher UI Tests"
-    local_storage = sg.find_one(
-        "LocalStorage", [["code", "is", storage_name]], ["code"]
-    )
-    if local_storage is None:
-        local_storage = sg.create("LocalStorage", {"code": storage_name})
-    # Always update local storage path
-    local_storage["path"] = os.path.expandvars("${SHOTGUN_CURRENT_REPO_ROOT}")
-    sg.update(
-        "LocalStorage", local_storage["id"], {"windows_path": local_storage["path"]}
-    )
-
-    # Make sure there is not already an automation project created
-    project_name = create_unique_name("Toolkit Publish2 UI Automation")
-    filters = [["name", "is", project_name]]
-    existed_project = sg.find_one("Project", filters)
-    if existed_project is not None:
-        sg.delete(existed_project["type"], existed_project["id"])
-    # Create a new project
-    project_data = {
-        "sg_description": "Project Created by Automation",
-        "name": project_name,
-    }
-    new_project = sg.create("Project", project_data)
-
-    # Create a Sequence to be used by the Shot creation
-    sequence_data = {
-        "project": {"type": new_project["type"], "id": new_project["id"]},
-        "code": "seq_001",
-        "sg_status_list": "ip",
-    }
-    new_sequence = sg.create("Sequence", sequence_data)
-
-    # Create a new shot
-    shot_data = {
-        "project": {"type": new_project["type"], "id": new_project["id"]},
-        "sg_sequence": {"type": new_sequence["type"], "id": new_sequence["id"]},
-        "code": "shot_001",
-        "sg_status_list": "ip",
-    }
-    sg.create("Shot", shot_data)
-
-    return new_project
-
-
 # This fixture will launch tk-run-app on first usage
 # and will remain valid until the test run ends.
 @pytest.fixture(scope="session")
-def host_application(context):
+def host_application(tk_test_create_project, tk_test_create_entities):
     """
     Launch the host application for the Toolkit application.
 
@@ -104,9 +49,9 @@ def host_application(context):
             "--location",
             os.path.dirname(__file__),
             "--context-entity-type",
-            context["type"],
+            tk_test_create_project["type"],
             "--context-entity-id",
-            str(context["id"]),
+            str(tk_test_create_project["id"]),
             "--config",
             "tests/fixtures/configInheritance",
         ]
@@ -200,7 +145,7 @@ def test_browse_buttons(app_dialog):
     ].mouseClick()
 
 
-def test_file_publish(app_dialog, context):
+def test_file_publish(app_dialog, tk_test_create_project):
     """
     Ensure you can publish an image file successfully.
     """
@@ -230,14 +175,14 @@ def test_file_publish(app_dialog, context):
     app_dialog.root["item details"].captions["svenFace.jpg"].waitExist(timeout=30)
     assert (
         app_dialog.root["context picker widget"]
-        .captions["*" + str(context["name"])]
+        .captions["*" + tk_test_create_project["name"]]
         .exists()
     ), "Context is not set to Toolkit Publish2 UI Automation."
 
     # Change context to use a comp task from shot_001
     # Select a shot
     app_dialog.root["context picker widget"].captions[
-        "*" + str(context["name"])
+        "*" + tk_test_create_project["name"]
     ].mouseClick()
     app_dialog.root["context picker widget"].textfields.typeIn("Shot")
     topwindows.listitems["Shot_001"].get().mouseClick()
@@ -470,7 +415,7 @@ def test_custom_plugin(app_dialog):
     ].exists(), "Browse folders to publish image sequences button is missing."
 
 
-def test_description_inheritance(app_dialog, context):
+def test_description_inheritance(app_dialog, tk_test_create_project):
     """
     Ensure summary description inheritance is working fine.
     """
@@ -483,7 +428,7 @@ def test_description_inheritance(app_dialog, context):
     # # This is commented out because it is not working on Azure!
     # image_path = os.path.normpath(
     #     os.path.expandvars(
-    #         '${TK_TEST_FIXTURES}/files/images/"svenFace.jpg" "svenThumb.png"'
+    #         '${TK_TEST_FIXTURES}/files/images/"svenFace.jpg" "sven.png"'
     #     )
     # )
     image_path = os.path.expandvars("${TK_TEST_FIXTURES}/files/images/svenFace.jpg")
@@ -506,7 +451,7 @@ def test_description_inheritance(app_dialog, context):
     # Open the Browse file to publish and then select the second file to publish
     app_dialog.root["button container"].navIndexes("0").mouseClick()
     # Get images path to be published
-    image_path = os.path.expandvars("${TK_TEST_FIXTURES}/files/images/svenThumb.png")
+    image_path = os.path.expandvars("${TK_TEST_FIXTURES}/files/images/sven.png")
     # Type in image path
     app_dialog.root.dialogs["Browse files to publish"].textfields[
         "File name:"
@@ -528,7 +473,7 @@ def test_description_inheritance(app_dialog, context):
     )
     assert (
         app_dialog.root["context picker widget"]
-        .captions["*" + str(context["name"])]
+        .captions["*" + tk_test_create_project["name"]]
         .exists()
     ), "Context is not set to Toolkit Publish2 UI Automation project."
 
@@ -567,7 +512,7 @@ def test_description_inheritance(app_dialog, context):
     ].mouseSlide()
     activityScrollBar.mouseDrag(width * 0, height * 1)
     # Make sure second item inherited the summary description
-    app_dialog.root["collected items tree"].outlineitems["*svenThumb.png*"].mouseClick()
+    app_dialog.root["collected items tree"].outlineitems["*sven.png*"].mouseClick()
     assert (
         app_dialog.root["item details"]
         .captions["Description inherited from: Summary"]
@@ -575,7 +520,7 @@ def test_description_inheritance(app_dialog, context):
     ), "Description should be inherited"
     # Make sure first child of the second item inherited the summary description
     app_dialog.root["collected items tree"].outlineitems[
-        "*svenThumb.png_sub*"
+        "*sven.png_sub*"
     ].mouseClick()
     assert (
         app_dialog.root["item details"]
@@ -584,7 +529,7 @@ def test_description_inheritance(app_dialog, context):
     ), "Description should be inherited"
     # Make sure second child of the second item inherited the summary description
     app_dialog.root["collected items tree"].outlineitems[
-        "*svenThumb.png_evenmoresub*"
+        "*sven.png_evenmoresub*"
     ].mouseClick()
     assert (
         app_dialog.root["item details"]
@@ -641,10 +586,10 @@ def test_description_inheritance(app_dialog, context):
     ].mouseSlide()
     activityScrollBar.mouseDrag(width * 0, height * 1)
     # Select the second parent item
-    app_dialog.root["collected items tree"].outlineitems["*svenThumb.png*"].mouseClick()
+    app_dialog.root["collected items tree"].outlineitems["*sven.png*"].mouseClick()
     # Make sure it is the right item
     assert (
-        app_dialog.root["item details"].captions["svenThumb.png"].exists()
+        app_dialog.root["item details"].captions["sven.png"].exists()
     ), "Not the right tree item selected"
     # Make sure description is still inherited for item 2
     assert (
@@ -661,20 +606,20 @@ def test_description_inheritance(app_dialog, context):
     ), "Description should not be inherited"
     # Make sure first child of the second item inherited the summary description
     app_dialog.root["collected items tree"].outlineitems[
-        "*svenThumb.png_sub*"
+        "*sven.png_sub*"
     ].mouseClick()
     assert (
         app_dialog.root["item details"]
-        .captions["Description inherited from: svenThumb.png"]
+        .captions["Description inherited from: sven.png"]
         .exists()
     ), "Description should be inherited"
     # Make sure second child of the second item inherited the summary description
     app_dialog.root["collected items tree"].outlineitems[
-        "*svenThumb.png_evenmoresub*"
+        "*sven.png_evenmoresub*"
     ].mouseClick()
     assert (
         app_dialog.root["item details"]
-        .captions["Description inherited from: svenThumb.png"]
+        .captions["Description inherited from: sven.png"]
         .exists()
     ), "Description should be inherited"
 
@@ -727,16 +672,16 @@ def test_description_inheritance(app_dialog, context):
     activityScrollBar.mouseDrag(width * 0, height * 1)
     # Select the second parent item
     app_dialog.root["collected items tree"].outlineitems[
-        "*svenThumb.png_sub*"
+        "*sven.png_sub*"
     ].mouseClick()
     # Make sure it is the right item
     assert (
-        app_dialog.root["item details"].captions["svenThumb.png_sub"].exists()
+        app_dialog.root["item details"].captions["sven.png_sub"].exists()
     ), "Not the right tree item selected"
     # Make sure description is still inherited for item 2 first child
     assert (
         app_dialog.root["item details"]
-        .captions["Description inherited from: svenThumb.png"]
+        .captions["Description inherited from: sven.png"]
         .exists()
     ), "Description should be inherited"
     app_dialog.root["item details"].textfields["item description"].typeIn(
@@ -748,10 +693,10 @@ def test_description_inheritance(app_dialog, context):
     ), "Description should not be inherited"
     # Make sure second child of the second item inherited the summary description
     app_dialog.root["collected items tree"].outlineitems[
-        "*svenThumb.png_evenmoresub*"
+        "*sven.png_evenmoresub*"
     ].mouseClick()
     assert (
         app_dialog.root["item details"]
-        .captions["Description inherited from: svenThumb.png_sub"]
+        .captions["Description inherited from: sven.png_sub"]
         .exists()
     ), "Description should be inherited"
