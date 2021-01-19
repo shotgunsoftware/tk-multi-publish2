@@ -519,9 +519,7 @@ def test_description_inheritance(app_dialog, tk_test_create_project):
         .exists()
     ), "Description should be inherited"
     # Make sure first child of the second item inherited the summary description
-    app_dialog.root["collected items tree"].outlineitems[
-        "*sven.png_sub*"
-    ].mouseClick()
+    app_dialog.root["collected items tree"].outlineitems["*sven.png_sub*"].mouseClick()
     assert (
         app_dialog.root["item details"]
         .captions["Description inherited from: Summary"]
@@ -605,9 +603,7 @@ def test_description_inheritance(app_dialog, tk_test_create_project):
         app_dialog.root["item details"].captions["Description not inherited"].exists()
     ), "Description should not be inherited"
     # Make sure first child of the second item inherited the summary description
-    app_dialog.root["collected items tree"].outlineitems[
-        "*sven.png_sub*"
-    ].mouseClick()
+    app_dialog.root["collected items tree"].outlineitems["*sven.png_sub*"].mouseClick()
     assert (
         app_dialog.root["item details"]
         .captions["Description inherited from: sven.png"]
@@ -671,9 +667,7 @@ def test_description_inheritance(app_dialog, tk_test_create_project):
     ].mouseSlide()
     activityScrollBar.mouseDrag(width * 0, height * 1)
     # Select the second parent item
-    app_dialog.root["collected items tree"].outlineitems[
-        "*sven.png_sub*"
-    ].mouseClick()
+    app_dialog.root["collected items tree"].outlineitems["*sven.png_sub*"].mouseClick()
     # Make sure it is the right item
     assert (
         app_dialog.root["item details"].captions["sven.png_sub"].exists()
