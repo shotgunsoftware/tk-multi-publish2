@@ -27,7 +27,7 @@ except ImportError:
 # This fixture will launch tk-run-app on first usage
 # and will remain valid until the test run ends.
 @pytest.fixture(scope="session")
-def host_application(tk_test_create_project, tk_test_create_entities):
+def host_application(tk_test_project, tk_test_entities):
     """
     Launch the host application for the Toolkit application.
 
@@ -49,9 +49,9 @@ def host_application(tk_test_create_project, tk_test_create_entities):
             "--location",
             os.path.dirname(__file__),
             "--context-entity-type",
-            tk_test_create_project["type"],
+            tk_test_project["type"],
             "--context-entity-id",
-            str(tk_test_create_project["id"]),
+            str(tk_test_project["id"]),
             "--config",
             "tests/fixtures/configInheritance",
         ]
@@ -145,7 +145,7 @@ def test_browse_buttons(app_dialog):
     ].mouseClick()
 
 
-def test_file_publish(app_dialog, tk_test_create_project):
+def test_file_publish(app_dialog, tk_test_project):
     """
     Ensure you can publish an image file successfully.
     """
@@ -175,14 +175,14 @@ def test_file_publish(app_dialog, tk_test_create_project):
     app_dialog.root["item details"].captions["svenFace.jpg"].waitExist(timeout=30)
     assert (
         app_dialog.root["context picker widget"]
-        .captions["*" + tk_test_create_project["name"]]
+        .captions["*" + tk_test_project["name"]]
         .exists()
     ), "Context is not set to Toolkit Publish2 UI Automation."
 
     # Change context to use a comp task from shot_001
     # Select a shot
     app_dialog.root["context picker widget"].captions[
-        "*" + tk_test_create_project["name"]
+        "*" + tk_test_project["name"]
     ].mouseClick()
     app_dialog.root["context picker widget"].textfields.typeIn("Shot")
     topwindows.listitems["Shot_001"].get().mouseClick()
@@ -415,7 +415,7 @@ def test_custom_plugin(app_dialog):
     ].exists(), "Browse folders to publish image sequences button is missing."
 
 
-def test_description_inheritance(app_dialog, tk_test_create_project):
+def test_description_inheritance(app_dialog, tk_test_project):
     """
     Ensure summary description inheritance is working fine.
     """
@@ -473,7 +473,7 @@ def test_description_inheritance(app_dialog, tk_test_create_project):
     )
     assert (
         app_dialog.root["context picker widget"]
-        .captions["*" + tk_test_create_project["name"]]
+        .captions["*" + tk_test_project["name"]]
         .exists()
     ), "Context is not set to Toolkit Publish2 UI Automation project."
 
