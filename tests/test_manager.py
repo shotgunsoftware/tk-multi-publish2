@@ -8,20 +8,21 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import os
+
 from publish_api_test_base import PublishApiTestBase
-from tank_test.tank_test_base import setUpModule # noqa
+from tank_test.tank_test_base import setUpModule  # noqa
 
 from mock import Mock, MagicMock
 
 
 class TestManager(PublishApiTestBase):
-
     def test_file_collection(self):
         """
         Ensures files are collected only once.
         """
-        A_PNG = "/a/b/c.png"
-        D_PNG = "/a/b/d.png"
+        A_PNG = os.path.normpath("/a/b/c.png")
+        D_PNG = os.path.normpath("/a/b/d.png")
 
         # Collecting one file should result in one collected file
         collected_files = self.manager.collect_files([A_PNG])
@@ -59,37 +60,30 @@ class TestManager(PublishApiTestBase):
         two_children_item = self.PublishItem("two_child", "two_child", "two_child")
         error_to_raise = Exception("Test error!")
 
-        task_1 = MagicMock(
-            item=one_child_item,
-            validate=lambda: False
-        )
+        task_1 = MagicMock(item=one_child_item, validate=lambda: False)
 
         task_2 = MagicMock(
-            item=two_children_item,
-            validate=Mock(side_effect=error_to_raise)
+            item=two_children_item, validate=Mock(side_effect=error_to_raise)
         )
 
-        task_3 = MagicMock(
-            item=two_children_item,
-            validate=lambda: False
-        )
+        task_3 = MagicMock(item=two_children_item, validate=lambda: False)
 
         def test_nodes():
             # First yield a task that fails validation normally.
-            is_valid, error_msg = (yield task_1)
+            is_valid, error_msg = yield task_1
             self.assertFalse(is_valid)
             self.assertIsNone(error_msg)
 
             # Then yield a task that fails by raising an error
             # and has a different parent
             # Invalid task should fail validation.
-            is_valid, error = (yield task_2)
+            is_valid, error = yield task_2
             self.assertFalse(is_valid)
             self.assertEqual(error, error_to_raise)
 
             # Then yield a task that has the same parent item and
             # also fail.
-            is_valid, error_msg = (yield task_3)
+            is_valid, error_msg = yield task_3
 
             self.assertFalse(is_valid)
             self.assertIsNone(error_msg)
@@ -100,12 +94,7 @@ class TestManager(PublishApiTestBase):
         # Since three tasks failed, but there were only two different
         # parent items, there should be two items.
         self.assertEqual(
-            failures,
-            [
-                (task_1, None),
-                (task_2, error_to_raise),
-                (task_3, None)
-            ]
+            failures, [(task_1, None), (task_2, error_to_raise), (task_3, None)]
         )
 
     def test_publish_raise_flag(self):
@@ -113,10 +102,9 @@ class TestManager(PublishApiTestBase):
         Ensures an exception is raised when the raise_on_error
         flag is set.
         """
+
         def test_nodes():
-            task = MagicMock(
-                publish=Mock(side_effect=Exception("Test error!"))
-            )
+            task = MagicMock(publish=Mock(side_effect=Exception("Test error!")))
             error = yield task
             self.assertIsNotNone(error)
             raise error
@@ -130,12 +118,10 @@ class TestManager(PublishApiTestBase):
         """
         error = Exception("Test error!")
 
-        task = MagicMock(
-            finalize=Mock(side_effect=error)
-        )
+        task = MagicMock(finalize=Mock(side_effect=error))
 
         def test_nodes():
-            returned_error = (yield task)
+            returned_error = yield task
 
             self.assertEqual(error, returned_error)
 
@@ -146,10 +132,9 @@ class TestManager(PublishApiTestBase):
         """
         Ensures finalizing report exceptions properly and do not abort the finalize process.
         """
+
         def test_nodes():
-            task = MagicMock(
-                publish=Mock(side_effect=Exception("Test error!"))
-            )
+            task = MagicMock(publish=Mock(side_effect=Exception("Test error!")))
             yield task
 
         with self.assertRaisesRegex(Exception, "Test error!"):

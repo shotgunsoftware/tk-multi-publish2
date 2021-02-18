@@ -35,7 +35,7 @@ class PublishTask(object):
         "_settings",
         "_active",
         "_visible",
-        "_enabled"
+        "_enabled",
     ]
 
     @classmethod
@@ -65,12 +65,12 @@ class PublishTask(object):
         new_task._enabled = task_dict["enabled"]
 
         # create all the setting instances from the data
-        for (k, setting) in task_dict["settings"].iteritems():
+        for (k, setting) in task_dict["settings"].items():
             new_setting = PluginSetting(
                 setting["name"],
                 setting["type"],
                 setting["default_value"],
-                setting["description"]
+                setting["description"],
             )
             new_setting.value = setting["value"]
             new_task._settings[k] = new_setting
@@ -84,8 +84,8 @@ class PublishTask(object):
 
         self._item = item
         self._plugin = plugin
-        self._name = None # task name override of plugin name
-        self._description = None # task description override of plugin desc.
+        self._name = None  # task name override of plugin name
+        self._description = None  # task description override of plugin desc.
 
         # need to make a deep copy of the settings as they may be modified
         self._settings = {}
@@ -106,7 +106,7 @@ class PublishTask(object):
 
         # Convert each of the settings to a dictionary.
         converted_settings = {}
-        for (k, setting) in self._settings.iteritems():
+        for (k, setting) in self._settings.items():
             converted_settings[k] = setting.to_dict()
 
         # build the full dictionary representation of this task

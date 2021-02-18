@@ -10,7 +10,7 @@
 
 
 import sgtk
-from sgtk.platform.qt import QtCore, QtGui
+from sgtk.platform.qt import QtCore
 from .ui.item_widget import Ui_ItemWidget
 from .custom_widget_base import CustomTreeWidgetBase
 
@@ -25,7 +25,7 @@ class CustomTreeWidgetItem(CustomTreeWidgetBase):
     Each item has got the following associated properties:
 
     - An area which can either be a checkbox for selection
-      or a "dot" which signals progress udpates
+      or a "dot" which signals progress updates
 
     - An icon
 
@@ -61,10 +61,14 @@ class CustomTreeWidgetItem(CustomTreeWidgetBase):
         """
         Callback that handles QT tri-state logic
         """
-        # QT tri-state logic is a little odd, see the docs for more
-        # details.
-        self.ui.checkbox.setChecked(not self.ui.checkbox.isChecked())
-        self._tree_node.set_check_state(self.ui.checkbox.checkState())
+        # Qt tri-state logic is a little odd. The default behaviour is to go from unchecked
+        # to partially checked. We want it to go from unchecked to checked
+        if self.ui.checkbox.checkState() == QtCore.Qt.CheckState.Checked:
+            next_state = QtCore.Qt.CheckState.Unchecked
+        else:
+            next_state = QtCore.Qt.CheckState.Checked
+        self.ui.checkbox.setCheckState(next_state)
+        self._tree_node.set_check_state(next_state)
 
     def _on_checkbox_click(self, state):
         """
@@ -93,7 +97,7 @@ class CustomTreeWidgetItem(CustomTreeWidgetBase):
 
         if draggable:
             self.ui.handle_stack.show()
-            self.ui.handle_stack.setCurrentIndex(0) # draggable
+            self.ui.handle_stack.setCurrentIndex(0)  # draggable
         else:
             self.ui.handle_stack.hide()
 

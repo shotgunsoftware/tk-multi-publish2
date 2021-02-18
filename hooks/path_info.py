@@ -9,7 +9,7 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import os
-import re
+from tank.util import sgre as re
 
 import sgtk
 
@@ -21,13 +21,13 @@ HookBaseClass = sgtk.get_hook_baseclass()
 # this implementation assumes the version number is of the form 'v###'
 # coming just before an optional extension in the file/folder name and just
 # after a '.', '_', or '-'.
-VERSION_REGEX = re.compile("(.*)([._-])v(\d+)\.?([^.]+)?$", re.IGNORECASE)
+VERSION_REGEX = re.compile(r"(.*)([._-])v(\d+)\.?([^.]+)?$", re.IGNORECASE)
 
 # a regular expression used to extract the frame number from the file.
 # this implementation assumes the version number is of the form '.####'
 # coming just before the extension in the filename and just after a '.', '_',
 # or '-'.
-FRAME_REGEX = re.compile("(.*)([._-])(\d+)\.([^.]+)$", re.IGNORECASE)
+FRAME_REGEX = re.compile(r"(.*)([._-])(\d+)\.([^.]+)$", re.IGNORECASE)
 
 
 class BasicPathInfo(HookBaseClass):
@@ -86,8 +86,7 @@ class BasicPathInfo(HookBaseClass):
             frame = frame_pattern_match.group(3)
             display_str = "#" * len(frame)
             extension = frame_pattern_match.group(4) or ""
-            publish_name = "%s%s%s.%s" % (
-                prefix, frame_sep, display_str, extension)
+            publish_name = "%s%s%s.%s" % (prefix, frame_sep, display_str, extension)
         else:
             publish_name = filename
 
@@ -212,8 +211,7 @@ class BasicPathInfo(HookBaseClass):
         publisher = self.parent
         logger = publisher.logger
 
-        logger.debug(
-            "Looking for sequences in folder: '%s'..." % (folder,))
+        logger.debug("Looking for sequences in folder: '%s'..." % (folder,))
 
         # list of already processed file names
         processed_names = {}
@@ -267,7 +265,7 @@ class BasicPathInfo(HookBaseClass):
             # seq pattern
             processed_names[file_no_frame] = {
                 "sequence_path": seq_path,
-                "file_list": [file_path]
+                "file_list": [file_path],
             }
 
         # build the final list of sequence paths to return

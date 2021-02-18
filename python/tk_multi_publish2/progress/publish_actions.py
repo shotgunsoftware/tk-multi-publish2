@@ -17,6 +17,7 @@ logger = sgtk.platform.get_logger(__name__)
 
 from .more_info_dialog import MoreInfoDialog
 
+
 def show_folder(path):
     """
     Show the supplied path in the filesystem.
@@ -27,20 +28,14 @@ def show_folder(path):
     # make sure we have a folder
     launch_path = os.path.dirname(path) if not os.path.isdir(path) else path
 
-    # get the setting
-    system = sys.platform
-
-    # run the app
-    if system == "linux2":
+    if sgtk.util.is_linux():
         cmd = 'xdg-open "%s"' % launch_path
-    elif system == "darwin":
+    elif sgtk.util.is_macos():
         cmd = 'open "%s"' % launch_path
-    elif system == "win32":
+    elif sgtk.util.is_windows():
         cmd = 'cmd.exe /C start "Folder" "%s"' % launch_path
     else:
-        logger.error(
-            "Don't know how to launch browser for '%s'." % (system,)
-        )
+        logger.error("Don't know how to launch browser for '%s'." % (sys.platform,))
         return
 
     exit_code = os.system(cmd)
@@ -58,16 +53,12 @@ def show_in_shotgun(entity):
 
     publisher = sgtk.platform.current_bundle()
 
-    url = "%s/detail/%s/%d" % (
-        publisher.sgtk.shotgun_url,
-        entity["type"],
-        entity["id"]
-    )
+    url = "%s/detail/%s/%d" % (publisher.sgtk.shotgun_url, entity["type"], entity["id"])
 
     try:
         logger.debug("Opening entity url: '%s'." % (url,))
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
-    except Exception, e:
+    except Exception as e:
         logger.error("Failed to open url: '%s'. Reason: %s" % (url, e))
 
 
@@ -80,8 +71,9 @@ def show_more_info(pixmap, message, text, parent):
 
     try:
         MoreInfoDialog(pixmap, message, text, parent)
-    except Exception, e:
+    except Exception as e:
         logger.error("Failed to launch more info dialog. Reason: %s" % (e,))
+
 
 def open_url(url):
     """
@@ -92,6 +84,5 @@ def open_url(url):
 
     try:
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
-    except Exception, e:
+    except Exception as e:
         logger.error("Failed to launch more info dialog. Reason: %s" % (e,))
-

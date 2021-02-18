@@ -36,7 +36,7 @@ class Thumbnail(QtGui.QLabel):
         """
         QtGui.QLabel.__init__(self, parent)
 
-        #_multiple_values allows to display indicator that the summary thumbnail is not applied to all items
+        # _multiple_values allows to display indicator that the summary thumbnail is not applied to all items
         self._multiple_values = False
 
         self._thumbnail = None
@@ -46,7 +46,7 @@ class Thumbnail(QtGui.QLabel):
         self.setCursor(QtCore.Qt.PointingHandCursor)
         self._no_thumb_pixmap = QtGui.QPixmap(":/tk_multi_publish2/camera.png")
         self._do_screengrab.connect(self._on_screengrab)
-        self.set_thumbnail(self._no_thumb_pixmap)       
+        self.set_thumbnail(self._no_thumb_pixmap)
 
     def setEnabled(self, enabled):
         """
@@ -134,16 +134,26 @@ class Thumbnail(QtGui.QLabel):
         # paint multiple values indicator
         if self._multiple_values == True:
             p = QtGui.QPainter(self)
-            p.drawPixmap(0,0,self.width(),self.height(),self._no_thumb_pixmap,0,0,self._no_thumb_pixmap.width(),self._no_thumb_pixmap.height())
-            p.fillRect(0,0,self.width(),self.height(),QtGui.QColor(42,42,42,237))
+            p.drawPixmap(
+                0,
+                0,
+                self.width(),
+                self.height(),
+                self._no_thumb_pixmap,
+                0,
+                0,
+                self._no_thumb_pixmap.width(),
+                self._no_thumb_pixmap.height(),
+            )
+            p.fillRect(0, 0, self.width(), self.height(), QtGui.QColor(42, 42, 42, 237))
             p.setFont(QtGui.QFont("Arial", 15, QtGui.QFont.Bold))
             pen = QtGui.QPen(QtGui.QColor("#18A7E3"))
             p.setPen(pen)
-            p.drawText(self.rect(), QtCore.Qt.AlignCenter,"Multiple Values")
+            p.drawText(self.rect(), QtCore.Qt.AlignCenter, "Multiple Values")
 
         else:
-           # paint thumbnail
-           QtGui.QLabel.paintEvent(self, paint_event)
+            # paint thumbnail
+            QtGui.QLabel.paintEvent(self, paint_event)
 
     def _set_screenshot_pixmap(self, pixmap):
         """
@@ -159,7 +169,7 @@ class Thumbnail(QtGui.QLabel):
             self.width(),
             self.height(),
             QtCore.Qt.KeepAspectRatio,
-            QtCore.Qt.SmoothTransformation
+            QtCore.Qt.SmoothTransformation,
         )
 
         self.setPixmap(thumb)

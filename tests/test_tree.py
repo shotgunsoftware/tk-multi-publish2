@@ -8,18 +8,19 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+from tank_vendor.six import StringIO
 import tempfile
+import datetime
 
 from mock import patch
 
 from publish_api_test_base import PublishApiTestBase
-from tank_test.tank_test_base import setUpModule # noqa
+from tank_test.tank_test_base import setUpModule  # noqa
 
 import sgtk
 
 
 class TestPublishTree(PublishApiTestBase):
-
     def test_unserialized_tree_same_as_serialized(self):
         """
         Make sure that persistence doesn't lose information
@@ -33,6 +34,7 @@ class TestPublishTree(PublishApiTestBase):
 
         # Create some items that will modify
         tree = self.manager.tree
+        # Make sure we are working with a clean tree.
         item = tree.root_item.create_item("item.a", "Item A", "Item A")
         child = item.create_item("item.b", "Item B", "Item B")
 
@@ -41,7 +43,13 @@ class TestPublishTree(PublishApiTestBase):
             item, True, "Description 1", "/a/b/c.png", "/d/e/f.png", "local", "global"
         )
         self._set_item(
-            child, False, "Description 2", "/g/h/i.png", "/j/k/l.png", "local2", "global2"
+            child,
+            False,
+            "Description 2",
+            "/g/h/i.png",
+            "/j/k/l.png",
+            "local2",
+            "global2",
         )
 
         fd, temp_file_path = tempfile.mkstemp()
@@ -53,6 +61,23 @@ class TestPublishTree(PublishApiTestBase):
         self.maxDiff = None
         self.assertEqual(before_load, after_load)
 
+    def test_unserializable_tree(self):
+        """
+        Tests that if you store an unserializable object on an item, it will fail with a
+        "is not JSON serializable" TypeError.
+        """
+
+        # Create some items that will modify
+        tree = self.manager.tree
+
+        item = tree.root_item.create_item("item.a", "Item A", "Item A")
+        # Store a datetime object as this can't be serialized.
+        item.properties["dateteime"] = datetime.datetime.now()
+
+        # Check that we get the error we expect.
+        with self.assertRaisesRegex(TypeError, "datetime.* is not JSON serializable"):
+            tree.save(StringIO())
+
     def test_bad_document_version(self):
         """
         Ensures we can't reload documents from an incorrect version.
@@ -61,7 +86,9 @@ class TestPublishTree(PublishApiTestBase):
             self.PublishTree.from_dict({})
 
         bad_version = 99999999
-        with self.assertRaisesRegex(sgtk.TankError, "Unrecognized serialization version \(%s\)" % bad_version):
+        with self.assertRaisesRegex(
+            sgtk.TankError, r"Unrecognized serialization version \(%s\)" % bad_version
+        ):
             self.PublishTree.from_dict({"serialization_version": bad_version})
 
     def test_pprint(self):
@@ -98,7 +125,9 @@ class TestPublishTree(PublishApiTestBase):
         # making a copy of the list of items to remove first. Rookie mistake. :)
         tree = self.manager.tree
         for _ in range(10):
-            persistent = tree.root_item.create_item("persitent", "persistent", "persistent")
+            persistent = tree.root_item.create_item(
+                "persitent", "persistent", "persistent"
+            )
             persistent.persistent = True
 
         tree.clear(clear_persistent=True)
@@ -108,10 +137,14 @@ class TestPublishTree(PublishApiTestBase):
         """
         Ensures you can't delete the root.
         """
-        with self.assertRaisesRegex(sgtk.TankError, "Removing the root item is not allowed."):
+        with self.assertRaisesRegex(
+            sgtk.TankError, "Removing the root item is not allowed."
+        ):
             self.manager.tree.remove_item(self.manager.tree.root_item)
 
-    def _set_item(self, item, boolean, description, icon_path, thumb_path, local_prop, global_prop):
+    def _set_item(
+        self, item, boolean, description, icon_path, thumb_path, local_prop, global_prop
+    ):
         item.active = boolean
         item.context_change_allowed = boolean
         item.enabled = boolean
@@ -157,5 +190,7 @@ class TestPublishTree(PublishApiTestBase):
 
         # Make sure an appropriate error is raised if the template is missing.
         with patch.dict(self.tk.templates, clear=True):
-            with self.assertRaisesRegex(sgtk.TankError, "Template 'shot_root' was not found"):
+            with self.assertRaisesRegex(
+                sgtk.TankError, "Template 'shot_root' was not found"
+            ):
                 new_tree = tree.load_file(temp_file_path)

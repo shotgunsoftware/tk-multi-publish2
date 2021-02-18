@@ -11,7 +11,7 @@ from tank.platform.qt import QtCore, QtGui
 class Ui_ItemWidget(object):
     def setupUi(self, ItemWidget):
         ItemWidget.setObjectName("ItemWidget")
-        ItemWidget.resize(290, 45)
+        ItemWidget.resize(313, 46)
         ItemWidget.setMinimumSize(QtCore.QSize(0, 45))
         self.verticalLayout = QtGui.QVBoxLayout(ItemWidget)
         self.verticalLayout.setSpacing(0)
@@ -57,6 +57,7 @@ class Ui_ItemWidget(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.header.sizePolicy().hasHeightForWidth())
         self.header.setSizePolicy(sizePolicy)
+        self.header.setMinimumSize(QtCore.QSize(1, 1))
         self.header.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.header.setObjectName("header")
         self.horizontalLayout.addWidget(self.header)
@@ -112,15 +113,24 @@ class Ui_ItemWidget(object):
         self.verticalLayout.addWidget(self.frame)
 
         self.retranslateUi(ItemWidget)
-        self.handle_stack.setCurrentIndex(1)
+        self.handle_stack.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(ItemWidget)
 
     def retranslateUi(self, ItemWidget):
         ItemWidget.setWindowTitle(QtGui.QApplication.translate("ItemWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
+        ItemWidget.setAccessibleName(QtGui.QApplication.translate("ItemWidget", "item widget", None, QtGui.QApplication.UnicodeUTF8))
+        self.frame.setAccessibleName(QtGui.QApplication.translate("ItemWidget", "item inner frame", None, QtGui.QApplication.UnicodeUTF8))
+        self.expand_placeholder.setAccessibleName(QtGui.QApplication.translate("ItemWidget", "item expand", None, QtGui.QApplication.UnicodeUTF8))
+        self.expand_indicator.setAccessibleName(QtGui.QApplication.translate("ItemWidget", "item expand indicator", None, QtGui.QApplication.UnicodeUTF8))
         self.header.setText(QtGui.QApplication.translate("ItemWidget", "<big>Alembic Caches</big><br>foo", None, QtGui.QApplication.UnicodeUTF8))
+        self.handle_stack.setAccessibleName(QtGui.QApplication.translate("ItemWidget", "item stackedwidget", None, QtGui.QApplication.UnicodeUTF8))
         self.drag_handle.setToolTip(QtGui.QApplication.translate("ItemWidget", "Drag & drop enabled for changing this item\'s context", None, QtGui.QApplication.UnicodeUTF8))
+        self.drag_handle.setAccessibleName(QtGui.QApplication.translate("ItemWidget", "item drag handle", None, QtGui.QApplication.UnicodeUTF8))
         self.locked_handle.setToolTip(QtGui.QApplication.translate("ItemWidget", "Context change is not allowed for this item", None, QtGui.QApplication.UnicodeUTF8))
+        self.locked_handle.setAccessibleName(QtGui.QApplication.translate("ItemWidget", "item lock handle", None, QtGui.QApplication.UnicodeUTF8))
         self.status.setToolTip(QtGui.QApplication.translate("ItemWidget", "Click for details", None, QtGui.QApplication.UnicodeUTF8))
+        self.status.setAccessibleName(QtGui.QApplication.translate("ItemWidget", "item status", None, QtGui.QApplication.UnicodeUTF8))
         self.status.setText(QtGui.QApplication.translate("ItemWidget", "...", None, QtGui.QApplication.UnicodeUTF8))
+        self.checkbox.setAccessibleName(QtGui.QApplication.translate("ItemWidget", "item checkbox", None, QtGui.QApplication.UnicodeUTF8))
 
 from . import resources_rc

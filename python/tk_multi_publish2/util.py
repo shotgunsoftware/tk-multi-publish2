@@ -19,6 +19,7 @@ logger = sgtk.platform.get_logger(__name__)
 
 # ---- file/path util functions
 
+
 def get_version_path(path, version):
     """
     Given a path without a version number, return the path with the supplied
@@ -39,10 +40,7 @@ def get_version_path(path, version):
     # collector/publisher hook implementations.
     publisher = sgtk.platform.current_bundle()
     return publisher.execute_hook_method(
-        "path_info",
-        "get_version_path",
-        path=path,
-        version=version
+        "path_info", "get_version_path", path=path, version=version
     )
 
 
@@ -67,9 +65,7 @@ def get_next_version_path(path):
     # collector/publisher hook implementations.
     publisher = sgtk.platform.current_bundle()
     return publisher.execute_hook_method(
-        "path_info",
-        "get_next_version_path",
-        path=path
+        "path_info", "get_next_version_path", path=path
     )
 
 
@@ -122,17 +118,9 @@ def get_file_path_components(path):
             # prevent extension = ""
             extension = None
 
-    file_info = dict(
-        path=path,
-        folder=folder,
-        filename=filename,
-        extension=extension,
-    )
+    file_info = dict(path=path, folder=folder, filename=filename, extension=extension,)
 
-    logger.debug(
-        "Extracted components from path '%s': %s" %
-        (path, file_info)
-    )
+    logger.debug("Extracted components from path '%s': %s" % (path, file_info))
 
     return file_info
 
@@ -155,10 +143,7 @@ def get_frame_sequence_path(path, frame_spec=None):
     # collector/publisher hook implementations.
     publisher = sgtk.platform.current_bundle()
     return publisher.execute_hook_method(
-        "path_info",
-        "get_frame_sequence_path",
-        path=path,
-        frame_spec=frame_spec
+        "path_info", "get_frame_sequence_path", path=path, frame_spec=frame_spec
     )
 
 
@@ -213,7 +198,7 @@ def get_frame_sequences(folder, extensions=None, frame_spec=None):
         "get_frame_sequences",
         folder=folder,
         extensions=extensions,
-        frame_spec=frame_spec
+        frame_spec=frame_spec,
     )
 
 
@@ -243,10 +228,7 @@ def get_publish_name(path, sequence=False):
     # collector/publisher hook implementations.
     publisher = sgtk.platform.current_bundle()
     return publisher.execute_hook_method(
-        "path_info",
-        "get_publish_name",
-        path=path,
-        sequence=sequence
+        "path_info", "get_publish_name", path=path, sequence=sequence
     )
 
 
@@ -273,14 +255,11 @@ def get_version_number(path):
     # clients from having to call other hooks directly in their
     # collector/publisher hook implementations.
     publisher = sgtk.platform.current_bundle()
-    return publisher.execute_hook_method(
-        "path_info",
-        "get_version_number",
-        path=path
-    )
+    return publisher.execute_hook_method("path_info", "get_version_number", path=path)
 
 
 # ---- publish util functions
+
 
 def get_conflicting_publishes(context, path, publish_name, filters=None):
     """
@@ -305,8 +284,8 @@ def get_conflicting_publishes(context, path, publish_name, filters=None):
     publisher = sgtk.platform.current_bundle()
 
     logger.debug(
-        "Getting conflicting publishes for context: %s, path: %s, name: %s" %
-        (context, path, publish_name)
+        "Getting conflicting publishes for context: %s, path: %s, name: %s"
+        % (context, path, publish_name)
     )
 
     # ask core to do a dry_run of a publish with the supplied criteria. this is
@@ -316,12 +295,7 @@ def get_conflicting_publishes(context, path, publish_name, filters=None):
     # those by their path field. Once we have the ability in SG to filter by
     # path, we can replace this whole method with a simple call to find().
     publish_data = sgtk.util.register_publish(
-        publisher.sgtk,
-        context,
-        path,
-        publish_name,
-        version_number=None,
-        dry_run=True
+        publisher.sgtk, context, path, publish_name, version_number=None, dry_run=True
     )
     logger.debug("Publish dry run data: %s" % (publish_data,))
 
@@ -332,11 +306,7 @@ def get_conflicting_publishes(context, path, publish_name, filters=None):
     logger.debug("Build publish filters: %s" % (publish_filters,))
 
     # run the
-    publishes = publisher.shotgun.find(
-        "PublishedFile",
-        publish_filters,
-        ["path"]
-    )
+    publishes = publisher.shotgun.find("PublishedFile", publish_filters, ["path"])
 
     # ensure the path is normalized for comparison
     normalized_path = sgtk.util.ShotgunPath.normalize(path)
@@ -350,8 +320,7 @@ def get_conflicting_publishes(context, path, publish_name, filters=None):
         publish_path = sgtk.util.resolve_publish_path(publisher.sgtk, publish)
         if publish_path:
             # ensure the published path is normalized for comparison
-            normalized_publish_path = sgtk.util.ShotgunPath.normalize(
-                publish_path)
+            normalized_publish_path = sgtk.util.ShotgunPath.normalize(publish_path)
             if normalized_path == normalized_publish_path:
                 matching_publishes.append(publish)
 
@@ -387,10 +356,7 @@ def clear_status_for_conflicting_publishes(context, publish_data):
 
     # get a list of all publishes matching this criteria
     publishes = get_conflicting_publishes(
-        context,
-        path,
-        name,
-        filters=["sg_status_list", "is_not", None]
+        context, path, name, filters=["sg_status_list", "is_not", None]
     )
 
     if not publishes:
@@ -407,18 +373,17 @@ def clear_status_for_conflicting_publishes(context, publish_data):
             continue
 
         # add the update info to the batch data list
-        batch_data.append({
-            "request_type": "update",
-            "entity_type": publish["type"],
-            "entity_id": publish["id"],
-            "data": {"sg_status_list": None}  # will clear the status
-        })
+        batch_data.append(
+            {
+                "request_type": "update",
+                "entity_type": publish["type"],
+                "entity_id": publish["id"],
+                "data": {"sg_status_list": None},  # will clear the status
+            }
+        )
 
     if batch_data:
-        logger.debug(
-            "Batch updating publish data: %s" %
-            (pprint.pformat(batch_data),)
-        )
+        logger.debug("Batch updating publish data: %s" % (pprint.pformat(batch_data),))
 
         # execute all the updates!
         publisher.shotgun.batch(batch_data)

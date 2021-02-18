@@ -10,12 +10,13 @@
 
 
 import sgtk
-from sgtk.platform.qt import QtCore, QtGui
+from sgtk.platform.qt import QtCore
 from .custom_widget_context import CustomTreeWidgetContext
 
 logger = sgtk.platform.get_logger(__name__)
 
 from .tree_node_base import TreeNodeBase
+
 
 class TreeNodeContext(TreeNodeBase):
     """
@@ -85,5 +86,3 @@ class TreeNodeContext(TreeNodeBase):
         Perform finalize
         """
         return True
-
-

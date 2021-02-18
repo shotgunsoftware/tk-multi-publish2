@@ -32,8 +32,7 @@ class CollectorPluginInstance(PluginInstanceBase):
         """
         bundle = sgtk.platform.current_bundle()
         plugin = bundle.create_hook_instance(
-            path,
-            base_class=bundle.base_hooks.CollectorPlugin
+            path, base_class=bundle.base_hooks.CollectorPlugin
         )
         plugin.id = path
         return plugin
@@ -51,18 +50,14 @@ class CollectorPluginInstance(PluginInstanceBase):
             if hasattr(self._hook_instance.__class__, "settings"):
                 # this hook has a 'settings' property defined. it is expecting
                 # 'settings' to be passed to the processing method.
-                return self._hook_instance.process_file(
-                    self.settings, item, path)
+                return self._hook_instance.process_file(self.settings, item, path)
             else:
                 # the hook hasn't been updated to handle collector settings.
                 # call the method without a settings argument
                 return self._hook_instance.process_file(item, path)
         except Exception:
             error_msg = traceback.format_exc()
-            logger.error(
-                "Error running process_file for %s. %s" %
-                (self, error_msg)
-            )
+            logger.error("Error running process_file for %s. %s" % (self, error_msg))
 
     def run_process_current_session(self, item):
         """
@@ -76,8 +71,7 @@ class CollectorPluginInstance(PluginInstanceBase):
             if hasattr(self._hook_instance.__class__, "settings"):
                 # this hook has a 'settings' property defined. it is expecting
                 # 'settings' to be passed to the processing method.
-                return self._hook_instance.process_current_session(
-                    self.settings, item)
+                return self._hook_instance.process_current_session(self.settings, item)
             else:
                 # the hook hasn't been updated to handle collector settings.
                 # call the method without a settings argument
@@ -85,6 +79,5 @@ class CollectorPluginInstance(PluginInstanceBase):
         except Exception:
             error_msg = traceback.format_exc()
             logger.error(
-                "Error running process_current_session for %s. %s" %
-                (self, error_msg)
+                "Error running process_current_session for %s. %s" % (self, error_msg)
             )

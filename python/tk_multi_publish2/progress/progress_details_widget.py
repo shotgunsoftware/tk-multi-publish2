@@ -8,13 +8,13 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-import os
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
 
 from .ui.progress_details_widget import Ui_ProgressDetailsWidget
 
 logger = sgtk.platform.get_logger(__name__)
+
 
 class ProgressDetailsWidget(QtGui.QWidget):
     """
@@ -147,6 +147,7 @@ class ResizeEventFilter(QtCore.QObject):
     # event system
     self.ui.thumbnail.installEventFilter(filter)
     """
+
     resized = QtCore.Signal()
 
     def eventFilter(self, obj, event):

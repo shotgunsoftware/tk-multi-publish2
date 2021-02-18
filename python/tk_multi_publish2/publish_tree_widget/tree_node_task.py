@@ -10,7 +10,7 @@
 
 
 import sgtk
-from sgtk.platform.qt import QtCore, QtGui
+from sgtk.platform.qt import QtCore
 from .tree_node_base import TreeNodeBase
 from .custom_widget_task import CustomTreeWidgetTask
 
@@ -64,6 +64,9 @@ class TreeNodeTask(TreeNodeBase):
         """
         Called by child item when checkbox was ticked
         """
+        # Ensure that we set the task to match the UI state
+        self._task.active = state != QtCore.Qt.Unchecked
+
         if apply_to_all_plugins:
             # do it for all of the items
             self.treeWidget().set_check_state_for_all_plugins(self._task.plugin, state)

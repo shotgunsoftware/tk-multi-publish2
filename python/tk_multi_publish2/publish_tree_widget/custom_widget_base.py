@@ -23,7 +23,7 @@ class CustomTreeWidgetBase(QtGui.QFrame):
     Each item has got the following associated properties:
 
     - An area which can either be a checkbox for selection
-      or a "dot" which signals progress udpates
+      or a "dot" which signals progress updates
 
     - An icon
 
@@ -55,14 +55,19 @@ class CustomTreeWidgetBase(QtGui.QFrame):
         self._icon_lookup = {
             self.NEUTRAL: None,
             self.VALIDATION: QtGui.QPixmap(":/tk_multi_publish2/status_validate.png"),
-            self.VALIDATION_ERROR: QtGui.QPixmap(":/tk_multi_publish2/status_warning.png"),
+            self.VALIDATION_ERROR: QtGui.QPixmap(
+                ":/tk_multi_publish2/status_warning.png"
+            ),
             self.PUBLISH: QtGui.QPixmap(":/tk_multi_publish2/status_publish.png"),
             self.PUBLISH_ERROR: QtGui.QPixmap(":/tk_multi_publish2/status_error.png"),
             self.FINALIZE: QtGui.QPixmap(":/tk_multi_publish2/status_success.png"),
             self.FINALIZE_ERROR: QtGui.QPixmap(":/tk_multi_publish2/status_error.png"),
-            self.VALIDATION_STANDALONE: QtGui.QPixmap(":/tk_multi_publish2/status_success.png"),
+            self.VALIDATION_STANDALONE: QtGui.QPixmap(
+                ":/tk_multi_publish2/status_success.png"
+            ),
         }
         self._status_icon = None
+        self._header = ""
 
     @property
     def icon(self):
@@ -79,13 +84,19 @@ class CustomTreeWidgetBase(QtGui.QFrame):
         """
         self.ui.icon.setPixmap(pixmap)
 
+    @property
+    def header(self):
+        return self._header
+
     def set_header(self, title):
         """
         Set the title of the item
 
         :param title: Header text. Can be html.
         """
+        self._header = title
         self.ui.header.setText(title)
+        self.setAccessibleName(title)
 
     def set_checkbox_value(self, state):
         """
@@ -126,15 +137,13 @@ class CustomTreeWidgetBase(QtGui.QFrame):
                     "ItemWidget",
                     "<p>%s</p>" % (message,),
                     None,
-                    QtGui.QApplication.UnicodeUTF8
+                    QtGui.QApplication.UnicodeUTF8,
                 )
             )
 
             self.ui.status.show()
             self._status_icon = QtGui.QIcon()
             self._status_icon.addPixmap(
-                self._icon_lookup[status],
-                QtGui.QIcon.Normal,
-                QtGui.QIcon.Off
+                self._icon_lookup[status], QtGui.QIcon.Normal, QtGui.QIcon.Off
             )
             self.ui.status.setIcon(self._status_icon)

@@ -9,7 +9,7 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 from publish_api_test_base import PublishApiTestBase
-from tank_test.tank_test_base import setUpModule # noqa
+from tank_test.tank_test_base import setUpModule  # noqa
 
 import logging
 from mock import Mock, MagicMock, patch
@@ -34,7 +34,6 @@ def mock_publish_plugin_instance_hook_creation(func):
 # It's very important to derive from object here, because Python 2.6's
 # implementation of the handler class doesn't, which breaks property setters.
 class Handler(logging.Handler, object):
-
     def __init__(self):
         logging.Handler.__init__(self)
         self.found = False
@@ -51,7 +50,8 @@ class Handler(logging.Handler, object):
 
     def emit(self, record):
         if self.keyword:
-            self.found |= (self.keyword in record.msg)
+            self.found |= self.keyword in record.msg
+
 
 # Set up the testing logger.
 handler = Handler()
@@ -59,7 +59,6 @@ logger.addHandler(handler)
 
 
 class TestPublishPluginInstance(PublishApiTestBase):
-
     @mock_publish_plugin_instance_hook_creation
     def test_plugin_attributes(self, create_hook_instance):
         """
@@ -103,7 +102,7 @@ class TestPublishPluginInstance(PublishApiTestBase):
         del mock_plugin.icon
         self.assertEqual(
             ppi.icon.cacheKey(),
-            self.QtGui.QPixmap(":/tk_multi_publish2/task.png").cacheKey()
+            self.QtGui.QPixmap(":/tk_multi_publish2/task.png").cacheKey(),
         )
 
     @mock_publish_plugin_instance_hook_creation
@@ -146,3 +145,62 @@ class TestPublishPluginInstance(PublishApiTestBase):
         handler.keyword = "Error running accept for"
         self.assertEqual(ppi.run_accept(None), {"accepted": True})
         self.assertFalse(handler.found)
+
+    # The following four methods are mock methods for the three UI customization methods.
+    # get_ui_settings
+    # set_ui_settings
+    # create_settings_widget
+    # We're not using proper return values, as we are only testing that the API handles
+    # passing the correct amount of arguments.
+
+    # Both create and get methods accept the same args, so we don't need
+    # separate testing methods.
+    def _mock_get_create_w_items(self, parent, items):
+        return "passed"
+
+    def _mock_get_create_wo_items(self, parent):
+        return "passed"
+
+    def _mock_set_settings_w_items(self, parent, settings, items):
+        pass
+
+    def _mock_set_settings_wo_items(self, parent, settings):
+        pass
+
+    @mock_publish_plugin_instance_hook_creation
+    def test_plugin_ui_methods(self, create_hook_instance):
+        """
+        Ensure that the custom UI methods receive the correct number of arguments.
+        Previously the custom ui Methods didn't get passed items, so this test makes sure
+        that the API can handle calling the hooks when they either implement or don't
+        implement the items.
+        """
+
+        # Create hook instances for the UI methods that accept the items arg
+        # We are not using lambdas for these, since the API checks for the
+        # number of arguments on the method, and there wouldn't be a `self`
+        # arg with a lambda.
+        create_hook_instance.return_value = MagicMock(
+            create_settings_widget=self._mock_get_create_w_items,
+            get_ui_settings=self._mock_get_create_w_items,
+            set_ui_settings=self._mock_set_settings_w_items,
+        )
+        ppi_w_items = self.PublishPluginInstance("test hook", None, {}, logger)
+
+        create_hook_instance.return_value = MagicMock(
+            create_settings_widget=self._mock_get_create_wo_items,
+            get_ui_settings=self._mock_get_create_wo_items,
+            set_ui_settings=self._mock_set_settings_wo_items,
+        )
+        ppi_wo_items = self.PublishPluginInstance("test hook", None, {}, logger)
+
+        for ppi in [ppi_w_items, ppi_wo_items]:
+
+            widget = ppi.run_create_settings_widget(None, [])
+            self.assertEqual(widget, "passed")
+
+            settings = ppi.run_get_ui_settings(None, [])
+            self.assertEqual(settings, "passed")
+
+            # we're just checking this doesn't error, as it doesn't return anything
+            ppi.run_set_ui_settings(None, [], [])

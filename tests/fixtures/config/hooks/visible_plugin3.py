@@ -34,5 +34,3 @@ class PluginWithoutUi(HookBaseClass):
 
     def finalize(self, settings, item):
         pass
-
-

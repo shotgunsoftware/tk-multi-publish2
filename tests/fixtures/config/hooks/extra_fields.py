@@ -42,11 +42,9 @@ class GenericLocalPlugin(HookBaseClass):
     def accept(self, settings, item):
         item.local_properties.publish_kwargs = {
             "created_at": datetime.datetime.now() - datetime.timedelta(days=(3 * 365)),
-            "comment": "A different description"
+            "comment": "A different description",
         }
-        item.local_properties.publish_fields = {
-            "sg_field_test": "some value"
-        }
+        item.local_properties.publish_fields = {"sg_field_test": "some value"}
         item.local_properties.plugin_name = "extra_fields"
         item.properties.path = __file__
         return {"accepted": True}

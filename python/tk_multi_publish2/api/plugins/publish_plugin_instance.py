@@ -11,6 +11,14 @@
 from contextlib import contextmanager
 import traceback
 
+try:
+    # In Python 3 the interface changed, getargspec is now deprecated.
+    # getfullargspec was deprecated in 3.5, but that was reversed in 3.6.
+    from inspect import getfullargspec as getargspec
+except ImportError:
+    # Fallback for Python 2
+    from inspect import getargspec
+
 import sgtk
 from .instance_base import PluginInstanceBase
 
@@ -36,11 +44,7 @@ class PublishPluginInstance(PluginInstanceBase):
 
         self._icon_pixmap = None
 
-        super(PublishPluginInstance, self).__init__(
-            path,
-            settings,
-            publish_logger
-        )
+        super(PublishPluginInstance, self).__init__(path, settings, publish_logger)
 
     def _create_hook_instance(self, path):
         """
@@ -51,8 +55,7 @@ class PublishPluginInstance(PluginInstanceBase):
         """
         bundle = sgtk.platform.current_bundle()
         hook = bundle.create_hook_instance(
-            path,
-            base_class=bundle.base_hooks.PublishPlugin
+            path, base_class=bundle.base_hooks.PublishPlugin
         )
         hook.id = path
         return hook
@@ -155,12 +158,13 @@ class PublishPluginInstance(PluginInstanceBase):
             error_msg = traceback.format_exc()
             self._logger.error(
                 "Error running accept for %s" % self,
-                extra=_get_error_extra_info(error_msg)
+                extra=_get_error_extra_info(error_msg),
             )
             return {"accepted": False}
         finally:
-            if not sgtk.platform.current_engine().has_ui:
+            if sgtk.platform.current_engine().has_ui:
                 from sgtk.platform.qt import QtCore
+
                 QtCore.QCoreApplication.processEvents()
 
     def run_validate(self, settings, item):
@@ -178,7 +182,9 @@ class PublishPluginInstance(PluginInstanceBase):
         # check that we are not trying to publish to a site level context
         if item.context.project is None:
             status = False
-            self.logger.error("Please link '%s' to a Shotgun object and task!" % item.name)
+            self.logger.error(
+                "Please link '%s' to a Shotgun object and task!" % item.name
+            )
 
         if status:
             self.logger.debug("Validation successful!")
@@ -210,7 +216,7 @@ class PublishPluginInstance(PluginInstanceBase):
     ############################################################################
     # ui methods
 
-    def run_create_settings_widget(self, parent):
+    def run_create_settings_widget(self, parent, items):
         """
         Creates a custom widget to edit a plugin's settings.
 
@@ -218,6 +224,7 @@ class PublishPluginInstance(PluginInstanceBase):
 
         :param parent: Parent widget
         :type parent: :class:`QtGui.QWidget`
+        :param items: A list of PublishItems the selected tasks are parented to.
         """
 
         # nothing to do if running without a UI
@@ -225,9 +232,15 @@ class PublishPluginInstance(PluginInstanceBase):
             return None
 
         with self._handle_plugin_error(None, "Error laying out widgets: %s"):
-            return self._hook_instance.create_settings_widget(parent)
 
-    def run_get_ui_settings(self, parent):
+            if len(getargspec(self._hook_instance.create_settings_widget).args) == 3:
+                return self._hook_instance.create_settings_widget(parent, items)
+            else:
+                # Items is a newer attribute, which an older version of the hook
+                # might not implement, so fallback to passing just the parent.
+                return self._hook_instance.create_settings_widget(parent)
+
+    def run_get_ui_settings(self, parent, items):
         """
         Retrieves the settings from the custom UI.
 
@@ -242,9 +255,15 @@ class PublishPluginInstance(PluginInstanceBase):
             return None
 
         with self._handle_plugin_error(None, "Error reading settings from UI: %s"):
-            return self._hook_instance.get_ui_settings(parent)
 
-    def run_set_ui_settings(self, parent, settings):
+            if len(getargspec(self._hook_instance.get_ui_settings).args) == 3:
+                return self._hook_instance.get_ui_settings(parent, items)
+            else:
+                # Items is a newer attribute, which an older version of the hook
+                # might not implement, so fallback to passing just the parent.
+                return self._hook_instance.get_ui_settings(parent)
+
+    def run_set_ui_settings(self, parent, settings, items):
         """
         Provides a list of settings from the custom UI. It is the responsibility of the UI
         handle different values for the same setting.
@@ -254,6 +273,7 @@ class PublishPluginInstance(PluginInstanceBase):
         :param parent: Parent widget
         :type parent: :class:`QtGui.QWidget`
         :param settings: List of dictionary of settings as python literals.
+        :param items: A list of PublishItems the selected tasks are parented to.
         """
 
         # nothing to do if running without a UI
@@ -261,7 +281,13 @@ class PublishPluginInstance(PluginInstanceBase):
             return None
 
         with self._handle_plugin_error(None, "Error writing settings to UI: %s"):
-            self._hook_instance.set_ui_settings(parent, settings)
+
+            if len(getargspec(self._hook_instance.set_ui_settings).args) == 4:
+                self._hook_instance.set_ui_settings(parent, settings, items)
+            else:
+                # Items is a newer attribute, which an older version of the hook
+                # might not implement, so fallback to passing just the parent and settings.
+                self._hook_instance.set_ui_settings(parent, settings)
 
     @contextmanager
     def _handle_plugin_error(self, success_msg, error_msg):
@@ -283,16 +309,17 @@ class PublishPluginInstance(PluginInstanceBase):
         except Exception as e:
             exception_msg = traceback.format_exc()
             self._logger.error(
-                error_msg % (e,),
-                extra=_get_error_extra_info(exception_msg)
+                error_msg % (e,), extra=_get_error_extra_info(exception_msg)
             )
             raise
         else:
             if success_msg:
                 self._logger.debug(success_msg)
         finally:
-            if not sgtk.platform.current_engine().has_ui:
+            if sgtk.platform.current_engine().has_ui:
+                # If we have a UI process the events so that the UI can update mid operation.
                 from sgtk.platform.qt import QtCore
+
                 QtCore.QCoreApplication.processEvents()
 
     def _load_plugin_icon(self):
@@ -312,11 +339,9 @@ class PublishPluginInstance(PluginInstanceBase):
             if icon_path:
                 try:
                     pixmap = QtGui.QPixmap(icon_path)
-                except Exception, e:
+                except Exception as e:
                     self._logger.warning(
-                        "%r: Could not load icon '%s': %s" % (
-                            self, icon_path, e
-                        )
+                        "%r: Could not load icon '%s': %s" % (self, icon_path, e)
                     )
         except AttributeError:
             # plugin does not have an icon
@@ -341,6 +366,6 @@ def _get_error_extra_info(error_msg):
         "action_show_more_info": {
             "label": "Error Details",
             "tooltip": "Show the full error tack trace",
-            "text": "<pre>%s</pre>" % (error_msg,)
+            "text": "<pre>%s</pre>" % (error_msg,),
         }
     }

@@ -67,5 +67,3 @@ Post Phase Hook
 .. autoclass:: PostPhaseHook
     :show-inheritance:
     :members:
-
-

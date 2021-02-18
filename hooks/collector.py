@@ -1,16 +1,17 @@
 # Copyright (c) 2017 Shotgun Software Inc.
-# 
+#
 # CONFIDENTIAL AND PROPRIETARY
-# 
-# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit 
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
 # Source Code License included in this distribution package. See LICENSE.
-# By accessing, using, copying or modifying this work you indicate your 
-# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import mimetypes
 import os
 import sgtk
+from tank_vendor import six
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -74,6 +75,11 @@ class BasicSceneCollector(HookBaseClass):
 
             # do this once to avoid unnecessary processing
             self._common_file_info = {
+                "Alias File": {
+                    "extensions": ["wire"],
+                    "icon": self._get_icon_path("alias.png"),
+                    "item_type": "file.alias",
+                },
                 "Alembic Cache": {
                     "extensions": ["abc"],
                     "icon": self._get_icon_path("alembic.png"),
@@ -114,6 +120,11 @@ class BasicSceneCollector(HookBaseClass):
                     "icon": self._get_icon_path("photoshop.png"),
                     "item_type": "file.photoshop",
                 },
+                "VRED Scene": {
+                    "extensions": ["vpb", "vpe", "osb"],
+                    "icon": self._get_icon_path("vred.png"),
+                    "item_type": "file.vred",
+                },
                 "Rendered Image": {
                     "extensions": ["dpx", "exr"],
                     "icon": self._get_icon_path("image_sequence.png"),
@@ -123,6 +134,11 @@ class BasicSceneCollector(HookBaseClass):
                     "extensions": ["tif", "tiff", "tx", "tga", "dds", "rat"],
                     "icon": self._get_icon_path("texture.png"),
                     "item_type": "file.texture",
+                },
+                "PDF": {
+                    "extensions": ["pdf"],
+                    "icon": self._get_icon_path("file.png"),
+                    "item_type": "file.image",
                 },
             }
 
@@ -213,17 +229,14 @@ class BasicSceneCollector(HookBaseClass):
                 item_type = "%s.%s" % (item_type, "sequence")
                 is_sequence = True
 
-        display_name = publisher.util.get_publish_name(
-            path, sequence=is_sequence)
+        display_name = publisher.util.get_publish_name(path, sequence=is_sequence)
 
         # create and populate the item
-        file_item = parent_item.create_item(
-            item_type, type_display, display_name)
+        file_item = parent_item.create_item(item_type, type_display, display_name)
         file_item.set_icon_from_path(item_info["icon_path"])
 
         # if the supplied path is an image, use the path as the thumbnail.
-        if (item_type.startswith("file.image") or
-            item_type.startswith("file.texture")):
+        if item_type.startswith("file.image") or item_type.startswith("file.texture"):
             file_item.set_thumbnail_from_path(path)
 
             # disable thumbnail creation since we get it for free
@@ -257,8 +270,7 @@ class BasicSceneCollector(HookBaseClass):
 
         publisher = self.parent
         img_sequences = publisher.util.get_frame_sequences(
-            folder,
-            self._get_image_extensions()
+            folder, self._get_image_extensions()
         )
 
         file_items = []
@@ -281,14 +293,11 @@ class BasicSceneCollector(HookBaseClass):
             img_seq_files.sort()
             first_frame_file = img_seq_files[0]
             display_name = publisher.util.get_publish_name(
-                first_frame_file, sequence=True)
+                first_frame_file, sequence=True
+            )
 
             # create and populate the item
-            file_item = parent_item.create_item(
-                item_type,
-                type_display,
-                display_name
-            )
+            file_item = parent_item.create_item(item_type, type_display, display_name)
             icon_path = self._get_icon_path(icon_name)
             file_item.set_icon_from_path(icon_path)
 
@@ -379,8 +388,7 @@ class BasicSceneCollector(HookBaseClass):
                 # the system's default encoding. If a unicode string is
                 # returned, we simply ensure it's utf-8 encoded to avoid issues
                 # with toolkit, which expects utf-8
-                if isinstance(category_type, unicode):
-                    category_type = category_type.encode("utf-8")
+                category_type = six.ensure_str(category_type)
 
                 # the category portion of the mimetype
                 category = category_type.split("/")[0]
@@ -395,9 +403,7 @@ class BasicSceneCollector(HookBaseClass):
 
         # everything should be populated. return the dictionary
         return dict(
-            item_type=item_type,
-            type_display=type_display,
-            icon_path=icon_path,
+            item_type=item_type, type_display=type_display, icon_path=icon_path,
         )
 
     def _get_icon_path(self, icon_name, icons_folders=None):
@@ -444,21 +450,18 @@ class BasicSceneCollector(HookBaseClass):
 
         if not hasattr(self, "_image_extensions"):
 
-            image_file_types = [
-                "Photoshop Image",
-                "Rendered Image",
-                "Texture Image"
-            ]
+            image_file_types = ["Photoshop Image", "Rendered Image", "Texture Image"]
             image_extensions = set()
 
             for image_file_type in image_file_types:
                 image_extensions.update(
-                    self.common_file_info[image_file_type]["extensions"])
+                    self.common_file_info[image_file_type]["extensions"]
+                )
 
             # get all the image mime type image extensions as well
             mimetypes.init()
             types_map = mimetypes.types_map
-            for (ext, mimetype) in types_map.iteritems():
+            for (ext, mimetype) in types_map.items():
                 if mimetype.startswith("image/"):
                     image_extensions.add(ext.lstrip("."))
 

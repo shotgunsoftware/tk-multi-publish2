@@ -49,9 +49,13 @@ class ProgressHandler(object):
 
         self._icon_lookup = {
             self.PHASE_LOAD: QtGui.QPixmap(":/tk_multi_publish2/status_load.png"),
-            self.PHASE_VALIDATE: QtGui.QPixmap(":/tk_multi_publish2/status_validate.png"),
+            self.PHASE_VALIDATE: QtGui.QPixmap(
+                ":/tk_multi_publish2/status_validate.png"
+            ),
             self.PHASE_PUBLISH: QtGui.QPixmap(":/tk_multi_publish2/status_publish.png"),
-            self.PHASE_FINALIZE: QtGui.QPixmap(":/tk_multi_publish2/status_success.png"),
+            self.PHASE_FINALIZE: QtGui.QPixmap(
+                ":/tk_multi_publish2/status_success.png"
+            ),
         }
 
         self._icon_warning = QtGui.QPixmap(":/tk_multi_publish2/status_warning.png")
@@ -64,7 +68,9 @@ class ProgressHandler(object):
 
         # parent our progress widget overlay
         self._progress_details = ProgressDetailsWidget(self._progress_bar.parent())
-        self._progress_details.copy_to_clipboard_clicked.connect(self._copy_log_to_clipboard)
+        self._progress_details.copy_to_clipboard_clicked.connect(
+            self._copy_log_to_clipboard
+        )
 
         # clicking on the log toggles the logging window
         self._status_label.clicked.connect(self._progress_details.toggle)
@@ -131,8 +137,7 @@ class ProgressHandler(object):
             self._progress_details.show()
             # focus on node in tree
             self._progress_details.log_tree.scrollToItem(
-                tree_node,
-                QtGui.QAbstractItemView.PositionAtCenter
+                tree_node, QtGui.QAbstractItemView.PositionAtCenter
             )
             # make it current
             self._progress_details.log_tree.setCurrentItem(tree_node)
@@ -141,9 +146,10 @@ class ProgressHandler(object):
         """
         Copy the log to the clipboard
         """
-        logger.debug("Copying %d log messages to clipboard..." % len(self._log_messages))
-        app = QtCore.QCoreApplication.instance()
-        app.clipboard().setText("\n".join(self._log_messages))
+        logger.debug(
+            "Copying %d log messages to clipboard..." % len(self._log_messages)
+        )
+        QtGui.QApplication.clipboard().setText("\n".join(self._log_messages))
 
     def process_log_message(self, message, status, action):
         """
@@ -172,7 +178,7 @@ class ProgressHandler(object):
             self._logging_parent_item.setData(
                 0,
                 self._NUM_ERRORS_ROLE,
-                self._logging_parent_item.data(0, self._NUM_ERRORS_ROLE) + 1
+                self._logging_parent_item.data(0, self._NUM_ERRORS_ROLE) + 1,
             )
 
         # better formatting in case of errors and warnings
@@ -304,11 +310,13 @@ class ProgressHandler(object):
                 # now calculate the number of errors for this node by aggregating the
                 # error counts for all children
                 parent_errors = 0
-                for child_index in xrange(self._logging_parent_item.childCount()):
+                for child_index in range(self._logging_parent_item.childCount()):
                     child_item = self._logging_parent_item.child(child_index)
                     parent_errors += child_item.data(0, self._NUM_ERRORS_ROLE)
 
-                self._logging_parent_item.setData(0, self._NUM_ERRORS_ROLE, parent_errors)
+                self._logging_parent_item.setData(
+                    0, self._NUM_ERRORS_ROLE, parent_errors
+                )
 
         else:
             num_errors = 0
@@ -390,9 +398,9 @@ class ProgressHandler(object):
             action["callback"] = show_more_info
             action["args"] = dict(
                 pixmap=item.icon(0).pixmap(16, 16),
-                message=item.text(0),   # the one line log message
+                message=item.text(0),  # the one line log message
                 text=action.get("text", ""),
-                parent=self._progress_details.log_tree
+                parent=self._progress_details.log_tree,
             )
 
             # add a label if not supplied
@@ -424,15 +432,13 @@ class ProgressHandler(object):
                 action["tooltip"] = "Opens a url in the appropriate browser"
 
         else:
-            logger.warning(
-                "Detected unrecognized action type: %s" % (action["type"],))
+            logger.warning("Detected unrecognized action type: %s" % (action["type"],))
             return
 
         # make sure the required keys are defined
         for key in ["label", "callback", "args"]:
             if key not in action:
-                logger.warning(
-                    "Key '%s' is required for progress action." % (key,))
+                logger.warning("Key '%s' is required for progress action." % (key,))
                 return
 
         # create the button!
@@ -440,9 +446,6 @@ class ProgressHandler(object):
         embedded_widget.setObjectName("log_action_button")
         embedded_widget.setText(action["label"])
         embedded_widget.setToolTip(action.get("tooltip", ""))
-        embedded_widget.clicked.connect(
-            lambda: action["callback"](**action["args"])
-        )
+        embedded_widget.clicked.connect(lambda: action["callback"](**action["args"]))
 
-        self._progress_details.log_tree.setItemWidget(
-            item, 1, embedded_widget)
+        self._progress_details.log_tree.setItemWidget(item, 1, embedded_widget)

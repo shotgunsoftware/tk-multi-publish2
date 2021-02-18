@@ -39,6 +39,8 @@ class Ui_TaskWidget(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.header.sizePolicy().hasHeightForWidth())
         self.header.setSizePolicy(sizePolicy)
+        self.header.setMinimumSize(QtCore.QSize(1, 1))
+        self.header.setAccessibleName("")
         self.header.setObjectName("header")
         self.horizontalLayout.addWidget(self.header)
         self.status = QtGui.QToolButton(self.frame)
@@ -60,9 +62,14 @@ class Ui_TaskWidget(object):
 
     def retranslateUi(self, TaskWidget):
         TaskWidget.setWindowTitle(QtGui.QApplication.translate("TaskWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
+        TaskWidget.setAccessibleName(QtGui.QApplication.translate("TaskWidget", "task widget", None, QtGui.QApplication.UnicodeUTF8))
+        self.frame.setAccessibleName(QtGui.QApplication.translate("TaskWidget", "task widget inner frame", None, QtGui.QApplication.UnicodeUTF8))
+        self.icon.setAccessibleName(QtGui.QApplication.translate("TaskWidget", "task icon", None, QtGui.QApplication.UnicodeUTF8))
         self.header.setText(QtGui.QApplication.translate("TaskWidget", "<big>Alembic Caches</big>", None, QtGui.QApplication.UnicodeUTF8))
         self.status.setToolTip(QtGui.QApplication.translate("TaskWidget", "Click for more details", None, QtGui.QApplication.UnicodeUTF8))
+        self.status.setAccessibleName(QtGui.QApplication.translate("TaskWidget", "task status", None, QtGui.QApplication.UnicodeUTF8))
         self.status.setText(QtGui.QApplication.translate("TaskWidget", "...", None, QtGui.QApplication.UnicodeUTF8))
         self.checkbox.setToolTip(QtGui.QApplication.translate("TaskWidget", "hint: shift-click to toggle all items of this type", None, QtGui.QApplication.UnicodeUTF8))
+        self.checkbox.setAccessibleName(QtGui.QApplication.translate("TaskWidget", "task checkbox", None, QtGui.QApplication.UnicodeUTF8))
 
 from . import resources_rc

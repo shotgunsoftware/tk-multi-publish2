@@ -1,12 +1,12 @@
 /*
 Copyright (c) 2017 Shotgun Software Inc
- 
+
 CONFIDENTIAL AND PROPRIETARY
- 
-This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit 
+
+This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
 Source Code License included in this distribution package. See LICENSE.
-By accessing, using, copying or modifying this work you indicate your 
-agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
+By accessing, using, copying or modifying this work you indicate your
+agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 not expressly granted therein are reserved by Shotgun Software Inc.
 */
 
@@ -27,7 +27,7 @@ QWidget {
     font-style: Regular;
 }
 
-/* need this to kick QT into 'style mode' for labels otherwise things are not formatted correctly */
+/* Need this to kick QT into 'style mode' for labels otherwise things are not formatted correctly */
 QLabel {
     margin-top: 1px;
 }
@@ -165,9 +165,6 @@ DropAreaFrame[dragging="true"] {
     alternate-background-color: #292929;
     border: none;
     margin: 0px;
-    /* push the whole tree 20px to the side */
-    margin-left: -28px;
-
 }
 
 /* disable all the 'tree handles' */
@@ -184,6 +181,10 @@ DropAreaFrame[dragging="true"] {
 
 #items_tree::item {
     background-color: none;
+    /* Shift all items sideways to cover up the branch area.
+    This is because we are hiding the standard expand collapse icons in the branch area,
+    and we don't want a area of blank indentation.*/
+    margin-left: -28px;
 }
 
 /* Tree view items */
@@ -192,6 +193,7 @@ CustomTreeWidgetItem #frame {
     padding-left: 4px;
     padding-right: 4px;
     background-color: #343434;
+
 }
 
 /* Tree view items */
@@ -201,7 +203,7 @@ CustomTreeWidgetSummary #frame {
     padding-right: 4px;
     background-color: #343434;
 
-    /* make sure we push it all the way in to compensate for the -20px margin of the widget */
+    /* make sure we push it all the way in to compensate for the -28px margin of the widget see #items_tree::item*/
     margin-left: 28px;
 }
 
@@ -221,7 +223,11 @@ CustomTreeWidgetContext {
     padding-top: 10px;
     border-bottom: 1px solid #494C4F;
 
-    /* make sure we push it all the way in to compensate for the -20px margin of the widget */
+    /*This is set to the same color as the tree widget background
+    so that the default item text gets blocked out.*/
+    background-color: #292929;
+
+    /* make sure we push it all the way in to compensate for the -28px margin of the widget, see #items_tree::item*/
     margin-left: 28px;
 }
 
@@ -320,12 +326,11 @@ ProgressDetailsWidget #log_tree::item {
 
 #progress_bar {
     border: none;
-    background-color: none;
     margin: 3px;
 }
 
 #progress_bar::chunk {
-    background-color: {{SG_HIGHLIGHT_COLOR}}; 
+    background-color: {{SG_HIGHLIGHT_COLOR}};
 }
 
 #bottom_frame #stop_processing {
@@ -378,7 +383,8 @@ ProgressDetailsWidget #log_tree::item {
     border-radius: 2px;
     background-color: {{SG_HIGHLIGHT_COLOR}};
     color: #FFFFFF;
-    padding: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
 }
 
 
@@ -418,4 +424,3 @@ QGroupBox::title {
     font-weight: bold;
     font-size: 18px;
 }
-

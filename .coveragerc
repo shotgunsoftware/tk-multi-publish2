@@ -1,4 +1,4 @@
-# Copyright (c) 2018 Shotgun Software Inc.
+# Copyright (c) 2020 Shotgun Software Inc.
 #
 # CONFIDENTIAL AND PROPRIETARY
 #
@@ -12,10 +12,9 @@
 #
 #
 [run]
-source=python/tk_multi_publish2/api
-    hooks
+source=.
+omit=tests/*
 
 [report]
 exclude_lines =
     raise NotImplementedError
-

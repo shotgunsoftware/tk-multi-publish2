@@ -37,6 +37,8 @@ class TreeNodeItem(TreeNodeBase):
         self._expanded_icon = QtGui.QIcon(":/tk_multi_publish2/down_arrow.png")
         self._collapsed_icon = QtGui.QIcon(":/tk_multi_publish2/right_arrow.png")
 
+        self._inherit_description = True
+
     def _create_widget(self, parent):
         """
         Create the widget that is used to visualise the node
@@ -44,15 +46,26 @@ class TreeNodeItem(TreeNodeBase):
         # create an item widget and associate it with this QTreeWidgetItem
         widget = CustomTreeWidgetItem(self, parent)
         # update with any saved state
-        widget.set_header("<b>%s</b><br>%s" % (self._item.name, self._item.type_display))
+        widget.set_header(
+            "<b>%s</b><br>%s" % (self._item.name, self._item.type_display)
+        )
         widget.set_icon(self._item.icon)
         widget.set_checkbox_value(self.data(0, self.CHECKBOX_ROLE))
 
         # connect the collapse/expand tool button to the toggle callback
         widget.expand_indicator.clicked.connect(
-            lambda: self.setExpanded(not self.isExpanded()))
+            lambda: self.setExpanded(not self.isExpanded())
+        )
 
         return widget
+
+    def set_check_state(self, state):
+        """
+        Called when the check state of the item changes.
+        """
+        # Ensure that the item's check state matches the GUIs.
+        self._item.checked = state != QtCore.Qt.Unchecked
+        super(TreeNodeItem, self).set_check_state(state)
 
     def __repr__(self):
         return "<TreeNodeItem %s>" % str(self)
@@ -71,7 +84,7 @@ class TreeNodeItem(TreeNodeBase):
             items_summaries = []
             task_summaries = []
 
-            for child_index in xrange(self.childCount()):
+            for child_index in range(self.childCount()):
                 child_item = self.child(child_index)
 
                 if isinstance(child_item, TreeNodeTask):
@@ -85,7 +98,9 @@ class TreeNodeItem(TreeNodeBase):
             if len(task_summaries) > 0:
 
                 summary_str = "<b>%s</b><br>" % self.item.name
-                summary_str += "<br>".join(["&ndash; %s" % task_summary for task_summary in task_summaries])
+                summary_str += "<br>".join(
+                    ["&ndash; %s" % task_summary for task_summary in task_summaries]
+                )
                 summary.append(summary_str)
 
             summary.extend(items_summaries)
@@ -94,13 +109,46 @@ class TreeNodeItem(TreeNodeBase):
         else:
             return []
 
-
     @property
     def item(self):
         """
         Associated item instance
         """
         return self._item
+
+    @property
+    def inherit_description(self):
+        """
+        Returns the state of whether this item's description is inherited or not.
+        :return: bool
+        """
+        return self._inherit_description
+
+    @inherit_description.setter
+    def inherit_description(self, value):
+        """
+        Allows setting the state of whether the item's description is inherited or not.
+        """
+        self._inherit_description = value
+
+    def set_description(self, description):
+        """
+        Sets the description on the API item associated with the tree node item.
+        It also sets the description on the child items if they also inherit. This in effect creates
+        a recursive loop over the child node items setting the description, until it hits the
+        end or an item that doesn't inherit.
+        :param description: str
+        """
+        self._item.description = description
+        # Now set all child items descriptions if they are set to inherit
+        for i in range(self.childCount()):
+            child_node_item = self.child(i)
+            if (
+                isinstance(child_node_item, TreeNodeItem)
+                and child_node_item.inherit_description is True
+            ):
+                # This is a recursive call until we hit an item that does not inherit or is the leaf item.
+                child_node_item.set_description(description)
 
     def get_publish_instance(self):
         """
@@ -149,18 +197,18 @@ class TreeNodeItem(TreeNodeBase):
 
         show_indicator = False
 
-        for child_index in xrange(self.childCount()):
+        for child_index in range(self.childCount()):
             child_item = self.child(child_index)
 
             if isinstance(child_item, TreeNodeTask):
                 if child_item.task.visible:
                     show_indicator = True
-                    # we know there's somethign to show. short-circuit
+                    # we know there's something to show. short-circuit
                     break
             else:
                 # there is a sub item. definitely show expand indicator
                 show_indicator = True
-                # we know there's somethign to show. short-circuit
+                # we know there's something to show. short-circuit
                 break
 
         self.show_expand_indicator(show_indicator)
@@ -193,6 +241,7 @@ class TreeNodeItem(TreeNodeBase):
             icon = self._collapsed_icon
 
         self._embedded_widget.expand_indicator.setIcon(icon)
+
 
 class TopLevelTreeNodeItem(TreeNodeItem):
     """

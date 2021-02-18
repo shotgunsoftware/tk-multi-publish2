@@ -4,6 +4,7 @@
 # Use of this software is subject to the terms of the Autodesk license agreement
 # provided at the time of installation or download, or which otherwise accompanies
 # this software in either electronic or hard copy form.
+from __future__ import print_function
 import os
 import sys
 
@@ -11,7 +12,7 @@ sys.path.insert(0, "../../tk-core/python")
 
 
 def progress_callback(value, message):
-    print "[%s] %s" % (value, message)
+    print("[%s] %s" % (value, message))
 
 
 def launch_engine():
@@ -22,29 +23,26 @@ def launch_engine():
     # Installs a StreamHandler so we see the server output in the console.
     sgtk.LogManager().initialize_base_file_handler("tk-multi-publish2.test")
 
-    # Set the repo root environment variable that is used by the config.
-    repo_root = os.path.join(
-        os.path.abspath(os.path.dirname(__file__)),
-        ".."
-    )
-    repo_root = os.path.normpath(repo_root)
-    os.environ["REPO_ROOT"] = repo_root
-    os.environ["SHOTGUN_EXTERNAL_REPOS_ROOT"] = os.path.dirname(repo_root)
-
     # Authenticate
     user = sgtk.authentication.ShotgunAuthenticator().get_user()
     sg = user.create_sg_connection()
 
+    project = sg.find_one("Project", [["tank_name", "is_not", None]])
+    if project is None:
+        raise RuntimeError(
+            "You need at least one project with the Project.tank_name field set."
+        )
+
     # Bootstrap
     manager = sgtk.bootstrap.ToolkitManager(user)
     manager.plugin_id = "basic.shell"
-    manager.base_configuration = "sgtk:descriptor:path?path=$REPO_ROOT/tests/fixtures/config"
+    manager.base_configuration = (
+        "sgtk:descriptor:path?path=$REPO_ROOT/tests/fixtures/config"
+    )
     manager.do_shotgun_config_lookup = False
     manager.progress_callback = progress_callback
-    return manager.bootstrap_engine(
-        "tk-shell",
-        sg.find_one("Project", [])
-    )
+
+    return manager.bootstrap_engine("tk-shell", project)
 
 
 def main():

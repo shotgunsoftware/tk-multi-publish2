@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Shotgun Publish</string>
   </property>
+  <property name="accessibleName">
+   <string>publish dialog</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_7">
    <property name="spacing">
     <number>0</number>
@@ -22,6 +25,9 @@
    </property>
    <item>
     <widget class="QStackedWidget" name="main_stack">
+     <property name="accessibleName">
+      <string>stackedwidget</string>
+     </property>
      <property name="currentIndex">
       <number>1</number>
      </property>
@@ -195,7 +201,7 @@
                  <widget class="QToolButton" name="drop_area_browse_file">
                   <property name="minimumSize">
                    <size>
-                    <width>150</width>
+                    <width>160</width>
                     <height>85</height>
                    </size>
                   </property>
@@ -247,7 +253,7 @@
                  <widget class="QToolButton" name="drop_area_browse_seq">
                   <property name="minimumSize">
                    <size>
-                    <width>150</width>
+                    <width>160</width>
                     <height>85</height>
                    </size>
                   </property>
@@ -402,12 +408,18 @@ image sequences</string>
       </layout>
      </widget>
      <widget class="QWidget" name="main_ui_frame">
+      <property name="accessibleName">
+       <string>Main publish frame</string>
+      </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <property name="spacing">
         <number>2</number>
        </property>
        <item>
         <widget class="QWidget" name="main_frame" native="true">
+         <property name="accessibleName">
+          <string>Upper frame</string>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_9">
           <property name="spacing">
            <number>0</number>
@@ -423,10 +435,16 @@ image sequences</string>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="accessibleName">
+             <string>splitter</string>
+            </property>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
             <widget class="DropAreaFrame" name="frame">
+             <property name="accessibleName">
+              <string>tree frame</string>
+             </property>
              <property name="frameShape">
               <enum>QFrame::StyledPanel</enum>
              </property>
@@ -444,6 +462,9 @@ image sequences</string>
                <widget class="PublishTreeWidget" name="items_tree">
                 <property name="acceptDrops">
                  <bool>true</bool>
+                </property>
+                <property name="accessibleName">
+                 <string>collected items tree</string>
                 </property>
                 <property name="dragEnabled">
                  <bool>true</bool>
@@ -477,6 +498,9 @@ image sequences</string>
              </layout>
             </widget>
             <widget class="QFrame" name="details_frame">
+             <property name="accessibleName">
+              <string>details frame</string>
+             </property>
              <layout class="QVBoxLayout" name="verticalLayout_5">
               <property name="spacing">
                <number>0</number>
@@ -486,10 +510,16 @@ image sequences</string>
               </property>
               <item>
                <widget class="QStackedWidget" name="details_stack">
+                <property name="accessibleName">
+                 <string>details stacked widget</string>
+                </property>
                 <property name="currentIndex">
                  <number>1</number>
                 </property>
                 <widget class="QWidget" name="details_item">
+                 <property name="accessibleName">
+                  <string>item details</string>
+                 </property>
                  <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,1,1,1,1,5,1,5">
                   <property name="spacing">
                    <number>8</number>
@@ -521,6 +551,9 @@ image sequences</string>
                         <width>60</width>
                         <height>60</height>
                        </size>
+                      </property>
+                      <property name="accessibleName">
+                       <string>item icon</string>
                       </property>
                       <property name="text">
                        <string/>
@@ -576,53 +609,65 @@ image sequences</string>
                   </item>
                   <item>
                    <widget class="Line" name="item_divider_1">
+                    <property name="accessibleName">
+                     <string>divider</string>
+                    </property>
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="ContextWidget" name="context_widget" native="true"/>
+                   <widget class="ContextWidget" name="context_widget" native="true">
+                    <property name="accessibleName">
+                     <string>context picker widget</string>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <layout class="QGridLayout" name="gridLayout_3">
-                    <item row="0" column="1">
-                     <widget class="QLabel" name="item_description_label">
+                    <property name="sizeConstraint">
+                     <enum>QLayout::SetDefaultConstraint</enum>
+                    </property>
+                    <property name="verticalSpacing">
+                     <number>1</number>
+                    </property>
+                    <item row="2" column="1">
+                     <widget class="QLabel" name="item_inherited_item_label">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true"/>
+                      </property>
                       <property name="text">
-                       <string>Description:</string>
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Inherited from: test&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="wordWrap">
+                       <bool>true</bool>
+                      </property>
+                      <property name="indent">
+                       <number>5</number>
+                      </property>
+                      <property name="openExternalLinks">
+                       <bool>false</bool>
+                      </property>
+                      <property name="textInteractionFlags">
+                       <set>Qt::LinksAccessibleByMouse</set>
                       </property>
                      </widget>
                     </item>
-                    <item row="0" column="0">
+                    <item row="0" column="2">
                      <widget class="QLabel" name="item_thumbnail_label">
                       <property name="text">
                        <string>Thumbnail:</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="1" column="1">
-                     <widget class="PublishDescriptionEdit" name="item_comments">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="minimumSize">
-                       <size>
-                        <width>0</width>
-                        <height>90</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>16777215</width>
-                        <height>90</height>
-                       </size>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="0">
+                    <item row="1" column="2">
                      <widget class="Thumbnail" name="item_thumbnail">
                       <property name="minimumSize">
                        <size>
@@ -639,6 +684,9 @@ image sequences</string>
                       <property name="toolTip">
                        <string>Click to take a screenshot.</string>
                       </property>
+                      <property name="accessibleName">
+                       <string>item thumbnail</string>
+                      </property>
                       <property name="text">
                        <string/>
                       </property>
@@ -647,6 +695,38 @@ image sequences</string>
                       </property>
                       <property name="alignment">
                        <set>Qt::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QLabel" name="item_description_label">
+                      <property name="text">
+                       <string>Description:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="PublishDescriptionEdit" name="item_comments">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>90</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>90</height>
+                       </size>
+                      </property>
+                      <property name="accessibleName">
+                       <string>item description</string>
                       </property>
                      </widget>
                     </item>
@@ -664,6 +744,9 @@ image sequences</string>
                   </item>
                   <item>
                    <widget class="QScrollArea" name="scrollArea">
+                    <property name="accessibleName">
+                     <string>summary scroll area</string>
+                    </property>
                     <property name="widgetResizable">
                      <bool>true</bool>
                     </property>
@@ -673,8 +756,11 @@ image sequences</string>
                        <x>0</x>
                        <y>0</y>
                        <width>408</width>
-                       <height>102</height>
+                       <height>101</height>
                       </rect>
+                     </property>
+                     <property name="accessibleName">
+                      <string>summary contents holder</string>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_10" stretch="0,1">
                       <property name="spacing">
@@ -695,8 +781,14 @@ image sequences</string>
                       </item>
                       <item>
                        <widget class="QLabel" name="expander_label">
+                        <property name="accessibleName">
+                         <string>expander label</string>
+                        </property>
                         <property name="text">
                          <string/>
+                        </property>
+                        <property name="openExternalLinks">
+                         <bool>false</bool>
                         </property>
                        </widget>
                       </item>
@@ -706,6 +798,9 @@ image sequences</string>
                   </item>
                   <item>
                    <widget class="QLabel" name="item_settings_label">
+                    <property name="accessibleName">
+                     <string/>
+                    </property>
                     <property name="text">
                      <string>Settings:</string>
                     </property>
@@ -722,11 +817,17 @@ image sequences</string>
                       <verstretch>0</verstretch>
                      </sizepolicy>
                     </property>
+                    <property name="accessibleName">
+                     <string>item settings</string>
+                    </property>
                    </widget>
                   </item>
                  </layout>
                 </widget>
                 <widget class="QWidget" name="details_task">
+                 <property name="accessibleName">
+                  <string>task details</string>
+                 </property>
                  <layout class="QVBoxLayout" name="verticalLayout_11">
                   <property name="spacing">
                    <number>8</number>
@@ -759,6 +860,9 @@ image sequences</string>
                         <height>60</height>
                        </size>
                       </property>
+                      <property name="accessibleName">
+                       <string>task icon</string>
+                      </property>
                       <property name="text">
                        <string/>
                       </property>
@@ -784,6 +888,9 @@ image sequences</string>
                   </item>
                   <item>
                    <widget class="QScrollArea" name="task_settings_scroll_area">
+                    <property name="accessibleName">
+                     <string>task settings scroll area</string>
+                    </property>
                     <property name="widgetResizable">
                      <bool>true</bool>
                     </property>
@@ -796,6 +903,9 @@ image sequences</string>
                        <height>432</height>
                       </rect>
                      </property>
+                     <property name="accessibleName">
+                      <string>task settings parent</string>
+                     </property>
                      <layout class="QVBoxLayout" name="verticalLayout_13" stretch="0,10">
                       <property name="spacing">
                        <number>-1</number>
@@ -804,7 +914,11 @@ image sequences</string>
                        <number>0</number>
                       </property>
                       <item>
-                       <widget class="CustomSettingsWidget" name="task_settings" native="true"/>
+                       <widget class="CustomSettingsWidget" name="task_settings" native="true">
+                        <property name="accessibleName">
+                         <string>task settings</string>
+                        </property>
+                       </widget>
                       </item>
                       <item>
                        <spacer name="task_settings_spacer">
@@ -826,6 +940,9 @@ image sequences</string>
                  </layout>
                 </widget>
                 <widget class="QWidget" name="details_please_select">
+                 <property name="accessibleName">
+                  <string>unselected details</string>
+                 </property>
                  <layout class="QVBoxLayout" name="verticalLayout_8">
                   <property name="spacing">
                    <number>8</number>
@@ -855,6 +972,9 @@ image sequences</string>
                  </layout>
                 </widget>
                 <widget class="QWidget" name="details_multi_edit_not_supported">
+                 <property name="accessibleName">
+                  <string>non multi edit details</string>
+                 </property>
                  <layout class="QVBoxLayout" name="verticalLayout_15">
                   <property name="spacing">
                    <number>8</number>
@@ -917,6 +1037,9 @@ Please select a single task.</string>
            <height>50</height>
           </size>
          </property>
+         <property name="accessibleName">
+          <string>Bottom frame</string>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -941,6 +1064,9 @@ Please select a single task.</string>
           </property>
           <item>
            <widget class="QWidget" name="button_container" native="true">
+            <property name="accessibleName">
+             <string>button container</string>
+            </property>
             <layout class="QHBoxLayout" name="horizontalLayout_5">
              <property name="spacing">
               <number>4</number>
@@ -1237,6 +1363,11 @@ Please select a single task.</string>
  </widget>
  <customwidgets>
   <customwidget>
+   <class>ProgressStatusLabel</class>
+   <extends>QLabel</extends>
+   <header>..progress_status_label</header>
+  </customwidget>
+  <customwidget>
    <class>DropAreaFrame</class>
    <extends>QFrame</extends>
    <header>..drop_area</header>
@@ -1254,20 +1385,9 @@ Please select a single task.</string>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>PublishDescriptionEdit</class>
-   <extends>QPlainTextEdit</extends>
-   <header>..publish_description_edit</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>PublishTreeWidget</class>
    <extends>QTreeWidget</extends>
    <header>..publish_tree_widget</header>
-  </customwidget>
-  <customwidget>
-   <class>ProgressStatusLabel</class>
-   <extends>QLabel</extends>
-   <header>..progress_status_label</header>
   </customwidget>
   <customwidget>
    <class>ContextWidget</class>
@@ -1286,9 +1406,13 @@ Please select a single task.</string>
    <header>..custom_settings_widget</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>PublishDescriptionEdit</class>
+   <extends>QTextEdit</extends>
+   <header>..publish_description_edit</header>
+  </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>item_comments</tabstop>
   <tabstop>validate</tabstop>
   <tabstop>publish</tabstop>
   <tabstop>items_tree</tabstop>

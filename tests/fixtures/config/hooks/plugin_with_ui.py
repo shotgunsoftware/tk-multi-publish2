@@ -8,6 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+from __future__ import print_function
 import abc
 import pprint
 
@@ -85,6 +86,7 @@ class CheckboxHandler(WidgetHandlerBase):
     When there's multiple different values available for the checkbox, it will
     be displayed with a partially checked state.
     """
+
     def __init__(self, layout, text):
         """
         :param layout: Layout in witch to add the widget.
@@ -188,6 +190,7 @@ class CustomWidgetController(QtGui.QWidget):
     """
     This is the plugin's custom UI.
     """
+
     def __init__(self, parent, description_widget=None):
         QtGui.QWidget.__init__(self, parent)
 
@@ -211,7 +214,7 @@ class PluginWithUi(HookBaseClass):
     Plugin for creating generic publishes in Shotgun
     """
 
-    def create_settings_widget(self, parent):
+    def create_settings_widget(self, parent, items):
         """
         Creates a QT widget, parented below the given parent object, to
         provide viewing and editing capabilities for the given settings.
@@ -221,10 +224,12 @@ class PluginWithUi(HookBaseClass):
         """
         return CustomWidgetController(
             parent,
-            description_widget=super(PluginWithUi, self).create_settings_widget(parent)
+            description_widget=super(PluginWithUi, self).create_settings_widget(
+                parent, items
+            ),
         )
 
-    def get_ui_settings(self, controller):
+    def get_ui_settings(self, controller, items):
         """
         Returns the modified settings.
         """
@@ -236,7 +241,9 @@ class PluginWithUi(HookBaseClass):
             settings["number"] = controller.number.editor.value()
 
         if controller.check_box.is_value_available():
-            settings["boolean"] = (controller.check_box.editor.checkState() == QtCore.Qt.Checked)
+            settings["boolean"] = (
+                controller.check_box.editor.checkState() == QtCore.Qt.Checked
+            )
 
         return settings
 
@@ -244,12 +251,15 @@ class PluginWithUi(HookBaseClass):
         """
         :returns: True if the setting is the same for every task, False otherwise.
         """
-        return all(
-            tasks_settings[0][setting_name] == task_setting[setting_name]
-            for task_setting in tasks_settings
-        ) is False
+        return (
+            all(
+                tasks_settings[0][setting_name] == task_setting[setting_name]
+                for task_setting in tasks_settings
+            )
+            is False
+        )
 
-    def set_ui_settings(self, controller, tasks_settings):
+    def set_ui_settings(self, controller, tasks_settings, items):
         """
         Updates the UI with the list of settings.
         """
@@ -257,16 +267,24 @@ class PluginWithUi(HookBaseClass):
         if len(tasks_settings) > 1 and not tasks_settings[0]["supports_multi_edit"]:
             raise NotImplementedError
 
-        controller.edit.multi_edit_mode = self._requires_multi_edit_mode(tasks_settings, "edit")
+        controller.edit.multi_edit_mode = self._requires_multi_edit_mode(
+            tasks_settings, "edit"
+        )
         controller.edit.editor.setText(tasks_settings[0]["edit"])
 
-        controller.number.multi_edit_mode = self._requires_multi_edit_mode(tasks_settings, "number")
+        controller.number.multi_edit_mode = self._requires_multi_edit_mode(
+            tasks_settings, "number"
+        )
         controller.number.editor.setValue(tasks_settings[0]["number"])
 
-        controller.check_box.multi_edit_mode = self._requires_multi_edit_mode(tasks_settings, "boolean")
+        controller.check_box.multi_edit_mode = self._requires_multi_edit_mode(
+            tasks_settings, "boolean"
+        )
         if controller.check_box.multi_edit_mode is False:
             controller.check_box.editor.setCheckState(
-                QtCore.Qt.Checked if tasks_settings[0]["boolean"] else QtCore.Qt.Unchecked
+                QtCore.Qt.Checked
+                if tasks_settings[0]["boolean"]
+                else QtCore.Qt.Unchecked
             )
 
     @property
@@ -292,20 +310,12 @@ class PluginWithUi(HookBaseClass):
         finalize methods.
         """
         return {
-            "edit": {
-                "type": "str",
-                "default": "",
-                "description": "Text setting."
-            },
-            "number": {
-                "type": "int",
-                "default": "",
-                "description": "Integer setting."
-            },
+            "edit": {"type": "str", "default": "", "description": "Text setting."},
+            "number": {"type": "int", "default": "", "description": "Integer setting."},
             "boolean": {
                 "type": "bool",
                 "default": "",
-                "description": "Boolean setting."
+                "description": "Boolean setting.",
             },
             "supports_multi_edit": {
                 "type": "bool",
@@ -313,8 +323,8 @@ class PluginWithUi(HookBaseClass):
                 "description": (
                     "When set to False, the UI will advertise that it can't "
                     "handle multi-selection by raising a NotImplementedError."
-                )
-            }
+                ),
+            },
         }
 
     @property
@@ -368,8 +378,8 @@ class PluginWithUi(HookBaseClass):
 
         :returns: True if item is valid, False otherwise.
         """
-        print item, "was published! The settings were:"
-        pprint.pprint(dict(list((k, v.value) for k, v in settings.iteritems())))
+        print(item, "was published! The settings were:")
+        pprint.pprint(dict(list((k, v.value) for k, v in settings.items())))
         return True
 
     def publish(self, settings, item):

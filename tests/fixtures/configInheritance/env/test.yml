@@ -1,0 +1,54 @@
+# Copyright (c) 2020 Shotgun Software Inc.
+#
+# CONFIDENTIAL AND PROPRIETARY
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
+# Source Code License included in this distribution package. See LICENSE.
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
+# not expressly granted therein are reserved by Shotgun Software Inc.
+#
+
+# All the bundles are relative to this repo, except for tk-shell, as there
+# is little chance it will need to be edited. All other repos are common
+# on dev machines.
+
+engines:
+  tk-testengine:
+    location:
+      type: path
+      path: $SHOTGUN_TEST_ENGINE
+    apps:
+      tk-multi-run-this-app:
+        collector: "{config}/collector.py"
+        publish_plugins:
+          - name: Publish to Shotgun with items
+            hook: "{self}/publish_file.py:{config}/publish_file_ui_w_items.py"
+            settings: {}
+          - name: Publish to Shotgun without items
+            hook: "{self}/publish_file.py:{config}/publish_file_ui_wo_items.py"
+            settings: {}
+        location:
+          type: path
+          path: $SHOTGUN_TK_APP_LOCATION
+
+frameworks:
+  # We're enumerating all the frameworks here because it's easier to assume everything
+  # is required even if it might not be than doing introspection of what the actual
+  # dependencies are and generating the appropriate config on the fly.
+  tk-framework-qtwidgets_v2.x.x:
+    location:
+      type: path
+      path: $SHOTGUN_REPOS_ROOT/tk-framework-qtwidgets
+  tk-framework-shotgunutils_v5.x.x:
+    location:
+      type: path
+      path: $SHOTGUN_REPOS_ROOT/tk-framework-shotgunutils
+  tk-framework-shotgunutils_v4.x.x:
+    location:
+      type: path
+      path: $SHOTGUN_REPOS_ROOT/tk-framework-shotgunutils
+  tk-framework-widget_v0.2.x:
+    location:
+      type: path
+      path: $SHOTGUN_REPOS_ROOT/tk-framework-widget

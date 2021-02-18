@@ -8,9 +8,9 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-from .data import PublishData
-from .manager import PublishManager
-from .item import PublishItem
-from .task import PublishTask
-from .tree import PublishTree
-from .plugins import PluginSetting
+from .data import PublishData  # noqa
+from .manager import PublishManager  # noqa
+from .item import PublishItem  # noqa
+from .task import PublishTask  # noqa
+from .tree import PublishTree  # noqa
+from .plugins import PluginSetting  # noqa
