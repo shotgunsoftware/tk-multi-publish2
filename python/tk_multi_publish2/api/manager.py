@@ -540,9 +540,9 @@ class PublishManager(object):
                 # current app instance.
                 for settings in context_settings:
                     if settings.get("app_instance") == self._bundle.instance_name:
-                        app_settings = settings
+                        app_settings = settings.get("settings")
             elif len(context_settings) == 1:
-                app_settings = context_settings[0]["settings"]
+                app_settings = context_settings[0].get("settings")
 
             if app_settings:
                 plugin_settings = app_settings[self.CONFIG_PLUGIN_DEFINITIONS]
