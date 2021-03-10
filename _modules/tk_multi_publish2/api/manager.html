@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.api.manager &mdash; tk-multi-publish2 v2.5.5 documentation</title>
+  <title>tk_multi_publish2.api.manager &mdash; tk-multi-publish2 v2.5.6 documentation</title>
   
 
   
@@ -120,7 +120,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.5.5.<br>
+    <b>tk-multi-publish2</b> v2.5.6.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -734,9 +734,9 @@
                 <span class="c1"># current app instance.</span>
                 <span class="k">for</span> <span class="n">settings</span> <span class="ow">in</span> <span class="n">context_settings</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;app_instance&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">instance_name</span><span class="p">:</span>
-                        <span class="n">app_settings</span> <span class="o">=</span> <span class="n">settings</span>
+                        <span class="n">app_settings</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;settings&quot;</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">context_settings</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">app_settings</span> <span class="o">=</span> <span class="n">context_settings</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;settings&quot;</span><span class="p">]</span>
+                <span class="n">app_settings</span> <span class="o">=</span> <span class="n">context_settings</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;settings&quot;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">app_settings</span><span class="p">:</span>
                 <span class="n">plugin_settings</span> <span class="o">=</span> <span class="n">app_settings</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_PLUGIN_DEFINITIONS</span><span class="p">]</span>
