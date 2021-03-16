@@ -37,6 +37,11 @@ def _is_qt_pixmap_usable():
     if _qt_pixmap_is_usable is not None:
         return _qt_pixmap_is_usable
 
+    # Check first that current engine has UI
+    if not sgtk.platform.current_engine().has_ui:
+        _qt_pixmap_is_usable = False
+        return _qt_pixmap_is_usable
+
     try:
         # We can fail importing if the engine doesn't even support Qt.
         from sgtk.platform.qt import QtGui
