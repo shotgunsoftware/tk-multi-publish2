@@ -210,7 +210,7 @@ class BasicFilePublishPlugin(HookBaseClass):
                 ],
                 "description": (
                     "List of file types to include. Each entry in the list "
-                    "is a list in which the first entry is the Shotgun "
+                    "is a list in which the first entry is the SG "
                     "published file type and subsequent entries are file "
                     "extensions that should be associated."
                 ),
@@ -321,7 +321,7 @@ class BasicFilePublishPlugin(HookBaseClass):
                 # happening.
                 error_msg = (
                     "Can not validate file path. There is already a publish in "
-                    "Shotgun that matches this path. Please uncheck this "
+                    "SG that matches this path. Please uncheck this "
                     "plugin or save the file to a different path."
                 )
                 self.logger.error(error_msg)
@@ -344,7 +344,7 @@ class BasicFilePublishPlugin(HookBaseClass):
                     },
                 )
 
-        self.logger.info("A Publish will be created in Shotgun and linked to:")
+        self.logger.info("A Publish will be created in SG and linked to:")
         self.logger.info("  %s" % (path,))
 
         return True
@@ -425,11 +425,11 @@ class BasicFilePublishPlugin(HookBaseClass):
         item.properties.sg_publish_data = sgtk.util.register_publish(**publish_data)
         self.logger.info("Publish registered!")
         self.logger.debug(
-            "Shotgun Publish data...",
+            "SG Publish data...",
             extra={
                 "action_show_more_info": {
-                    "label": "Shotgun Publish Data",
-                    "tooltip": "Show the complete Shotgun Publish Entity dictionary",
+                    "label": "SG Publish Data",
+                    "tooltip": "Show the complete SG Publish Entity dictionary",
                     "text": "<pre>%s</pre>"
                     % (pprint.pformat(item.properties.sg_publish_data),),
                 }

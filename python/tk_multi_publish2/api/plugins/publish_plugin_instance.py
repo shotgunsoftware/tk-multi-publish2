@@ -182,9 +182,7 @@ class PublishPluginInstance(PluginInstanceBase):
         # check that we are not trying to publish to a site level context
         if item.context.project is None:
             status = False
-            self.logger.error(
-                "Please link '%s' to a Shotgun object and task!" % item.name
-            )
+            self.logger.error("Please link '%s' to a SG object and task!" % item.name)
 
         if status:
             self.logger.debug("Validation successful!")

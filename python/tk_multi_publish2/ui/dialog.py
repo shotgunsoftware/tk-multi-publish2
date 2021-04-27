@@ -528,7 +528,7 @@ class Ui_Dialog(object):
         Dialog.setTabOrder(self.stop_processing, self.scrollArea)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "Shotgun Publish", None, QtGui.QApplication.UnicodeUTF8))
+        Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "SG Publish", None, QtGui.QApplication.UnicodeUTF8))
         Dialog.setAccessibleName(QtGui.QApplication.translate("Dialog", "publish dialog", None, QtGui.QApplication.UnicodeUTF8))
         self.main_stack.setAccessibleName(QtGui.QApplication.translate("Dialog", "stackedwidget", None, QtGui.QApplication.UnicodeUTF8))
         self.large_drop_area_label.setText(QtGui.QApplication.translate("Dialog", "Drag and drop files or folders here", None, QtGui.QApplication.UnicodeUTF8))

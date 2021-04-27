@@ -294,7 +294,7 @@ def test_custom_plugin(app_dialog):
     # Validation of the Publish to Shotgun with items plugin
     # Select plugin Publish to Shotgun with items of the first item
     app_dialog.root["collected items tree"].outlineitems[
-        "Publish to Shotgun with items"
+        "Publish to SG with items"
     ].mouseClick()
     # Make sure the checkbox is check
     if (
@@ -305,9 +305,9 @@ def test_custom_plugin(app_dialog):
             "Set task to in review"
         ].mouseClick()
     # Select plugin Publish to Shotgun with items of the second item
-    app_dialog.root["collected items tree"].outlineitems[
-        "Publish to Shotgun with items"
-    ][1].mouseClick()
+    app_dialog.root["collected items tree"].outlineitems["Publish to Shotgun with items"][
+        1
+    ].mouseClick()
     # Make sure the checkbox is unchecked
     if (
         app_dialog.root["details frame"].checkboxes["Set task to in review"].checked
@@ -371,9 +371,9 @@ def test_custom_plugin(app_dialog):
             "Set task to in review"
         ].mouseClick()
     # Select Publish to Shotgun without items of the second item
-    app_dialog.root["collected items tree"].outlineitems[
-        "Publish to Shotgun without items"
-    ][1].mouseClick()
+    app_dialog.root["collected items tree"].outlineitems["Publish to Shotgun without items"][
+        1
+    ].mouseClick()
     # Make sure the checkbox is unchecked
     if (
         app_dialog.root["details frame"].checkboxes["Set task to in review"].checked
