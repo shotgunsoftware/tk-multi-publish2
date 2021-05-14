@@ -257,7 +257,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         :returns: dictionary with boolean keys accepted, required and enabled
         """
 
-        path = item.properties.path
+        path = item.get_property("path")
 
         # log the accepted file and display a button to reveal it in the fs
         self.logger.info(
@@ -283,7 +283,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
 
         publisher = self.parent
-        path = item.properties.get("path")
+        path = item.get_property("path")
 
         # ---- determine the information required to validate
 
@@ -314,7 +314,7 @@ class BasicFilePublishPlugin(HookBaseClass):
 
             publish_template = self.get_publish_template(settings, item)
 
-            if "work_template" in item.properties or publish_template:
+            if "work_template" in item.properties or "work_template" in item.local_properties or publish_template:
 
                 # templates are in play and there is already a publish in SG
                 # for this file path. We will raise here to prevent this from
@@ -380,9 +380,9 @@ class BasicFilePublishPlugin(HookBaseClass):
         # if the parent item has publish data, get it id to include it in the list of
         # dependencies
         publish_dependencies_ids = []
-        if "sg_publish_data" in item.parent.properties:
+        if "sg_publish_data" in item.parent.properties or "sg_publish_data" in item.parent.local_properties:
             publish_dependencies_ids.append(
-                item.parent.properties.sg_publish_data["id"]
+                item.parent.get_property("sg_publish_data")["id"]
             )
 
         # handle copying of work to publish if templates are in play
@@ -431,7 +431,7 @@ class BasicFilePublishPlugin(HookBaseClass):
                     "label": "Shotgun Publish Data",
                     "tooltip": "Show the complete Shotgun Publish Entity dictionary",
                     "text": "<pre>%s</pre>"
-                    % (pprint.pformat(item.properties.sg_publish_data),),
+                    % (pprint.pformat(item.get_property("sg_publish_data")),),
                 }
             },
         )
@@ -451,7 +451,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         publisher = self.parent
 
         # get the data for the publish that was just created in SG
-        publish_data = item.properties.sg_publish_data
+        publish_data = item.get_property("sg_publish_data")
 
         # ensure conflicting publishes have their status cleared
         publisher.util.clear_status_for_conflicting_publishes(
@@ -460,7 +460,7 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         self.logger.info("Cleared the status of all previous, conflicting publishes")
 
-        path = item.properties.path
+        path = item.get_property("path")
         self.logger.info(
             "Publish created for file: %s" % (path,),
             extra={
@@ -502,7 +502,7 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         # fall back to the path info hook logic
         publisher = self.parent
-        path = item.properties.path
+        path = item.get_property("path")
 
         # get the publish path components
         path_info = publisher.util.get_file_path_components(path)
@@ -554,9 +554,9 @@ class BasicFilePublishPlugin(HookBaseClass):
             return publish_path
 
         # fall back to template/path logic
-        path = item.properties.path
+        path = item.get_property("path")
 
-        work_template = item.properties.get("work_template")
+        work_template = item.get_property("work_template")
         publish_template = self.get_publish_template(settings, item)
 
         work_fields = []
@@ -611,9 +611,9 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         # fall back to the template/path_info logic
         publisher = self.parent
-        path = item.properties.path
+        path = item.get_property("path")
 
-        work_template = item.properties.get("work_template")
+        work_template = item.get_property("work_template")
         work_fields = None
         publish_version = None
 
@@ -654,11 +654,11 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         # fall back to the path_info logic
         publisher = self.parent
-        path = item.properties.path
+        path = item.get_property("path")
 
-        if "sequence_paths" in item.properties:
+        if "sequence_paths" in item.properties or "sequence_paths" in item.local_properties:
             # generate the name from one of the actual files in the sequence
-            name_path = item.properties.sequence_paths[0]
+            name_path = item.get_property("sequence_paths")[0]
             is_sequence = True
         else:
             name_path = path
@@ -678,13 +678,13 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
 
         # local properties first
-        dependencies = item.local_properties.get("publish_dependencies")
+        dependencies = item.get_property("publish_dependencies")
 
         # have to check against `None` here since `[]` is valid and may have
         # been explicitly set on the item
         if dependencies is None:
             # get from the global item properties.
-            dependencies = item.properties.get("publish_dependencies")
+            dependencies = item.get_property("publish_dependencies")
 
         if dependencies is None:
             # not set globally or locally on the item. make it []
@@ -768,7 +768,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
 
         # ---- ensure templates are available
-        work_template = item.properties.get("work_template")
+        work_template = item.get_property("work_template")
         if not work_template:
             self.logger.debug(
                 "No work template set on the item. "
@@ -787,15 +787,15 @@ class BasicFilePublishPlugin(HookBaseClass):
         # ---- get a list of files to be copied
 
         # by default, the path that was collected for publishing
-        work_files = [item.properties.path]
+        work_files = [item.get_property("path")]
 
         # if this is a sequence, get the attached files
-        if "sequence_paths" in item.properties:
-            work_files = item.properties.get("sequence_paths", [])
+        if "sequence_paths" in item.properties or "sequence_paths" in item.local_properties:
+            work_files = item.get_property("sequence_paths", [])
             if not work_files:
                 self.logger.warning(
                     "Sequence publish without a list of files. Publishing "
-                    "the sequence path in place: %s" % (item.properties.path,)
+                    "the sequence path in place: %s" % (item.get_property("path"),)
                 )
                 return
 
@@ -865,7 +865,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         # if the item has a known work file template, see if the path
         # matches. if not, warn the user and provide a way to save the file to
         # a different path
-        work_template = item.properties.get("work_template")
+        work_template = item.get_property("work_template")
         work_fields = None
 
         if work_template:
