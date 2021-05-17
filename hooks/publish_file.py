@@ -683,10 +683,6 @@ class BasicFilePublishPlugin(HookBaseClass):
         # have to check against `None` here since `[]` is valid and may have
         # been explicitly set on the item
         if dependencies is None:
-            # get from the global item properties.
-            dependencies = item.get_property("publish_dependencies")
-
-        if dependencies is None:
             # not set globally or locally on the item. make it []
             dependencies = []
 
