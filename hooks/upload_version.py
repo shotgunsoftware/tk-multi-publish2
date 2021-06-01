@@ -52,12 +52,12 @@ class UploadVersionPlugin(HookBaseClass):
         review_url = "https://www.shotgunsoftware.com/features/#review"
 
         return """
-        Upload the file to Shotgun for review.<br><br>
+        Upload the file to ShotGrid for review.<br><br>
 
-        A <b>Version</b> entry will be created in Shotgun and a transcoded
+        A <b>Version</b> entry will be created in ShotGrid and a transcoded
         copy of the file will be attached to it. The file can then be reviewed
         via the project's <a href='%s'>Media</a> page, <a href='%s'>RV</a>, or
-        the <a href='%s'>Shotgun Review</a> mobile app.
+        the <a href='%s'>ShotGrid Review</a> mobile app.
         """ % (
             media_page_url,
             review_url,
