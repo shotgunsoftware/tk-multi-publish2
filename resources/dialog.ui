@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Shotgun Publish</string>
+   <string>ShotGrid Publish</string>
   </property>
   <property name="accessibleName">
    <string>publish dialog</string>

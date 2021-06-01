@@ -94,12 +94,12 @@ class UploadVersionPlugin(HookBaseClass):
             "Upload": {
                 "type": "bool",
                 "default": True,
-                "description": "Upload content to Shotgun?",
+                "description": "Upload content to ShotGrid?",
             },
             "Link Local File": {
                 "type": "bool",
                 "default": True,
-                "description": "Should the local file be referenced by Shotgun",
+                "description": "Should the local file be referenced by ShotGrid",
             },
         }
 
@@ -292,7 +292,7 @@ class UploadVersionPlugin(HookBaseClass):
             extra={
                 "action_show_in_shotgun": {
                     "label": "Show Version",
-                    "tooltip": "Reveal the version in Shotgun.",
+                    "tooltip": "Reveal the version in ShotGrid.",
                     "entity": version,
                 }
             },

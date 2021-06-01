@@ -85,7 +85,7 @@ class AppDialog(QtGui.QWidget):
         # tooltips for the task and link inputs
         self.ui.context_widget.set_task_tooltip(
             "<p>The task that the selected item will be associated with "
-            "in Shotgun after publishing. It is recommended to always "
+            "in ShotGrid after publishing. It is recommended to always "
             "fill out the Task field when publishing. The menu button "
             "to the right will provide suggestions for Tasks to publish "
             "including the Tasks assigned to you, recently used Tasks, "
@@ -94,7 +94,7 @@ class AppDialog(QtGui.QWidget):
         )
         self.ui.context_widget.set_link_tooltip(
             "<p>The entity that the selected item will be associated with "
-            "in Shotgun after publishing. By selecting a Task in the field "
+            "in ShotGrid after publishing. By selecting a Task in the field "
             "above, the Link will automatically be populated. It is "
             "recommended that you always populate the Task field when "
             "publishing. The Task menu above will display any tasks associated "
@@ -306,7 +306,7 @@ class AppDialog(QtGui.QWidget):
             # shut down main threadpool
             self._task_manager.shut_down()
         except Exception:
-            logger.exception("Error running Shotgun Panel App closeEvent()")
+            logger.exception("Error running ShotGrid Panel App closeEvent()")
 
         # ensure the context widget's recent contexts are saved
         self.ui.context_widget.save_recent_contexts()
