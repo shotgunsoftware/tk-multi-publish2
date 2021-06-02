@@ -52,12 +52,12 @@ class UploadVersionPlugin(HookBaseClass):
         review_url = "https://www.shotgunsoftware.com/features/#review"
 
         return """
-        Upload the file to Shotgun for review.<br><br>
+        Upload the file to ShotGrid for review.<br><br>
 
-        A <b>Version</b> entry will be created in Shotgun and a transcoded
+        A <b>Version</b> entry will be created in ShotGrid and a transcoded
         copy of the file will be attached to it. The file can then be reviewed
         via the project's <a href='%s'>Media</a> page, <a href='%s'>RV</a>, or
-        the <a href='%s'>Shotgun Review</a> mobile app.
+        the <a href='%s'>ShotGrid Review</a> mobile app.
         """ % (
             media_page_url,
             review_url,
@@ -94,12 +94,12 @@ class UploadVersionPlugin(HookBaseClass):
             "Upload": {
                 "type": "bool",
                 "default": True,
-                "description": "Upload content to Shotgun?",
+                "description": "Upload content to ShotGrid?",
             },
             "Link Local File": {
                 "type": "bool",
                 "default": True,
-                "description": "Should the local file be referenced by Shotgun",
+                "description": "Should the local file be referenced by ShotGrid",
             },
         }
 
@@ -292,7 +292,7 @@ class UploadVersionPlugin(HookBaseClass):
             extra={
                 "action_show_in_shotgun": {
                     "label": "Show Version",
-                    "tooltip": "Reveal the version in Shotgun.",
+                    "tooltip": "Reveal the version in ShotGrid.",
                     "entity": version,
                 }
             },

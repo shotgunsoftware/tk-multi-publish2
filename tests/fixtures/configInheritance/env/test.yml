@@ -22,10 +22,10 @@ engines:
       tk-multi-run-this-app:
         collector: "{config}/collector.py"
         publish_plugins:
-          - name: Publish to Shotgun with items
+          - name: Publish to ShotGrid with items
             hook: "{self}/publish_file.py:{config}/publish_file_ui_w_items.py"
             settings: {}
-          - name: Publish to Shotgun without items
+          - name: Publish to ShotGrid without items
             hook: "{self}/publish_file.py:{config}/publish_file_ui_wo_items.py"
             settings: {}
         location:

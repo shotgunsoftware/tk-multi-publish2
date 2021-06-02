@@ -384,7 +384,7 @@ class ProgressHandler(object):
 
             # add a tooltip if not supplied
             if "tooltip" not in action:
-                action["tooltip"] = "Reveal the entity in Shotgun"
+                action["tooltip"] = "Reveal the entity in ShotGrid"
 
         elif action["type"] == "show_more_info":
             # A common action for showing more information than what

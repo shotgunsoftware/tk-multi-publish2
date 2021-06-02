@@ -56,7 +56,7 @@ class MultiPublish2(sgtk.platform.Application):
         menu_caption = "%s..." % display_name
         menu_options = {
             "short_name": command_name,
-            "description": "Publishing of data to Shotgun",
+            "description": "Publishing of data to ShotGrid",
             # dark themed icon for engines that recognize this format
             "icons": {
                 "dark": {"png": os.path.join(self.disk_location, "icon_256_dark.png")}

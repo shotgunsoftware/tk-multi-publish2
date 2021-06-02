@@ -130,7 +130,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
         One line display name describing the plugin
         """
-        return "Publish to Shotgun"
+        return "Publish to ShotGrid"
 
     @property
     def description(self):
@@ -142,15 +142,15 @@ class BasicFilePublishPlugin(HookBaseClass):
         loader_url = "https://support.shotgunsoftware.com/hc/en-us/articles/219033078"
 
         return """
-        Publishes the file to Shotgun. A <b>Publish</b> entry will be
-        created in Shotgun which will include a reference to the file's current
+        Publishes the file to ShotGrid. A <b>Publish</b> entry will be
+        created in ShotGrid which will include a reference to the file's current
         path on disk. Other users will be able to access the published file via
         the <b><a href='%s'>Loader</a></b> so long as they have access to
         the file's location on disk.
 
         <h3>File versioning</h3>
         The <code>version</code> field of the resulting <b>Publish</b> in
-        Shotgun will also reflect the version number identified in the filename.
+        ShotGrid will also reflect the version number identified in the filename.
         The basic worklfow recognizes the following version formats by default:
 
         <ul>
@@ -210,7 +210,7 @@ class BasicFilePublishPlugin(HookBaseClass):
                 ],
                 "description": (
                     "List of file types to include. Each entry in the list "
-                    "is a list in which the first entry is the Shotgun "
+                    "is a list in which the first entry is the ShotGrid "
                     "published file type and subsequent entries are file "
                     "extensions that should be associated."
                 ),
@@ -321,7 +321,7 @@ class BasicFilePublishPlugin(HookBaseClass):
                 # happening.
                 error_msg = (
                     "Can not validate file path. There is already a publish in "
-                    "Shotgun that matches this path. Please uncheck this "
+                    "ShotGrid that matches this path. Please uncheck this "
                     "plugin or save the file to a different path."
                 )
                 self.logger.error(error_msg)
@@ -334,17 +334,17 @@ class BasicFilePublishPlugin(HookBaseClass):
                     "<pre>%s</pre>" % (pprint.pformat(publishes),)
                 )
                 self.logger.warn(
-                    "Found %s conflicting publishes in Shotgun" % (len(publishes),),
+                    "Found %s conflicting publishes in ShotGrid" % (len(publishes),),
                     extra={
                         "action_show_more_info": {
                             "label": "Show Conflicts",
-                            "tooltip": "Show conflicting publishes in Shotgun",
+                            "tooltip": "Show conflicting publishes in ShotGrid",
                             "text": conflict_info,
                         }
                     },
                 )
 
-        self.logger.info("A Publish will be created in Shotgun and linked to:")
+        self.logger.info("A Publish will be created in ShotGrid and linked to:")
         self.logger.info("  %s" % (path,))
 
         return True
@@ -425,11 +425,11 @@ class BasicFilePublishPlugin(HookBaseClass):
         item.properties.sg_publish_data = sgtk.util.register_publish(**publish_data)
         self.logger.info("Publish registered!")
         self.logger.debug(
-            "Shotgun Publish data...",
+            "ShotGrid Publish data...",
             extra={
                 "action_show_more_info": {
-                    "label": "Shotgun Publish Data",
-                    "tooltip": "Show the complete Shotgun Publish Entity dictionary",
+                    "label": "ShotGrid Publish Data",
+                    "tooltip": "Show the complete ShotGrid Publish Entity dictionary",
                     "text": "<pre>%s</pre>"
                     % (pprint.pformat(item.properties.sg_publish_data),),
                 }
@@ -466,7 +466,7 @@ class BasicFilePublishPlugin(HookBaseClass):
             extra={
                 "action_show_in_shotgun": {
                     "label": "Show Publish",
-                    "tooltip": "Open the Publish in Shotgun.",
+                    "tooltip": "Open the Publish in ShotGrid.",
                     "entity": publish_data,
                 }
             },

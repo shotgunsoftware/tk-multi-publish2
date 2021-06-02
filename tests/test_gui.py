@@ -103,7 +103,7 @@ class AppDialogAppWrapper(object):
         """
         :param root:
         """
-        self.root = parent["Shotgun: Publish"].get()
+        self.root = parent["ShotGrid: Publish"].get()
 
     def exists(self):
         """
@@ -294,7 +294,7 @@ def test_custom_plugin(app_dialog):
     # Validation of the Publish to Shotgun with items plugin
     # Select plugin Publish to Shotgun with items of the first item
     app_dialog.root["collected items tree"].outlineitems[
-        "Publish to Shotgun with items"
+        "Publish to ShotGrid with items"
     ].mouseClick()
     # Make sure the checkbox is check
     if (
@@ -306,7 +306,7 @@ def test_custom_plugin(app_dialog):
         ].mouseClick()
     # Select plugin Publish to Shotgun with items of the second item
     app_dialog.root["collected items tree"].outlineitems[
-        "Publish to Shotgun with items"
+        "Publish to ShotGrid with items"
     ][1].mouseClick()
     # Make sure the checkbox is unchecked
     if (
@@ -319,7 +319,7 @@ def test_custom_plugin(app_dialog):
     # Do a multiple plugins selection of item 1 and 2
     with holdKeys("{CONTROL}"):
         app_dialog.root["collected items tree"].outlineitems[
-            "Publish to Shotgun with items"
+            "Publish to ShotGrid with items"
         ].mouseSlide()
         Mouse.click()
 
@@ -359,7 +359,7 @@ def test_custom_plugin(app_dialog):
     # Validation of the Publish to Shotgun without items plugin
     # Select Publish to Shotgun without items of the first item
     app_dialog.root["collected items tree"].outlineitems[
-        "Publish to Shotgun without items"
+        "Publish to ShotGrid without items"
     ].mouseSlide()
     Mouse.click()
     # Make sure the checkbox is check
@@ -372,7 +372,7 @@ def test_custom_plugin(app_dialog):
         ].mouseClick()
     # Select Publish to Shotgun without items of the second item
     app_dialog.root["collected items tree"].outlineitems[
-        "Publish to Shotgun without items"
+        "Publish to ShotGrid without items"
     ][1].mouseClick()
     # Make sure the checkbox is unchecked
     if (
@@ -384,7 +384,7 @@ def test_custom_plugin(app_dialog):
         ].mouseClick()
     # Go back the Publish to Shotgun without items plugin of the first item and make sure checkbox is still checked
     app_dialog.root["collected items tree"].outlineitems[
-        "Publish to Shotgun without items"
+        "Publish to ShotGrid without items"
     ].mouseClick()
     assert (
         app_dialog.root["details frame"].checkboxes["Set task to in review"].checked
