@@ -7,10 +7,11 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Logging &mdash; tk-multi-publish2 v2.5.6 documentation</title>
+  <title>Logging &mdash; tk-multi-publish2 v2.6.0 documentation</title>
   
 
   
@@ -51,7 +52,7 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
           
-    <a href='http://developer.shotgunsoftware.com'>
+    <a href='http://developer.shotgridsoftware.com'>
     
         <img style='width: 191px;
                 height: 60px;
@@ -129,12 +130,12 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.5.6.<br>
+    <b>tk-multi-publish2</b> v2.6.0.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
     For more information, please visit
-    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    <a class=custom_post_menu href='https://support.shotgridsoftware.com/home'>Shotgun Support</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-multi-publish2'>here</a>.
 
@@ -200,7 +201,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="logging">
+  <section id="logging">
 <h1>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h1>
 <p>Any logging in the collector and publish plugin hooks will be displayed in the
 progress details widget of the Publisher. The image below shows logging output
@@ -211,7 +212,7 @@ errors, and debug messages to the user.</p>
 <p>The publisher has a special logging handler that will make use of the standard
 <code class="docutils literal notranslate"><span class="pre">extra</span></code> <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> to display action buttons next to the log messages.
 These special action button types are detailed below:</p>
-<div class="section" id="generic-action">
+<section id="generic-action">
 <h2>Generic Action<a class="headerlink" href="#generic-action" title="Permalink to this headline">¶</a></h2>
 <p>A generic button to execute a callback method when clicked.</p>
 <p>The <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> supplied takes the following form:</p>
@@ -250,9 +251,9 @@ These special action button types are detailed below:</p>
 <p>The image below shows how this action button would appear in the log output view
 of the publish UI:</p>
 <img alt="_images/log_extra_action_button.png" src="_images/log_extra_action_button.png" />
-</div>
+</section>
 <hr class="docutils" />
-<div class="section" id="show-folder-action">
+<section id="show-folder-action">
 <h2>Show Folder Action<a class="headerlink" href="#show-folder-action" title="Permalink to this headline">¶</a></h2>
 <p>A common action for showing the folder for a supplied path in the system’s file
 browser.</p>
@@ -286,9 +287,9 @@ button. The default value is <code class="docutils literal notranslate"><span cl
 <p>The image below shows how this action button would appear in the log output view
 of the publish UI.</p>
 <img alt="_images/log_extra_action_show_folder.png" src="_images/log_extra_action_show_folder.png" />
-</div>
+</section>
 <hr class="docutils" />
-<div class="section" id="show-in-shotgun-action">
+<section id="show-in-shotgun-action">
 <h2>Show in Shotgun Action<a class="headerlink" href="#show-in-shotgun-action" title="Permalink to this headline">¶</a></h2>
 <p>A common action for showing an entity’s detail page in Shotgun.</p>
 <p>The <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> supplied takes the following form:</p>
@@ -324,9 +325,9 @@ button. The default value is <code class="docutils literal notranslate"><span cl
 <p>The image below shows how this action button would appear in the log output view
 of the publish UI.</p>
 <img alt="_images/log_extra_action_show_in_shotgun.png" src="_images/log_extra_action_show_in_shotgun.png" />
-</div>
+</section>
 <hr class="docutils" />
-<div class="section" id="show-more-info-action">
+<section id="show-more-info-action">
 <h2>Show More Info Action<a class="headerlink" href="#show-more-info-action" title="Permalink to this headline">¶</a></h2>
 <p>A common action for showing more information than what typically fits on a
 single line of logging output. The output will be shown in a text browser popup
@@ -370,9 +371,9 @@ window (any html tags supported by Qt’s rich text engine).</p></li>
 <p>The image below shows how this action button would appear in the log output view
 of the publish UI.</p>
 <img alt="_images/log_extra_action_show_more_info.png" src="_images/log_extra_action_show_more_info.png" />
-</div>
+</section>
 <hr class="docutils" />
-<div class="section" id="open-url-action">
+<section id="open-url-action">
 <h2>Open URL Action<a class="headerlink" href="#open-url-action" title="Permalink to this headline">¶</a></h2>
 <p>A common action for opening a supplied URL in the default browser.</p>
 <p>The <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> supplied takes the following form:</p>
@@ -406,8 +407,8 @@ button. The default value is <code class="docutils literal notranslate"><span cl
 <p>The image below shows how this action button would appear in the log output view
 of the publish UI.</p>
 <img alt="_images/log_extra_action_open_url.png" src="_images/log_extra_action_open_url.png" />
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

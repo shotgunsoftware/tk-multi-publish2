@@ -7,10 +7,11 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Publish Customization &mdash; tk-multi-publish2 v2.5.6 documentation</title>
+  <title>Publish Customization &mdash; tk-multi-publish2 v2.6.0 documentation</title>
   
 
   
@@ -39,7 +40,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Publish API" href="api.html" />
-    <link rel="prev" title="Shotgun Publisher API reference, v2.5.6" href="index.html" /> 
+    <link rel="prev" title="Shotgun Publisher API reference, v2.6.0" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -51,7 +52,7 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
           
-    <a href='http://developer.shotgunsoftware.com'>
+    <a href='http://developer.shotgridsoftware.com'>
     
         <img style='width: 191px;
                 height: 60px;
@@ -133,12 +134,12 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.5.6.<br>
+    <b>tk-multi-publish2</b> v2.6.0.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
     For more information, please visit
-    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    <a class=custom_post_menu href='https://support.shotgridsoftware.com/home'>Shotgun Support</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-multi-publish2'>here</a>.
 
@@ -204,12 +205,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="publish-customization">
+  <section id="publish-customization">
 <h1>Publish Customization<a class="headerlink" href="#publish-customization" title="Permalink to this headline">¶</a></h1>
 <p>The sections below identify the entry points for customizing publish workflows.
 For a broad overview of how publish execution works, see the
 <a class="reference internal" href="index.html#publish-execution"><span class="std std-ref">Publish Execution</span></a> doc.</p>
-<div class="section" id="collector-hook">
+<section id="collector-hook">
 <span id="publish-collector"></span><h2>Collector Hook<a class="headerlink" href="#collector-hook" title="Permalink to this headline">¶</a></h2>
 <p>The collector hook handles processing the current user’s session to identify
 what will be published. It also handles processing any file paths that have been
@@ -220,10 +221,10 @@ and presented to the user.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>For more information on how to take over, subclass, and manage hooks,
-see the <a class="reference external" href="http://developer.shotgunsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.19.18)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
+see the <a class="reference external" href="http://developer.shotgridsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.20.1)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
 </div>
 <hr class="docutils" />
-<div class="section" id="collector-hook-api">
+<section id="collector-hook-api">
 <h3>Collector Hook API<a class="headerlink" href="#collector-hook-api" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="tk_multi_publish2.base_hooks.CollectorPlugin">
@@ -430,9 +431,9 @@ collect child items for.</p></li>
 
 </dd></dl>
 
-</div>
-</div>
-<div class="section" id="publish-plugin">
+</section>
+</section>
+<section id="publish-plugin">
 <span id="id1"></span><h2>Publish Plugin<a class="headerlink" href="#publish-plugin" title="Permalink to this headline">¶</a></h2>
 <p>Publish plugins are hooks that handle processing of collected publish items.
 After all items have been collected, the Publisher attempts to match the items
@@ -445,10 +446,10 @@ custom publish plugin UI.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>For more information on how to take over, subclass, and manage hooks,
-see the <a class="reference external" href="http://developer.shotgunsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.19.18)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
+see the <a class="reference external" href="http://developer.shotgridsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.20.1)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
 </div>
 <hr class="docutils" />
-<div class="section" id="publish-plugin-api">
+<section id="publish-plugin-api">
 <h3>Publish Plugin API<a class="headerlink" href="#publish-plugin-api" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="tk_multi_publish2.base_hooks.PublishPlugin">
@@ -477,7 +478,7 @@ plugin, as shown in the image below.</p>
 </div>
 <p>Icons can be stored within the same bundle as the plugin itself and
 referenced relative to the disk location of the plugin, accessible via
-<a class="reference external" href="http://developer.shotgunsoftware.com/tk-core/core.html#sgtk.Hook.disk_location" title="(in tk-core vv0.19.18)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sgtk.Hook.disk_location()</span></code></a>.</p>
+<a class="reference external" href="http://developer.shotgridsoftware.com/tk-core/core.html#sgtk.Hook.disk_location" title="(in tk-core vv0.20.1)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sgtk.Hook.disk_location()</span></code></a>.</p>
 <p>Example implementation:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@property</span>
 <span class="k">def</span> <span class="nf">icon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -909,9 +910,9 @@ task.</p></li>
 
 </dd></dl>
 
-</div>
-</div>
-<div class="section" id="post-phase-hook">
+</section>
+</section>
+<section id="post-phase-hook">
 <h2>Post Phase Hook<a class="headerlink" href="#post-phase-hook" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="tk_multi_publish2.base_hooks.PostPhaseHook">
@@ -1034,8 +1035,8 @@ the items to be published.</p>
 
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -1048,7 +1049,7 @@ the items to be published.</p>
         <a href="api.html" class="btn btn-neutral float-right" title="Publish API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral float-left" title="Shotgun Publisher API reference, v2.5.6" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Shotgun Publisher API reference, v2.6.0" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

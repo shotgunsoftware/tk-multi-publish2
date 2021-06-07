@@ -7,10 +7,11 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Publish API &mdash; tk-multi-publish2 v2.5.6 documentation</title>
+  <title>Publish API &mdash; tk-multi-publish2 v2.6.0 documentation</title>
   
 
   
@@ -51,7 +52,7 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
           
-    <a href='http://developer.shotgunsoftware.com'>
+    <a href='http://developer.shotgridsoftware.com'>
     
         <img style='width: 191px;
                 height: 60px;
@@ -130,12 +131,12 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.5.6.<br>
+    <b>tk-multi-publish2</b> v2.6.0.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
     For more information, please visit
-    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    <a class=custom_post_menu href='https://support.shotgridsoftware.com/home'>Shotgun Support</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-multi-publish2'>here</a>.
 
@@ -201,7 +202,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="publish-api">
+  <section id="publish-api">
 <span id="id1"></span><h1>Publish API<a class="headerlink" href="#publish-api" title="Permalink to this headline">¶</a></h1>
 <p>The publish API gives developers access to the underlying data structures and
 methods used by the publish UI. They can use this interface to build more
@@ -255,7 +256,7 @@ items are to be processed.</p>
 </div>
 <p>See the documentation for each of these classes below for more detail on how
 to use them.</p>
-<div class="section" id="publishmanager">
+<section id="publishmanager">
 <span id="publish-api-manager"></span><h2>PublishManager<a class="headerlink" href="#publishmanager" title="Permalink to this headline">¶</a></h2>
 <p>This class gives developers direct access to the same methods and data
 structures used by the Publish UI. You can create an instance of this class
@@ -467,8 +468,8 @@ is aborted and the exception is raised back to the caller.</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="publishtree">
+</section>
+<section id="publishtree">
 <span id="publish-api-tree"></span><h2>PublishTree<a class="headerlink" href="#publishtree" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="tk_multi_publish2.api.PublishTree">
@@ -625,8 +626,8 @@ tree.</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="publishitem">
+</section>
+<section id="publishitem">
 <span id="publish-api-item"></span><h2>PublishItem<a class="headerlink" href="#publishitem" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="tk_multi_publish2.api.PublishItem">
@@ -851,7 +852,7 @@ of this item.</p>
 <dl class="method">
 <dt id="tk_multi_publish2.api.PublishItem.context">
 <em class="property">property </em><code class="sig-name descname">context</code><a class="headerlink" href="#tk_multi_publish2.api.PublishItem.context" title="Permalink to this definition">¶</a></dt>
-<dd><p>The <a class="reference external" href="http://developer.shotgunsoftware.com/tk-core/core.html#sgtk.Context" title="(in tk-core vv0.19.18)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sgtk.Context</span></code></a> associated with this item.</p>
+<dd><p>The <a class="reference external" href="http://developer.shotgridsoftware.com/tk-core/core.html#sgtk.Context" title="(in tk-core vv0.20.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sgtk.Context</span></code></a> associated with this item.</p>
 <p>If no context has been explicitly set for this item, the context will be
 inherited from the item’s parent. If none of this item’s parents have
 had a context set explicitly, the publisher’s launch context will be
@@ -1099,8 +1100,8 @@ on collected items.</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="publishtask">
+</section>
+<section id="publishtask">
 <span id="publish-api-task"></span><h2>PublishTask<a class="headerlink" href="#publishtask" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="tk_multi_publish2.api.PublishTask">
@@ -1187,8 +1188,8 @@ publish UI.</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="publishdata">
+</section>
+<section id="publishdata">
 <span id="publish-api-data"></span><h2>PublishData<a class="headerlink" href="#publishdata" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="tk_multi_publish2.api.PublishData">
@@ -1208,8 +1209,8 @@ classes.</p>
 </div>
 </dd></dl>
 
-</div>
-<div class="section" id="pluginsetting">
+</section>
+<section id="pluginsetting">
 <span id="publish-api-setting"></span><h2>PluginSetting<a class="headerlink" href="#pluginsetting" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="tk_multi_publish2.api.PluginSetting">
@@ -1241,8 +1242,8 @@ configured <code class="docutils literal notranslate"><span class="pre">PluginSe
 
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

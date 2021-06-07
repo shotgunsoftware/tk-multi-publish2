@@ -7,10 +7,11 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Shotgun Publisher API reference, v2.5.6 &mdash; tk-multi-publish2 v2.5.6 documentation</title>
+  <title>Shotgun Publisher API reference, v2.6.0 &mdash; tk-multi-publish2 v2.6.0 documentation</title>
   
 
   
@@ -50,7 +51,7 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
           
-    <a href='http://developer.shotgunsoftware.com'>
+    <a href='http://developer.shotgridsoftware.com'>
     
         <img style='width: 191px;
                 height: 60px;
@@ -121,12 +122,12 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.5.6.<br>
+    <b>tk-multi-publish2</b> v2.6.0.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
     For more information, please visit
-    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    <a class=custom_post_menu href='https://support.shotgridsoftware.com/home'>Shotgun Support</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-multi-publish2'>here</a>.
 
@@ -175,7 +176,7 @@
     
       <li><a href="#">Docs</a> &raquo;</li>
         
-      <li>Shotgun Publisher API reference, v2.5.6</li>
+      <li>Shotgun Publisher API reference, v2.6.0</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -192,9 +193,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="shotgun-publisher-api-reference-release">
-<h1>Shotgun Publisher API reference, v2.5.6<a class="headerlink" href="#shotgun-publisher-api-reference-release" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="overview">
+  <section id="shotgun-publisher-api-reference-release">
+<h1>Shotgun Publisher API reference, v2.6.0<a class="headerlink" href="#shotgun-publisher-api-reference-release" title="Permalink to this headline">¶</a></h1>
+<section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>The Publish app is a highly customizable workflow tool that allows studios to
 track the data being created by artists and control how it is shared. The app
@@ -203,7 +204,7 @@ are identified for presentation to artists for publishing and how those items
 are then processed. In addition to customizing the publish UI behavior, the
 underlying Python API that drives the interface is also available for more
 advanced studio customization.</p>
-<div class="section" id="publish-execution">
+<section id="publish-execution">
 <span id="id1"></span><h3>Publish Execution<a class="headerlink" href="#publish-execution" title="Permalink to this headline">¶</a></h3>
 <p>The publisher has several phases of execution that developers should be aware
 of before implementing custom behaviors.</p>
@@ -213,7 +214,7 @@ each of these concepts and the APIs that drive the publisher in detail.</p>
 <hr class="docutils" />
 <img alt="_images/publish_overview.png" src="_images/publish_overview.png" />
 <hr class="docutils" />
-<div class="section" id="collection-acceptance">
+<section id="collection-acceptance">
 <h4>Collection &amp; Acceptance<a class="headerlink" href="#collection-acceptance" title="Permalink to this headline">¶</a></h4>
 <p>When the Publisher is launched, the current session (Maya, Nuke, Houdini, etc)
 is processed and publish items are collected for display in the Publish app’s
@@ -247,15 +248,15 @@ triggered.</p>
 <p>For a deeper dive into the publish plugin behavior and how it can be
 customized, see the <a class="reference internal" href="customizing.html#publish-plugin"><span class="std std-ref">Publish Plugin</span></a> docs.</p>
 </div>
-</div>
-<div class="section" id="item-review">
+</section>
+<section id="item-review">
 <h4>Item Review<a class="headerlink" href="#item-review" title="Permalink to this headline">¶</a></h4>
 <p>Once the acceptance phase is complete, the user can review the items, make
 changes to the target context of each, provide publish descriptions, take screen
 grabs, and update settings. Additional files can also be dragged and dropped or
 browsed to for collection.</p>
-</div>
-<div class="section" id="publishing">
+</section>
+<section id="publishing">
 <h4>Publishing<a class="headerlink" href="#publishing" title="Permalink to this headline">¶</a></h4>
 <p>After the artist has taken the time to review the collected items, they can
 perform one of two actions;</p>
@@ -305,10 +306,10 @@ for publish workflow building and customization.</p>
 <li class="toctree-l1"><a class="reference internal" href="application.html">App Interface</a></li>
 </ul>
 </div>
-</div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
+</section>
 
 
            </div>
