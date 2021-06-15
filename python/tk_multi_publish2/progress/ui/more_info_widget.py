@@ -28,6 +28,7 @@ class Ui_MoreInfoWidget(object):
         self.pixmap_label.setObjectName("pixmap_label")
         self.horizontalLayout.addWidget(self.pixmap_label)
         self.message_label = QtGui.QLabel(MoreInfoWidget)
+        self.message_label.setWordWrap(True)
         self.message_label.setObjectName("message_label")
         self.horizontalLayout.addWidget(self.message_label)
         self.horizontalLayout.setStretch(0, 1)
