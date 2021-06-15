@@ -203,7 +203,7 @@ class BasicFilePublishPlugin(HookBaseClass):
                     ["Photoshop Image", "psd", "psb"],
                     ["VRED Scene", "vpb", "vpe", "osb"],
                     ["Rendered Image", "dpx", "exr"],
-                    ["Texture", "tiff", "tx", "tga", "dds"],
+                    ["Texture", "tif", "tiff", "tex", "tx", "tga", "dds"],
                     ["Image", "jpeg", "jpg", "png"],
                     ["Movie", "mov", "mp4"],
                     ["PDF", "pdf"],
