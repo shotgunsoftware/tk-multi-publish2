@@ -13,4 +13,4 @@ This repository is a part of the ShotGrid Pipeline Toolkit.
 For documentation, see http://developer.shotgridsoftware.com/tk-multi-publish2/
 
 ## Have a Question?
-Don't hesitate to contact us! You can find us on knowledge.autodesk.com/contact-support
+Don't hesitate to contact us! You can find us on https://knowledge.autodesk.com/contact-support
