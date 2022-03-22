@@ -127,7 +127,7 @@ def test_browse_buttons(app_dialog):
         "Browse files to publish"
     ].exists(), "Browse files to publish button is missing."
     assert app_dialog.root.buttons[
-        "Browse sequences to publish"
+        "Browse folders to publish*image sequences"
     ].exists(), "Browse folders to publish image sequences button is missing."
 
     # Click on Browse file to publish and then close the file explorer window
@@ -136,7 +136,7 @@ def test_browse_buttons(app_dialog):
     app_dialog.root.dialogs["Browse files to publish"].buttons["Cancel"].mouseClick()
 
     # Click on Browse folders to publish and image sequences then close the file explorer window
-    app_dialog.root.buttons["Browse sequences to publish"].mouseClick()
+    app_dialog.root.buttons["Browse folders to publish*image sequences"].mouseClick()
     app_dialog.root.dialogs["Browse folders to publish image sequences"].waitExist(
         timeout=30
     )
@@ -184,11 +184,13 @@ def test_file_publish(app_dialog, tk_test_project):
     app_dialog.root["context picker widget"].captions[
         "*" + tk_test_project["name"]
     ].mouseClick()
-    app_dialog.root["context picker widget"].textfields.typeIn("Shot")
-    topwindows.listitems["Shot_001"].get().mouseClick()
+    app_dialog.root["context picker widget"].textfields.typeIn("Shot_001")
+    topwindows.listitems["Shot_001"].waitExist(timeout=30)
+    app_dialog.root["context picker widget"].textfields.typeIn("{ENTER}")
     app_dialog.root["context picker widget"].captions["*Shot_001"].waitExist(timeout=30)
     # Select the comp task from the dropdown menu
     app_dialog.root["context picker widget"].checkboxes.mouseClick()
+    app_dialog.root["context picker widget"].textfields.typeIn("{ENTER}{ENTER}")
 
     # Click on validate button
     app_dialog.root["Bottom frame"].buttons["Validate"].mouseClick()
@@ -214,7 +216,7 @@ def test_file_publish(app_dialog, tk_test_project):
 
     # Validate the Progress Details view
     app_dialog.root["Upper frame"].captions[
-        "For more details, click here."
+        "For more details*"
     ].mouseClick()
     app_dialog.root["Upper frame"].captions["Progress Details"].waitExist(timeout=30)
     # Validate Copy to clipboard button
@@ -231,8 +233,12 @@ def test_file_publish(app_dialog, tk_test_project):
     # Scroll down to make sure to have all second items showing up
     activityScrollBar = first(app_dialog.root.scrollbars)
     width, height = activityScrollBar.size
-    app_dialog.root["Upper frame"].scrollbars.indicators["Position"].mouseSlide()
-    activityScrollBar.mouseDrag(width * 0, height * 1)
+    # PySide2 is not able to see scrollbar position UI item
+    if app_dialog.root["Upper frame"].scrollbars.indicators["Position"].exists() is True:
+        app_dialog.root["Upper frame"].scrollbars.indicators["Position"].mouseSlide()
+    else:
+        app_dialog.root.scrollbars.mouseSlide(width * 0.5, height * -2)
+    activityScrollBar.mouseDrag(width * 0.5, height * 1)
     # Validate the finalizing pass
     assert (
         app_dialog.root["Upper frame"]
@@ -245,13 +251,16 @@ def test_file_publish(app_dialog, tk_test_project):
         .exists()
     ), "Publish Complete! For details, click here is missing"
     # Close Progress Details view
-    app_dialog.root["Upper frame"].buttons["Close"].mouseClick()
-    app_dialog.root["Upper frame"].captions["To publish again, click here"].waitExist(
+    if app_dialog.root["Upper frame"].buttons["Close"].exists() is True:
+        app_dialog.root["Upper frame"].buttons["Close"].mouseClick()
+    else:
+        app_dialog.root["Upper frame"].buttons[7].mouseClick()
+    app_dialog.root["Upper frame"].captions["To publish again*"].waitExist(
         timeout=30
     )
 
     # Return to the main dialog
-    app_dialog.root["Upper frame"].captions["To publish again, click here"].mouseClick()
+    app_dialog.root["Upper frame"].captions["To publish again*"].mouseClick()
 
     # make sure you're on the main dialog
     assert app_dialog.root.captions[
@@ -261,7 +270,7 @@ def test_file_publish(app_dialog, tk_test_project):
         "Browse files to publish"
     ].exists(), "Browse files to publish button is missing."
     assert app_dialog.root.buttons[
-        "Browse sequences to publish"
+        "Browse folders to publish*image sequences"
     ].exists(), "Browse folders to publish image sequences button is missing."
 
 
@@ -325,36 +334,58 @@ def test_custom_plugin(app_dialog):
 
     # Validate that items and set_in_review values are the right ones for each rows
     expected_results = [
-        ["svenFace.jpg_sub", "*'set_in_review': False}"],
-        ["svenFace.jpg", "*'set_in_review': True}"],
+        ["svenFace.jpg_sub", "*'set_in_review': False*"],
+        ["svenFace.jpg", "*'set_in_review': True*"],
     ]
-    row_number = 0
-    for row_number, (name, state) in enumerate(expected_results):
-        row_number += 1  # This is to skip the first row which is used for headers.
-        assert (
-            app_dialog.root["details frame"]
-            .tables.rows[row_number]
-            .cells[name]
-            .exists()
-        ), (
-            "Not the right item for row "
-            + str(row_number)
-            + ". "
-            + str(name)
-            + " isn't the expected one."
-        )
-        assert (
-            app_dialog.root["details frame"]
-            .tables.rows[row_number]
-            .cells[state]
-            .exists()
-        ), (
-            "Not the right state for row "
-            + str(row_number)
-            + ". "
-            + str(state)
-            + " isn't the expected one."
-        )
+    # Rows and cells are not showing up with PySide2. It is only showing listitems
+    if app_dialog.root["details frame"].tables.rows.exists() is True:
+        row_number = 0
+        for row_number, (name, state) in enumerate(expected_results):
+            row_number += 1  # This is to skip the first row which is used for headers.
+            assert (
+                app_dialog.root["details frame"]
+                .tables.rows[row_number]
+                .cells[name]
+                .exists()
+            ), (
+                "Not the right item for row "
+                + str(row_number)
+                + ". "
+                + str(name)
+                + " isn't the expected one."
+            )
+            assert (
+                app_dialog.root["details frame"]
+                .tables.rows[row_number]
+                .cells[state]
+                .exists()
+            ), (
+                "Not the right state for row "
+                + str(row_number)
+                + ". "
+                + str(state)
+                + " isn't the expected one."
+            )
+    else:
+        for item, (name, state) in enumerate(expected_results):
+            assert (
+                app_dialog.root["details frame"]
+                .listitems[name]
+                .exists()
+            ), (
+                "Not the right item, "
+                + str(name)
+                + " isn't the expected one."
+            )
+            assert (
+                app_dialog.root["details frame"]
+                .listitems[state]
+                .exists()
+            ), (
+                "Not the right state, "
+                + str(state)
+                + " isn't the expected one."
+            )
 
     # Validation of the Publish to Shotgun without items plugin
     # Select Publish to Shotgun without items of the first item
@@ -400,7 +431,10 @@ def test_custom_plugin(app_dialog):
 
     # Return to the main dialog
     app_dialog.root["collected items tree"].outlineitems["*svenFace.jpg*"].mouseClick()
-    app_dialog.root["Bottom frame"].buttons[3].mouseClick()
+    if app_dialog.root["Bottom frame"].buttons["Delete selected items"].exists() is True:
+        app_dialog.root["Bottom frame"].buttons["Delete selected items"].mouseClick()
+    else:
+        app_dialog.root["Bottom frame"].buttons[4].mouseClick()
     app_dialog.root.dialogs["Remove items?"].buttons["OK"].mouseClick()
 
     # make sure you're on the main dialog
@@ -411,7 +445,7 @@ def test_custom_plugin(app_dialog):
         "Browse files to publish"
     ].exists(), "Browse files to publish button is missing."
     assert app_dialog.root.buttons[
-        "Browse sequences to publish"
+        "Browse folders to publish*image sequences"
     ].exists(), "Browse folders to publish image sequences button is missing."
 
 
@@ -505,12 +539,17 @@ def test_description_inheritance(app_dialog, tk_test_project):
         .exists()
     ), "Description should be inherited"
     # Scroll down to make sure to have all second items showing up
-    activityScrollBar = first(app_dialog.root.scrollbars)
-    width, height = activityScrollBar.size
-    app_dialog.root["collected items tree"].scrollbars.indicators[
-        "Position"
-    ].mouseSlide()
-    activityScrollBar.mouseDrag(width * 0, height * 1)
+    # PySide2 is not able to see scrollbar position UI item
+    if app_dialog.root["collected items tree"].scrollbars.indicators["Position"].exists() is True:
+        activityScrollBar = first(app_dialog.root.scrollbars)
+        width, height = activityScrollBar.size
+        app_dialog.root["collected items tree"].scrollbars.indicators["Position"].mouseSlide()
+        activityScrollBar.mouseDrag(width * 0, height * 1)
+    else:
+        activityScrollBar = first(app_dialog.root["collected items tree"])
+        width, height = activityScrollBar.size
+        app_dialog.root["collected items tree"].mouseSlide(width * 0.97, height * 0.1)
+        activityScrollBar.mouseDrag(width * 0.97, height * 1)
     # Make sure second item inherited the summary description
     app_dialog.root["collected items tree"].outlineitems["*sven.png*"].mouseClick()
     assert (
@@ -537,12 +576,17 @@ def test_description_inheritance(app_dialog, tk_test_project):
 
     # Add description for the first image
     # Scroll up to make sure to have all first items showing up
-    activityScrollBar = first(app_dialog.root.scrollbars)
-    width, height = activityScrollBar.size
-    app_dialog.root["collected items tree"].scrollbars.indicators[
-        "Position"
-    ].mouseSlide()
-    activityScrollBar.mouseDrag(width * 0, height * 0)
+    # PySide2 is not able to see scrollbar position UI item
+    if app_dialog.root["collected items tree"].scrollbars.indicators["Position"].exists() is True:
+        activityScrollBar = first(app_dialog.root.scrollbars)
+        width, height = activityScrollBar.size
+        app_dialog.root["collected items tree"].scrollbars.indicators["Position"].mouseSlide()
+        activityScrollBar.mouseDrag(width * 0, height * 0)
+    else:
+        activityScrollBar = first(app_dialog.root["collected items tree"])
+        width, height = activityScrollBar.size
+        app_dialog.root["collected items tree"].mouseSlide(width * 0.97, height * 0.8)
+        activityScrollBar.mouseDrag(width * 0.97, height * 0)
     # Select the first parent item
     app_dialog.root["collected items tree"].outlineitems["*svenFace.jpg*"].mouseClick()
     # Make sure it is the right item
@@ -577,12 +621,17 @@ def test_description_inheritance(app_dialog, tk_test_project):
 
     # Add descriptions for the second image
     # Scroll down to make sure to have all second items showing up
-    activityScrollBar = first(app_dialog.root.scrollbars)
-    width, height = activityScrollBar.size
-    app_dialog.root["collected items tree"].scrollbars.indicators[
-        "Position"
-    ].mouseSlide()
-    activityScrollBar.mouseDrag(width * 0, height * 1)
+    # PySide2 is not able to see scrollbar position UI item
+    if app_dialog.root["collected items tree"].scrollbars.indicators["Position"].exists() is True:
+        activityScrollBar = first(app_dialog.root.scrollbars)
+        width, height = activityScrollBar.size
+        app_dialog.root["collected items tree"].scrollbars.indicators["Position"].mouseSlide()
+        activityScrollBar.mouseDrag(width * 0, height * 1)
+    else:
+        activityScrollBar = first(app_dialog.root["collected items tree"])
+        width, height = activityScrollBar.size
+        app_dialog.root["collected items tree"].mouseSlide(width * 0.97, height * 0.1)
+        activityScrollBar.mouseDrag(width * 0.97, height * 1)
     # Select the second parent item
     app_dialog.root["collected items tree"].outlineitems["*sven.png*"].mouseClick()
     # Make sure it is the right item
@@ -621,12 +670,17 @@ def test_description_inheritance(app_dialog, tk_test_project):
 
     # Add description for the first child of the first image
     # Scroll up to make sure to have all first items showing up
-    activityScrollBar = first(app_dialog.root.scrollbars)
-    width, height = activityScrollBar.size
-    app_dialog.root["collected items tree"].scrollbars.indicators[
-        "Position"
-    ].mouseSlide()
-    activityScrollBar.mouseDrag(width * 0, height * 0)
+    # PySide2 is not able to see scrollbar position UI item
+    if app_dialog.root["collected items tree"].scrollbars.indicators["Position"].exists() is True:
+        activityScrollBar = first(app_dialog.root.scrollbars)
+        width, height = activityScrollBar.size
+        app_dialog.root["collected items tree"].scrollbars.indicators["Position"].mouseSlide()
+        activityScrollBar.mouseDrag(width * 0, height * 0)
+    else:
+        activityScrollBar = first(app_dialog.root["collected items tree"])
+        width, height = activityScrollBar.size
+        app_dialog.root["collected items tree"].mouseSlide(width * 0.97, height * 0.8)
+        activityScrollBar.mouseDrag(width * 0.97, height * 0)
     # Select the first child of the first item
     app_dialog.root["collected items tree"].outlineitems[
         "*svenFace.jpg_sub*"
@@ -660,12 +714,15 @@ def test_description_inheritance(app_dialog, tk_test_project):
 
     # Add descriptions for the first child of the second image
     # Scroll down to make sure to have all second items showing up
-    activityScrollBar = first(app_dialog.root.scrollbars)
-    width, height = activityScrollBar.size
-    app_dialog.root["collected items tree"].scrollbars.indicators[
-        "Position"
-    ].mouseSlide()
-    activityScrollBar.mouseDrag(width * 0, height * 1)
+    # PySide2 is not able to see scrollbar position UI item
+    if app_dialog.root["collected items tree"].scrollbars.indicators["Position"].exists() is True:
+        app_dialog.root["collected items tree"].scrollbars.indicators["Position"].mouseSlide()
+        activityScrollBar.mouseDrag(width * 0, height * 1)
+    else:
+        activityScrollBar = first(app_dialog.root["collected items tree"])
+        width, height = activityScrollBar.size
+        app_dialog.root["collected items tree"].mouseSlide(width * 0.97, height * 0.1)
+        activityScrollBar.mouseDrag(width * 0.97, height * 1)
     # Select the second parent item
     app_dialog.root["collected items tree"].outlineitems["*sven.png_sub*"].mouseClick()
     # Make sure it is the right item
