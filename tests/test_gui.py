@@ -716,6 +716,8 @@ def test_description_inheritance(app_dialog, tk_test_project):
     # Scroll down to make sure to have all second items showing up
     # PySide2 is not able to see scrollbar position UI item
     if app_dialog.root["collected items tree"].scrollbars.indicators["Position"].exists() is True:
+        activityScrollBar = first(app_dialog.root.scrollbars)
+        width, height = activityScrollBar.size
         app_dialog.root["collected items tree"].scrollbars.indicators["Position"].mouseSlide()
         activityScrollBar.mouseDrag(width * 0, height * 1)
     else:
