@@ -696,6 +696,7 @@ class AppDialog(QtGui.QWidget):
 
         else:
             summary_text = "<p>The following items will be processed:</p>"
+            summary_text += "<style>ul { margin-left:-20px; }</style>"
             summary_text += "".join(["<p>%s</p>" % line for line in summary])
 
         self.ui.item_summary.setText(summary_text)
