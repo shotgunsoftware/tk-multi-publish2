@@ -8,14 +8,14 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-import collections
+from tank_vendor.six.moves import collections_abc
 import sgtk
 import copy
 
 logger = sgtk.platform.get_logger(__name__)
 
 
-class PublishData(collections.MutableMapping):
+class PublishData(collections_abc.MutableMapping):
     """
     A simple dictionary-like object for storing/serializing arbitrary publish
     data.
