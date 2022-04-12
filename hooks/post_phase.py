@@ -24,4 +24,4 @@ class PostPhaseHook(HookBaseClass):
     """
 
     # See the developer docs for more information about the methods that can be
-    # defined here: https://developer.shotgunsoftware.com/tk-multi-publish2/
+    # defined here: https://developer.shotgridsoftware.com/tk-multi-publish2/
