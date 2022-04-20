@@ -114,15 +114,20 @@ class MultiPublish2(sgtk.platform.Application):
         """
         return True
 
-    def create_publish_manager(self):
+    def create_publish_manager(self, publish_logger=None):
         """
         Create and return a :class:`tk_multi_publish2.PublishManager` instance.
         See the :class:`tk_multi_publish2.PublishManager` docs for details on
         how it can be used to automate your publishing workflows.
 
+        :param publish_logger: This is a standard python logger to use during
+            publishing. A default logger will be provided if not supplied. This
+            can be useful when implementing a custom UI, for example, with a
+            specialized log handler (as is the case with the Publisher)
+
         :returns: A :class:`tk_multi_publish2.PublishManager` instance
         """
-        return self._manager_class()
+        return self._manager_class(publish_logger=publish_logger)
 
     def destroy_app(self):
         """
