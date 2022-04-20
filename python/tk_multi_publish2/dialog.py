@@ -1403,7 +1403,11 @@ class AppDialog(QtGui.QWidget):
                 continue
 
             self._progress_handler.push(
-                "%s: %s" % (stage_name, ui_item,),
+                "%s: %s"
+                % (
+                    stage_name,
+                    ui_item,
+                ),
                 ui_item.icon,
                 ui_item.get_publish_instance(),
             )

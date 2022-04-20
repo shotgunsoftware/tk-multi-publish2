@@ -414,7 +414,9 @@ class BasicSceneCollector(HookBaseClass):
 
         # everything should be populated. return the dictionary
         return dict(
-            item_type=item_type, type_display=type_display, icon_path=icon_path,
+            item_type=item_type,
+            type_display=type_display,
+            icon_path=icon_path,
         )
 
     def _get_icon_path(self, icon_name, icons_folders=None):
