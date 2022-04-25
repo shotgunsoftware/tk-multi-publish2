@@ -269,7 +269,7 @@ class AppDialog(QtGui.QWidget):
 
     @property
     def manual_load_enabled(self):
-        """ Returns whether user is allowed to load file to the UI """
+        """Returns whether user is allowed to load file to the UI"""
         return self._bundle.get_setting("enable_manual_load")
 
     def keyPressEvent(self, event):
