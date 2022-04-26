@@ -502,7 +502,9 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         # fall back to the path info hook logic
         publisher = self.parent
-        path = item.properties.path
+        path = item.get_property("path")
+        if path is None:
+            raise AttributeError("'PublishData' object has no attribute 'path'")
 
         # get the publish path components
         path_info = publisher.util.get_file_path_components(path)
@@ -554,7 +556,9 @@ class BasicFilePublishPlugin(HookBaseClass):
             return publish_path
 
         # fall back to template/path logic
-        path = item.properties.path
+        path = item.get_property("path")
+        if path is None:
+            raise AttributeError("'PublishData' object has no attribute 'path'")
 
         work_template = item.properties.get("work_template")
         publish_template = self.get_publish_template(settings, item)
@@ -611,7 +615,9 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         # fall back to the template/path_info logic
         publisher = self.parent
-        path = item.properties.path
+        path = item.get_property("path")
+        if path is None:
+            raise AttributeError("'PublishData' object has no attribute 'path'")
 
         work_template = item.properties.get("work_template")
         work_fields = None
@@ -654,7 +660,9 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         # fall back to the path_info logic
         publisher = self.parent
-        path = item.properties.path
+        path = item.get_property("path")
+        if path is None:
+            raise AttributeError("'PublishData' object has no attribute 'path'")
 
         if "sequence_paths" in item.properties:
             # generate the name from one of the actual files in the sequence

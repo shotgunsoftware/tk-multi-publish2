@@ -913,7 +913,7 @@ class PublishItem(object):
 
     @thumbnail.setter
     def thumbnail(self, pixmap):
-        """Sets the thumbnail """
+        """Sets the thumbnail"""
         # If we're changing the thumbnail, the cached path is no longer valid.
         if self._thumbnail_pixmap != pixmap:
             self._current_temp_file_path = None

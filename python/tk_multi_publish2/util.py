@@ -118,7 +118,12 @@ def get_file_path_components(path):
             # prevent extension = ""
             extension = None
 
-    file_info = dict(path=path, folder=folder, filename=filename, extension=extension,)
+    file_info = dict(
+        path=path,
+        folder=folder,
+        filename=filename,
+        extension=extension,
+    )
 
     logger.debug("Extracted components from path '%s': %s" % (path, file_info))
 

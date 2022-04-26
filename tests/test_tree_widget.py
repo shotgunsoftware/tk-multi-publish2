@@ -15,11 +15,11 @@ from tank_test.tank_test_base import setUpModule  # noqa
 class TestPublishTreeWidget(PublishApiTestBase):
     def test_parent_partially_checked(self):
         """
-            If we have a bunch of active tasks followed by a bunch of inactive tasks, the addition
-            of the inactive tasks does not trigger an update of the parent's checkbox (because the update
-            relies on the checkbox.state_changed and the default is unchecked, so inactive tasks do not
-            trigger a state change). Test that we are forcing a recalculation to keep the parent's check_state
-            correct in all situations
+        If we have a bunch of active tasks followed by a bunch of inactive tasks, the addition
+        of the inactive tasks does not trigger an update of the parent's checkbox (because the update
+        relies on the checkbox.state_changed and the default is unchecked, so inactive tasks do not
+        trigger a state change). Test that we are forcing a recalculation to keep the parent's check_state
+        correct in all situations
         """
         tree = self.manager.tree
         item = tree.root_item.create_item("item.parent", "Parent", "Parent")
@@ -41,8 +41,8 @@ class TestPublishTreeWidget(PublishApiTestBase):
 
     def test_parent_checked_children_unchecked(self):
         """
-            If a parent item is active and only has inactive tasks, make sure that when the
-            tree is built the parent item's check_state is valid and is set to unchecked
+        If a parent item is active and only has inactive tasks, make sure that when the
+        tree is built the parent item's check_state is valid and is set to unchecked
         """
         tree = self.manager.tree
         item = tree.root_item.create_item("item.parent", "Parent", "Parent")
@@ -65,8 +65,8 @@ class TestPublishTreeWidget(PublishApiTestBase):
 
     def test_next_check_state(self):
         """
-            Make sure the tristate checkbox on an item goes from Partially checked to
-            Checked to Unchecked every time it is clicked
+        Make sure the tristate checkbox on an item goes from Partially checked to
+        Checked to Unchecked every time it is clicked
         """
 
         tree = self.manager.tree

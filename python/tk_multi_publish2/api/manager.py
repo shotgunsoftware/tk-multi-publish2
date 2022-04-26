@@ -304,7 +304,9 @@ class PublishManager(object):
         self._process_tasks(task_generator, task_cb)
 
         # execute the post validate method of the phase phase hook
-        self._post_phase_hook.post_validate(self.tree,)
+        self._post_phase_hook.post_validate(
+            self.tree,
+        )
 
         return failed_to_validate
 
