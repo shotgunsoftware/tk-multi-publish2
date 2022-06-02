@@ -8,7 +8,10 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-import collections
+try:
+    import collections.abc as collections
+except:
+    import collections
 import sgtk
 import copy
 
