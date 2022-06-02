@@ -15,7 +15,7 @@ import copy
 logger = sgtk.platform.get_logger(__name__)
 
 
-class PublishData(collections.MutableMapping):
+class PublishData(collections.abc.MutableMapping):
     """
     A simple dictionary-like object for storing/serializing arbitrary publish
     data.
