@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>App Interface &mdash; tk-multi-publish2 v2.6.2 documentation</title>
+  <title>App Interface &mdash; tk-multi-publish2 v2.6.3 documentation</title>
   
 
   
@@ -121,7 +121,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.6.2.<br>
+    <b>tk-multi-publish2</b> v2.6.3.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -197,7 +197,7 @@
 <dl class="class">
 <dt id="app.MultiPublish2">
 <em class="property">class </em><code class="descclassname">app.</code><code class="descname">MultiPublish2</code><a class="reference internal" href="_modules/app.html#MultiPublish2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.MultiPublish2" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is the <a class="reference external" href="http://developer.shotgridsoftware.com/tk-core/platform.html#sgtk.platform.Application" title="(in tk-core vv0.20.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sgtk.platform.Application</span></code></a> subclass that defines the
+<dd><p>This is the <a class="reference external" href="http://developer.shotgridsoftware.com/tk-core/platform.html#sgtk.platform.Application" title="(in tk-core vmaster)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sgtk.platform.Application</span></code></a> subclass that defines the
 top-level publish2 interface.</p>
 <p>Application instances are constructed by the toolkit launch process
 and various factory methods such as <code class="xref py py-meth docutils literal notranslate"><span class="pre">start_engine()</span></code>.</p>
@@ -265,7 +265,7 @@ directly.</p>
 
 <dl class="method">
 <dt id="app.MultiPublish2.create_publish_manager">
-<code class="descname">create_publish_manager</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#MultiPublish2.create_publish_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.MultiPublish2.create_publish_manager" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create_publish_manager</code><span class="sig-paren">(</span><em>publish_logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#MultiPublish2.create_publish_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.MultiPublish2.create_publish_manager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create and return a <code class="xref py py-class docutils literal notranslate"><span class="pre">tk_multi_publish2.PublishManager</span></code> instance.
 See the <code class="xref py py-class docutils literal notranslate"><span class="pre">tk_multi_publish2.PublishManager</span></code> docs for details on
 how it can be used to automate your publishing workflows.</p>
@@ -273,7 +273,12 @@ how it can be used to automate your publishing workflows.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A <code class="xref py py-class docutils literal notranslate"><span class="pre">tk_multi_publish2.PublishManager</span></code> instance</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>publish_logger</strong> – This is a standard python logger to use during
+publishing. A default logger will be provided if not supplied. This
+can be useful when implementing a custom UI, for example, with a
+specialized log handler (as is the case with the Publisher)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A <code class="xref py py-class docutils literal notranslate"><span class="pre">tk_multi_publish2.PublishManager</span></code> instance</td>
 </tr>
 </tbody>
 </table>

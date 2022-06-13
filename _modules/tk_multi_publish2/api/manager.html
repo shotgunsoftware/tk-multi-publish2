@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.api.manager &mdash; tk-multi-publish2 v2.6.2 documentation</title>
+  <title>tk_multi_publish2.api.manager &mdash; tk-multi-publish2 v2.6.3 documentation</title>
   
 
   
@@ -120,7 +120,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.6.2.<br>
+    <b>tk-multi-publish2</b> v2.6.3.<br>
     
         This documentation is part of the Shotgun Pipeline Toolkit.
     
@@ -498,7 +498,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_process_tasks</span><span class="p">(</span><span class="n">task_generator</span><span class="p">,</span> <span class="n">task_cb</span><span class="p">)</span>
 
         <span class="c1"># execute the post validate method of the phase phase hook</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_post_phase_hook</span><span class="o">.</span><span class="n">post_validate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">,)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_post_phase_hook</span><span class="o">.</span><span class="n">post_validate</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">failed_to_validate</span></div>
 
