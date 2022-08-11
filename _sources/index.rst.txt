@@ -1,5 +1,5 @@
-Shotgun Publisher API reference, |release|
-##########################################
+ShotGrid Publisher API reference, |release|
+###########################################
 
 Overview
 ********
@@ -36,12 +36,12 @@ Collection & Acceptance
 
 When the Publisher is launched, the current session (Maya, Nuke, Houdini, etc)
 is processed and publish items are collected for display in the Publish app's
-interface. These items represent what the artists may want to track in Shotgun
+interface. These items represent what the artists may want to track in ShotGrid
 and/or share with other artists by way of publishing. Similarly, as files are
 dragged and dropped onto the publish UI, they are processed and collected as publish
 items. This item collection behavior is defined by the app's collector hook and
 can be taken over or modified by studios to customize what data should be
-tracked in Shotgun and how it should be shared between artists.
+tracked in ShotGrid and how it should be shared between artists.
 
 .. note:: For a deeper dive into the collection behavior and how it can be
     customized, see the :ref:`publish-collector` docs.
