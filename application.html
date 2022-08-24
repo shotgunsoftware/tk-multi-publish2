@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>App Interface &mdash; tk-multi-publish2 v2.6.3 documentation</title>
+  <title>App Interface &mdash; tk-multi-publish2 master documentation</title>
   
 
   
@@ -121,7 +121,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.6.3.<br>
+    <b>tk-multi-publish2</b> master.<br>
     
         This documentation is part of the ShotGrid Pipeline Toolkit.
     
@@ -131,6 +131,12 @@
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-multi-publish2'>here</a>.
 
     </div>
+    <style>
+        p.privacy_links { margin: 4px 0px;}
+    </style>
+    <p class="privacy_links"><a data-opt-in-preferences href="javascript:;">Privacy settings</a></p>
+    <p class="privacy_links"><a data-wat-linkname="manage-ccpa-settings-footer-link" href="javascript:;">Do not sell my personal information</a></p>
+    <p class="privacy_links"><a href="https://www.autodesk.com/company/legal-notices-trademarks/privacy-statement">Privacy/Cookies</a></p>
 
 
 
@@ -194,98 +200,6 @@
             
   <div class="section" id="app-interface">
 <h1>App Interface<a class="headerlink" href="#app-interface" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="app.MultiPublish2">
-<em class="property">class </em><code class="descclassname">app.</code><code class="descname">MultiPublish2</code><a class="reference internal" href="_modules/app.html#MultiPublish2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.MultiPublish2" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is the <a class="reference external" href="https://developer.shotgridsoftware.com/tk-core/platform.html#sgtk.platform.Application" title="(in tk-core vv0.20.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sgtk.platform.Application</span></code></a> subclass that defines the
-top-level publish2 interface.</p>
-<p>Application instances are constructed by the toolkit launch process
-and various factory methods such as <code class="xref py py-meth docutils literal notranslate"><span class="pre">start_engine()</span></code>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>engine</strong> – The engine instance to connect this app to</li>
-<li><strong>app_name</strong> – The short name of this app (e.g. tk-nukepublish)</li>
-<li><strong>settings</strong> – a settings dictionary for this app</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="attribute">
-<dt id="app.MultiPublish2.base_hooks">
-<code class="descname">base_hooks</code><a class="headerlink" href="#app.MultiPublish2.base_hooks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Exposes the publish2 <code class="docutils literal notranslate"><span class="pre">base_hooks</span></code> module.</p>
-<p>This module provides base class implementations of collector and publish
-plugin hooks:</p>
-<ul class="simple">
-<li><a class="reference internal" href="customizing.html#tk_multi_publish2.base_hooks.CollectorPlugin" title="tk_multi_publish2.base_hooks.CollectorPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">CollectorPlugin</span></code></a></li>
-<li><a class="reference internal" href="customizing.html#tk_multi_publish2.base_hooks.PublishPlugin" title="tk_multi_publish2.base_hooks.PublishPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">PublishPlugin</span></code></a></li>
-</ul>
-<p>Access to these classes won’t typically be needed when writing hooks as
-they are are injected into the class hierarchy automatically for any
-collector or publish plugins configured.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A handle on the app’s <code class="docutils literal notranslate"><span class="pre">base_hooks</span></code> module.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="app.MultiPublish2.util">
-<code class="descname">util</code><a class="headerlink" href="#app.MultiPublish2.util" title="Permalink to this definition">¶</a></dt>
-<dd><p>Exposes the publish2 <code class="docutils literal notranslate"><span class="pre">util</span></code> module.</p>
-<p>This module provides methods that are useful to collector and publish
-plugin hooks. Example code running in a hook:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># get a handle on the publish2 app</span>
-<span class="n">app</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span>
-
-<span class="c1"># call a util method</span>
-<span class="n">path_components</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">get_file_path_components</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Some of the methods available via <code class="docutils literal notranslate"><span class="pre">util</span></code> are the <code class="docutils literal notranslate"><span class="pre">path_info</span></code> hook
-methods. Exposing them via this property allows them to be called
-directly.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A handle on the app’s <code class="docutils literal notranslate"><span class="pre">util</span></code> module.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="app.MultiPublish2.create_publish_manager">
-<code class="descname">create_publish_manager</code><span class="sig-paren">(</span><em>publish_logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#MultiPublish2.create_publish_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.MultiPublish2.create_publish_manager" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create and return a <code class="xref py py-class docutils literal notranslate"><span class="pre">tk_multi_publish2.PublishManager</span></code> instance.
-See the <code class="xref py py-class docutils literal notranslate"><span class="pre">tk_multi_publish2.PublishManager</span></code> docs for details on
-how it can be used to automate your publishing workflows.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>publish_logger</strong> – This is a standard python logger to use during
-publishing. A default logger will be provided if not supplied. This
-can be useful when implementing a custom UI, for example, with a
-specialized log handler (as is the case with the Publisher)</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A <code class="xref py py-class docutils literal notranslate"><span class="pre">tk_multi_publish2.PublishManager</span></code> instance</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
 </div>
 
 
@@ -334,15 +248,14 @@ specialized log handler (as is the case with the Publisher)</td>
   
  
 
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-  ga('create', 'UA-2114792-1', 'auto');
-  ga('send', 'pageview');
-</script>
-
+  <script type="text/javascript">
+    window.wafCCPAForceShow = true;
+    (function(a,b,c,d){
+      a='https://tags.tiqcdn.com/utag/autodesk/micro-opt/prod/utag.js';
+      b=document;c='script';d=b.createElement(c);d.src=a;d.type='text/java'+c;d.async=true;
+      a=b.getElementsByTagName(c)[0];a.parentNode.insertBefore(d,a);
+    })();
+  </script>
 
 
 </body>

@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Utilities &mdash; tk-multi-publish2 v2.6.3 documentation</title>
+  <title>Utilities &mdash; tk-multi-publish2 master documentation</title>
   
 
   
@@ -122,7 +122,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.6.3.<br>
+    <b>tk-multi-publish2</b> master.<br>
     
         This documentation is part of the ShotGrid Pipeline Toolkit.
     
@@ -132,6 +132,12 @@
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-multi-publish2'>here</a>.
 
     </div>
+    <style>
+        p.privacy_links { margin: 4px 0px;}
+    </style>
+    <p class="privacy_links"><a data-opt-in-preferences href="javascript:;">Privacy settings</a></p>
+    <p class="privacy_links"><a data-wat-linkname="manage-ccpa-settings-footer-link" href="javascript:;">Do not sell my personal information</a></p>
+    <p class="privacy_links"><a href="https://www.autodesk.com/company/legal-notices-trademarks/privacy-statement">Privacy/Cookies</a></p>
 
 
 
@@ -208,211 +214,6 @@ hook. Studios can override these path processing methods to account for their
 own naming conventions and path structures.</p>
 </div>
 <p>The utilty method are documented below:</p>
-<span class="target" id="module-tk_multi_publish2.util"></span><dl class="function">
-<dt id="tk_multi_publish2.util.get_version_path">
-<code class="descclassname">tk_multi_publish2.util.</code><code class="descname">get_version_path</code><span class="sig-paren">(</span><em>path</em>, <em>version</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/util.html#get_version_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.util.get_version_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a path without a version number, return the path with the supplied
-version number.</p>
-<p>If a version number is detected in the supplied path, the path will be
-returned as-is.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>path</strong> – The path to inject a version number.</li>
-<li><strong>version</strong> – The version number to inject.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The modified path with the supplied version number inserted.</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="tk_multi_publish2.util.get_next_version_path">
-<code class="descclassname">tk_multi_publish2.util.</code><code class="descname">get_next_version_path</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/util.html#get_next_version_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.util.get_next_version_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a file path, return a path to the next version.</p>
-<p>This is typically used by auto-versioning logic in plugins that need to
-save the current work file to the next version number.</p>
-<p>If no version can be identified in the supplied path, <code class="docutils literal notranslate"><span class="pre">None</span></code> will be
-returned, indicating that the next version path can’t be determined.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> – The path to a file, likely one to be published.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The path to the next version of the supplied path.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="tk_multi_publish2.util.get_file_path_components">
-<code class="descclassname">tk_multi_publish2.util.</code><code class="descname">get_file_path_components</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/util.html#get_file_path_components"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.util.get_file_path_components" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convenience method for determining file components for a given path.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The path to the file to componentize.</td>
-</tr>
-</tbody>
-</table>
-<p>Returns file path components in the form:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># path=&quot;/path/to/the/file/my_file.v001.ext&quot;</span>
-
-<span class="p">{</span>
-    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/the/file/my_file.v001.ext&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;folder&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/the/file&quot;</span> <span class="p">,</span>
-    <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;my_file.v001.ext&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;extension&quot;</span><span class="p">:</span> <span class="s2">&quot;ext&quot;</span><span class="p">,</span>
-<span class="p">}</span>
-
-<span class="c1"># path=&quot;/path/to/the/folder&quot;</span>
-
-<span class="p">{</span>
-    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/the/folder&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;folder&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/the&quot;</span> <span class="p">,</span>
-    <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;folder&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;extension&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="tk_multi_publish2.util.get_frame_sequence_path">
-<code class="descclassname">tk_multi_publish2.util.</code><code class="descname">get_frame_sequence_path</code><span class="sig-paren">(</span><em>path</em>, <em>frame_spec=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/util.html#get_frame_sequence_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.util.get_frame_sequence_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a path with a frame number, return the sequence path where the frame
-number is replaced with a given frame specification such as <code class="docutils literal notranslate"><span class="pre">{FRAME}</span></code> or
-<code class="docutils literal notranslate"><span class="pre">%04d</span></code> or <code class="docutils literal notranslate"><span class="pre">$F</span></code>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>path</strong> – The input path with a frame number</li>
-<li><strong>frame_spec</strong> – The frame specification to replace the frame number with.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The full frame sequence path</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="tk_multi_publish2.util.get_frame_sequences">
-<code class="descclassname">tk_multi_publish2.util.</code><code class="descname">get_frame_sequences</code><span class="sig-paren">(</span><em>folder</em>, <em>extensions=None</em>, <em>frame_spec=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/util.html#get_frame_sequences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.util.get_frame_sequences" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a folder, inspect the contained files to find what appear to be
-files with frame numbers.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>folder</strong> – The path to a folder potentially containing a sequence of
-files.</li>
-<li><strong>extensions</strong> – A list of file extensions to retrieve paths for.
-If not supplied, the extension will be ignored.</li>
-<li><strong>frame_spec</strong> – A string to use to represent the frame number in the
-return sequence path.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p>A list of tuples for each identified frame sequence. The first
-item in the tuple is a sequence path with the frame number replaced
-with the supplied frame specification. If no frame spec is supplied,
-a python string format spec will be returned with the padding found
-in the file.</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">get_frame_sequences</span><span class="p">(</span>
-    <span class="s2">&quot;/path/to/the/folder&quot;</span><span class="p">,</span>
-    <span class="p">[</span><span class="s2">&quot;exr&quot;</span><span class="p">,</span> <span class="s2">&quot;jpg&quot;</span><span class="p">],</span>
-    <span class="n">frame_spec</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{FRAME}</span><span class="s2">&quot;</span>
-<span class="p">)</span>
-
-<span class="p">[</span>
-    <span class="p">(</span>
-        <span class="s2">&quot;/path/to/the/supplied/folder/key_light1.</span><span class="si">{FRAME}</span><span class="s2">.exr&quot;</span><span class="p">,</span>
-        <span class="p">[</span><span class="o">&lt;</span><span class="n">frame_1_path</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">frame_2_path</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
-    <span class="p">),</span>
-    <span class="p">(</span>
-        <span class="s2">&quot;/path/to/the/supplied/folder/fill_light1.</span><span class="si">{FRAME}</span><span class="s2">.jpg&quot;</span><span class="p">,</span>
-        <span class="p">[</span><span class="o">&lt;</span><span class="n">frame_1_path</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">frame_2_path</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
-    <span class="p">)</span>
-<span class="p">]</span>
-</pre></div>
-</div>
-</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="tk_multi_publish2.util.get_publish_name">
-<code class="descclassname">tk_multi_publish2.util.</code><code class="descname">get_publish_name</code><span class="sig-paren">(</span><em>path</em>, <em>sequence=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/util.html#get_publish_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.util.get_publish_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a file path, return the display name to use for publishing.</p>
-<p>Typically, this is a name where the path and any version number are removed
-in order to keep the publish name consistent as subsequent versions are
-published.</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ow">in</span><span class="p">:</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">the</span><span class="o">/</span><span class="n">file</span><span class="o">/</span><span class="n">my_file</span><span class="o">.</span><span class="n">v001</span><span class="o">.</span><span class="n">jpg</span>
-<span class="n">out</span><span class="p">:</span> <span class="n">my_file</span><span class="o">.</span><span class="n">jpg</span>
-</pre></div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>path</strong> – The path to a file, likely one to be published.</li>
-<li><strong>sequence</strong> – If True, treat the path as a sequence name and replace
-the frame number with placeholder</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A publish display name for the provided path.</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="tk_multi_publish2.util.get_version_number">
-<code class="descclassname">tk_multi_publish2.util.</code><code class="descname">get_version_number</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/util.html#get_version_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_multi_publish2.util.get_version_number" title="Permalink to this definition">¶</a></dt>
-<dd><p>Extract a version number from the supplied path.</p>
-<p>This is used by plugins that need to know what version number to associate
-with the file when publishing.</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ow">in</span><span class="p">:</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">the</span><span class="o">/</span><span class="n">file</span><span class="o">/</span><span class="n">my_file</span><span class="o">.</span><span class="n">v001</span><span class="o">.</span><span class="n">jpg</span>
-<span class="n">out</span><span class="p">:</span> <span class="mi">1</span>
-</pre></div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> – The path to a file, likely one to be published.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">An integer representing the version number in the supplied path.
-If no version found, <code class="docutils literal notranslate"><span class="pre">None</span></code> will be returned.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 </div>
 
 
@@ -463,15 +264,14 @@ If no version found, <code class="docutils literal notranslate"><span class="pre
   
  
 
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-  ga('create', 'UA-2114792-1', 'auto');
-  ga('send', 'pageview');
-</script>
-
+  <script type="text/javascript">
+    window.wafCCPAForceShow = true;
+    (function(a,b,c,d){
+      a='https://tags.tiqcdn.com/utag/autodesk/micro-opt/prod/utag.js';
+      b=document;c='script';d=b.createElement(c);d.src=a;d.type='text/java'+c;d.async=true;
+      a=b.getElementsByTagName(c)[0];a.parentNode.insertBefore(d,a);
+    })();
+  </script>
 
 
 </body>
