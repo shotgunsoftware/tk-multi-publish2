@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Logging &mdash; tk-multi-publish2 master documentation</title>
+  <title>Logging &mdash; tk-multi-publish2 v2.6.3 documentation</title>
   
 
   
@@ -99,7 +99,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Logging</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#generic-action">Generic Action</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#show-folder-action">Show Folder Action</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#show-in-shotgrid-action">Show in ShotGrid Action</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#show-in-shotgun-action">Show in Shotgun Action</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#show-more-info-action">Show More Info Action</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#open-url-action">Open URL Action</a></li>
 </ul>
@@ -129,7 +129,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> master.<br>
+    <b>tk-multi-publish2</b> v2.6.3.<br>
     
         This documentation is part of the ShotGrid Pipeline Toolkit.
     
@@ -294,9 +294,9 @@ of the publish UI.</p>
 <img alt="_images/log_extra_action_show_folder.png" src="_images/log_extra_action_show_folder.png" />
 </div>
 <hr class="docutils" />
-<div class="section" id="show-in-shotgrid-action">
-<h2>Show in ShotGrid Action<a class="headerlink" href="#show-in-shotgrid-action" title="Permalink to this headline">¶</a></h2>
-<p>A common action for showing an entity’s detail page in ShotGrid.</p>
+<div class="section" id="show-in-shotgun-action">
+<h2>Show in Shotgun Action<a class="headerlink" href="#show-in-shotgun-action" title="Permalink to this headline">¶</a></h2>
+<p>A common action for showing an entity’s detail page in Shotgun.</p>
 <p>The <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> supplied takes the following form:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;action_show_in_shotgun&quot;</span><span class="p">:</span> <span class="p">{</span>
     <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">,</span>
@@ -310,8 +310,8 @@ of the publish UI.</p>
 <li><code class="docutils literal notranslate"><span class="pre">label</span></code>: The text to display on the button itself. The default value is
 <code class="docutils literal notranslate"><span class="pre">&quot;Show</span> <span class="pre">Entity&quot;</span></code>. Optional.</li>
 <li><code class="docutils literal notranslate"><span class="pre">tooltip</span></code>: Optional tooltip text to display when the mouse is over the
-button. The default value is <code class="docutils literal notranslate"><span class="pre">&quot;Reveal</span> <span class="pre">the</span> <span class="pre">entity</span> <span class="pre">in</span> <span class="pre">ShotGrid.&quot;</span></code>.</li>
-<li><code class="docutils literal notranslate"><span class="pre">entity</span></code>: Required, standard ShotGrid entity <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>.</li>
+button. The default value is <code class="docutils literal notranslate"><span class="pre">&quot;Reveal</span> <span class="pre">the</span> <span class="pre">entity</span> <span class="pre">in</span> <span class="pre">Shotgun.&quot;</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">entity</span></code>: Required, standard Shotgun entity <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>.</li>
 </ul>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
