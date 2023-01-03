@@ -416,16 +416,17 @@ class TestQtPixmapAvailability(PublishApiTestBase):
         self._reset_pixmap_flag()
         self.assertTrue(self.api.item._is_qt_pixmap_usable())
 
-    def test_missing_qtgui(self):
+    def test_missing_engine_ui(self):
         """
-        Ensures a missing QApplication will not support QtPixmap usage.
+        Ensures an engine without UI will not support QtPixmap usage.
         """
-        QtGui = sgtk.platform.qt.QtGui
-        del sgtk.platform.qt.QtGui
-        self.assertFalse(self.api.item._is_qt_pixmap_usable())
-        self._reset_pixmap_flag()
+        with patch.object(
+            sgtk.platform.qt.QtGui.QApplication, "instance", return_value=None
+        ):
+            self.assertFalse(sgtk.platform.current_engine().has_ui)
+            self.assertFalse(self.api.item._is_qt_pixmap_usable())
 
-        sgtk.platform.qt.QtGui = QtGui
+        self._reset_pixmap_flag()
         self.assertTrue(self.api.item._is_qt_pixmap_usable())
 
     def test_pixmap_methods(self):
