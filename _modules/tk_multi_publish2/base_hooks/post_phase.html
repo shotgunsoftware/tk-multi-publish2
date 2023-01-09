@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.base_hooks.post_phase &mdash; tk-multi-publish2 v2.6.3 documentation</title>
+  <title>tk_multi_publish2.base_hooks.post_phase &mdash; tk-multi-publish2 v2.6.4 documentation</title>
   
 
   
@@ -120,7 +120,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.6.3.<br>
+    <b>tk-multi-publish2</b> v2.6.4.<br>
     
         This documentation is part of the ShotGrid Pipeline Toolkit.
     
@@ -214,7 +214,7 @@
 
 
 <div class="viewcode-block" id="PostPhaseHook"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PostPhaseHook">[docs]</a><span class="k">class</span> <span class="nc">PostPhaseHook</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This hook defines methods that are executed after each phase of a publish:</span>
 <span class="sd">    validation, publish, and finalization. Each method receives the</span>
 <span class="sd">    :ref:`publish-api-tree` tree instance being used by the publisher, giving</span>
@@ -225,7 +225,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="PostPhaseHook.post_validate"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PostPhaseHook.post_validate">[docs]</a>    <span class="k">def</span> <span class="nf">post_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_tree</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method is executed after the validation pass has completed for each</span>
 <span class="sd">        item in the tree, before the publish pass.</span>
 
@@ -274,7 +274,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Executing post validate hook method...&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PostPhaseHook.post_publish"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PostPhaseHook.post_publish">[docs]</a>    <span class="k">def</span> <span class="nf">post_publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_tree</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method is executed after the publish pass has completed for each</span>
 <span class="sd">        item in the tree, before the finalize pass.</span>
 
@@ -299,7 +299,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Executing post publish hook method...&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PostPhaseHook.post_finalize"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PostPhaseHook.post_finalize">[docs]</a>    <span class="k">def</span> <span class="nf">post_finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_tree</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method is executed after the finalize pass has completed for each</span>
 <span class="sd">        item in the tree.</span>
 
@@ -335,7 +335,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2022, Autodesk
+        &copy; Copyright 2023, Autodesk
 
     </p>
   </div> 

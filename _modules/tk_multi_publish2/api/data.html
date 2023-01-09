@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.api.data &mdash; tk-multi-publish2 v2.6.3 documentation</title>
+  <title>tk_multi_publish2.api.data &mdash; tk-multi-publish2 v2.6.4 documentation</title>
   
 
   
@@ -120,7 +120,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.6.3.<br>
+    <b>tk-multi-publish2</b> v2.6.4.<br>
     
         This documentation is part of the ShotGrid Pipeline Toolkit.
     
@@ -216,7 +216,7 @@
 
 
 <div class="viewcode-block" id="PublishData"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishData">[docs]</a><span class="k">class</span> <span class="nc">PublishData</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">MutableMapping</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A simple dictionary-like object for storing/serializing arbitrary publish</span>
 <span class="sd">    data.</span>
 
@@ -228,7 +228,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a :class:`~PublishData` instance from a dict.</span>
 
 <span class="sd">        This method is used to deserialize data returned by :meth:`to_dict`.</span>
@@ -241,7 +241,7 @@
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        .. note:: Developers should not create instances of this class. Instances</span>
 <span class="sd">            of ``PublishData`` are exposed via properties and settings of other</span>
 <span class="sd">            classes.</span>
@@ -249,7 +249,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a dictionary representation of the :class:`~PublishData`</span>
 <span class="sd">        instance.</span>
 
@@ -285,7 +285,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2022, Autodesk
+        &copy; Copyright 2023, Autodesk
 
     </p>
   </div> 

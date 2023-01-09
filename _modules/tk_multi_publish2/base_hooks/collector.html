@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.base_hooks.collector &mdash; tk-multi-publish2 v2.6.3 documentation</title>
+  <title>tk_multi_publish2.base_hooks.collector &mdash; tk-multi-publish2 v2.6.4 documentation</title>
   
 
   
@@ -120,7 +120,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.6.3.<br>
+    <b>tk-multi-publish2</b> v2.6.4.<br>
     
         This documentation is part of the ShotGrid Pipeline Toolkit.
     
@@ -214,7 +214,7 @@
 
 
 <div class="viewcode-block" id="CollectorPlugin"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.CollectorPlugin">[docs]</a><span class="k">class</span> <span class="nc">CollectorPlugin</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class defines the required interface for a collector plugin.</span>
 <span class="sd">    Collectors are used to gather individual files that are loaded via the</span>
 <span class="sd">    file browser or dragged and dropped into the Publish2 UI. It is also used</span>
@@ -223,14 +223,14 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unique string identifying this plugin.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span>
 
     <span class="nd">@id</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Allows to set the unique string identifying this plugin.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">new_id</span>
@@ -239,7 +239,7 @@
     <span class="c1"># Collector properties</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A :class:`dict` defining the configuration interface for this collector.</span>
 
 <span class="sd">        The values configured for the collector will be supplied via settings</span>
@@ -307,7 +307,7 @@
     <span class="c1"># Collection methods</span>
 
 <div class="viewcode-block" id="CollectorPlugin.process_current_session"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.CollectorPlugin.process_current_session">[docs]</a>    <span class="k">def</span> <span class="nf">process_current_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">parent_item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method analyzes the current engine session and creates a hierarchy</span>
 <span class="sd">        of items for publishing.</span>
 
@@ -371,7 +371,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="CollectorPlugin.process_file"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.CollectorPlugin.process_file">[docs]</a>    <span class="k">def</span> <span class="nf">process_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">parent_item</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method creates one or more items to publish for the supplied file</span>
 <span class="sd">        path.</span>
 
@@ -441,7 +441,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2022, Autodesk
+        &copy; Copyright 2023, Autodesk
 
     </p>
   </div> 

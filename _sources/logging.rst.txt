@@ -104,10 +104,10 @@ of the publish UI.
 
 ----
 
-Show in Shotgun Action
-----------------------
+Show in ShotGrid Action
+-----------------------
 
-A common action for showing an entity's detail page in Shotgun.
+A common action for showing an entity's detail page in ShotGrid.
 
 The :class:`dict` supplied takes the following form::
 
@@ -122,8 +122,8 @@ The values in the :class:`dict` are:
 * ``label``: The text to display on the button itself. The default value is
   ``"Show Entity"``. Optional.
 * ``tooltip``: Optional tooltip text to display when the mouse is over the
-  button. The default value is ``"Reveal the entity in Shotgun."``.
-* ``entity``: Required, standard Shotgun entity :class:`dict`.
+  button. The default value is ``"Reveal the entity in ShotGrid."``.
+* ``entity``: Required, standard ShotGrid entity :class:`dict`.
 
 Example:
 

@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.api.tree &mdash; tk-multi-publish2 v2.6.3 documentation</title>
+  <title>tk_multi_publish2.api.tree &mdash; tk-multi-publish2 v2.6.4 documentation</title>
   
 
   
@@ -120,7 +120,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.6.3.<br>
+    <b>tk-multi-publish2</b> v2.6.4.<br>
     
         This documentation is part of the ShotGrid Pipeline Toolkit.
     
@@ -220,7 +220,7 @@
 
 
 <div class="viewcode-block" id="PublishTree"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishTree">[docs]</a><span class="k">class</span> <span class="nc">PublishTree</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class provides an interface for operating on a tree of items to be</span>
 <span class="sd">    published. At a high level, the publish tree is structured like this:</span>
 
@@ -297,7 +297,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">tree_dict</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a publish tree instance given the supplied dictionary. The</span>
 <span class="sd">        supplied dictionary is typically the result of calling ``to_dict`` on</span>
 <span class="sd">        a publish tree instance during serialization.</span>
@@ -326,7 +326,7 @@
 
 <div class="viewcode-block" id="PublishTree.load_file"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishTree.load_file">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">load_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method returns a new :class:`~.PublishTree` instance by reading</span>
 <span class="sd">        a serialized tree file from disk._sgtk_custom_type</span>
 
@@ -346,7 +346,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">file_obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load a publish tree from a supplied file-like object.</span>
 
 <span class="sd">        :param file file_obj: A file-like object</span>
@@ -366,7 +366,7 @@
             <span class="k">raise</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize the publish tree instance.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the publish tree instance.&quot;&quot;&quot;</span>
 
         <span class="c1"># The root item is the sole parent of all top level publish items. It</span>
         <span class="c1"># has no use other than organization and provides an easy interface for</span>
@@ -374,7 +374,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_root_item</span> <span class="o">=</span> <span class="n">PublishItem</span><span class="p">(</span><span class="s2">&quot;__root__&quot;</span><span class="p">,</span> <span class="s2">&quot;__root__&quot;</span><span class="p">,</span> <span class="s2">&quot;__root__&quot;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Iterates over the tree, depth first.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Iterates over the tree, depth first.&quot;&quot;&quot;</span>
 
         <span class="c1"># item&#39;s are recursively iterable. this will yield all items under the</span>
         <span class="c1"># root.</span>
@@ -382,7 +382,7 @@
             <span class="k">yield</span> <span class="n">item</span>
 
 <div class="viewcode-block" id="PublishTree.clear"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishTree.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clear_persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clears the tree of all items.</span>
 
 <span class="sd">        :param bool clear_persistent: If ``True``, all items will be cleared</span>
@@ -397,7 +397,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">remove_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PublishTree.pformat"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishTree.pformat">[docs]</a>    <span class="k">def</span> <span class="nf">pformat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a human-readable string representation of the tree, useful for</span>
 <span class="sd">        debugging.</span>
 
@@ -406,7 +406,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_tree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root_item</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PublishTree.pprint"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishTree.pprint">[docs]</a>    <span class="k">def</span> <span class="nf">pprint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prints a human-readable string representation of the tree, useful for</span>
 <span class="sd">        debugging.</span>
 
@@ -434,7 +434,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pformat</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="PublishTree.remove_item"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishTree.remove_item">[docs]</a>    <span class="k">def</span> <span class="nf">remove_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove the supplied item from the tree.</span>
 
 <span class="sd">        :param item: The :ref:`publish-api-item` instance to remove from the</span>
@@ -448,7 +448,7 @@
         <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">remove_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PublishTree.save_file"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishTree.save_file">[docs]</a>    <span class="k">def</span> <span class="nf">save_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the serialized tree instance to disk at the supplied path.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -460,7 +460,7 @@
                 <span class="k">raise</span></div>
 
     <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Writes a json-serialized representation of the publish tree to the</span>
 <span class="sd">        supplied file-like object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -482,7 +482,7 @@
             <span class="k">raise</span>
 
     <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a dictionary representation of the publish tree. Typically used</span>
 <span class="sd">        during serialization of the publish tree.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -493,21 +493,21 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">persistent_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;A generator of all persistent items in the tree.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A generator of all persistent items in the tree.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_item</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">persistent</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">item</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">root_item</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the root item of this tree.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the root item of this tree.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root_item</span>
 
     <span class="c1">############################################################################</span>
     <span class="c1"># protected methods</span>
 
     <span class="k">def</span> <span class="nf">_format_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_item</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Depth first traversal and string formatting of the tree given a root</span>
 <span class="sd">        node.</span>
 
@@ -533,7 +533,7 @@
 
 
 <span class="k">class</span> <span class="nc">_PublishTreeEncoder</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements the json encoder interface for custom publish tree serialization.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -547,7 +547,7 @@
 
 
 <span class="k">def</span> <span class="nf">_json_to_objects</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if an dictionary is actually representing a Toolkit object and</span>
 <span class="sd">    unserializes it.</span>
 
@@ -576,7 +576,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2022, Autodesk
+        &copy; Copyright 2023, Autodesk
 
     </p>
   </div> 
