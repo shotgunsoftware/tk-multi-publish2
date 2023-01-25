@@ -60,7 +60,9 @@ class TreeNodeTask(TreeNodeBase):
         widget.set_checkbox_value(self.data(0, self.CHECKBOX_ROLE))
         return widget
 
-    def set_check_state(self, state, apply_to_all_plugins=False):
+    def set_check_state(
+        self, state, apply_to_all_plugins=False, apply_to_invisible_siblings=False
+    ):
         """
         Called by child item when checkbox was ticked
         """
@@ -70,6 +72,12 @@ class TreeNodeTask(TreeNodeBase):
         if apply_to_all_plugins:
             # do it for all of the items
             self.treeWidget().set_check_state_for_all_plugins(self._task.plugin, state)
+        elif apply_to_invisible_siblings:
+            # set invisible siblings
+            self.treeWidget().set_check_state_for_invisible_siblings(
+                self._task.plugin, state
+            )
+            super(TreeNodeTask, self).set_check_state(state)
         else:
             # set just this one
             super(TreeNodeTask, self).set_check_state(state)
