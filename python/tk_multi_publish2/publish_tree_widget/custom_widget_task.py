@@ -58,7 +58,7 @@ class CustomTreeWidgetTask(CustomTreeWidgetBase):
             logger.debug("shift held. propagating check to all plugins.")
             self._tree_node.set_check_state(state, apply_to_all_plugins=True)
         else:
-            self._tree_node.set_check_state(state)
+            self._tree_node.set_check_state(state, apply_to_invisible_siblings=True)
 
     def _on_status_click(self):
         """
