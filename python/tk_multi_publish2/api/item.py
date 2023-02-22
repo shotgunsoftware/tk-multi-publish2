@@ -399,11 +399,11 @@ class PublishItem(object):
         if self._current_temp_file_path:
             return self._current_temp_file_path
 
-        if self.thumbnail is None:
-            return None
-
         # nothing to do if running without a UI
         if not sgtk.platform.current_engine().has_ui:
+            return None
+
+        if self.thumbnail is None:
             return None
 
         temp_path = tempfile.NamedTemporaryFile(
