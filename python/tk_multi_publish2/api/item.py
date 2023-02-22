@@ -392,16 +392,16 @@ class PublishItem(object):
         :returns: Path to a file on disk or None if no thumbnail set
         """
 
-        # nothing to do if running without a UI
-        if not sgtk.platform.current_engine().has_ui:
-            return None
-
         # the thumbnail path was explicitly provided
         if self._thumbnail_path:
             return self._thumbnail_path
 
         if self._current_temp_file_path:
             return self._current_temp_file_path
+
+        # nothing to do if running without a UI
+        if not sgtk.platform.current_engine().has_ui:
+            return None
 
         if self.thumbnail is None:
             return None
