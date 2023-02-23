@@ -11,6 +11,8 @@
 
 import sgtk
 import copy
+import sys
+
 # https://stackoverflow.com/questions/70943244/attributeerror-module-collections-has-no-attribute-mutablemapping
 if sys.version_info.major == 3 and sys.version_info.minor >= 10:
 
