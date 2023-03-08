@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tk_multi_publish2.api.item &mdash; tk-multi-publish2 v2.6.4 documentation</title>
+  <title>tk_multi_publish2.api.item &mdash; tk-multi-publish2 v2.6.5 documentation</title>
   
 
   
@@ -120,7 +120,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.6.4.<br>
+    <b>tk-multi-publish2</b> v2.6.5.<br>
     
         This documentation is part of the ShotGrid Pipeline Toolkit.
     
@@ -592,16 +592,16 @@
 <span class="sd">        :returns: Path to a file on disk or None if no thumbnail set</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="c1"># nothing to do if running without a UI</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span><span class="o">.</span><span class="n">has_ui</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
-
         <span class="c1"># the thumbnail path was explicitly provided</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thumbnail_path</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thumbnail_path</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_temp_file_path</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_temp_file_path</span>
+
+        <span class="c1"># nothing to do if running without a UI</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span><span class="o">.</span><span class="n">has_ui</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">thumbnail</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
