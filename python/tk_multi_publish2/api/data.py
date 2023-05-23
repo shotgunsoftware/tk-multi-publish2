@@ -8,14 +8,22 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-import collections
+
 import sgtk
 import copy
+import sys
+
+if sys.version_info.major < 3 or (
+    sys.version_info.major == 3 and sys.version_info.minor < 3
+):
+    from collections import MutableMapping
+else:
+    from collections.abc import MutableMapping
 
 logger = sgtk.platform.get_logger(__name__)
 
 
-class PublishData(collections.MutableMapping):
+class PublishData(MutableMapping):
     """
     A simple dictionary-like object for storing/serializing arbitrary publish
     data.
