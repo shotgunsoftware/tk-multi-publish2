@@ -257,7 +257,9 @@ class BasicFilePublishPlugin(HookBaseClass):
         :returns: dictionary with boolean keys accepted, required and enabled
         """
 
-        path = item.properties.path
+        path = item.get_property("path")
+        if path is None:
+            raise AttributeError("'PublishData' object has no attribute 'path'")
 
         # log the accepted file and display a button to reveal it in the fs
         self.logger.info(
@@ -460,7 +462,9 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         self.logger.info("Cleared the status of all previous, conflicting publishes")
 
-        path = item.properties.path
+        path = item.get_property("path")
+        if path is None:
+            raise AttributeError("'PublishData' object has no attribute 'path'")
         self.logger.info(
             "Publish created for file: %s" % (path,),
             extra={
@@ -795,7 +799,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         # ---- get a list of files to be copied
 
         # by default, the path that was collected for publishing
-        work_files = [item.properties.path]
+        work_files = [item.get_property("path")]
 
         # if this is a sequence, get the attached files
         if "sequence_paths" in item.properties:
@@ -803,7 +807,7 @@ class BasicFilePublishPlugin(HookBaseClass):
             if not work_files:
                 self.logger.warning(
                     "Sequence publish without a list of files. Publishing "
-                    "the sequence path in place: %s" % (item.properties.path,)
+                    "the sequence path in place: %s" % (item.get_property("path"),)
                 )
                 return
 
