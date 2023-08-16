@@ -497,26 +497,6 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         root = self.invisibleRootItem()
         _check_r(root)
 
-    def set_check_state_for_invisible_siblings(self, plugin, state):
-        """
-        Set the check state for all invisible items,
-        otherwise there's no way to check back them.
-
-        :param plugin: Plugin for which tasks should be manipulated
-        :param state: checkstate to set.
-        """
-        logger.debug("Setting state %d for invisible sibling %s" % (state, plugin))
-
-        def _check_r(parent):
-            for child_index in range(parent.childCount()):
-                child = parent.child(child_index)
-                if isinstance(child, TreeNodeTask) and not child.task.visible:
-                    child.set_check_state(state)
-                _check_r(child)
-
-        root = self.invisibleRootItem()
-        _check_r(root)
-
     def dropEvent(self, event):
         """
         Something was dropped on this widget
