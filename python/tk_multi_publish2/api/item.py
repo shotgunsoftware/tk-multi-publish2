@@ -478,6 +478,8 @@ class PublishItem(object):
         # Do not remove this. The original version of the API validated the thumbnail
         # path and ensured it could be loaded into a pixmap.
         self._thumbnail_path = self._validate_image(path)
+        
+        print("_thumbnail_path set to:", self._thumbnail_path)
 
     def _validate_image(self, path):
         """
@@ -494,6 +496,10 @@ class PublishItem(object):
         if not path:
             return None
 
+        print()
+        print("_validate_image", path)
+        print()
+
         # We can't validate the path by creating a QPixmap, so bail out and
         # return the unvalidated path.
         if not _is_qt_pixmap_usable():
@@ -507,8 +513,14 @@ class PublishItem(object):
         except Exception as e:
             logger.warning("%r: Could not load icon '%s': %s" % (self, path, e))
             return None
-        else:
-            return None if icon.isNull() else path
+
+        if icon.isNull():
+            return
+
+        if path.endswith(".pdf"):
+            print("seriously?! We have a valid pixmap here????", icon)
+
+        return path
 
     @property
     def active(self):
