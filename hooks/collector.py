@@ -138,7 +138,7 @@ class BasicSceneCollector(HookBaseClass):
                 "PDF": {
                     "extensions": ["pdf"],
                     "icon": self._get_icon_path("file.png"),
-                    "item_type": "file.image",
+                    "item_type": "file.pdf",
                 },
             }
 
