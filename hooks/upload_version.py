@@ -10,6 +10,7 @@
 
 import os
 import pprint
+
 import sgtk
 from tank_vendor import six
 
@@ -88,7 +89,7 @@ class UploadVersionPlugin(HookBaseClass):
         return {
             "File Extensions": {
                 "type": "str",
-                "default": "jpeg, jpg, png, mov, mp4, pdf",
+                "default": "jpeg, jpg, png, mov, mp4, pdf, ppt, pptx",
                 "description": "File Extensions of files to include",
             },
             "Upload": {
@@ -114,7 +115,7 @@ class UploadVersionPlugin(HookBaseClass):
         """
 
         # we use "video" since that's the mimetype category.
-        return ["file.image", "file.pdf", "file.video"]
+        return ["file.image", "file.pdf", "file.ppt", "file.video"]
 
     def accept(self, settings, item):
         """

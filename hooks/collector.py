@@ -135,6 +135,11 @@ class BasicSceneCollector(HookBaseClass):
                     "icon": self._get_icon_path("texture.png"),
                     "item_type": "file.texture",
                 },
+                "PowerPoint Presentation": {
+                    "extensions": ["ppt", "pptx"],
+                    "icon": self._get_icon_path("file.png"),
+                    "item_type": "file.ppt",
+                },
                 "PDF": {
                     "extensions": ["pdf"],
                     "icon": self._get_icon_path("file.png"),
