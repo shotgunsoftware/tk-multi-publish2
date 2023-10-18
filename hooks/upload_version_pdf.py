@@ -60,7 +60,7 @@ class UploadVersionPDFPlugin(HookBaseClass):
         :returns: dictionary with boolean keys accepted, required and enabled
         """
 
-        return True
+        return {"accepted": True, "checked": True}
 
     def validate(self, settings, item):
         """
