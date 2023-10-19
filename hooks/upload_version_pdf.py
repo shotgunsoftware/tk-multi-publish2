@@ -29,6 +29,36 @@ class UploadVersionPDFPlugin(HookBaseClass):
         return """Convert the file to PDF and upload to ShotGrid."""
 
     @property
+    def settings(self):
+        """
+        Dictionary defining the settings that this plugin expects to recieve
+        through the settings parameter in the accept, validate, publish and
+        finalize methods.
+
+        A dictionary on the following form::
+
+            {
+                "Settings Name": {
+                    "type": "settings_type",
+                    "default": "default_value",
+                    "description": "One line description of the setting"
+            }
+
+        The type string should be one of the data types that toolkit accepts as
+        part of its environment configuration.
+        """
+        plugin_settings = {
+            "Upload": {
+                "type": "bool",
+                "default": False,
+                "description": "Upload PDF as Uploaded Movie to Version",
+            },
+        }
+        all_settings = super(UploadVersionPDFPlugin, self).settings
+        all_settings.update(plugin_settings)
+        return all_settings
+
+    @property
     def item_filters(self):
         """List of item types that this plugin is interested in."""
 
