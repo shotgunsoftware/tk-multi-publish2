@@ -107,57 +107,68 @@ class UploadVersionPDFPlugin(HookBaseClass):
         base_file_name = os.path.splitext(file_name)[0]
         pdf_file_name = f"{base_file_name}.pdf"
 
-        # Do the PPT to PDF translations, and upload as sg_translation_files
-        pdf_temp_dir = framework_office2pdf.translate(path=path)
-        pdf_file_path = os.path.join(pdf_temp_dir, pdf_file_name)
+        pdf_temp_dir = None
+        png_temp_dir = None
 
-        # Set item properties and create Version in ShotGrid for PDF file
-        item.properties["path"] = pdf_file_path
-        item.properties["publish_name"] = pdf_file_name
-        super(UploadVersionPDFPlugin, self).publish(settings, item)
+        try:
+            # Do the PPT to PDF translations, and upload as sg_translation_files
+            pdf_temp_dir = framework_office2pdf.translate(path=path)
+            pdf_file_path = os.path.join(pdf_temp_dir, pdf_file_name)
+            if not os.path.exists(pdf_file_path):
+                raise Exception(f"Failed to create PDF {pdf_file_name} from {file_name}")
 
-        # Make sure we have the version that was just created
-        if not item.properties["sg_version_data"]["id"]:
-            raise Exception("Failed to create Version for PDF")
+            # Set item properties and create Version in ShotGrid for PDF file
+            item.properties["path"] = pdf_file_path
+            item.properties["publish_name"] = pdf_file_name
+            super(UploadVersionPDFPlugin, self).publish(settings, item)
 
-        # Update the Version wtih the PDF content
-        pdf_version_id = item.properties["sg_version_data"]["id"]
-        pdf_version_type = item.properties["sg_version_data"]["type"]
-        self.parent.engine.shotgun.upload(
-            entity_type=pdf_version_type,
-            entity_id=pdf_version_id,
-            path=pdf_file_path,
-            field_name="sg_translation_files"
-        )
-        self.parent.engine.shotgun.update(
-            entity_type=pdf_version_type,
-            entity_id=pdf_version_id,
-            data={"sg_translation_type": "PDF"}
-        )
+            # Make sure we have the version that was just created
+            if not item.properties["sg_version_data"]["id"]:
+                raise Exception("Failed to create Version for PDF")
 
-        # Override the Version thumbnail wth the PDF thumbnail
-        png_temp_dir = framework_pdf2png.translate(path=pdf_file_path)
-        png_file_name = f"{base_file_name}.png"
-        png_file_path = os.path.join(png_temp_dir, png_file_name)
-        self.parent.engine.shotgun.upload_thumbnail(
-            entity_type=pdf_version_type,
-            entity_id=pdf_version_id,
-            path=png_file_path
-        )
-        # Optionally override the Pubilshed File thumbnail as well
-        publish_data = item.properties["sg_publish_data"]
-        if publish_data:
-            publish_id = publish_data["id"]
-            publish_type = publish_data["type"]
-            self.parent.engine.shotgun.upload_thumbnail(
-                entity_type=publish_type,
-                entity_id=publish_id,
-                path=png_file_path
+            # Update the Version wtih the PDF content
+            pdf_version_id = item.properties["sg_version_data"]["id"]
+            pdf_version_type = item.properties["sg_version_data"]["type"]
+            self.parent.engine.shotgun.upload(
+                entity_type=pdf_version_type,
+                entity_id=pdf_version_id,
+                path=pdf_file_path,
+                field_name="sg_translation_files"
+            )
+            self.parent.engine.shotgun.update(
+                entity_type=pdf_version_type,
+                entity_id=pdf_version_id,
+                data={"sg_translation_type": "PDF"}
             )
 
-        # Clean up temporary directories and files
-        shutil.rmtree(pdf_temp_dir)
-        shutil.rmtree(png_temp_dir)
+            # Override the Version thumbnail wth the PDF thumbnail
+            png_temp_dir = framework_pdf2png.translate(path=pdf_file_path)
+            png_file_name = f"{base_file_name}.png"
+            png_file_path = os.path.join(png_temp_dir, png_file_name)
+            if os.path.exists(pdf_file_path):
+                self.parent.engine.shotgun.upload_thumbnail(
+                    entity_type=pdf_version_type,
+                    entity_id=pdf_version_id,
+                    path=png_file_path
+                )
+                # Optionally override the Pubilshed File thumbnail as well
+                publish_data = item.properties["sg_publish_data"]
+                if publish_data:
+                    publish_id = publish_data["id"]
+                    publish_type = publish_data["type"]
+                    self.parent.engine.shotgun.upload_thumbnail(
+                        entity_type=publish_type,
+                        entity_id=publish_id,
+                        path=png_file_path
+                    )
+            else:
+                self.logger.warning(f"Failed to create PNG {png_file_name} from PDF {pdf_file_name}")
+        finally:
+            # Clean up temporary directories and files
+            if os.path.exists(pdf_temp_dir):
+                shutil.rmtree(pdf_temp_dir)
+            if os.path.exists(png_temp_dir):
+                shutil.rmtree(png_temp_dir)
 
     def finalize(self, settings, item):
         """
