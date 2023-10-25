@@ -29,36 +29,6 @@ class UploadVersionPDFPlugin(HookBaseClass):
         return """Convert the file to PDF and upload to ShotGrid."""
 
     @property
-    def settings(self):
-        """
-        Dictionary defining the settings that this plugin expects to recieve
-        through the settings parameter in the accept, validate, publish and
-        finalize methods.
-
-        A dictionary on the following form::
-
-            {
-                "Settings Name": {
-                    "type": "settings_type",
-                    "default": "default_value",
-                    "description": "One line description of the setting"
-            }
-
-        The type string should be one of the data types that toolkit accepts as
-        part of its environment configuration.
-        """
-        plugin_settings = {
-            "Upload": {
-                "type": "bool",
-                "default": False,
-                "description": "Upload PDF as Uploaded Movie to Version",
-            },
-        }
-        all_settings = super(UploadVersionPDFPlugin, self).settings
-        all_settings.update(plugin_settings)
-        return all_settings
-
-    @property
     def item_filters(self):
         """List of item types that this plugin is interested in."""
 
@@ -141,13 +111,14 @@ class UploadVersionPDFPlugin(HookBaseClass):
         png_temp_dir = None
 
         try:
-            # Do the PPT to PDF translations, and upload as sg_translation_files
+            # Do the PPT to PDF translations, and upload to ShotGrid
             pdf_temp_dir = framework_office2pdf.translate(path=path)
             pdf_file_path = os.path.join(pdf_temp_dir, pdf_file_name)
             if not os.path.exists(pdf_file_path):
                 raise Exception(f"Failed to create PDF {pdf_file_name} from {file_name}")
 
-            # Set item properties and create Version in ShotGrid for PDF file
+            # Set item properties and create Version in ShotGrid for PDF file. The base upload
+            # version plugin will upload the PDF to the Version sg_uploaded_movie field
             item.properties["path"] = pdf_file_path
             item.properties["publish_name"] = pdf_file_name
             super(UploadVersionPDFPlugin, self).publish(settings, item)
@@ -156,15 +127,9 @@ class UploadVersionPDFPlugin(HookBaseClass):
             if not item.properties["sg_version_data"]["id"]:
                 raise Exception("Failed to create Version for PDF")
 
-            # Update the Version wtih the PDF content
+            # Update the Version translation type to PDF
             pdf_version_id = item.properties["sg_version_data"]["id"]
             pdf_version_type = item.properties["sg_version_data"]["type"]
-            self.parent.engine.shotgun.upload(
-                entity_type=pdf_version_type,
-                entity_id=pdf_version_id,
-                path=pdf_file_path,
-                field_name="sg_translation_files"
-            )
             self.parent.engine.shotgun.update(
                 entity_type=pdf_version_type,
                 entity_id=pdf_version_id,
