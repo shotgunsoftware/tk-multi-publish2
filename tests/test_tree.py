@@ -78,6 +78,19 @@ class TestPublishTree(PublishApiTestBase):
         with self.assertRaisesRegex(TypeError, "set is not JSON serializable"):
             tree.save(StringIO())
 
+    def test_serialize_tree_with_datetime_property(self):
+        """
+        Ensures we can save a tree when an item property is a datetime object
+        """
+
+        # Create some items that will modify
+        tree = self.manager.tree
+
+        item = tree.root_item.create_item("item.a", "Item A", "Item A")
+        item.properties["datetime"] = datetime.datetime.now()
+
+        tree.save(StringIO())
+
     def test_bad_document_version(self):
         """
         Ensures we can't reload documents from an incorrect version.
