@@ -75,7 +75,7 @@ class TestPublishTree(PublishApiTestBase):
         item.properties["set"] = set()
 
         # Check that we get the error we expect.
-        with self.assertRaisesRegex(TypeError, "datetime.* is not JSON serializable"):
+        with self.assertRaisesRegex(TypeError, "set is not JSON serializable"):
             tree.save(StringIO())
 
     def test_bad_document_version(self):
