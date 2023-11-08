@@ -71,8 +71,8 @@ class TestPublishTree(PublishApiTestBase):
         tree = self.manager.tree
 
         item = tree.root_item.create_item("item.a", "Item A", "Item A")
-        # Store a datetime object as this can't be serialized.
-        item.properties["dateteime"] = datetime.datetime.now()
+        # Store a set object as this can't be serialized.
+        item.properties["set"] = set()
 
         # Check that we get the error we expect.
         with self.assertRaisesRegex(TypeError, "datetime.* is not JSON serializable"):
