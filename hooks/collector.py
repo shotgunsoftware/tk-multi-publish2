@@ -241,6 +241,14 @@ class BasicSceneCollector(HookBaseClass):
 
             # disable thumbnail creation since we get it for free
             file_item.thumbnail_enabled = False
+        else:
+            # Try to generate a thumbnail from the file
+            try:
+                thumbnail = publisher.util.get_thumbnail(path, file_item.context)
+                if thumbnail:
+                    file_item.thumbnail = thumbnail
+            except Exception as e:
+                self.logger.debug(f"Thumbnail not generated for {path}. Error {e}")
 
         # all we know about the file is its path. set the path in its
         # properties for the plugins to use for processing.

@@ -48,6 +48,13 @@ configuration:
            identification, publish display name, image sequence paths, etc."
         default_value: "{self}/path_info.py"
 
+    thumbnail_generator:
+        type: hook
+        description:
+          "This hook contains methods that are used during publishing to auto
+          generate a thumbnail from the file being published."
+        default_value: "{self}/thumbnail_generator.py"
+
     pre_publish:
         type: hook
         description:
