@@ -116,11 +116,6 @@ class ThumbnailGenerator(HookBaseClass):
 
         return {
             ".wire": self.ALIAS,
-            ".CATPart": self.ALIAS,
-            ".jt": self.ALIAS,
-            ".igs": self.ALIAS,
-            ".stp": self.ALIAS,
-            ".fbx": self.ALIAS,
             ".vpb": self.VRED,
         }
 
