@@ -13,6 +13,7 @@ import tempfile
 import os
 
 import sgtk
+from tank import TankError
 
 from sgtk.platform.qt import QtGui
 
@@ -58,18 +59,18 @@ class ThumbnailGenerator(HookBaseClass):
         # Get the thumbnail extractor data for the given extractor
         extractor_data = self._get_thumbnail_extractor_data().get(extractor)
         if not extractor_data:
-            raise Exception(f"Missing thumbnail extractor data for {extractor}")
+            raise TankError(f"Missing thumbnail extractor data for {extractor}")
 
         # Sanity check all necessary extractor data is present
         engine_name = extractor_data.get("engine")
         if not engine_name:
-            raise Exception(f"Thumbnail extractor data missing key 'engine'")
+            raise TankError(f"Thumbnail extractor data missing key 'engine'")
         extractor_path = extractor_data.get("extractor_path")
         if not extractor_path:
-            raise Exception(f"Thumbnail extractor data missing key 'extractor_path'")
+            raise TankError(f"Thumbnail extractor data missing key 'extractor_path'")
         get_extractor_cmd_func = extractor_data.get("get_extractor_cmd_func")
         if not get_extractor_cmd_func:
-            raise Exception(f"Thumbnail extractor data missing key 'get_cmds_func'")
+            raise TankError(f"Thumbnail extractor data missing key 'get_cmds_func'")
 
         # Get the full path to the thumbnail extractor executable
         thumbnail_extractor_path = self._get_thumbnail_extractor_path(
@@ -92,7 +93,7 @@ class ThumbnailGenerator(HookBaseClass):
             if not success:
                 error_msg = f"Failed to generate thumbnail for {input_path}"
                 self.logger.error(error_msg)
-                raise Exception(error_msg)
+                raise TankError(error_msg)
             return QtGui.QPixmap(output_path)
         finally:
             # Clean up the temporary file used to store the thumbnail
