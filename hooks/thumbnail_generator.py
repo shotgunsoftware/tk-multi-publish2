@@ -94,9 +94,11 @@ class ThumbnailGenerator(HookBaseClass):
                 error_msg = f"Failed to generate thumbnail for {input_path}"
                 self.logger.error(error_msg)
                 raise TankError(error_msg)
+
+            # Return the thumbnail as a pixmap
             return QtGui.QPixmap(output_path)
         finally:
-            # Clean up the temporary file used to store the thumbnail
+            # Clean up the temporary file used to store the thumbnail.
             try:
                 os.remove(output_path)
             except Exception:

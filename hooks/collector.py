@@ -11,6 +11,7 @@
 import mimetypes
 import os
 import sgtk
+from tank import TankError
 from tank_vendor import six
 
 HookBaseClass = sgtk.get_hook_baseclass()
@@ -244,11 +245,11 @@ class BasicSceneCollector(HookBaseClass):
         else:
             # Try to generate a thumbnail from the file
             try:
-                thumbnail = publisher.util.get_thumbnail(path, file_item.context)
-                if thumbnail:
-                    file_item.thumbnail = thumbnail
-            except Exception as e:
-                self.logger.debug(f"Thumbnail not generated for {path}. Error {e}")
+                file_item.thumbnail = publisher.util.get_thumbnail(path, file_item.context)
+            except TankError as tank_error:
+                self.logger.error(f"Failed to generate thumbnail for {path}. Error {tank_error}")
+            except Exception as error:
+                self.logger.error(f"Unexepcted error occured while attempting to generate thumbnail for {path}. Error {error}")
 
         # all we know about the file is its path. set the path in its
         # properties for the plugins to use for processing.
