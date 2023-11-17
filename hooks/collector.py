@@ -245,11 +245,17 @@ class BasicSceneCollector(HookBaseClass):
         else:
             # Try to generate a thumbnail from the file
             try:
-                file_item.thumbnail = publisher.util.get_thumbnail(path, file_item.context)
+                file_item.thumbnail = publisher.util.get_thumbnail(
+                    path, file_item.context
+                )
             except TankError as tank_error:
-                self.logger.error(f"Failed to generate thumbnail for {path}. Error {tank_error}")
+                self.logger.error(
+                    f"Failed to generate thumbnail for {path}. Error {tank_error}"
+                )
             except Exception as error:
-                self.logger.error(f"Unexepcted error occured while attempting to generate thumbnail for {path}. Error {error}")
+                self.logger.error(
+                    f"Unexepcted error occured while attempting to generate thumbnail for {path}. Error {error}"
+                )
 
         # all we know about the file is its path. set the path in its
         # properties for the plugins to use for processing.
