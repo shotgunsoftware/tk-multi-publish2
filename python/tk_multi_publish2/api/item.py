@@ -77,6 +77,7 @@ class PublishItem(object):
     __slots__ = [
         "_active",
         "_allows_context_change",
+        "_allows_context_widget",
         "_children",
         "_context",
         "_created_temp_files",
@@ -184,6 +185,7 @@ class PublishItem(object):
 
         self._active = True
         self._allows_context_change = True
+        self._allows_context_widget = False
         self._children = []
         self._context = None
         self._created_temp_files = []
@@ -635,6 +637,22 @@ class PublishItem(object):
         Enable/disable context change for this item.
         """
         self._allows_context_change = allow
+
+    @property
+    def context_widget(self):
+        """
+        Enable/disable context change for this item.
+
+        Default is ``True``
+        """
+        return self._allows_context_widget
+
+    @context_widget.setter
+    def context_widget(self, allow):
+        """
+        Enable/disable context change for this item.
+        """
+        self._allows_context_widget = allow 
 
     @property
     def description(self):
