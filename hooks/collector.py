@@ -140,6 +140,16 @@ class BasicSceneCollector(HookBaseClass):
                     "icon": self._get_icon_path("file.png"),
                     "item_type": "file.pdf",
                 },
+                "MaterialX": {
+                    "extensions": ["mtlx"],
+                    "icon": self._get_icon_path("mtlx.png"),
+                    "item_type": "material",
+                },
+                "AXF File": {
+                    "extensions": ["axf"],
+                    "icon": self._get_icon_path("axf.png"),
+                    "item_type": "material",
+                },
             }
 
         return self._common_file_info
@@ -251,9 +261,51 @@ class BasicSceneCollector(HookBaseClass):
             # file that belongs to this sequence
             file_item.properties["sequence_paths"] = [path]
 
+        # Materials
+        if item_type in ("material"):
+            material_output_group_item = file_item.create_item(
+                "material.output", "Outputs", "Material Outputs"
+            )
+            material_output_group_item.properties["path"] = file_item.properties["path"]
+
+            # Check for textures. This is a folder in the same directory as the material file.
+            self._collect_material_textures(file_item, path)
+
+        if item_type == "file.vred":
+            material_output_group_item = file_item.create_item(
+                "vred.material.output", "VRED Outputs", "VRED Material Outputs"
+            )
+            material_output_group_item.properties["path"] = file_item.properties["path"]
+
         self.logger.info("Collected file: %s" % (evaluated_path,))
 
         return file_item
+
+    def _collect_material_textures(self, parent_item, path):
+        """Collects textures for a material."""
+
+        # Get the directory of the material file
+        material_dir = os.path.dirname(path)
+
+        # Get the textures directory
+        textures_dir = os.path.join(material_dir, "textures")
+        if not os.path.exists(textures_dir):
+            return
+
+        # Collect the texture files by iterating through the textures directory
+        for texture_file in os.listdir(textures_dir):
+            texture_path = os.path.join(textures_dir, texture_file)
+            if not os.path.isfile(texture_path):
+                continue
+            # Create a new item for the texture file
+            texture_item = parent_item.create_item("material.texture", "Material Texture", texture_file)
+            # FIXME path does not publish correctly for texture
+            texture_item.properties["material_path"] = path
+            texture_item.properties["path"] = texture_path
+            # FIXME this does not publish the thumbnail...
+            texture_item.set_thumbnail_from_path(texture_path)
+            # disable thumbnail creation since we get it for free
+            texture_item.thumbnail_enabled = False
 
     def _collect_folder(self, parent_item, folder):
         """
