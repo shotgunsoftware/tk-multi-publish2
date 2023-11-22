@@ -10,25 +10,15 @@
 
 import os
 import pprint
-import traceback
 
 import sgtk
-from sgtk import TankError
-from sgtk.util.filesystem import copy_file, ensure_folder_exists
 
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
-# import sys
-# sys.path.append("C:\\python_libs")
-# import ptvsd
-# ptvsd.enable_attach()
-# ptvsd.wait_for_attach()
-
-
 class MaterialTexturePublishPlugin(HookBaseClass):
-    """Plugin for creating Material publishes in ShotGrid."""
+    """Plugin for publishing Material texture files to ShotGrid."""
 
     ############################################################################
     # standard publish plugin properties
@@ -321,5 +311,3 @@ class MaterialTexturePublishPlugin(HookBaseClass):
 
         return publisher.util.get_publish_name(path, sequence=False)
 
-    ############################################################################
-    # protected methods
