@@ -1,5 +1,6 @@
 import os
 import time
+from pathlib import Path
 
 # Setup PySide modules. Depending on the VRED version, we may have PySide6 or PySide2
 try:
@@ -48,28 +49,42 @@ def save_material(material, output_path):
     
     return (True, output_file_path, None)
 
-def create_material_asset(material):
+
+def create_material_asset(material, output_path):
     """
     Create a VRED Material Asset from the given material.
     """
 
     # NOTE this requires VRED to have the material assets directory to point to ShotGrid storage
 
+    def __create_material_asset(path):
+        # Ensure the Asset Manager knows about the path
+        vrAssetsModule.reloadAssetDirectory(os.path.dirname(path))
+        success = vrAssetsModule.createMaterialAsset(material_ptr, path)
+        if not success:
+            # Try one more time by reloading all directories
+            vrAssetsModule.reloadAllAssetDirectories()
+            success = vrAssetsModule.createMaterialAsset(material_ptr, path)
+        return success
+
+    errors = []
     material_name = material.getName()
     material_ptr = findMaterial(material_name)
-    material_asset_path = output_path.replace(os.sep, "/")
-
-    # Ensure the Asset Manager knows about the path
-    vrAssetsModule.reloadAssetDirectory(os.path.dirname(material_asset_path))
-
-    success = vrAssetsModule.createMaterialAsset(material_ptr, material_asset_path)
+    material_asset_path = str(Path(output_path).resolve())
+    success = __create_material_asset(material_asset_path)
     if not success:
-        # Try one more time by reloading all directories
-        vrAssetsModule.reloadAllAssetDirectories()
-        success = vrAssetsModule.createMaterialAsset(material_ptr, material_asset_path)
+        # First record the error 
+        errors.append(f"Attempt failed to save material asset to {material_asset_path}")
+        # Try formatting the path ourselves
+        # FIXME format this more robustly
+        material_asset_path = output_path.replace(os.sep, "/")
+        # Ensure the network drive is capitalized (e.g. "Z:/" instead of "z:/")
+        material_asset_path = material_asset_path[0].capitalize() + material_asset_path[1:]
+        success = __create_material_asset(material_asset_path)
 
     if not success:
-        error = f"Failed to save material asset {material_asset_path}"
+        errors.append(f"Attempt failed to save material asset to {material_asset_path}")
+        error = "\n".join(errors)
         return (False, error)
 
     return (True, None)
@@ -240,7 +255,7 @@ if os.path.splitext(os.path.basename(input_path))[1] != ".osb":
     print(f"Saved material: {output_file_path}")
 
 if create_asset:
-    success, error = create_material_asset(material)
+    success, error = create_material_asset(material, output_path)
     if not success:
         print(error)
 
