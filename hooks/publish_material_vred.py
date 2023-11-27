@@ -781,7 +781,7 @@ class CreateVREDMaterialPublishPlugin(HookBaseClass):
             "Step",
             filters=[
                 ["entity_type", "is", item.context.entity["type"]],
-                ["code", "is", "Digital Creation"],
+                ["code", "is", "Material"],
             ],
         )
         task_name = "Create VRED Material"
