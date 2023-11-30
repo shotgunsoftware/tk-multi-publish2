@@ -470,7 +470,7 @@ class MaterialPublishPlugin(HookBaseClass):
 
         return publish_type
 
-    def get_publish_path(self, settings, item):
+    def get_publish_path(self, settings, item, context=None):
         """
         Get a publish path for the supplied settings and item.
 
@@ -491,16 +491,16 @@ class MaterialPublishPlugin(HookBaseClass):
 
         publish_template = self.get_publish_template(settings, item)
         if publish_template:
-
+            context = context or item.context
             # First, try to get the template fields from the selected context. If no folder has
             # been created on disk, this logic will fail as the cache will be empty. We have to
             # find another solution to get the template keys from the current context
             try:
-                fields = item.context.as_template_fields(publish_template, validate=True)
+                fields = context.as_template_fields(publish_template, validate=True)
             except TankError:
-                ctx_entity = item.context.task or item.context.entity or item.context.project
+                ctx_entity = context.task or context.entity or context.project
                 self.parent.sgtk.create_filesystem_structure(ctx_entity["type"], ctx_entity["id"])
-                fields = item.context.as_template_fields(publish_template, validate=True)
+                fields = context.as_template_fields(publish_template, validate=True)
 
             # try to fill all the missing keys
             missing_keys = publish_template.missing_keys(fields)
@@ -760,11 +760,17 @@ class MaterialPublishPlugin(HookBaseClass):
         :return:
         """
 
-        # publish_name = self.get_publish_name(settings, item)
+        # First try to extract the file name and extension from the path
         path = item.get_property("path")
         filename = os.path.basename(path)
         name, file_extension = os.path.splitext(filename)
         file_extension = file_extension[1:]
+        if not file_extension:
+            # If no extension, this may be a VRED Material Asset, in which the path is a directory.
+            # Try to get the extension from the publish name
+            filename = self.get_publish_name(settings, item)
+            name, file_extension = os.path.splitext(filename)
+            file_extension = file_extension[1:]
 
         if "version" in missing_keys:
             version_number = self.get_publish_version_number(settings, item)
@@ -773,11 +779,11 @@ class MaterialPublishPlugin(HookBaseClass):
             fields["version"] = version_number
             missing_keys.remove("version")
 
-        if "name" in missing_keys:
+        if "name" in missing_keys and name:
             fields["name"] = name
             missing_keys.remove("name")
 
-        if "extension" in missing_keys:
+        if "extension" in missing_keys and file_extension:
             fields["extension"] = file_extension
             missing_keys.remove("extension")
 
