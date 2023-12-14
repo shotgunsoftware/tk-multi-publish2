@@ -92,7 +92,7 @@ class ThumbnailGenerator(HookBaseClass):
             success = self._execute_command(extractor_cmd)
             if not success:
                 error_msg = f"Failed to generate thumbnail for {input_path}"
-                self.logger.error(error_msg)
+                logger.error(error_msg)
                 raise TankError(error_msg)
 
             # Return the thumbnail as a pixmap
@@ -219,10 +219,11 @@ class ThumbnailGenerator(HookBaseClass):
         :rtype: bool
         """
 
+        logger.info("Running thumbnail command: {}".format(cmd))
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        p_output, _ = p.communicate()
-        if p.returncode != 0:
-            self.logger.error(p_output)
+        p_output, p_error = p.communicate()
+        if p.returncode != 0 or p_error:
+            logger.error("{}. Error {}".format(p_output, p_error))
             return False
         return True
 
