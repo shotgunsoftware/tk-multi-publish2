@@ -23,9 +23,9 @@ class Thumbnail(QtGui.QLabel):
     using screen capture and other methods.
     """
 
-    # emitted when screen is captured
+    # emitted when the thumbnail has changed (e.g. from screen grab, file drop)
     # passes the QPixmap as a parameter
-    screen_grabbed = QtCore.Signal(object)
+    thumbnail_changed = QtCore.Signal(object)
 
     # internal signal to initiate screengrab
     _do_screengrab = QtCore.Signal()
@@ -34,7 +34,9 @@ class Thumbnail(QtGui.QLabel):
         """
         :param parent: The parent QWidget for this control
         """
+
         QtGui.QLabel.__init__(self, parent)
+        self.setAcceptDrops(True)
 
         # _multiple_values allows to display indicator that the summary thumbnail is not applied to all items
         self._multiple_values = False
@@ -47,6 +49,28 @@ class Thumbnail(QtGui.QLabel):
         self._no_thumb_pixmap = QtGui.QPixmap(":/tk_multi_publish2/camera.png")
         self._do_screengrab.connect(self._on_screengrab)
         self.set_thumbnail(self._no_thumb_pixmap)
+
+    def dragEnterEvent(self, event):
+        """Implement drag event handler to accept images."""
+
+        if event.mimeData().hasUrls() or event.mimeData().hasImage():
+            event.acceptProposedAction()
+
+    def dropEvent(self, event):
+        """Implement drop event handler to set the thumbnail from the dropped image."""
+
+        pixmap = None
+
+        if event.mimeData().hasUrls():
+            url = event.mimeData().urls()[0]
+            file_path = url.toLocalFile()
+            pixmap = QtGui.QPixmap(file_path)
+        elif event.mimeData().hasImage():
+            image = QtCore.QImage(event.mimeData().imageData())
+            pixmap = QtGui.QPixmap.fromImage(image)
+
+        if pixmap:
+            self.set_thumbnail(pixmap)
 
     def setEnabled(self, enabled):
         """
@@ -101,10 +125,7 @@ class Thumbnail(QtGui.QLabel):
                 self._do_screengrab.emit()
 
     def _on_screengrab(self):
-        """
-        Perform a screengrab and update the label pixmap.
-        Emit screen_grabbed signal.
-        """
+        """Perform a screengrab and update the label pixmap."""
         self._bundle.log_debug("Prompting for screenshot...")
 
         self.window().hide()
@@ -119,7 +140,6 @@ class Thumbnail(QtGui.QLabel):
             )
             self._multiple_values = False
             self._set_screenshot_pixmap(pixmap)
-            self.screen_grabbed.emit(pixmap)
 
     def _set_multiple_values_indicator(self, is_multiple_values):
         """
@@ -160,6 +180,8 @@ class Thumbnail(QtGui.QLabel):
         Takes the given QPixmap and sets it to be the thumbnail
         image of the note input widget.
 
+        Emits thumbnail_changed signal.
+
         :param pixmap:  A QPixmap object containing the screenshot image.
         """
         self._thumbnail = pixmap
@@ -173,3 +195,4 @@ class Thumbnail(QtGui.QLabel):
         )
 
         self.setPixmap(thumb)
+        self.thumbnail_changed.emit(pixmap)
