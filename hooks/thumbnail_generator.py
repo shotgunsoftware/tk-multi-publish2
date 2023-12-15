@@ -19,6 +19,8 @@ from sgtk.platform.qt import QtGui
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
+logger = sgtk.platform.get_logger(__name__)
+
 
 class ThumbnailGenerator(HookBaseClass):
     """Hook to generate a thumbnail automatically for a given file."""
