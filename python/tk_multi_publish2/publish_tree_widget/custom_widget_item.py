@@ -74,7 +74,8 @@ class CustomTreeWidgetItem(CustomTreeWidgetBase):
         """
         Callback that fires when the user clicks the checkbox
         """
-        # Convert integer state to CheckState enum if necessary
+        # For PySide6 compatibility, convert state to CheckState enum if not already
+        # an instance. Issue described at: https://forum.qt.io/post/743017
         if not isinstance(state, QtCore.Qt.CheckState):
             state = QtCore.Qt.CheckState(state)
         self._tree_node.set_check_state(state)
