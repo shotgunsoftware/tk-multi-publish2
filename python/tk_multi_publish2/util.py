@@ -392,3 +392,25 @@ def clear_status_for_conflicting_publishes(context, publish_data):
 
         # execute all the updates!
         publisher.shotgun.batch(batch_data)
+
+
+def get_thumbnail(path, context):
+    """
+    Given a path and context, attempt to automatically generate a thumbnail.
+
+    :param path: The path to generate a thumbnail from.
+    :param context: The context to help determine engine software locations in order to
+        discover thumbnail extraction tools.
+
+    :return: The generated thumbnail.
+    :rtype: QtGui.QPixmap
+    """
+
+    # the logic for this method lives in a hook that can be overridden by
+    # clients. exposing the method here in the publish utils api prevents
+    # clients from having to call other hooks directly in their
+    # collector/publisher hook implementations.
+    publisher = sgtk.platform.current_bundle()
+    return publisher.execute_hook_method(
+        "thumbnail_generator", "generate_thumbnail", input_path=path, context=context
+    )

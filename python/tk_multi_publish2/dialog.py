@@ -151,7 +151,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.items_tree.checked.connect(self._update_details_from_selection)
 
         # thumbnails
-        self.ui.item_thumbnail.screen_grabbed.connect(self._update_item_thumbnail)
+        self.ui.item_thumbnail.thumbnail_changed.connect(self._update_item_thumbnail)
 
         # tool buttons
         self.ui.delete_items.clicked.connect(self._delete_selected)
