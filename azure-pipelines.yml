@@ -14,7 +14,7 @@ resources:
     - repository: templates
       type: github
       name: shotgunsoftware/tk-ci-tools
-      ref: refs/heads/master
+      ref: python-311-poc
       endpoint: shotgunsoftware
 
 # We want builds to trigger for 3 reasons:
@@ -46,3 +46,4 @@ jobs:
     - name: tk-framework-qtwidgets
     - name: tk-framework-shotgunutils
     - name: tk-shell
+    tk_core_ref: SG-33587_Qt6_Maya_Beta_The_Checkboxes_In_The_Publish_Window_Do_Not_Work
