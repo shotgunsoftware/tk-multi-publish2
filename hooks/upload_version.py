@@ -52,12 +52,13 @@ class UploadVersionPlugin(HookBaseClass):
         review_url = "https://www.shotgridsoftware.com/features/#review"
 
         return """
-        Upload the file to ShotGrid for review.<br><br>
+        Upload the file to Flow Production Tracking for review.<br><br>
 
-        A <b>Version</b> entry will be created in ShotGrid and a transcoded
-        copy of the file will be attached to it. The file can then be reviewed
-        via the project's <a href='%s'>Media</a> page, <a href='%s'>RV</a>, or
-        the <a href='%s'>ShotGrid Review</a> mobile app.
+        A <b>Version</b> entry will be created in Flow Production Tracking and
+        a transcoded copy of the file will be attached to it. The file can then
+        be reviewed via the project's <a href='%s'>Media</a> page,
+        <a href='%s'>RV</a>, or the <a href='%s'>Flow Production Tracking Review</a>
+        mobile app.
         """ % (
             media_page_url,
             review_url,
@@ -94,12 +95,12 @@ class UploadVersionPlugin(HookBaseClass):
             "Upload": {
                 "type": "bool",
                 "default": True,
-                "description": "Upload content to ShotGrid?",
+                "description": "Upload content to Flow Production Tracking?",
             },
             "Link Local File": {
                 "type": "bool",
                 "default": True,
-                "description": "Should the local file be referenced by ShotGrid",
+                "description": "Should the local file be referenced by Flow Production Tracking",
             },
         }
 
@@ -292,7 +293,7 @@ class UploadVersionPlugin(HookBaseClass):
             extra={
                 "action_show_in_shotgun": {
                     "label": "Show Version",
-                    "tooltip": "Reveal the version in ShotGrid.",
+                    "tooltip": "Reveal the version in Flow Production Tracking.",
                     "entity": version,
                 }
             },

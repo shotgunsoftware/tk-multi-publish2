@@ -85,11 +85,11 @@ configuration:
                     type: dict
         allows_empty: True
         default_value:
-            # Default hook 1: publish any file to SG
-            - name: Publish to ShotGrid
+            # Default hook 1: publish any file to PTR
+            - name: Publish to Flow Production Tracking
               hook: "{self}/publish_file.py"
               settings: {}
-            # Default hook 2: upload known, reviewable types to SG
+            # Default hook 2: upload known, reviewable types to PTR
             - name: Upload for review
               hook: "{self}/upload_version.py"
               settings: {}
@@ -138,7 +138,7 @@ requires_shotgun_fields:
 
 # More verbose description of this item
 display_name: "Publish"
-description: "Provides UI and functionality to publish files to ShotGrid."
+description: "Provides UI and functionality to publish files to Flow Production Tracking."
 
 # Required minimum versions for this item to run
 requires_shotgun_version:

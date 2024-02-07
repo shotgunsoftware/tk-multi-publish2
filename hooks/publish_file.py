@@ -57,21 +57,21 @@ class BasicFilePublishPlugin(HookBaseClass):
             copied prior to publishing. If not specified, "path" will be
             published in place.
 
-        publish_type - If set, will be supplied to SG as the publish type when
+        publish_type - If set, will be supplied to PTR as the publish type when
             registering "path" as a new publish. If not set, will be determined
             via the plugin's "File Type" setting.
 
-        publish_path - If set, will be supplied to SG as the publish path when
+        publish_path - If set, will be supplied to PTR as the publish path when
             registering the new publish. If not set, will be determined by the
             "published_file" property if available, falling back to publishing
             "path" in place.
 
-        publish_name - If set, will be supplied to SG as the publish name when
+        publish_name - If set, will be supplied to PTR as the publish name when
             registering the new publish. If not available, will be determined
             by the "work_template" property if available, falling back to the
             ``path_info`` hook logic.
 
-        publish_version - If set, will be supplied to SG as the publish version
+        publish_version - If set, will be supplied to PTR as the publish version
             when registering the new publish. If not available, will be
             determined by the "work_template" property if available, falling
             back to the ``path_info`` hook logic.
@@ -80,7 +80,7 @@ class BasicFilePublishPlugin(HookBaseClass):
             registering the publish. If the item's parent has been published,
             it's path will be appended to this list.
 
-        publish_user - If set, will be supplied to SG as the publish user
+        publish_user - If set, will be supplied to PTR as the publish user
             when registering the new publish. If not available, the publishing
             will fall back to the :meth:`tank.util.register_publish` logic.
 
@@ -130,7 +130,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
         One line display name describing the plugin
         """
-        return "Publish to ShotGrid"
+        return "Publish to Flow Production Tracking"
 
     @property
     def description(self):
@@ -142,16 +142,17 @@ class BasicFilePublishPlugin(HookBaseClass):
         loader_url = "https://help.autodesk.com/view/SGDEV/ENU/?contextId=PC_APP_LOADER"
 
         return """
-        Publishes the file to ShotGrid. A <b>Publish</b> entry will be
-        created in ShotGrid which will include a reference to the file's current
-        path on disk. Other users will be able to access the published file via
-        the <b><a href='%s'>Loader</a></b> so long as they have access to
-        the file's location on disk.
+        Publishes the file to Flow Production Tracking. A <b>Publish</b> entry
+        will be created in Flow Production Tracking which will include a reference
+        to the file's current path on disk. Other users will be able to access the
+        published file via the <b><a href='%s'>Loader</a></b> so long as they have
+        access to the file's location on disk.
 
         <h3>File versioning</h3>
         The <code>version</code> field of the resulting <b>Publish</b> in
-        ShotGrid will also reflect the version number identified in the filename.
-        The basic worklfow recognizes the following version formats by default:
+        Flow Production Tracking will also reflect the version number identified in
+        the filename. The basic worklfow recognizes the following version formats by
+        default:
 
         <ul>
         <li><code>filename.v###.ext</code></li>
@@ -210,9 +211,9 @@ class BasicFilePublishPlugin(HookBaseClass):
                 ],
                 "description": (
                     "List of file types to include. Each entry in the list "
-                    "is a list in which the first entry is the ShotGrid "
-                    "published file type and subsequent entries are file "
-                    "extensions that should be associated."
+                    "is a list in which the first entry is the "
+                    "Flow Production Tracking published file type and subsequent"
+                    " entries are file extensions that should be associated."
                 ),
             },
         }
@@ -318,13 +319,13 @@ class BasicFilePublishPlugin(HookBaseClass):
 
             if "work_template" in item.properties or publish_template:
 
-                # templates are in play and there is already a publish in SG
+                # templates are in play and there is already a publish in PTR
                 # for this file path. We will raise here to prevent this from
                 # happening.
                 error_msg = (
                     "Can not validate file path. There is already a publish in "
-                    "ShotGrid that matches this path. Please uncheck this "
-                    "plugin or save the file to a different path."
+                    "Flow Production Tracking that matches this path. Please "
+                    "uncheck this plugin or save the file to a different path."
                 )
                 self.logger.error(error_msg)
                 raise Exception(error_msg)
@@ -336,17 +337,20 @@ class BasicFilePublishPlugin(HookBaseClass):
                     "<pre>%s</pre>" % (pprint.pformat(publishes),)
                 )
                 self.logger.warn(
-                    "Found %s conflicting publishes in ShotGrid" % (len(publishes),),
+                    "Found %s conflicting publishes in Flow Production Tracking"
+                    % (len(publishes),),
                     extra={
                         "action_show_more_info": {
                             "label": "Show Conflicts",
-                            "tooltip": "Show conflicting publishes in ShotGrid",
+                            "tooltip": "Show conflicting publishes in Flow Production Tracking",
                             "text": conflict_info,
                         }
                     },
                 )
 
-        self.logger.info("A Publish will be created in ShotGrid and linked to:")
+        self.logger.info(
+            "A Publish will be created in Flow Production Tracking and linked to:"
+        )
         self.logger.info("  %s" % (path,))
 
         return True
@@ -427,11 +431,11 @@ class BasicFilePublishPlugin(HookBaseClass):
         item.properties.sg_publish_data = sgtk.util.register_publish(**publish_data)
         self.logger.info("Publish registered!")
         self.logger.debug(
-            "ShotGrid Publish data...",
+            "Flow Production Tracking Publish data...",
             extra={
                 "action_show_more_info": {
-                    "label": "ShotGrid Publish Data",
-                    "tooltip": "Show the complete ShotGrid Publish Entity dictionary",
+                    "label": "Flow Production Tracking Publish Data",
+                    "tooltip": "Show the complete Flow Production Tracking Publish Entity dictionary",
                     "text": "<pre>%s</pre>"
                     % (pprint.pformat(item.properties.sg_publish_data),),
                 }
@@ -452,7 +456,7 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         publisher = self.parent
 
-        # get the data for the publish that was just created in SG
+        # get the data for the publish that was just created in PTR
         publish_data = item.properties.sg_publish_data
 
         # ensure conflicting publishes have their status cleared
@@ -470,7 +474,7 @@ class BasicFilePublishPlugin(HookBaseClass):
             extra={
                 "action_show_in_shotgun": {
                     "label": "Show Publish",
-                    "tooltip": "Open the Publish in ShotGrid.",
+                    "tooltip": "Open the Publish in Flow Production Tracking.",
                     "entity": publish_data,
                 }
             },
@@ -686,7 +690,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         :param item: The item to determine the publish template for
 
         :return: A list of file paths representing the dependencies to store in
-            SG for this publish
+            PTR for this publish
         """
 
         # local properties first

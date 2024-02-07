@@ -45,7 +45,7 @@ class ThumbnailGenerator(HookBaseClass):
 
         :param input_path: The file path to generate a thumbnail for.
         :type input_path: str
-        :param context: The current ShotGrid Toolkit context.
+        :param context: The current Flow Production Tracking Toolkit context.
         :type context: sgtk.Context
 
         :return: The generated thumbnail.

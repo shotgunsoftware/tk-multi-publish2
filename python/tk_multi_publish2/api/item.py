@@ -965,10 +965,10 @@ class PublishItem(object):
         The type specification for this item. This specification typically
         follows a hierarchical dot notation. For example, 'file', 'file.image',
         or 'file.movie'. This allows for a system whereby some publish plugins
-        act on 'file.*' items (publish to SG for example) while other plugins
+        act on 'file.*' items (publish to PTR for example) while other plugins
         may perform actions on a more specific set of items (for example
         uploading the media represented by 'file.image' or 'file.movie' items to
-        SG as Versions). This is how the default integrations use this property
+        PTR as Versions). This is how the default integrations use this property
         on collected items.
         """
         return self._type_spec
