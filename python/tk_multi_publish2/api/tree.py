@@ -11,6 +11,7 @@
 from __future__ import print_function
 import traceback
 
+import datetime
 import json
 
 import sgtk
@@ -342,6 +343,8 @@ class _PublishTreeEncoder(json.JSONEncoder):
             return data.to_dict()
         elif isinstance(data, sgtk.Template):
             return {"_sgtk_custom_type": "sgtk.Template", "name": data.name}
+        elif isinstance(data, datetime.date):
+            return {"_sgtk_custom_type": "datetime", "value": data.isoformat()}
         else:
             return super(_PublishTreeEncoder, self).default(data)
 
@@ -363,4 +366,6 @@ def _json_to_objects(data):
                 "Template '{0}' was not found in templates.yml.".format(data["name"])
             )
         return templates[data["name"]]
+    elif data.get("_sgtk_custom_type") == "datetime":
+        return datetime.datetime.fromisoformat(data.get("value"))
     return data
