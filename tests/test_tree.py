@@ -89,7 +89,14 @@ class TestPublishTree(PublishApiTestBase):
         item = tree.root_item.create_item("item.a", "Item A", "Item A")
         item.properties["datetime"] = datetime.datetime.now()
 
-        tree.save(StringIO())
+        fd, temp_file_path = tempfile.mkstemp()
+
+        # Save and reload the publish tree to check that the datetime property is correctly handled
+        tree.save_file(temp_file_path)
+        new_tree = tree.load_file(temp_file_path)
+        new_item = next(new_tree.root_item.children)
+
+        self.assertEqual(type(new_item.properties.datetime), datetime.datetime)
 
     def test_bad_document_version(self):
         """
