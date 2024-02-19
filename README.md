@@ -8,7 +8,7 @@
 
 
 ## Documentation
-This repository is a part of the Flow Production Tracking.
+This repository is a part of the Flow Production Tracking Toolkit.
 
 For documentation, see http://developer.shotgridsoftware.com/tk-multi-publish2/
 
