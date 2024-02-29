@@ -164,7 +164,13 @@ class BasicSceneCollector(HookBaseClass):
         The type string should be one of the data types that toolkit accepts as
         part of its environment configuration.
         """
-        return {}
+        return {
+            "Publish Templates": {
+                "type": "dict",
+                "default": {},
+                "description": "A dictionary of templates by file type to use for publishing."
+            }
+        }
 
     def process_current_session(self, settings, parent_item):
         """
@@ -191,12 +197,22 @@ class BasicSceneCollector(HookBaseClass):
             for the supplied path
         """
 
+        publish_templates_setting = settings.get("Publish Templates")
+        if publish_templates_setting:
+            publish_templates = publish_templates_setting.value
+        else:
+            publish_templates = {}
+
         # handle files and folders differently
         if os.path.isdir(path):
-            self._collect_folder(parent_item, path)
+            file_items = self._collect_folder(parent_item, path)
+            for file_item in file_items:
+                file_item.properties["publish_templates"] = publish_templates
             return None
         else:
-            return self._collect_file(parent_item, path)
+            file_item = self._collect_file(parent_item, path)
+            file_item.properties["publish_templates"] = publish_templates
+            return file_item
 
     def _collect_file(self, parent_item, path, frame_sequence=False):
         """

@@ -14,6 +14,7 @@ import traceback
 
 import sgtk
 from sgtk.util.filesystem import copy_file, ensure_folder_exists
+from tank.errors import TankError
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -388,7 +389,7 @@ class BasicFilePublishPlugin(HookBaseClass):
             )
 
         # handle copying of work to publish if templates are in play
-        self._copy_work_to_publish(settings, item)
+        self._copy_to_publish(settings, item)
 
         # arguments for publish registration
         self.logger.info("Registering publish...")
@@ -487,7 +488,16 @@ class BasicFilePublishPlugin(HookBaseClass):
             None if no template could be identified.
         """
 
-        return item.get_property("publish_template")
+        publish_template = item.get_property("publish_template")
+        if publish_template:
+            return publish_template
+        
+        publish_templates_by_file_type = item.get_property("publish_templates")
+        publish_type = self.get_publish_type(settings, item)
+        publish_template_name = publish_templates_by_file_type.get(publish_type)
+        if not publish_template_name:
+            return None
+        return self.parent.engine.get_template_by_name(publish_template_name)
 
     def get_publish_type(self, settings, item):
         """
@@ -589,6 +599,44 @@ class BasicFilePublishPlugin(HookBaseClass):
                     "Used publish template to determine the publish path: %s"
                     % (publish_path,)
                 )
+        elif publish_template:
+            # Build the publish path using the item context, without a work template
+            context = item.context
+            # First, try to get the template fields from the selected context. If no folder has
+            # been created on disk, this logic will fail as the cache will be empty. We have to
+            # find another solution to get the template keys from the current context
+            try:
+                fields = context.as_template_fields(publish_template, validate=True)
+            except TankError:
+                ctx_entity = context.task or context.entity or context.project
+                self.parent.sgtk.create_filesystem_structure(ctx_entity["type"], ctx_entity["id"])
+                fields = context.as_template_fields(publish_template, validate=True)
+            # Check if the template is misisng any required fields. If so, try to fill the
+            # missing keys data
+            missing_keys = publish_template.missing_keys(fields)
+            if missing_keys:
+                self.__get_template_missing_keys(settings, item, fields, missing_keys)
+            if missing_keys:
+                self.logger.warning("Missing data fields (%s) for publish template (%s)" % (fields, publish_template))
+                if not context.task:
+                    self.logger.warning("Selecting a Task may resolve the missing template fields")
+                if not context.entity:
+                    self.logger.warning("Selecting a Link entity may resolve the missing template fields")
+                return
+
+            # Get the publish path based on the template fields data
+            publish_path = publish_template.apply_fields(fields)
+            publish_name = self.get_publish_name(settings, item)
+            while self.parent.util.get_conflicting_publishes(item.context, publish_path, publish_name):
+                # Get the next version to publish to and rebuild the publish path
+                fields["version"] = fields["version"] + 1
+                publish_path = publish_template.apply_fields(fields)
+
+            # Set the item property based on the publish template data
+            publish_version_name, _ = os.path.splitext(os.path.basename(publish_path))
+            item.properties["publish_version_name"] = publish_version_name
+            item.properties["publish_version"] = fields["version"]
+
         else:
             self.logger.debug("publish_template: %s" % publish_template)
             self.logger.debug("work_template: %s" % work_template)
@@ -755,6 +803,47 @@ class BasicFilePublishPlugin(HookBaseClass):
 
     ############################################################################
     # protected methods
+
+    def _copy_to_publish(self, settings, item):
+        """
+        Copy the item file to the publish location.
+
+        :param settings: This plugin instance's configured settings.
+        :param item: The item containing the file to copy.
+        """
+
+        work_template = item.properties.get("work_template")
+        if work_template:
+            self._copy_work_to_publish(settings, item)
+        else:
+            self._copy_local_to_publish(settings, item)
+
+    def _copy_local_to_publish(self, settings, item):
+        """
+        Copy the item from the local file path to the publish tempalte path.
+
+        This method does not use a work template, instead it tries to determine
+        the publish path based on the item's context.
+
+        :param settings: This plugin instance's configured settings
+        :param item: The item to determine the publish template for
+        """
+
+        path = item.get_property("path")
+        if not path:
+            return
+
+        publish_path = self.get_publish_path(settings, item)
+        if path != publish_path:
+            try:
+                publish_folder = os.path.dirname(publish_path)
+                ensure_folder_exists(publish_folder)
+                copy_file(path, publish_path)
+            except Exception:
+                raise Exception(
+                    "Failed to copy local file from '%s' to '%s'.\n%s"
+                    % (path, publish_path, traceback.format_exc())
+                )
 
     def _copy_work_to_publish(self, settings, item):
         """
@@ -950,3 +1039,37 @@ class BasicFilePublishPlugin(HookBaseClass):
         self.logger.info("File saved as: %s" % (next_version_path,))
 
         return next_version_path
+
+    def __get_template_missing_keys(self, settings, item, fields, missing_keys):
+        """
+        Attempt to update the given fields dictionary with data for the missing keys.
+
+        The method will modify the fields dictionary in place to add the missing data,
+        and will modify the missing_keys list in place to remove the keys that were
+        found.
+
+        :param settings: This plugin instance's configured settings
+        :param item: The item to determine the publish path for
+        :param fields: The templates fields data
+        :param missing_keys: The list of missing fields keys
+        """
+
+        # First try to extract the file name and extension from the path
+        path = item.get_property("path")
+        filename = os.path.basename(path)
+        name, file_extension = os.path.splitext(filename)
+        file_extension = file_extension[1:]
+
+        if "version" in missing_keys:
+            # Default to version 1. On generating the template path, check for
+            # conflicting publishes and version up accordingly
+            fields["version"] = 1
+            missing_keys.remove("version")
+
+        if "name" in missing_keys and name:
+            fields["name"] = name
+            missing_keys.remove("name")
+
+        if "extension" in missing_keys and file_extension:
+            fields["extension"] = file_extension
+            missing_keys.remove("extension")
