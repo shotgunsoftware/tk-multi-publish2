@@ -491,7 +491,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         publish_template = item.get_property("publish_template")
         if publish_template:
             return publish_template
-        
+
         publish_templates_by_file_type = item.get_property("publish_templates")
         publish_type = self.get_publish_type(settings, item)
         publish_template_name = publish_templates_by_file_type.get(publish_type)
@@ -609,25 +609,37 @@ class BasicFilePublishPlugin(HookBaseClass):
                 fields = context.as_template_fields(publish_template, validate=True)
             except TankError:
                 ctx_entity = context.task or context.entity or context.project
-                self.parent.sgtk.create_filesystem_structure(ctx_entity["type"], ctx_entity["id"])
+                self.parent.sgtk.create_filesystem_structure(
+                    ctx_entity["type"], ctx_entity["id"]
+                )
                 fields = context.as_template_fields(publish_template, validate=True)
+
             # Check if the template is misisng any required fields. If so, try to fill the
             # missing keys data
             missing_keys = publish_template.missing_keys(fields)
             if missing_keys:
                 self.__get_template_missing_keys(settings, item, fields, missing_keys)
             if missing_keys:
-                self.logger.warning("Missing data fields (%s) for publish template (%s)" % (fields, publish_template))
+                self.logger.warning(
+                    "Missing data fields (%s) for publish template (%s)"
+                    % (fields, publish_template)
+                )
                 if not context.task:
-                    self.logger.warning("Selecting a Task may resolve the missing template fields")
+                    self.logger.warning(
+                        "Selecting a Task may resolve the missing template fields"
+                    )
                 if not context.entity:
-                    self.logger.warning("Selecting a Link entity may resolve the missing template fields")
+                    self.logger.warning(
+                        "Selecting a Link entity may resolve the missing template fields"
+                    )
                 return
 
             # Get the publish path based on the template fields data
             publish_path = publish_template.apply_fields(fields)
             publish_name = self.get_publish_name(settings, item)
-            while self.parent.util.get_conflicting_publishes(item.context, publish_path, publish_name):
+            while self.parent.util.get_conflicting_publishes(
+                item.context, publish_path, publish_name
+            ):
                 # Get the next version to publish to and rebuild the publish path
                 fields["version"] = fields["version"] + 1
                 publish_path = publish_template.apply_fields(fields)

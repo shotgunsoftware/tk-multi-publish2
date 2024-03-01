@@ -187,13 +187,15 @@ class UploadVersionPlugin(HookBaseClass):
                 extra={"action_show_folder": {"path": file_path}},
             )
             return {"accepted": True}
-        
+
         # Accept files of type defined in the setting "File Types" that have a publish template
         # A publish template setting must be defined in the collector settings
         publish_templates_by_file_type = item.get_property("publish_templates")
         publish_type = self._get_publish_type(settings, item)
         publish_template_name = publish_templates_by_file_type.get(publish_type)
-        publish_template = self.parent.engine.get_template_by_name(publish_template_name)
+        publish_template = self.parent.engine.get_template_by_name(
+            publish_template_name
+        )
         if publish_template:
             self.logger.info(
                 "Version upload plugin accepted: %s" % (file_path,),
@@ -239,7 +241,9 @@ class UploadVersionPlugin(HookBaseClass):
         # useful for collectors that have access to templates and can determine
         # publish information about the item that doesn't require further, fuzzy
         # logic to be used here (the zero config way)
-        publish_name = item.properties.get("publish_name") or item.properties.get("publish_version_name")
+        publish_name = item.properties.get("publish_name") or item.properties.get(
+            "publish_version_name"
+        )
         if not publish_name:
 
             self.logger.debug("Using path info hook to determine publish name.")

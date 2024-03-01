@@ -168,7 +168,7 @@ class BasicSceneCollector(HookBaseClass):
             "Publish Templates": {
                 "type": "dict",
                 "default": {},
-                "description": "A dictionary of templates by file type to use for publishing."
+                "description": "A dictionary of templates by file type to use for publishing.",
             }
         }
 
