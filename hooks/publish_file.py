@@ -493,6 +493,8 @@ class BasicFilePublishPlugin(HookBaseClass):
             return publish_template
 
         publish_templates_by_file_type = item.get_property("publish_templates")
+        if not publish_templates_by_file_type:
+            return None
         publish_type = self.get_publish_type(settings, item)
         publish_template_name = publish_templates_by_file_type.get(publish_type)
         if not publish_template_name:
