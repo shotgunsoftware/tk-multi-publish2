@@ -250,11 +250,17 @@ class BasicSceneCollector(HookBaseClass):
                 )
             except TankError as tank_error:
                 self.logger.error(
-                    f"Failed to generate thumbnail for {path}. Error {tank_error}"
+                    "Failed to generate thumbnail for {path}. Error {tank_error}".format(
+                        path=path,
+                        tank_error=tank_error,
+                    )
                 )
             except Exception as error:
                 self.logger.error(
-                    f"Unexepcted error occured while attempting to generate thumbnail for {path}. Error {error}"
+                    "Unexepcted error occured while attempting to generate thumbnail for {path}. Error {error}".format(
+                        error=error,
+                        path=path,
+                    )
                 )
 
         # all we know about the file is its path. set the path in its
