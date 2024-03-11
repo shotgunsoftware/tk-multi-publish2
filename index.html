@@ -1,56 +1,36 @@
 
 
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>ShotGrid Publisher API reference, v2.6.9 &mdash; tk-multi-publish2 v2.6.9 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShotGrid Publisher API reference, v2.7.0 &mdash; tk-multi-publish2 v2.7.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Publish Customization" href="customizing.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-    <a href='http://developer.shotgridsoftware.com'>
+    <a href='https://help.autodesk.com/view/SGDEV/ENU/'>
     
         <img style='width: 191px;
                 height: 60px;
@@ -63,35 +43,20 @@
     
 
           
-            <a href="#" class="icon icon-home"> tk-multi-publish2
           
-
-          
+          <a href="#" class="icon icon-home">
+            tk-multi-publish2
           </a>
-
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
 
-          
-
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-            
-            
-              
-            
-            
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="customizing.html">Publish Customization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">Publish API</a></li>
@@ -100,8 +65,6 @@
 <li class="toctree-l1"><a class="reference internal" href="application.html">App Interface</a></li>
 </ul>
 
-            
-          
 
     <a href='genindex.html'>Alphabetic Index</a>
 
@@ -121,12 +84,12 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.6.9.<br>
+    <b>tk-multi-publish2</b> v2.7.0.<br>
     
         This documentation is part of the ShotGrid Pipeline Toolkit.
     
     For more information, please visit
-    <a class=custom_post_menu href='https://developer.shotgridsoftware.com'>The ShotGrid developer portal.</a>.
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The ShotGrid developer portal.</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-multi-publish2'>here</a>.
 
@@ -144,64 +107,29 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="#">tk-multi-publish2</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="#">Docs</a> &raquo;</li>
-        
-      <li>ShotGrid Publisher API reference, v2.6.9</li>
-    
-    
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ShotGrid Publisher API reference, v2.7.0</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="shotgrid-publisher-api-reference-release">
-<h1>ShotGrid Publisher API reference, v2.6.9<a class="headerlink" href="#shotgrid-publisher-api-reference-release" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+             
+  <section id="shotgrid-publisher-api-reference-release">
+<h1>ShotGrid Publisher API reference, v2.7.0<a class="headerlink" href="#shotgrid-publisher-api-reference-release" title="Permalink to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
 <p>The Publish app is a highly customizable workflow tool that allows studios to
 track the data being created by artists and control how it is shared. The app
 can be modified for studio-specific needs by way of hooks that control how items
@@ -209,8 +137,8 @@ are identified for presentation to artists for publishing and how those items
 are then processed. In addition to customizing the publish UI behavior, the
 underlying Python API that drives the interface is also available for more
 advanced studio customization.</p>
-<div class="section" id="publish-execution">
-<span id="id1"></span><h3>Publish Execution<a class="headerlink" href="#publish-execution" title="Permalink to this headline">¶</a></h3>
+<section id="publish-execution">
+<span id="id1"></span><h3>Publish Execution<a class="headerlink" href="#publish-execution" title="Permalink to this heading"></a></h3>
 <p>The publisher has several phases of execution that developers should be aware
 of before implementing custom behaviors.</p>
 <p>The graphic and descriptions below outline these concepts for developers just
@@ -219,8 +147,8 @@ each of these concepts and the APIs that drive the publisher in detail.</p>
 <hr class="docutils" />
 <img alt="_images/publish_overview.png" src="_images/publish_overview.png" />
 <hr class="docutils" />
-<div class="section" id="collection-acceptance">
-<h4>Collection &amp; Acceptance<a class="headerlink" href="#collection-acceptance" title="Permalink to this headline">¶</a></h4>
+<section id="collection-acceptance">
+<h4>Collection &amp; Acceptance<a class="headerlink" href="#collection-acceptance" title="Permalink to this heading"></a></h4>
 <p>When the Publisher is launched, the current session (Maya, Nuke, Houdini, etc)
 is processed and publish items are collected for display in the Publish app’s
 interface. These items represent what the artists may want to track in ShotGrid
@@ -230,8 +158,8 @@ items. This item collection behavior is defined by the app’s collector hook an
 can be taken over or modified by studios to customize what data should be
 tracked in ShotGrid and how it should be shared between artists.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">For a deeper dive into the collection behavior and how it can be
+<p class="admonition-title">Note</p>
+<p>For a deeper dive into the collection behavior and how it can be
 customized, see the <a class="reference internal" href="customizing.html#publish-collector"><span class="std std-ref">Collector Hook</span></a> docs.</p>
 </div>
 <p>Before the collected items are shown in the Publisher UI, they will
@@ -249,32 +177,32 @@ item.</p>
 publish tasks represent the processing that will happen once a publish is
 triggered.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">For a deeper dive into the publish plugin behavior and how it can be
+<p class="admonition-title">Note</p>
+<p>For a deeper dive into the publish plugin behavior and how it can be
 customized, see the <a class="reference internal" href="customizing.html#publish-plugin"><span class="std std-ref">Publish Plugin</span></a> docs.</p>
 </div>
-</div>
-<div class="section" id="item-review">
-<h4>Item Review<a class="headerlink" href="#item-review" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="item-review">
+<h4>Item Review<a class="headerlink" href="#item-review" title="Permalink to this heading"></a></h4>
 <p>Once the acceptance phase is complete, the user can review the items, make
 changes to the target context of each, provide publish descriptions, take screen
 grabs, and update settings. Additional files can also be dragged and dropped or
 browsed to for collection.</p>
-</div>
-<div class="section" id="publishing">
-<h4>Publishing<a class="headerlink" href="#publishing" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="publishing">
+<h4>Publishing<a class="headerlink" href="#publishing" title="Permalink to this heading"></a></h4>
 <p>After the artist has taken the time to review the collected items, they can
 perform one of two actions;</p>
 <ol class="arabic simple">
-<li>They can run a validation pass on the items. This will trigger a validation
-pass for each task in the list in the order in which they are displayed.</li>
-<li>The user can also decide to run the full publish pass. This will include all
+<li><p>They can run a validation pass on the items. This will trigger a validation
+pass for each task in the list in the order in which they are displayed.</p></li>
+<li><p>The user can also decide to run the full publish pass. This will include all
 the validation steps above followed by execution of each plugin’s publish
-pass followed by execution of each plugin’s finalize pass.</li>
+pass followed by execution of each plugin’s finalize pass.</p></li>
 </ol>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The overview above describes the publish execution in terms of an
+<p class="admonition-title">Note</p>
+<p>The overview above describes the publish execution in terms of an
 artist launching the Publish UI. All of these concepts, including
 collection, acceptance, and publish plugins are exposed by the
 <a class="reference internal" href="api.html#publish-api"><span class="std std-ref">Publish API</span></a> making it possible to build more advanced, custom publish
@@ -307,59 +235,53 @@ for publish workflow building and customization.</p>
 <li class="toctree-l2"><a class="reference internal" href="logging.html#open-url-action">Open URL Action</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="utility.html">Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="application.html">App Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utility.html">Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utility.html#tk_multi_publish2.util.get_version_path"><code class="docutils literal notranslate"><span class="pre">get_version_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utility.html#tk_multi_publish2.util.get_next_version_path"><code class="docutils literal notranslate"><span class="pre">get_next_version_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utility.html#tk_multi_publish2.util.get_file_path_components"><code class="docutils literal notranslate"><span class="pre">get_file_path_components()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utility.html#tk_multi_publish2.util.get_frame_sequence_path"><code class="docutils literal notranslate"><span class="pre">get_frame_sequence_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utility.html#tk_multi_publish2.util.get_frame_sequences"><code class="docutils literal notranslate"><span class="pre">get_frame_sequences()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utility.html#tk_multi_publish2.util.get_publish_name"><code class="docutils literal notranslate"><span class="pre">get_publish_name()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utility.html#tk_multi_publish2.util.get_version_number"><code class="docutils literal notranslate"><span class="pre">get_version_number()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utility.html#tk_multi_publish2.util.get_thumbnail"><code class="docutils literal notranslate"><span class="pre">get_thumbnail()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="application.html">App Interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="application.html#app.MultiPublish2"><code class="docutils literal notranslate"><span class="pre">MultiPublish2</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
-</div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="customizing.html" class="btn btn-neutral float-right" title="Publish Customization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="customizing.html" class="btn btn-neutral float-right" title="Publish Customization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2023, Autodesk
+    <p>&#169; Copyright 2024, Autodesk.</p>
+  </div>
 
-    </p>
-  </div> 
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-
-  
-  
-    
-  
  
 
   <script type="text/javascript">

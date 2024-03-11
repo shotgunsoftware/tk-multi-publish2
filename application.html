@@ -1,56 +1,36 @@
 
 
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>App Interface &mdash; tk-multi-publish2 v2.6.9 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>App Interface &mdash; tk-multi-publish2 v2.7.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="Utilities" href="utility.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-    <a href='http://developer.shotgridsoftware.com'>
+    <a href='https://help.autodesk.com/view/SGDEV/ENU/'>
     
         <img style='width: 191px;
                 height: 60px;
@@ -63,45 +43,36 @@
     
 
           
-            <a href="index.html" class="icon icon-home"> tk-multi-publish2
           
-
-          
+          <a href="index.html" class="icon icon-home">
+            tk-multi-publish2
           </a>
-
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
 
-          
-
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-            
-            
-              
-            
-            
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="customizing.html">Publish Customization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">Publish API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utility.html">Utilities</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">App Interface</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">App Interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#app.MultiPublish2"><code class="docutils literal notranslate"><span class="pre">MultiPublish2</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#app.MultiPublish2.base_hooks"><code class="docutils literal notranslate"><span class="pre">MultiPublish2.base_hooks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#app.MultiPublish2.util"><code class="docutils literal notranslate"><span class="pre">MultiPublish2.util</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#app.MultiPublish2.create_publish_manager"><code class="docutils literal notranslate"><span class="pre">MultiPublish2.create_publish_manager()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
-            
-          
 
     <a href='genindex.html'>Alphabetic Index</a>
 
@@ -121,12 +92,12 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.6.9.<br>
+    <b>tk-multi-publish2</b> v2.7.0.<br>
     
         This documentation is part of the ShotGrid Pipeline Toolkit.
     
     For more information, please visit
-    <a class=custom_post_menu href='https://developer.shotgridsoftware.com'>The ShotGrid developer portal.</a>.
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The ShotGrid developer portal.</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-multi-publish2'>here</a>.
 
@@ -144,108 +115,66 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">tk-multi-publish2</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
-      <li>App Interface</li>
-    
-    
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">App Interface</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="app-interface">
-<h1>App Interface<a class="headerlink" href="#app-interface" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="app.MultiPublish2">
-<em class="property">class </em><code class="descclassname">app.</code><code class="descname">MultiPublish2</code><a class="reference internal" href="_modules/app.html#MultiPublish2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.MultiPublish2" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is the <a class="reference external" href="https://developer.shotgridsoftware.com/tk-core/platform.html#sgtk.platform.Application" title="(in tk-core vv0.20.25)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sgtk.platform.Application</span></code></a> subclass that defines the
+             
+  <section id="app-interface">
+<h1>App Interface<a class="headerlink" href="#app-interface" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.MultiPublish2">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">MultiPublish2</span></span><a class="reference internal" href="_modules/app.html#MultiPublish2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.MultiPublish2" title="Permalink to this definition"></a></dt>
+<dd><p>This is the <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/platform.html#sgtk.platform.Application" title="(in tk-core vv0.20.34)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sgtk.platform.Application</span></code></a> subclass that defines the
 top-level publish2 interface.</p>
 <p>Application instances are constructed by the toolkit launch process
 and various factory methods such as <code class="xref py py-meth docutils literal notranslate"><span class="pre">start_engine()</span></code>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>engine</strong> – The engine instance to connect this app to</li>
-<li><strong>app_name</strong> – The short name of this app (e.g. tk-nukepublish)</li>
-<li><strong>settings</strong> – a settings dictionary for this app</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> – The engine instance to connect this app to</p></li>
+<li><p><strong>app_name</strong> – The short name of this app (e.g. tk-nukepublish)</p></li>
+<li><p><strong>settings</strong> – a settings dictionary for this app</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="attribute">
-<dt id="app.MultiPublish2.base_hooks">
-<code class="descname">base_hooks</code><a class="headerlink" href="#app.MultiPublish2.base_hooks" title="Permalink to this definition">¶</a></dt>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="app.MultiPublish2.base_hooks">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">base_hooks</span></span><a class="headerlink" href="#app.MultiPublish2.base_hooks" title="Permalink to this definition"></a></dt>
 <dd><p>Exposes the publish2 <code class="docutils literal notranslate"><span class="pre">base_hooks</span></code> module.</p>
 <p>This module provides base class implementations of collector and publish
 plugin hooks:</p>
 <ul class="simple">
-<li><a class="reference internal" href="customizing.html#tk_multi_publish2.base_hooks.CollectorPlugin" title="tk_multi_publish2.base_hooks.CollectorPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">CollectorPlugin</span></code></a></li>
-<li><a class="reference internal" href="customizing.html#tk_multi_publish2.base_hooks.PublishPlugin" title="tk_multi_publish2.base_hooks.PublishPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">PublishPlugin</span></code></a></li>
+<li><p><a class="reference internal" href="customizing.html#tk_multi_publish2.base_hooks.CollectorPlugin" title="tk_multi_publish2.base_hooks.CollectorPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">CollectorPlugin</span></code></a></p></li>
+<li><p><a class="reference internal" href="customizing.html#tk_multi_publish2.base_hooks.PublishPlugin" title="tk_multi_publish2.base_hooks.PublishPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">PublishPlugin</span></code></a></p></li>
 </ul>
 <p>Access to these classes won’t typically be needed when writing hooks as
 they are are injected into the class hierarchy automatically for any
 collector or publish plugins configured.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A handle on the app’s <code class="docutils literal notranslate"><span class="pre">base_hooks</span></code> module.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A handle on the app’s <code class="docutils literal notranslate"><span class="pre">base_hooks</span></code> module.</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="app.MultiPublish2.util">
-<code class="descname">util</code><a class="headerlink" href="#app.MultiPublish2.util" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="app.MultiPublish2.util">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">util</span></span><a class="headerlink" href="#app.MultiPublish2.util" title="Permalink to this definition"></a></dt>
 <dd><p>Exposes the publish2 <code class="docutils literal notranslate"><span class="pre">util</span></code> module.</p>
 <p>This module provides methods that are useful to collector and publish
 plugin hooks. Example code running in a hook:</p>
@@ -259,85 +188,61 @@ plugin hooks. Example code running in a hook:</p>
 <p>Some of the methods available via <code class="docutils literal notranslate"><span class="pre">util</span></code> are the <code class="docutils literal notranslate"><span class="pre">path_info</span></code> hook
 methods. Exposing them via this property allows them to be called
 directly.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A handle on the app’s <code class="docutils literal notranslate"><span class="pre">util</span></code> module.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A handle on the app’s <code class="docutils literal notranslate"><span class="pre">util</span></code> module.</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="app.MultiPublish2.create_publish_manager">
-<code class="descname">create_publish_manager</code><span class="sig-paren">(</span><em>publish_logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#MultiPublish2.create_publish_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.MultiPublish2.create_publish_manager" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.MultiPublish2.create_publish_manager">
+<span class="sig-name descname"><span class="pre">create_publish_manager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">publish_logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#MultiPublish2.create_publish_manager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.MultiPublish2.create_publish_manager" title="Permalink to this definition"></a></dt>
 <dd><p>Create and return a <code class="xref py py-class docutils literal notranslate"><span class="pre">tk_multi_publish2.PublishManager</span></code> instance.
 See the <code class="xref py py-class docutils literal notranslate"><span class="pre">tk_multi_publish2.PublishManager</span></code> docs for details on
 how it can be used to automate your publishing workflows.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>publish_logger</strong> – This is a standard python logger to use during
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>publish_logger</strong> – This is a standard python logger to use during
 publishing. A default logger will be provided if not supplied. This
 can be useful when implementing a custom UI, for example, with a
-specialized log handler (as is the case with the Publisher)</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A <code class="xref py py-class docutils literal notranslate"><span class="pre">tk_multi_publish2.PublishManager</span></code> instance</td>
-</tr>
-</tbody>
-</table>
+specialized log handler (as is the case with the Publisher)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">tk_multi_publish2.PublishManager</span></code> instance</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
-</div>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-      
-        <a href="utility.html" class="btn btn-neutral float-left" title="Utilities" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="utility.html" class="btn btn-neutral float-left" title="Utilities" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2023, Autodesk
+    <p>&#169; Copyright 2024, Autodesk.</p>
+  </div>
 
-    </p>
-  </div> 
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-
-  
-  
-    
-  
  
 
   <script type="text/javascript">
