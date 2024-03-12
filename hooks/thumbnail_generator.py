@@ -61,7 +61,11 @@ class ThumbnailGenerator(HookBaseClass):
         # Get the thumbnail extractor data for the given extractor
         extractor_data = self._get_thumbnail_extractor_data().get(extractor)
         if not extractor_data:
-            raise TankError("Missing thumbnail extractor data for {extractor}".format(extractor=extractor))
+            raise TankError(
+                "Missing thumbnail extractor data for {extractor}".format(
+                    extractor=extractor
+                )
+            )
 
         # Sanity check all necessary extractor data is present
         engine_name = extractor_data.get("engine")
@@ -93,7 +97,9 @@ class ThumbnailGenerator(HookBaseClass):
             # Execute the thumbnail extraction command
             success = self._execute_command(extractor_cmd)
             if not success:
-                error_msg = "Failed to generate thumbnail for {input_path}".format(input_path=input_path)
+                error_msg = "Failed to generate thumbnail for {input_path}".format(
+                    input_path=input_path
+                )
                 logger.error(error_msg)
                 raise TankError(error_msg)
 
