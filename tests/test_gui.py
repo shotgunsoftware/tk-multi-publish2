@@ -103,7 +103,7 @@ class AppDialogAppWrapper(object):
         """
         :param root:
         """
-        self.root = parent["ShotGrid: Publish"].get()
+        self.root = parent["Flow Production Tracking: Publish"].get()
 
     def exists(self):
         """
@@ -302,7 +302,7 @@ def test_custom_plugin(app_dialog):
     # Validation of the Publish to Shotgun with items plugin
     # Select plugin Publish to Shotgun with items of the first item
     app_dialog.root["collected items tree"].outlineitems[
-        "Publish to ShotGrid with items"
+        "Publish to Flow Production Tracking with items"
     ].mouseClick()
     # Make sure the checkbox is check
     if (
@@ -314,7 +314,7 @@ def test_custom_plugin(app_dialog):
         ].mouseClick()
     # Select plugin Publish to Shotgun with items of the second item
     app_dialog.root["collected items tree"].outlineitems[
-        "Publish to ShotGrid with items"
+        "Publish to Flow Production Tracking with items"
     ][1].mouseClick()
     # Make sure the checkbox is unchecked
     if (
@@ -327,7 +327,7 @@ def test_custom_plugin(app_dialog):
     # Do a multiple plugins selection of item 1 and 2
     with holdKeys("{CONTROL}"):
         app_dialog.root["collected items tree"].outlineitems[
-            "Publish to ShotGrid with items"
+            "Publish to Flow Production Tracking with items"
         ].mouseSlide()
         Mouse.click()
 
@@ -377,7 +377,7 @@ def test_custom_plugin(app_dialog):
     # Validation of the Publish to Shotgun without items plugin
     # Select Publish to Shotgun without items of the first item
     app_dialog.root["collected items tree"].outlineitems[
-        "Publish to ShotGrid without items"
+        "Publish to Flow Production Tracking without items"
     ].mouseSlide()
     Mouse.click()
     # Make sure the checkbox is check
@@ -390,7 +390,7 @@ def test_custom_plugin(app_dialog):
         ].mouseClick()
     # Select Publish to Shotgun without items of the second item
     app_dialog.root["collected items tree"].outlineitems[
-        "Publish to ShotGrid without items"
+        "Publish to Flow Production Tracking without items"
     ][1].mouseClick()
     # Make sure the checkbox is unchecked
     if (
@@ -402,7 +402,7 @@ def test_custom_plugin(app_dialog):
         ].mouseClick()
     # Go back the Publish to Shotgun without items plugin of the first item and make sure checkbox is still checked
     app_dialog.root["collected items tree"].outlineitems[
-        "Publish to ShotGrid without items"
+        "Publish to Flow Production Tracking without items"
     ].mouseClick()
     assert (
         app_dialog.root["details frame"].checkboxes["Set task to in review"].checked
