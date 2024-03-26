@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>tk_multi_publish2.util &mdash; tk-multi-publish2 v2.7.1 documentation</title>
+  <title>tk_multi_publish2.util &mdash; tk-multi-publish2 v2.8.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -82,7 +82,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.7.1.<br>
+    <b>tk-multi-publish2</b> v2.8.0.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -396,13 +396,13 @@
 
 <span class="k">def</span> <span class="nf">get_conflicting_publishes</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">publish_name</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns a list of SG published file dicts for any existing publishes that</span>
+<span class="sd">    Returns a list of PTR published file dicts for any existing publishes that</span>
 <span class="sd">    match the supplied context, path, and publish_name.</span>
 
 <span class="sd">    :param context: The context to search publishes for</span>
 <span class="sd">    :param path: The path to match against previous publishes</span>
 <span class="sd">    :param publish_name: The name of the publish.</span>
-<span class="sd">    :param filters: A list of additional SG find() filters to apply to the</span>
+<span class="sd">    :param filters: A list of additional PTR find() filters to apply to the</span>
 <span class="sd">        publish search.</span>
 
 <span class="sd">    :return: A list of ``dict``s representing existing publishes that match</span>
@@ -425,7 +425,7 @@
     <span class="c1"># a workaround for our inability to filter publishes by path. so for now,</span>
     <span class="c1"># get a dictionary of data that would be used to create a matching publish</span>
     <span class="c1"># and use that to get publishes via a call to find(). Then we&#39;ll filter</span>
-    <span class="c1"># those by their path field. Once we have the ability in SG to filter by</span>
+    <span class="c1"># those by their path field. Once we have the ability in PTR to filter by</span>
     <span class="c1"># path, we can replace this whole method with a simple call to find().</span>
     <span class="n">publish_data</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">register_publish</span><span class="p">(</span>
         <span class="n">publisher</span><span class="o">.</span><span class="n">sgtk</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">publish_name</span><span class="p">,</span> <span class="n">version_number</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="kc">True</span>
@@ -467,7 +467,7 @@
 
 <span class="sd">    The loader app respects the status of publishes to determine which are</span>
 <span class="sd">    available for the user to load in their DCC. Because it is possible to</span>
-<span class="sd">    create a version entry in SG with the same path multiple times, this method</span>
+<span class="sd">    create a version entry in PTR with the same path multiple times, this method</span>
 <span class="sd">    provides an easy way to clear the status of previous publishes for a given</span>
 <span class="sd">    path.</span>
 

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>tk_multi_publish2.api.item &mdash; tk-multi-publish2 v2.7.1 documentation</title>
+  <title>tk_multi_publish2.api.item &mdash; tk-multi-publish2 v2.8.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
@@ -82,7 +82,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.7.1.<br>
+    <b>tk-multi-publish2</b> v2.8.0.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -1093,10 +1093,10 @@
 <span class="sd">        The type specification for this item. This specification typically</span>
 <span class="sd">        follows a hierarchical dot notation. For example, &#39;file&#39;, &#39;file.image&#39;,</span>
 <span class="sd">        or &#39;file.movie&#39;. This allows for a system whereby some publish plugins</span>
-<span class="sd">        act on &#39;file.*&#39; items (publish to SG for example) while other plugins</span>
+<span class="sd">        act on &#39;file.*&#39; items (publish to PTR for example) while other plugins</span>
 <span class="sd">        may perform actions on a more specific set of items (for example</span>
 <span class="sd">        uploading the media represented by &#39;file.image&#39; or &#39;file.movie&#39; items to</span>
-<span class="sd">        SG as Versions). This is how the default integrations use this property</span>
+<span class="sd">        PTR as Versions). This is how the default integrations use this property</span>
 <span class="sd">        on collected items.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_spec</span>
