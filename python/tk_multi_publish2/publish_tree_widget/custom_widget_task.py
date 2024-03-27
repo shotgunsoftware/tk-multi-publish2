@@ -54,6 +54,10 @@ class CustomTreeWidgetTask(CustomTreeWidgetBase):
         """
         Callback that fires when the user clicks the checkbox
         """
+        # For PySide6 compatibility, convert state to CheckState enum if not already
+        # an instance. Issue described at: https://forum.qt.io/post/743017
+        if not isinstance(state, QtCore.Qt.CheckState):
+            state = QtCore.Qt.CheckState(state)
         if QtGui.QApplication.keyboardModifiers() == QtCore.Qt.ShiftModifier:
             logger.debug("shift held. propagating check to all plugins.")
             self._tree_node.set_check_state(state, apply_to_all_plugins=True)
