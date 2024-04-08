@@ -102,6 +102,32 @@ class UploadVersionPlugin(HookBaseClass):
                 "default": True,
                 "description": "Should the local file be referenced by Flow Production Tracking",
             },
+            "File Types": {
+                "type": "list",
+                "default": [
+                    ["Alias File", "wire"],
+                    ["Alembic Cache", "abc"],
+                    ["3dsmax Scene", "max"],
+                    ["NukeStudio Project", "hrox"],
+                    ["Houdini Scene", "hip", "hipnc"],
+                    ["Maya Scene", "ma", "mb"],
+                    ["Motion Builder FBX", "fbx"],
+                    ["Nuke Script", "nk"],
+                    ["Photoshop Image", "psd", "psb"],
+                    ["VRED Scene", "vpb", "vpe", "osb"],
+                    ["Rendered Image", "dpx", "exr"],
+                    ["Texture", "tiff", "tx", "tga", "dds"],
+                    ["Image", "jpeg", "jpg", "png"],
+                    ["Movie", "mov", "mp4"],
+                    ["PDF", "pdf"],
+                ],
+                "description": (
+                    "List of file types to include. Each entry in the list "
+                    "is a list in which the first entry is the ShotGrid "
+                    "published file type and subsequent entries are file "
+                    "extensions that should be associated."
+                ),
+            },
         }
 
     @property
@@ -114,8 +140,9 @@ class UploadVersionPlugin(HookBaseClass):
         ["maya.*", "file.maya"]
         """
 
-        # we use "video" since that's the mimetype category.
-        return ["file.image", "file.pdf", "file.video"]
+        # The accept method will do additional filtering on which items this
+        # plugin will appear for.
+        return ["file.*"]
 
     def accept(self, settings, item):
         """
@@ -146,32 +173,42 @@ class UploadVersionPlugin(HookBaseClass):
         publisher = self.parent
         file_path = item.properties["path"]
 
+        # Accept any files with a valid extension defined in the setting "File Extensions"
         file_info = publisher.util.get_file_path_components(file_path)
         extension = file_info["extension"].lower()
-
         valid_extensions = []
-
         for ext in settings["File Extensions"].value.split(","):
             ext = ext.strip().lstrip(".")
             valid_extensions.append(ext)
-
         self.logger.debug("Valid extensions: %s" % valid_extensions)
-
         if extension in valid_extensions:
             # log the accepted file and display a button to reveal it in the fs
             self.logger.info(
                 "Version upload plugin accepted: %s" % (file_path,),
                 extra={"action_show_folder": {"path": file_path}},
             )
-
-            # return the accepted info
             return {"accepted": True}
-        else:
-            self.logger.debug(
-                "%s is not in the valid extensions list for Version creation"
-                % (extension,)
+
+        # Accept files of type defined in the setting "File Types" that have a publish template
+        # A publish template setting must be defined in the collector settings
+        publish_templates_by_file_type = item.get_property("publish_templates")
+        publish_type = self._get_publish_type(settings, item)
+        publish_template_name = publish_templates_by_file_type.get(publish_type)
+        publish_template = self.parent.engine.get_template_by_name(
+            publish_template_name
+        )
+        if publish_template:
+            self.logger.info(
+                "Version upload plugin accepted: %s" % (file_path,),
+                extra={"action_show_folder": {"path": file_path}},
             )
-            return {"accepted": False}
+            return {"accepted": True}
+
+        self.logger.debug(
+            "%s is not in the valid extensions list for Version creation and does not have a publish template"
+            % (extension,)
+        )
+        return {"accepted": False}
 
     def validate(self, settings, item):
         """
@@ -205,7 +242,9 @@ class UploadVersionPlugin(HookBaseClass):
         # useful for collectors that have access to templates and can determine
         # publish information about the item that doesn't require further, fuzzy
         # logic to be used here (the zero config way)
-        publish_name = item.properties.get("publish_name")
+        publish_name = item.properties.get("publish_name") or item.properties.get(
+            "publish_version_name"
+        )
         if not publish_name:
 
             self.logger.debug("Using path info hook to determine publish name.")
@@ -310,3 +349,49 @@ class UploadVersionPlugin(HookBaseClass):
             return item.context.project
         else:
             return None
+
+    def _get_publish_type(self, settings, item):
+        """
+        Get a publish type for the supplied settings and item.
+
+        :param settings: This plugin instance's configured settings
+        :param item: The item to determine the publish type for
+
+        :return: A publish type or None if one could not be found.
+        """
+
+        # fall back to the path info hook logic
+        publisher = self.parent
+        path = item.get_property("path")
+        if path is None:
+            raise AttributeError("'PublishData' object has no attribute 'path'")
+
+        # get the publish path components
+        path_info = publisher.util.get_file_path_components(path)
+
+        # determine the publish type
+        extension = path_info["extension"]
+
+        # ensure lowercase and no dot
+        if extension:
+            extension = extension.lstrip(".").lower()
+
+            for type_def in settings["File Types"].value:
+
+                publish_type = type_def[0]
+                file_extensions = type_def[1:]
+
+                if extension in file_extensions:
+                    # found a matching type in settings. use it!
+                    return publish_type
+
+        # --- no pre-defined publish type found...
+
+        if extension:
+            # publish type is based on extension
+            publish_type = "%s File" % extension.capitalize()
+        else:
+            # no extension, assume it is a folder
+            publish_type = "Folder"
+
+        return publish_type
