@@ -201,7 +201,6 @@ class BasicSceneCollector(HookBaseClass):
         publish_templates = {}
         if publish_templates_setting:
             publish_templates = publish_templates_setting.value
-            
 
         # handle files and folders differently
         if os.path.isdir(path):
