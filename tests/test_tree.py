@@ -80,7 +80,7 @@ class TestPublishTree(PublishApiTestBase):
 
     def test_serialize_tree_with_datetime_property(self):
         """
-        Ensures we can save a tree when an item property is a datetime object
+        Ensures we can save a tree when an item property is a datetime.datetime object
         """
 
         # Create some items that will modify
@@ -96,7 +96,29 @@ class TestPublishTree(PublishApiTestBase):
         new_tree = tree.load_file(temp_file_path)
         new_item = next(new_tree.root_item.children)
 
+        self.assertEqual(type(new_item.properties.datetime), datetime.datetime)
+        self.assertNotEqual(type(new_item.properties.datetime), datetime.date)
+
+    def test_serialize_tree_with_date_property(self):
+        """
+        Ensures we can save a tree when an item property is a datetime.date object
+        """
+
+        # Create some items that will modify
+        tree = self.manager.tree
+
+        item = tree.root_item.create_item("item.a", "Item A", "Item A")
+        item.properties["datetime"] = datetime.date.today()
+
+        fd, temp_file_path = tempfile.mkstemp()
+
+        # Save and reload the publish tree to check that the datetime property is correctly handled
+        tree.save_file(temp_file_path)
+        new_tree = tree.load_file(temp_file_path)
+        new_item = next(new_tree.root_item.children)
+
         self.assertEqual(type(new_item.properties.datetime), datetime.date)
+        self.assertNotEqual(type(new_item.properties.datetime), datetime.datetime)
 
     def test_bad_document_version(self):
         """
