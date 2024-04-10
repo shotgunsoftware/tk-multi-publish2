@@ -96,7 +96,7 @@ class TestPublishTree(PublishApiTestBase):
         new_tree = tree.load_file(temp_file_path)
         new_item = next(new_tree.root_item.children)
 
-        self.assertEqual(type(new_item.properties.datetime), datetime.datetime)
+        self.assertEqual(type(new_item.properties.datetime), datetime.date)
 
     def test_bad_document_version(self):
         """
