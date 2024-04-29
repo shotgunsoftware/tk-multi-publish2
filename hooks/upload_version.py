@@ -192,17 +192,18 @@ class UploadVersionPlugin(HookBaseClass):
         # Accept files of type defined in the setting "File Types" that have a publish template
         # A publish template setting must be defined in the collector settings
         publish_templates_by_file_type = item.get_property("publish_templates")
-        publish_type = self._get_publish_type(settings, item)
-        publish_template_name = publish_templates_by_file_type.get(publish_type)
-        publish_template = self.parent.engine.get_template_by_name(
-            publish_template_name
-        )
-        if publish_template:
-            self.logger.info(
-                "Version upload plugin accepted: %s" % (file_path,),
-                extra={"action_show_folder": {"path": file_path}},
+        if publish_templates_by_file_type:
+            publish_type = self._get_publish_type(settings, item)
+            publish_template_name = publish_templates_by_file_type.get(publish_type)
+            publish_template = self.parent.engine.get_template_by_name(
+                publish_template_name
             )
-            return {"accepted": True}
+            if publish_template:
+                self.logger.info(
+                    "Version upload plugin accepted: %s" % (file_path,),
+                    extra={"action_show_folder": {"path": file_path}},
+                )
+                return {"accepted": True}
 
         self.logger.debug(
             "%s is not in the valid extensions list for Version creation and does not have a publish template"
