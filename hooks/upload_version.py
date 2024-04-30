@@ -89,7 +89,7 @@ class UploadVersionPlugin(HookBaseClass):
         return {
             "File Extensions": {
                 "type": "str",
-                "default": "jpeg, jpg, png, mov, mp4, pdf",
+                "default": "jpeg, jpg, png, mov, mp4, pdf, avi",
                 "description": "File Extensions of files to include",
             },
             "Upload": {
