@@ -62,8 +62,5 @@ class PublishDescriptionEditBase(QtGui.QTextEdit):
             super(PublishDescriptionEditBase, self).paintEvent(paint_event)
 
 
-base = PublishDescriptionEditBase
-
-
-class PublishDescriptionEdit(base):
+class PublishDescriptionEdit(PublishDescriptionEditBase):
     pass
