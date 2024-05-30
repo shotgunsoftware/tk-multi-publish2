@@ -14,7 +14,7 @@ from sgtk.platform.qt import QtCore, QtGui
 logger = sgtk.platform.get_logger(__name__)
 
 
-class PublishDescriptionEditBase(QtGui.QTextEdit):
+class PublishDescriptionEdit(QtGui.QTextEdit):
     """
     Widget that holds the summary description
     """
@@ -25,7 +25,7 @@ class PublishDescriptionEditBase(QtGui.QTextEdit):
 
         :param parent: QT parent object
         """
-        super(PublishDescriptionEditBase, self).__init__(parent)
+        super(PublishDescriptionEdit, self).__init__(parent)
 
         self._show_multiple_values = False
 
@@ -59,8 +59,4 @@ class PublishDescriptionEditBase(QtGui.QTextEdit):
             )
 
         else:
-            super(PublishDescriptionEditBase, self).paintEvent(paint_event)
-
-
-class PublishDescriptionEdit(PublishDescriptionEditBase):
-    pass
+            super(PublishDescriptionEdit, self).paintEvent(paint_event)
