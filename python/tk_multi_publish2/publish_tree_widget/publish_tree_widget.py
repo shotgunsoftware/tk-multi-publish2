@@ -152,12 +152,12 @@ class PublishTreeWidget(QtGui.QTreeWidget):
             ui_task = TreeNodeTask(task, ui_item)
             self.__created_items.append(ui_task)
 
+        for child in item.children:
+            self._build_item_tree_r(child, checked, level + 1, ui_item)
+
         # ensure the expand indicator is shown/hidden depending on child
         # visibility
         ui_item.update_expand_indicator()
-
-        for child in item.children:
-            self._build_item_tree_r(child, checked, level + 1, ui_item)
 
         # lastly, handle the item level check state.
         # if the item has been marked as checked=False
