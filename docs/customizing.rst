@@ -88,7 +88,7 @@ new entry under the ``settings.tk-multi-publish2.maya.asset_step`` publish_plugi
 list called "Create Version from Playblast":
 
 .. code-block:: yaml
-    
+
     # ---- Maya
 
     # asset step
