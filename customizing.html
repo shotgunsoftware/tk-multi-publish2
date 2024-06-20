@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Publish Customization &mdash; tk-multi-publish2 v2.8.4 documentation</title>
+  <title>Publish Customization &mdash; tk-multi-publish2 v2.9.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Publish API" href="api.html" />
-    <link rel="prev" title="Flow Production Tracking Publisher API reference, v2.8.4" href="index.html" /> 
+    <link rel="prev" title="Flow Production Tracking Publisher API reference, v2.9.0" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -68,6 +68,10 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#publish-plugin">Publish Plugin</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#step-by-step-tutorials">Step-by-Step Tutorials</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#create-a-publish-plugin">Create a Publish Plugin</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#publish-plugin-api">Publish Plugin API</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#tk_multi_publish2.base_hooks.PublishPlugin"><code class="docutils literal notranslate"><span class="pre">PublishPlugin</span></code></a></li>
 </ul>
@@ -110,7 +114,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.8.4.<br>
+    <b>tk-multi-publish2</b> v2.9.0.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -168,7 +172,7 @@ and presented to the user.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>For more information on how to take over, subclass, and manage hooks,
-see the <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.21.2)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
+see the <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.21.5)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
 </div>
 <hr class="docutils" />
 <section id="collector-hook-api">
@@ -176,7 +180,7 @@ see the <a class="reference external" href="https://developers.shotgridsoftware.
 <dl class="py class">
 <dt class="sig sig-object py" id="tk_multi_publish2.base_hooks.CollectorPlugin">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.base_hooks.</span></span><span class="sig-name descname"><span class="pre">CollectorPlugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/collector.html#CollectorPlugin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.CollectorPlugin" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk.Hook" title="(in tk-core vv0.21.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hook</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk.Hook" title="(in tk-core vv0.21.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hook</span></code></a></p>
 <p>This class defines the required interface for a collector plugin.
 Collectors are used to gather individual files that are loaded via the
 file browser or dragged and dropped into the Publish2 UI. It is also used
@@ -393,15 +397,252 @@ custom publish plugin UI.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>For more information on how to take over, subclass, and manage hooks,
-see the <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.21.2)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
+see the <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.21.5)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
 </div>
 <hr class="docutils" />
+<section id="step-by-step-tutorials">
+<h3>Step-by-Step Tutorials<a class="headerlink" href="#step-by-step-tutorials" title="Permalink to this heading"></a></h3>
+<p>Listed below are step-by-step tutorials to help you customize your publish
+workflows using publish plugins. See <a class="reference internal" href="api.html#publish-api"><span class="std std-ref">Publish API</span></a> reference for more
+technical details of the Publish Plugin.</p>
+<section id="create-a-publish-plugin">
+<h4>Create a Publish Plugin<a class="headerlink" href="#create-a-publish-plugin" title="Permalink to this heading"></a></h4>
+<p>This tutorial will guide you through the process of creating a new publish
+plugin to create a new Version in Flow Production Tracking from a Playblast file
+in Maya, and customizing your Toolkit configuration to use this new plugin. This
+tutorial will focus on creating and setting up a new publish plugin, and less
+about the specifics of Playblasts in Maya (it does not require extensive
+knowledge of Maya or Playblasts, only if you want to test out this change you
+would need to know how to create a Playblast in Maya). If you are interested in
+creating a new publih plugin for another DCC, you can still follow this
+tutorial, but you will need to add the configuration settings under the
+appropriate DCC in your Toolkit configuration.</p>
+<p>Before you begin, you will need to have the following:</p>
+<ul class="simple">
+<li><p>A local copy of your Toolkit configuration</p></li>
+<li><p>The configuration must be based off the tk-config-default2 configuration</p></li>
+</ul>
+<p><strong>1. Add a new publish plugin setting to your configuration.</strong></p>
+<p>We need to add a new setting to the tk-multi-publish2 app configuration in
+order to use our new publish plugin. We will modify the
+<code class="docutils literal notranslate"><span class="pre">tk-config-default2/env/includes/settings/tk-multi-publish2.yml</span></code> file to add a
+new entry under the <code class="docutils literal notranslate"><span class="pre">settings.tk-multi-publish2.maya.asset_step</span></code> publish_plugins
+list called “Create Version from Playblast”:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># ---- Maya</span>
+
+<span class="c1"># asset step</span>
+<span class="nt">settings.tk-multi-publish2.maya.asset_step</span><span class="p">:</span>
+<span class="nt">collector</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{self}/collector.py:{engine}/tk-multi-publish2/basic/collector.py&quot;</span>
+<span class="nt">collector_settings</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">Work Template</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">maya_asset_work</span>
+<span class="nt">publish_plugins</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Publish to Flow Production Tracking</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">hook</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;{self}/publish_file.py&quot;</span>
+<span class="w">    </span><span class="nt">settings</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Upload for review</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">hook</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;{self}/upload_version.py&quot;</span>
+<span class="w">    </span><span class="nt">settings</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Begin file versioning</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">hook</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;{engine}/tk-multi-publish2/basic/start_version_control.py&quot;</span>
+<span class="w">    </span><span class="nt">settings</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Publish to Flow Production Tracking</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">hook</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;{self}/publish_file.py:{engine}/tk-multi-publish2/basic/publish_session.py&quot;</span>
+<span class="w">    </span><span class="nt">settings</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">Publish Template</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">maya_asset_publish</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Publish to Flow Production Tracking</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">hook</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;{self}/publish_file.py:{engine}/tk-multi-publish2/basic/publish_session_geometry.py&quot;</span>
+<span class="w">    </span><span class="nt">settings</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">Publish Template</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">asset_alembic_cache</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create Version from Playblast</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">hook</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;{self}/upload_version.py:{config}/tk-multi-publish2/basic/upload_version_playblast.py&quot;</span>
+<span class="w">    </span><span class="nt">settings</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="nt">help_url</span><span class="p">:</span><span class="w"> </span><span class="nv">*help_url</span>
+<span class="nt">location</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;@apps.tk-multi-publish2.location&quot;</span>
+</pre></div>
+</div>
+<p>This is the new entry we added to the configuration:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create Version from Playblast</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">hook</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;{self}/upload_version.py:{config}/tk-multi-publish2/basic/upload_version_playblast.py&quot;</span>
+<span class="w">    </span><span class="nt">settings</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+</pre></div>
+</div>
+<p>The publish plugin will have the name “Create Version from Playblast” and will
+use the publish plugin defined by the hook
+<code class="docutils literal notranslate"><span class="pre">tk-config-default2/hooks/tk-multi-publish2/upload_version_playblast.py</span></code>. The
+<code class="docutils literal notranslate"><span class="pre">{config}</span></code> token will be resolved to the path of your Toolkit configuration.</p>
+<p>The publish plugin will have the base class of the publish plugin defined in the
+tk-multi-publish2 App <code class="docutils literal notranslate"><span class="pre">tk-multi-publish2/hooks//upload_version.py</span></code>. The
+<code class="docutils literal notranslate"><span class="pre">{self}</span></code> token will be resolved to the path of the tk-multi-publish2 App.</p>
+<p><strong>2. Create the new publish plugin file.</strong></p>
+<p>From Step 1, we defined a new publish plugin file in the configuration at the
+location <code class="docutils literal notranslate"><span class="pre">tk-config-default2/hooks/tk-multi-publish2</span></code> and named
+<code class="docutils literal notranslate"><span class="pre">upload_version_playblast.py</span></code>. So we will now need to create that file, below
+is the implementaiton of the new publish plugin file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sgtk</span>
+
+<span class="n">HookBaseClass</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">get_hook_baseclass</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">MayaUploadVersionPlayblastPlugin</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plugin for sending Playblasts to Flow Production Tracking for review.&quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verbose, multi-line description of what the plugin does. This can</span>
+<span class="sd">        contain simple html for formatting.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Upload the Playblast file to Flow Production Tracking for review.&lt;br&gt;&lt;br&gt;</span>
+
+<span class="s2">        A &lt;b&gt;Version&lt;/b&gt; entry will be created in Flow Production Tracking and</span>
+<span class="s2">        a transcoded copy of the file will be attached to it. The Version will be</span>
+<span class="s2">        linked to the Published File created for the Playblast.</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dictionary defining the settings that this plugin expects to recieve</span>
+<span class="sd">        through the settings parameter in the accept, validate, publish and</span>
+<span class="sd">        finalize methods.</span>
+
+<span class="sd">        A dictionary on the following form::</span>
+
+<span class="sd">            {</span>
+<span class="sd">                &quot;Settings Name&quot;: {</span>
+<span class="sd">                    &quot;type&quot;: &quot;settings_type&quot;,</span>
+<span class="sd">                    &quot;default&quot;: &quot;default_value&quot;,</span>
+<span class="sd">                    &quot;description&quot;: &quot;One line description of the setting&quot;</span>
+<span class="sd">            }</span>
+
+<span class="sd">        The type string should be one of the data types that toolkit accepts as</span>
+<span class="sd">        part of its environment configuration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;Upload&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Upload content to Flow Production Tracking?&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;Link Local File&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Should the local file be referenced by Flow Production Tracking&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">item_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List of item types that this plugin is interested in.</span>
+
+<span class="sd">        Only items matching entries in this list will be presented to the</span>
+<span class="sd">        accept() method. Strings can contain glob patters such as *, for example</span>
+<span class="sd">        [&quot;maya.*&quot;, &quot;file.maya&quot;]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;file.video&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method called by the publisher to determine if an item is of any</span>
+<span class="sd">        interest to this plugin. Only items matching the filters defined via the</span>
+<span class="sd">        item_filters property will be presented to this method.</span>
+
+<span class="sd">        A publish task will be generated for each item accepted here. Returns a</span>
+<span class="sd">        dictionary with the following booleans:</span>
+
+<span class="sd">            - accepted: Indicates if the plugin is interested in this value at</span>
+<span class="sd">                all. Required.</span>
+<span class="sd">            - enabled: If True, the plugin will be enabled in the UI, otherwise</span>
+<span class="sd">                it will be disabled. Optional, True by default.</span>
+<span class="sd">            - visible: If True, the plugin will be visible in the UI, otherwise</span>
+<span class="sd">                it will be hidden. Optional, True by default.</span>
+<span class="sd">            - checked: If True, the plugin will be checked in the UI, otherwise</span>
+<span class="sd">                it will be unchecked. Optional, True by default.</span>
+
+<span class="sd">        :param settings: Dictionary of Settings. The keys are strings, matching</span>
+<span class="sd">            the keys returned in the settings property. The values are `Setting`</span>
+<span class="sd">            instances.</span>
+<span class="sd">        :param item: Item to process</span>
+
+<span class="sd">        :returns: dictionary with boolean keys accepted, required and enabled</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;accepted&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validates the given item to check that it is ok to publish.</span>
+
+<span class="sd">        Returns a boolean to indicate validity.</span>
+
+<span class="sd">        :param settings: Dictionary of Settings. The keys are strings, matching</span>
+<span class="sd">            the keys returned in the settings property. The values are `Setting`</span>
+<span class="sd">            instances.</span>
+<span class="sd">        :param item: Item to process</span>
+
+<span class="sd">        :returns: True if item is valid, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get_property</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Missing Playblast file path.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Executes the publish logic for the given item and settings.</span>
+
+<span class="sd">        :param settings: Dictionary of Settings. The keys are strings, matching</span>
+<span class="sd">            the keys returned in the settings property. The values are `Setting`</span>
+<span class="sd">            instances.</span>
+<span class="sd">        :param item: Item to process</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Set the publish name property for the UploadVersionPlugin to consume</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;publish_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get_property</span><span class="p">(</span><span class="s2">&quot;sg_publish_data&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">MayaUploadVersionPlayblastPlugin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Breaking down this publish plugin:</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">description</span></code> property provides a verbose description of what the plugin
+does. This description will be displayed in the UI when the plugin is selected.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">settings</span></code> property defines the settings that the plugin expects to
+receive. The settings are used to help guide the publish plugin execution.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">item_filters</span></code> property defines the item types that the plugin is
+interested in. Only items matching the filters defined here will be presented
+to the plugin. For example, we know that Playblast files are video files, so
+we set the item filter to <code class="docutils literal notranslate"><span class="pre">file.video</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">accept</span></code> method is called by the publisher to determine if an item is of
+interest to the plugin. A plugin will only show up in the publisher if it is
+accepted.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">validate</span></code> method validates the item to check if it is ok to publish. A
+publish plugin will not execute its publish method if it is does not pass the
+validation.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">publish</span></code> method executes the publish logic for the given item and settings.
+In our case, the publish method will create a new Version in Flow Production
+Tracking and attach the Playblast file to it.</p></li>
+</ul>
+<p>See the <a class="reference internal" href="api.html#publish-api"><span class="std std-ref">Publish API</span></a> reference for more information on how to extend the
+MayaUploadVersionPlayblastPlugin class.</p>
+<p><strong>3. Run Maya with your modified configuration.</strong></p>
+<p>Now that you have created the new publish plugin and added it to your
+configuration, you can run Maya with your modified configuration. When you run
+the Publisher, you should see the new “Create Version from Playblast” plugin:</p>
+<img alt="_images/tutorial_create_plugin_upload_version_playblast.png" src="_images/tutorial_create_plugin_upload_version_playblast.png" />
+</section>
+</section>
 <section id="publish-plugin-api">
 <h3>Publish Plugin API<a class="headerlink" href="#publish-plugin-api" title="Permalink to this heading"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="tk_multi_publish2.base_hooks.PublishPlugin">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.base_hooks.</span></span><span class="sig-name descname"><span class="pre">PublishPlugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/publish_plugin.html#PublishPlugin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk.Hook" title="(in tk-core vv0.21.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hook</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk.Hook" title="(in tk-core vv0.21.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hook</span></code></a></p>
 <p>This class defines the required interface for a publish plugin. Publish
 plugins are responsible for operating on items collected by the collector
 plugin. Publish plugins define which items they will operate on as well as
@@ -864,7 +1105,7 @@ task.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="tk_multi_publish2.base_hooks.PostPhaseHook">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.base_hooks.</span></span><span class="sig-name descname"><span class="pre">PostPhaseHook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/post_phase.html#PostPhaseHook"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.PostPhaseHook" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk.Hook" title="(in tk-core vv0.21.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hook</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk.Hook" title="(in tk-core vv0.21.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hook</span></code></a></p>
 <p>This hook defines methods that are executed after each phase of a publish:
 validation, publish, and finalization. Each method receives the
 <a class="reference internal" href="api.html#publish-api-tree"><span class="std std-ref">PublishTree</span></a> tree instance being used by the publisher, giving
@@ -989,7 +1230,7 @@ the items to be published.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Flow Production Tracking Publisher API reference, v2.8.4" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Flow Production Tracking Publisher API reference, v2.9.0" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="api.html" class="btn btn-neutral float-right" title="Publish API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
