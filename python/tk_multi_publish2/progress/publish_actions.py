@@ -47,7 +47,7 @@ def show_in_shotgun(entity):
     """
     Show the supplied path in Shotgun
 
-    :param entity: A standard SG entity dictionary containing at least the
+    :param entity: A standard PTR entity dictionary containing at least the
         "type" and "id" fields.
     """
 

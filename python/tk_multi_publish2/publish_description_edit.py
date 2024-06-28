@@ -14,7 +14,7 @@ from sgtk.platform.qt import QtCore, QtGui
 logger = sgtk.platform.get_logger(__name__)
 
 
-class PublishDescriptionEditBase(QtGui.QTextEdit):
+class PublishDescriptionEdit(QtGui.QTextEdit):
     """
     Widget that holds the summary description
     """
@@ -25,7 +25,7 @@ class PublishDescriptionEditBase(QtGui.QTextEdit):
 
         :param parent: QT parent object
         """
-        super(PublishDescriptionEditBase, self).__init__(parent)
+        super(PublishDescriptionEdit, self).__init__(parent)
 
         self._show_multiple_values = False
 
@@ -59,79 +59,4 @@ class PublishDescriptionEditBase(QtGui.QTextEdit):
             )
 
         else:
-            super(PublishDescriptionEditBase, self).paintEvent(paint_event)
-
-
-class PublishDescriptionEditQt4(PublishDescriptionEditBase):
-    """
-    Widget that holds the summary description.
-    Since Qt 4's QTextEdit doesn't have a built in placeholder, this class implements one.
-    Taken from here: https://stackoverflow.com/a/54553625/4223964
-    """
-
-    def __init__(self, parent):
-        """
-        Constructor
-
-        :param parent: QT parent object
-        """
-        super(PublishDescriptionEditQt4, self).__init__(parent)
-        self._placeholderText = ""
-        self._placeholderVisible = False
-        self.textChanged.connect(self.placeholderVisible)
-
-    def placeholderVisible(self):
-        """
-        Return if the placeholder text is visible, and force update if required.
-        """
-        placeholderCurrentlyVisible = self._placeholderVisible
-        self._placeholderVisible = self._placeholderText and self.document().isEmpty()
-        if self._placeholderVisible != placeholderCurrentlyVisible:
-            self.viewport().update()
-        return self._placeholderVisible
-
-    def placeholderText(self):
-        """
-        Return text used as a placeholder.
-        """
-        return self._placeholderText
-
-    def setPlaceholderText(self, text):
-        """
-        Set text to use as a placeholder.
-        """
-        self._placeholderText = text
-        if self.document().isEmpty():
-            self.viewport().update()
-
-    def paintEvent(self, paint_event):
-        """
-        Paints the line plain text editor and adds a placeholder on bottom right corner when multiple values are detected.
-        """
-        super(PublishDescriptionEditQt4, self).paintEvent(paint_event)
-
-        if self.placeholderVisible():
-            painter = QtGui.QPainter(self.viewport())
-            colour = self.palette().text().color()
-            colour.setAlpha(128)
-            painter.setPen(colour)
-            painter.setClipRect(self.rect())
-            margin = self.document().documentMargin()
-            textRect = self.viewport().rect().adjusted(margin, margin, 0, 0)
-            painter.drawText(
-                textRect,
-                QtCore.Qt.AlignTop | QtCore.Qt.TextWordWrap,
-                self.placeholderText(),
-            )
-
-
-# Qt 5 implements a QTextEdit with a placeholder feature built in.
-# However for Qt 4 we've had to implement one.
-if QtCore.qVersion()[0] == "4":
-    base = PublishDescriptionEditQt4
-else:
-    base = PublishDescriptionEditBase
-
-
-class PublishDescriptionEdit(base):
-    pass
+            super(PublishDescriptionEdit, self).paintEvent(paint_event)

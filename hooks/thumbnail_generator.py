@@ -45,7 +45,7 @@ class ThumbnailGenerator(HookBaseClass):
 
         :param input_path: The file path to generate a thumbnail for.
         :type input_path: str
-        :param context: The current ShotGrid Toolkit context.
+        :param context: The current Flow Production Tracking context.
         :type context: sgtk.Context
 
         :return: The generated thumbnail.
@@ -61,18 +61,22 @@ class ThumbnailGenerator(HookBaseClass):
         # Get the thumbnail extractor data for the given extractor
         extractor_data = self._get_thumbnail_extractor_data().get(extractor)
         if not extractor_data:
-            raise TankError(f"Missing thumbnail extractor data for {extractor}")
+            raise TankError(
+                "Missing thumbnail extractor data for {extractor}".format(
+                    extractor=extractor
+                )
+            )
 
         # Sanity check all necessary extractor data is present
         engine_name = extractor_data.get("engine")
         if not engine_name:
-            raise TankError(f"Thumbnail extractor data missing key 'engine'")
+            raise TankError("Thumbnail extractor data missing key 'engine'")
         extractor_path = extractor_data.get("extractor_path")
         if not extractor_path:
-            raise TankError(f"Thumbnail extractor data missing key 'extractor_path'")
+            raise TankError("Thumbnail extractor data missing key 'extractor_path'")
         get_extractor_cmd_func = extractor_data.get("get_extractor_cmd_func")
         if not get_extractor_cmd_func:
-            raise TankError(f"Thumbnail extractor data missing key 'get_cmds_func'")
+            raise TankError("Thumbnail extractor data missing key 'get_cmds_func'")
 
         # Get the full path to the thumbnail extractor executable
         thumbnail_extractor_path = self._get_thumbnail_extractor_path(
@@ -93,7 +97,9 @@ class ThumbnailGenerator(HookBaseClass):
             # Execute the thumbnail extraction command
             success = self._execute_command(extractor_cmd)
             if not success:
-                error_msg = f"Failed to generate thumbnail for {input_path}"
+                error_msg = "Failed to generate thumbnail for {input_path}".format(
+                    input_path=input_path
+                )
                 logger.error(error_msg)
                 raise TankError(error_msg)
 

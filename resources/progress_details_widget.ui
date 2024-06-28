@@ -47,7 +47,7 @@
            </size>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open the publisher's log file. The log file is useful for deeper debugging of publish issues. For issues involving ShotGrid Support, please include a copy of this file when submitting a support request. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open the publisher's log file. The log file is useful for deeper debugging of publish issues. For issues involving Flow Production Tracking Support, please include a copy of this file when submitting a support request. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>Copy to Clipboard</string>
@@ -94,7 +94,7 @@
       <item>
        <widget class="QTreeWidget" name="log_tree">
         <property name="accessibleName">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Opens the log file for the current engine which will include log messages from the publisher. This file is extremely useful for deeper debugging and understanding of publish issues. A copy of this file should be included when submitting support requests to the ShotGrid Support team.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Opens the log file for the current engine which will include log messages from the publisher. This file is extremely useful for deeper debugging and understanding of publish issues. A copy of this file should be included when submitting support requests to the Flow Production Tracking Support team.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="horizontalScrollMode">
          <enum>QAbstractItemView::ScrollPerItem</enum>

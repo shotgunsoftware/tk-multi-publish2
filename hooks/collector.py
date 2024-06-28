@@ -173,7 +173,7 @@ class BasicSceneCollector(HookBaseClass):
             "Publish Templates": {
                 "type": "dict",
                 "default": {},
-                "description": "A dictionary of templates by file type to use for publishing."
+                "description": "A dictionary of templates by file type to use for publishing.",
             }
         }
 
@@ -203,10 +203,9 @@ class BasicSceneCollector(HookBaseClass):
         """
 
         publish_templates_setting = settings.get("Publish Templates")
+        publish_templates = {}
         if publish_templates_setting:
             publish_templates = publish_templates_setting.value
-        else:
-            publish_templates = {}
 
         # handle files and folders differently
         if os.path.isdir(path):
@@ -271,11 +270,17 @@ class BasicSceneCollector(HookBaseClass):
                 )
             except TankError as tank_error:
                 self.logger.error(
-                    f"Failed to generate thumbnail for {path}. Error {tank_error}"
+                    "Failed to generate thumbnail for {path}. Error {tank_error}".format(
+                        path=path,
+                        tank_error=tank_error,
+                    )
                 )
             except Exception as error:
                 self.logger.error(
-                    f"Unexepcted error occured while attempting to generate thumbnail for {path}. Error {error}"
+                    "Unexepcted error occured while attempting to generate thumbnail for {path}. Error {error}".format(
+                        error=error,
+                        path=path,
+                    )
                 )
 
         # all we know about the file is its path. set the path in its

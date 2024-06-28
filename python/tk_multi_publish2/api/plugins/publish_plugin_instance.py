@@ -183,7 +183,8 @@ class PublishPluginInstance(PluginInstanceBase):
         if item.context.project is None:
             status = False
             self.logger.error(
-                "Please link '%s' to a ShotGrid object and task!" % item.name
+                "Please link '%s' to a Flow Production Tracking object and task!"
+                % item.name
             )
 
         if status:
