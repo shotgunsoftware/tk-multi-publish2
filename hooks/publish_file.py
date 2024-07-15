@@ -208,6 +208,7 @@ class BasicFilePublishPlugin(HookBaseClass):
                     ["Texture", "tiff", "tx", "tga", "dds"],
                     ["Image", "jpeg", "jpg", "png"],
                     ["Movie", "mov", "mp4"],
+                    ["ICEM", "edf"],
                     ["PDF", "pdf"],
                 ],
                 "description": (

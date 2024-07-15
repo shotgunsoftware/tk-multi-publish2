@@ -136,6 +136,11 @@ class BasicSceneCollector(HookBaseClass):
                     "icon": self._get_icon_path("texture.png"),
                     "item_type": "file.texture",
                 },
+                "ICEM": {
+                    "extensions": ["edf"],
+                    "icon": self._get_icon_path("file.png"),
+                    "item_type": "file.edf",
+                },
                 "PDF": {
                     "extensions": ["pdf"],
                     "icon": self._get_icon_path("file.png"),
