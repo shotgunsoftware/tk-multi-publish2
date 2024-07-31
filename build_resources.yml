@@ -1,0 +1,31 @@
+# YAML Configuration File for Qt Resource Building
+#
+# This YAML file defines the configuration for building Qt UI and resource files using the tk-build-qt-resources script.
+# Each entry in the file represents a separate build configuration, to know more about each field please visit
+# https://github.com/shotgunsoftware/tk-toolchain?tab=readme-ov-file#tk-build-qt-resources.
+
+- ui_src: resources
+  ui_files:
+    - dialog
+    - settings_widget
+    - summary_overlay
+  res_files:
+    - resources
+  py_dest: python/tk_multi_publish2/ui
+  import_pattern: tank.platform.qt
+
+- ui_src: resources
+  ui_files:
+    - item_widget
+    - task_widget
+    - context_widget
+    - summary_widget
+  py_dest: python/tk_multi_publish2/publish_tree_widget/ui
+  import_pattern: tank.platform.qt
+
+- ui_src: resources
+  ui_files:
+    - progress_details_widget
+    - more_info_widget
+  py_dest: python/tk_multi_publish2/progress/ui
+  import_pattern: tank.platform.qt
