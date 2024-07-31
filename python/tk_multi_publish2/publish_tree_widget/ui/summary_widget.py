@@ -1,53 +1,70 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'summary_widget.ui'
-#
-#      by: pyside-uic 0.2.15 running on PySide 1.2.2
-#
-# WARNING! All changes made in this file will be lost!
+################################################################################
+## Form generated from reading UI file 'summary_widget.ui'
+##
+## Created by: Qt User Interface Compiler version 5.15.2
+##
+## WARNING! All changes made in this file will be lost when recompiling UI file!
+################################################################################
 
-from tank.platform.qt import QtCore, QtGui
+from tank.platform.qt import QtCore
+for name, cls in QtCore.__dict__.items():
+    if isinstance(cls, type): globals()[name] = cls
+
+from tank.platform.qt import QtGui
+for name, cls in QtGui.__dict__.items():
+    if isinstance(cls, type): globals()[name] = cls
+
+
+from  . import resources_rc
 
 class Ui_SummaryWidget(object):
     def setupUi(self, SummaryWidget):
-        SummaryWidget.setObjectName("SummaryWidget")
+        if not SummaryWidget.objectName():
+            SummaryWidget.setObjectName(u"SummaryWidget")
         SummaryWidget.resize(300, 45)
-        SummaryWidget.setMinimumSize(QtCore.QSize(0, 45))
-        self.verticalLayout = QtGui.QVBoxLayout(SummaryWidget)
+        SummaryWidget.setMinimumSize(QSize(0, 45))
+        self.verticalLayout = QVBoxLayout(SummaryWidget)
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setContentsMargins(2, 2, 2, 2)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.frame = QtGui.QFrame(SummaryWidget)
-        self.frame.setFrameShape(QtGui.QFrame.StyledPanel)
-        self.frame.setFrameShadow(QtGui.QFrame.Raised)
-        self.frame.setObjectName("frame")
-        self.horizontalLayout = QtGui.QHBoxLayout(self.frame)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.frame = QFrame(SummaryWidget)
+        self.frame.setObjectName(u"frame")
+        self.frame.setFrameShape(QFrame.StyledPanel)
+        self.frame.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout = QHBoxLayout(self.frame)
         self.horizontalLayout.setSpacing(4)
         self.horizontalLayout.setContentsMargins(2, 2, 2, 2)
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.icon = QtGui.QLabel(self.frame)
-        self.icon.setMinimumSize(QtCore.QSize(32, 32))
-        self.icon.setMaximumSize(QtCore.QSize(30, 30))
-        self.icon.setText("")
-        self.icon.setPixmap(QtGui.QPixmap(":/tk_multi_publish2/icon_256.png"))
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.icon = QLabel(self.frame)
+        self.icon.setObjectName(u"icon")
+        self.icon.setMinimumSize(QSize(32, 32))
+        self.icon.setMaximumSize(QSize(30, 30))
+        self.icon.setPixmap(QPixmap(u":/tk_multi_publish2/icon_256.png"))
         self.icon.setScaledContents(True)
-        self.icon.setObjectName("icon")
+
         self.horizontalLayout.addWidget(self.icon)
-        self.header = QtGui.QLabel(self.frame)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+
+        self.header = QLabel(self.frame)
+        self.header.setObjectName(u"header")
+        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.header.sizePolicy().hasHeightForWidth())
         self.header.setSizePolicy(sizePolicy)
-        self.header.setObjectName("header")
+
         self.horizontalLayout.addWidget(self.header)
+
         self.verticalLayout.addWidget(self.frame)
 
         self.retranslateUi(SummaryWidget)
-        QtCore.QMetaObject.connectSlotsByName(SummaryWidget)
+
+        QMetaObject.connectSlotsByName(SummaryWidget)
+    # setupUi
 
     def retranslateUi(self, SummaryWidget):
-        SummaryWidget.setWindowTitle(QtGui.QApplication.translate("SummaryWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
-        self.header.setText(QtGui.QApplication.translate("SummaryWidget", "<big>Summary</big>", None, QtGui.QApplication.UnicodeUTF8))
-
-from . import resources_rc
+        SummaryWidget.setWindowTitle(QCoreApplication.translate("SummaryWidget", u"Form", None))
+        self.icon.setText("")
+        self.header.setText(QCoreApplication.translate("SummaryWidget", u"<big>Summary</big>", None))
+    # retranslateUi
