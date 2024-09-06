@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Publish Customization &mdash; tk-multi-publish2 v2.9.0 documentation</title>
+  <title>Publish Customization &mdash; tk-multi-publish2 v2.10.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Publish API" href="api.html" />
-    <link rel="prev" title="Flow Production Tracking Publisher API reference, v2.9.0" href="index.html" /> 
+    <link rel="prev" title="Flow Production Tracking Publisher API reference, v2.10.0" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -114,7 +114,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.9.0.<br>
+    <b>tk-multi-publish2</b> v2.10.0.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -172,7 +172,7 @@ and presented to the user.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>For more information on how to take over, subclass, and manage hooks,
-see the <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.21.5)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
+see the <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.21.6)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
 </div>
 <hr class="docutils" />
 <section id="collector-hook-api">
@@ -180,7 +180,7 @@ see the <a class="reference external" href="https://developers.shotgridsoftware.
 <dl class="py class">
 <dt class="sig sig-object py" id="tk_multi_publish2.base_hooks.CollectorPlugin">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.base_hooks.</span></span><span class="sig-name descname"><span class="pre">CollectorPlugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/collector.html#CollectorPlugin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.CollectorPlugin" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk.Hook" title="(in tk-core vv0.21.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hook</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk.Hook" title="(in tk-core vv0.21.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hook</span></code></a></p>
 <p>This class defines the required interface for a collector plugin.
 Collectors are used to gather individual files that are loaded via the
 file browser or dragged and dropped into the Publish2 UI. It is also used
@@ -397,7 +397,7 @@ custom publish plugin UI.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>For more information on how to take over, subclass, and manage hooks,
-see the <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.21.5)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
+see the <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.21.6)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
 </div>
 <hr class="docutils" />
 <section id="step-by-step-tutorials">
@@ -642,7 +642,7 @@ the Publisher, you should see the new “Create Version from Playblast” plugin
 <dl class="py class">
 <dt class="sig sig-object py" id="tk_multi_publish2.base_hooks.PublishPlugin">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.base_hooks.</span></span><span class="sig-name descname"><span class="pre">PublishPlugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/publish_plugin.html#PublishPlugin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk.Hook" title="(in tk-core vv0.21.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hook</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk.Hook" title="(in tk-core vv0.21.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hook</span></code></a></p>
 <p>This class defines the required interface for a publish plugin. Publish
 plugins are responsible for operating on items collected by the collector
 plugin. Publish plugins define which items they will operate on as well as
@@ -1105,7 +1105,7 @@ task.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="tk_multi_publish2.base_hooks.PostPhaseHook">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.base_hooks.</span></span><span class="sig-name descname"><span class="pre">PostPhaseHook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/post_phase.html#PostPhaseHook"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.PostPhaseHook" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk.Hook" title="(in tk-core vv0.21.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hook</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk.Hook" title="(in tk-core vv0.21.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hook</span></code></a></p>
 <p>This hook defines methods that are executed after each phase of a publish:
 validation, publish, and finalization. Each method receives the
 <a class="reference internal" href="api.html#publish-api-tree"><span class="std std-ref">PublishTree</span></a> tree instance being used by the publisher, giving
@@ -1230,7 +1230,7 @@ the items to be published.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Flow Production Tracking Publisher API reference, v2.9.0" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Flow Production Tracking Publisher API reference, v2.10.0" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="api.html" class="btn btn-neutral float-right" title="Publish API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
