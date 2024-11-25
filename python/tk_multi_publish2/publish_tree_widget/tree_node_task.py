@@ -64,6 +64,9 @@ class TreeNodeTask(TreeNodeBase):
         """
         Called by child item when checkbox was ticked
         """
+        if not self._task.visible or not self._task.enabled:
+            return
+
         # Ensure that we set the task to match the UI state
         self._task.active = state != QtCore.Qt.Unchecked
 
@@ -73,6 +76,14 @@ class TreeNodeTask(TreeNodeBase):
         else:
             # set just this one
             super(TreeNodeTask, self).set_check_state(state)
+
+    def _set_check_state_r(self, state):
+        if not self._task.visible or not self._task.enabled:
+            if self.parent():
+                self.parent().recompute_check_state()
+            return
+
+        super(TreeNodeTask, self)._set_check_state_r(state)
 
     @property
     def task(self):
