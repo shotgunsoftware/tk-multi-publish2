@@ -223,9 +223,7 @@ class PluginWithUi(HookBaseClass):
         """
         return CustomWidgetController(
             parent,
-            description_widget=super().create_settings_widget(
-                parent, items
-            ),
+            description_widget=super().create_settings_widget(parent, items),
         )
 
     def get_ui_settings(self, controller, items):

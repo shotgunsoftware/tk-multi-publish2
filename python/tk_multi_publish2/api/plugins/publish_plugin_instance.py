@@ -229,7 +229,10 @@ class PublishPluginInstance(PluginInstanceBase):
 
         with self._handle_plugin_error(None, "Error laying out widgets: %s"):
 
-            if len(getfullargspec(self._hook_instance.create_settings_widget).args) == 3:
+            if (
+                len(getfullargspec(self._hook_instance.create_settings_widget).args)
+                == 3
+            ):
                 return self._hook_instance.create_settings_widget(parent, items)
             else:
                 # Items is a newer attribute, which an older version of the hook
