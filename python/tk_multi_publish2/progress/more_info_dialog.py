@@ -30,7 +30,7 @@ class MoreInfoDialog(QtGui.QDialog):
         :param parent: The parent widget
         """
 
-        super(MoreInfoDialog, self).__init__(parent)
+        super().__init__(parent)
 
         # set up the UI
         self.ui = Ui_MoreInfoWidget()

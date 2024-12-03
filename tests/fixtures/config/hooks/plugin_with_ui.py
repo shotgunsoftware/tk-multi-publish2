@@ -8,7 +8,6 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-from __future__ import print_function
 import abc
 import pprint
 
@@ -92,7 +91,7 @@ class CheckboxHandler(WidgetHandlerBase):
         :param layout: Layout in witch to add the widget.
         :param text: Name of the setting.
         """
-        super(CheckboxHandler, self).__init__(QtGui.QCheckBox(text))
+        super().__init__(QtGui.QCheckBox(text))
         layout.addWidget(self.editor)
         self.editor.setTristate(False)
 
@@ -131,7 +130,7 @@ class WidgetHandler(WidgetHandlerBase):
         :param text: Text on the left of the editor widget.
         :param editor: Widget used to edit the value.
         """
-        super(WidgetHandler, self).__init__(editor)
+        super().__init__(editor)
 
         self._layout = QtGui.QHBoxLayout()
         self._check_box = QtGui.QCheckBox(text)
@@ -224,7 +223,7 @@ class PluginWithUi(HookBaseClass):
         """
         return CustomWidgetController(
             parent,
-            description_widget=super(PluginWithUi, self).create_settings_widget(
+            description_widget=super().create_settings_widget(
                 parent, items
             ),
         )

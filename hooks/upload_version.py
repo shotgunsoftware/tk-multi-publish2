@@ -11,7 +11,11 @@
 import os
 import pprint
 import sgtk
-from tank_vendor import six
+
+try:
+    from tank_vendor import sgutils
+except ImportError:
+    from tank_vendor import six as sgutils
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -305,7 +309,7 @@ class UploadVersionPlugin(HookBaseClass):
             # on windows, ensure the path is utf-8 encoded to avoid issues with
             # the shotgun api
             if sgtk.util.is_windows():
-                upload_path = six.ensure_text(path)
+                upload_path = sgutils.ensure_text(path)
             else:
                 upload_path = path
 

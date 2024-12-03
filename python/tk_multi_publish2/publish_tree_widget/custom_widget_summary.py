@@ -25,7 +25,7 @@ class CustomTreeWidgetSummary(CustomTreeWidgetBase):
         """
         :param parent: The parent QWidget for this control
         """
-        super(CustomTreeWidgetSummary, self).__init__(tree_node, parent)
+        super().__init__(tree_node, parent)
 
         # set up the UI
         self.ui = Ui_SummaryWidget()

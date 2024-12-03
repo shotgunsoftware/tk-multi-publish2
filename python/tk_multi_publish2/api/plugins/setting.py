@@ -34,7 +34,7 @@ class PluginSetting(PublishData):
             configured ``PluginSettings``.
         """
 
-        super(PluginSetting, self).__init__()
+        super().__init__()
 
         self.default_value = default_value
         self.description = description

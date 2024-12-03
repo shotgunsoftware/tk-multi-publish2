@@ -25,7 +25,7 @@ class PublishDescriptionEdit(QtGui.QTextEdit):
 
         :param parent: QT parent object
         """
-        super(PublishDescriptionEdit, self).__init__(parent)
+        super().__init__(parent)
 
         self._show_multiple_values = False
 
@@ -59,4 +59,4 @@ class PublishDescriptionEdit(QtGui.QTextEdit):
             )
 
         else:
-            super(PublishDescriptionEdit, self).paintEvent(paint_event)
+            super().paintEvent(paint_event)

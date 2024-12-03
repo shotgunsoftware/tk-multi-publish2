@@ -41,7 +41,7 @@ class ProgressHandler(object):
         :param parent: The model parent.
         :type parent: :class:`~PySide.QtGui.QObject`
         """
-        super(ProgressHandler, self).__init__()
+        super().__init__()
 
         self._icon_label = icon_label
         self._status_label = status_label

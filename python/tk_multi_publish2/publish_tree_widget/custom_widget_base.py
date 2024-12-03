@@ -49,7 +49,7 @@ class CustomTreeWidgetBase(QtGui.QFrame):
         """
         :param parent: The parent QWidget for this control
         """
-        super(CustomTreeWidgetBase, self).__init__(parent)
+        super().__init__(parent)
         self._tree_node = tree_node
 
         self._icon_lookup = {

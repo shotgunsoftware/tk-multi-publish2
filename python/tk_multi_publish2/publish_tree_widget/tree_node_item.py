@@ -30,7 +30,7 @@ class TreeNodeItem(TreeNodeBase):
         :param parent: The parent QWidget for this control
         """
         self._item = item
-        super(TreeNodeItem, self).__init__(parent)
+        super().__init__(parent)
         self.setFlags(self.flags() | QtCore.Qt.ItemIsSelectable)
 
         # go ahead and keep a handle on these so they can be reused
@@ -65,7 +65,7 @@ class TreeNodeItem(TreeNodeBase):
         """
         # Ensure that the item's check state matches the GUIs.
         self._item.checked = state != QtCore.Qt.Unchecked
-        super(TreeNodeItem, self).set_check_state(state)
+        super().set_check_state(state)
 
     def __repr__(self):
         return "<TreeNodeItem %s>" % str(self)
@@ -168,7 +168,7 @@ class TreeNodeItem(TreeNodeBase):
 
         :param bool expand: True if item should be expanded, False otherwise
         """
-        super(TreeNodeItem, self).setExpanded(expand)
+        super().setExpanded(expand)
         self._check_expand_state()
 
     def show_expand_indicator(self, show):
@@ -253,7 +253,7 @@ class TopLevelTreeNodeItem(TreeNodeItem):
         :param item:
         :param parent: The parent QWidget for this control
         """
-        super(TopLevelTreeNodeItem, self).__init__(item, parent)
+        super().__init__(item, parent)
 
         # ensure items that allow context change are draggable
         if self.item.context_change_allowed:
@@ -267,7 +267,7 @@ class TopLevelTreeNodeItem(TreeNodeItem):
         """
         Create the widget that is used to visualise the node
         """
-        widget = super(TopLevelTreeNodeItem, self)._create_widget(parent)
+        widget = super()._create_widget(parent)
 
         # show the proper drag handle
         widget.show_drag_handle(self.item.context_change_allowed)

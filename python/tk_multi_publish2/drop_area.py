@@ -35,7 +35,7 @@ def drop_area(cls):
             :param args: Arbitrary list of parameters used in base class init
             :param args: Arbitrary dictionary of parameters used in base class init
             """
-            super(WrappedClass, self).__init__(*args, **kwargs)
+            super().__init__(*args, **kwargs)
             self.setAcceptDrops(True)
             self._set_property("dragging", False)
             self._restrict_to_ext = []

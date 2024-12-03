@@ -8,16 +8,16 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-from tank_vendor.six import StringIO
 import tempfile
 import datetime
 
+import sgtk
+
+from io import StringIO
 from mock import patch
 
 from publish_api_test_base import PublishApiTestBase
 from tank_test.tank_test_base import setUpModule  # noqa
-
-import sgtk
 
 
 class TestPublishTree(PublishApiTestBase):

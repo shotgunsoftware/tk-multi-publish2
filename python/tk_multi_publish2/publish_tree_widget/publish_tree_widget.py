@@ -42,7 +42,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         """
         :param parent: The parent QWidget for this control
         """
-        super(PublishTreeWidget, self).__init__(parent)
+        super().__init__(parent)
         self._publish_manager = None
         self._selected_items_state = []
         self._bundle = sgtk.platform.current_bundle()
@@ -98,7 +98,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
          to paint in the remainder of the selection box covering the branch area.
         """
         # First draw the default visuals for the branch.
-        super(PublishTreeWidget, self).drawBranches(painter, rect, index)
+        super().drawBranches(painter, rect, index)
 
         if index in self.selectedIndexes():
             # Draw the selection boarder around the shifted item.
@@ -503,7 +503,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         """
 
         # run default implementation
-        super(PublishTreeWidget, self).dropEvent(event)
+        super().dropEvent(event)
 
         for ui_item, state in self._selected_items_state:
 
@@ -558,7 +558,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
         self._selected_items_state = selected_items_state
 
-        super(PublishTreeWidget, self).dragEnterEvent(event)
+        super().dragEnterEvent(event)
 
     def mouseMoveEvent(self, event):
         """
@@ -568,7 +568,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         """
         if self.state() != QtGui.QAbstractItemView.DragSelectingState:
             # bubble up all events that aren't drag select related
-            super(PublishTreeWidget, self).mouseMoveEvent(event)
+            super().mouseMoveEvent(event)
 
 
 def _init_item_r(parent_item):

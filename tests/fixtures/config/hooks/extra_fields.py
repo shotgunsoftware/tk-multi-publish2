@@ -33,7 +33,7 @@ class GenericLocalPlugin(HookBaseClass):
 
     @property
     def settings(self):
-        return super(GenericLocalPlugin, self).settings
+        return super().settings
 
     @property
     def item_filters(self):
@@ -56,15 +56,15 @@ class GenericLocalPlugin(HookBaseClass):
             if item.local_properties.plugin_name == "extra_fields":
                 raise Exception("local_properties was serialized properly.")
         self.logger.debug("Executing extra_fields plugin validate.")
-        return super(GenericLocalPlugin, self).validate(settings, item)
+        return super().validate(settings, item)
 
     def publish(self, settings, item):
         self.logger.debug("Executing extra_fields plugin publish.")
-        super(GenericLocalPlugin, self).publish(settings, item)
+        super().publish(settings, item)
         # Mockgun doesn't properly set the link_type field, so we'll do it ourselves
         # so later calls to resolve_publish_path do not fail.
         item.properties.sg_publish_data["path"]["link_type"] = "web"
 
     def finalize(self, settings, item):
         self.logger.debug("Executing extra_fields plugin finalize.")
-        super(GenericLocalPlugin, self).finalize(settings, item)
+        super().finalize(settings, item)
