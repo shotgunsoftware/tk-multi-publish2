@@ -10,12 +10,10 @@
 
 import datetime
 import tempfile
-
-from mock import patch
 from io import StringIO
+from mock import patch
 
 import sgtk
-
 from publish_api_test_base import PublishApiTestBase
 from tank_test.tank_test_base import setUpModule  # noqa
 

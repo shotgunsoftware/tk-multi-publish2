@@ -9,7 +9,6 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import traceback
-
 from contextlib import contextmanager
 from inspect import getfullargspec
 
