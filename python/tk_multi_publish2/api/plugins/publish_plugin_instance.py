@@ -10,10 +10,10 @@
 
 import traceback
 
-import sgtk
-
 from contextlib import contextmanager
 from inspect import getfullargspec
+
+import sgtk
 
 from .instance_base import PluginInstanceBase
 

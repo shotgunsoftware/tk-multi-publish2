@@ -8,13 +8,13 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-import tempfile
 import datetime
+import tempfile
+
+from mock import patch
+from io import StringIO
 
 import sgtk
-
-from io import StringIO
-from mock import patch
 
 from publish_api_test_base import PublishApiTestBase
 from tank_test.tank_test_base import setUpModule  # noqa

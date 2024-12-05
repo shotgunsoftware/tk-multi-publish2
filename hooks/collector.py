@@ -13,11 +13,6 @@ import os
 import sgtk
 from tank import TankError
 
-try:
-    from tank_vendor import sgutils
-except ImportError:
-    from tank_vendor import six as sgutils
-
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
@@ -433,7 +428,7 @@ class BasicSceneCollector(HookBaseClass):
                 # the system's default encoding. If a unicode string is
                 # returned, we simply ensure it's utf-8 encoded to avoid issues
                 # with toolkit, which expects utf-8
-                category_type = sgutils.ensure_str(category_type)
+                category_type = str(category_type)
 
                 # the category portion of the mimetype
                 category = category_type.split("/")[0]
