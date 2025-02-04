@@ -12,7 +12,11 @@ import traceback
 
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
-from tank_vendor import six
+
+try:
+    from tank_vendor import sgutils
+except ImportError:
+    from tank_vendor import six as sgutils
 
 from .api import PublishManager, PublishItem, PublishTask
 from .ui.dialog import Ui_Dialog
@@ -286,7 +290,7 @@ class AppDialog(QtGui.QWidget):
             self._progress_handler.hide_details()
 
         else:
-            super(AppDialog, self).keyPressEvent(event)
+            super().keyPressEvent(event)
 
     def closeEvent(self, event):
         """
@@ -870,7 +874,7 @@ class AppDialog(QtGui.QWidget):
         self._progress_handler.push("Processing external files...")
 
         # pyside gives us back unicode. Make sure we convert it to strings
-        str_files = [six.ensure_str(f) for f in files]
+        str_files = [sgutils.ensure_str(f) for f in files]
 
         try:
             self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
@@ -1780,6 +1784,3 @@ class _TaskSelection(object):
         :returns: ``True`` is the selection is not empty, ``False`` otherwise.
         """
         return bool(self._items)
-
-    # To maintain Python 2 compatibility, define __nonzero__ as well as __bool__
-    __nonzero__ = __bool__

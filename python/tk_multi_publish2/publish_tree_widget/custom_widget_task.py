@@ -39,7 +39,7 @@ class CustomTreeWidgetTask(CustomTreeWidgetBase):
         """
         :param parent: The parent QWidget for this control
         """
-        super(CustomTreeWidgetTask, self).__init__(tree_node, parent)
+        super().__init__(tree_node, parent)
 
         # set up the UI
         self.ui = Ui_TaskWidget()

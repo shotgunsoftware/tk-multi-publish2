@@ -29,7 +29,7 @@ class TreeNodeTask(TreeNodeBase):
         """
         self._task = task
 
-        super(TreeNodeTask, self).__init__(parent)
+        super().__init__(parent)
 
         # tasks cannot be dragged or dropped on
         self.setFlags(self.flags() | QtCore.Qt.ItemIsSelectable)
@@ -72,7 +72,7 @@ class TreeNodeTask(TreeNodeBase):
             self.treeWidget().set_check_state_for_all_plugins(self._task.plugin, state)
         else:
             # set just this one
-            super(TreeNodeTask, self).set_check_state(state)
+            super().set_check_state(state)
 
     @property
     def task(self):

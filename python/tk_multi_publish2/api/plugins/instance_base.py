@@ -31,7 +31,7 @@ class PluginInstanceBase(object):
         :param publish_logger: a logger object that will be used by the hook
         """
 
-        super(PluginInstanceBase, self).__init__()
+        super().__init__()
 
         if not publish_logger:
             publish_logger = logger

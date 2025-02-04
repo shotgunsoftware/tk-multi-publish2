@@ -42,7 +42,7 @@ class TreeNodeBase(QtGui.QTreeWidgetItem):
         """
         :param parent: The parent QWidget for this control
         """
-        super(TreeNodeBase, self).__init__(parent)
+        super().__init__(parent)
         self.build_internal_widget()
 
         self.setFlags(QtCore.Qt.ItemIsEnabled)

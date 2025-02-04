@@ -43,7 +43,7 @@ class PublishApiTestBase(TankTestBase):
 
         os.environ["REPO_ROOT"] = repo_root
 
-        super(PublishApiTestBase, self).setUp()
+        super().setUp()
         self.setup_fixtures()
 
         # set up an environment variable that points to the root of the
@@ -104,4 +104,4 @@ class PublishApiTestBase(TankTestBase):
             cur_engine.destroy()
 
         # important to call base class so it can clean up memory
-        super(PublishApiTestBase, self).tearDown()
+        super().tearDown()

@@ -4,8 +4,6 @@
 # Use of this software is subject to the terms of the Autodesk license agreement
 # provided at the time of installation or download, or which otherwise accompanies
 # this software in either electronic or hard copy form.
-from __future__ import print_function
-import os
 import sys
 
 sys.path.insert(0, "../../tk-core/python")
