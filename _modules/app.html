@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>app &mdash; tk-multi-publish2 v2.10.1 documentation</title>
+  <title>app &mdash; tk-multi-publish2 v2.10.2 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -82,7 +82,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.10.1.<br>
+    <b>tk-multi-publish2</b> v2.10.2.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -135,14 +135,14 @@
 <span class="c1"># By accessing, using, copying or modifying this work you indicate your</span>
 <span class="c1"># agreement to the Shotgun Pipeline Toolkit Source Code License. All rights</span>
 <span class="c1"># not expressly granted therein are reserved by Shotgun Software Inc.</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sgtk</span>
-<span class="kn">from</span> <span class="nn">tank.util</span> <span class="kn">import</span> <span class="n">sgre</span> <span class="k">as</span> <span class="n">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sgtk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tank.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">sgre</span> <span class="k">as</span> <span class="n">re</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="MultiPublish2"><a class="viewcode-back" href="../application.html#app.MultiPublish2">[docs]</a><span class="k">class</span> <span class="nc">MultiPublish2</span><span class="p">(</span><span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">Application</span><span class="p">):</span>
+<div class="viewcode-block" id="MultiPublish2"><a class="viewcode-back" href="../application.html#app.MultiPublish2">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MultiPublish2</span><span class="p">(</span><span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">Application</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the :class:`sgtk.platform.Application` subclass that defines the</span>
 <span class="sd">    top-level publish2 interface.</span>
@@ -150,7 +150,7 @@
 
     <span class="n">CONFIG_PRE_PUBLISH_HOOK_PATH</span> <span class="o">=</span> <span class="s2">&quot;pre_publish&quot;</span>
 
-    <span class="k">def</span> <span class="nf">init_app</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init_app</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called as the application is being initialized</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -193,7 +193,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">register_command</span><span class="p">(</span><span class="n">menu_caption</span><span class="p">,</span> <span class="n">cb</span><span class="p">,</span> <span class="n">menu_options</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">base_hooks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">base_hooks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Exposes the publish2 ``base_hooks`` module.</span>
 
@@ -212,7 +212,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_hooks</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">util</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">util</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Exposes the publish2 ``util`` module.</span>
 
@@ -236,13 +236,13 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_util</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">context_change_allowed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">context_change_allowed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Specifies that context changes are allowed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="MultiPublish2.create_publish_manager"><a class="viewcode-back" href="../application.html#app.MultiPublish2.create_publish_manager">[docs]</a>    <span class="k">def</span> <span class="nf">create_publish_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="MultiPublish2.create_publish_manager"><a class="viewcode-back" href="../application.html#app.MultiPublish2.create_publish_manager">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_publish_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create and return a :class:`tk_multi_publish2.PublishManager` instance.</span>
 <span class="sd">        See the :class:`tk_multi_publish2.PublishManager` docs for details on</span>
@@ -257,7 +257,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_manager_class</span><span class="p">(</span><span class="n">publish_logger</span><span class="o">=</span><span class="n">publish_logger</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">destroy_app</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">destroy_app</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tear down the app</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -271,7 +271,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, Autodesk.</p>
+    <p>&#169; Copyright 2025, Autodesk.</p>
   </div>
 
    

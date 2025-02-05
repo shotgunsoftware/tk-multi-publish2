@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Publish Customization &mdash; tk-multi-publish2 v2.10.1 documentation</title>
+  <title>Publish Customization &mdash; tk-multi-publish2 v2.10.2 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Publish API" href="api.html" />
-    <link rel="prev" title="Flow Production Tracking Publisher API reference, v2.10.1" href="index.html" /> 
+    <link rel="prev" title="Flow Production Tracking Publisher API reference, v2.10.2" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -114,7 +114,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.10.1.<br>
+    <b>tk-multi-publish2</b> v2.10.2.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -172,7 +172,7 @@ and presented to the user.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>For more information on how to take over, subclass, and manage hooks,
-see the <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.21.6)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
+see the <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.21.8)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
 </div>
 <hr class="docutils" />
 <section id="collector-hook-api">
@@ -180,7 +180,7 @@ see the <a class="reference external" href="https://developers.shotgridsoftware.
 <dl class="py class">
 <dt class="sig sig-object py" id="tk_multi_publish2.base_hooks.CollectorPlugin">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.base_hooks.</span></span><span class="sig-name descname"><span class="pre">CollectorPlugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/collector.html#CollectorPlugin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.CollectorPlugin" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk.Hook" title="(in tk-core vv0.21.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hook</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk.Hook" title="(in tk-core vv0.21.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hook</span></code></a></p>
 <p>This class defines the required interface for a collector plugin.
 Collectors are used to gather individual files that are loaded via the
 file browser or dragged and dropped into the Publish2 UI. It is also used
@@ -226,7 +226,7 @@ as <code class="docutils literal notranslate"><span class="pre">hook</span></cod
 </ul>
 <p>Example implementation:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@property</span>
-<span class="k">def</span> <span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;Work Template&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;template&quot;</span><span class="p">,</span>
@@ -284,7 +284,7 @@ instance of the publish app.</p>
 <a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.create_item" title="tk_multi_publish2.api.PublishItem.create_item"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_item()</span></code></a> method available on the supplied
 <code class="docutils literal notranslate"><span class="pre">parent_item</span></code>.</p>
 <p>Example Maya implementation:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process_current_session</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">parent_item</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">process_current_session</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">parent_item</span><span class="p">):</span>
 
     <span class="n">path</span> <span class="o">=</span> <span class="n">cmds</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -340,7 +340,7 @@ configured for this instance of the publish app.</p>
 <a class="reference internal" href="api.html#tk_multi_publish2.api.PublishItem.create_item" title="tk_multi_publish2.api.PublishItem.create_item"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_item()</span></code></a> method available on the supplied
 <code class="docutils literal notranslate"><span class="pre">parent_item</span></code>.</p>
 <p>Example implementation:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process_file</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">parent_item</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">process_file</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">parent_item</span><span class="p">):</span>
 
     <span class="c1"># make sure the path is normalized. no trailing separator,</span>
     <span class="c1"># separators are appropriate for the current os, no double</span>
@@ -397,7 +397,7 @@ custom publish plugin UI.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>For more information on how to take over, subclass, and manage hooks,
-see the <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.21.6)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
+see the <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk-hook-docs" title="(in tk-core vv0.21.8)"><span class="xref std std-ref">Hooks</span></a> documentation.</p>
 </div>
 <hr class="docutils" />
 <section id="step-by-step-tutorials">
@@ -478,15 +478,15 @@ tk-multi-publish2 App <code class="docutils literal notranslate"><span class="pr
 location <code class="docutils literal notranslate"><span class="pre">tk-config-default2/hooks/tk-multi-publish2</span></code> and named
 <code class="docutils literal notranslate"><span class="pre">upload_version_playblast.py</span></code>. So we will now need to create that file, below
 is the implementaiton of the new publish plugin file:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sgtk</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sgtk</span>
 
 <span class="n">HookBaseClass</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">get_hook_baseclass</span><span class="p">()</span>
 
-<span class="k">class</span> <span class="nc">MayaUploadVersionPlayblastPlugin</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MayaUploadVersionPlayblastPlugin</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Plugin for sending Playblasts to Flow Production Tracking for review.&quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verbose, multi-line description of what the plugin does. This can</span>
 <span class="sd">        contain simple html for formatting.</span>
@@ -501,7 +501,7 @@ is the implementaiton of the new publish plugin file:</p>
 <span class="s2">        &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Dictionary defining the settings that this plugin expects to recieve</span>
 <span class="sd">        through the settings parameter in the accept, validate, publish and</span>
@@ -533,7 +533,7 @@ is the implementaiton of the new publish plugin file:</p>
         <span class="p">}</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">item_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">item_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        List of item types that this plugin is interested in.</span>
 
@@ -544,7 +544,7 @@ is the implementaiton of the new publish plugin file:</p>
 
         <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;file.video&quot;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method called by the publisher to determine if an item is of any</span>
 <span class="sd">        interest to this plugin. Only items matching the filters defined via the</span>
@@ -572,7 +572,7 @@ is the implementaiton of the new publish plugin file:</p>
 
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;accepted&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validates the given item to check that it is ok to publish.</span>
 
@@ -592,7 +592,7 @@ is the implementaiton of the new publish plugin file:</p>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Executes the publish logic for the given item and settings.</span>
 
@@ -642,7 +642,7 @@ the Publisher, you should see the new “Create Version from Playblast” plugin
 <dl class="py class">
 <dt class="sig sig-object py" id="tk_multi_publish2.base_hooks.PublishPlugin">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.base_hooks.</span></span><span class="sig-name descname"><span class="pre">PublishPlugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/publish_plugin.html#PublishPlugin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.PublishPlugin" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk.Hook" title="(in tk-core vv0.21.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hook</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk.Hook" title="(in tk-core vv0.21.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hook</span></code></a></p>
 <p>This class defines the required interface for a publish plugin. Publish
 plugins are responsible for operating on items collected by the collector
 plugin. Publish plugins define which items they will operate on as well as
@@ -669,7 +669,7 @@ referenced relative to the disk location of the plugin, accessible via
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">sgtk.Hook.disk_location()</span></code>.</p>
 <p>Example implementation:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@property</span>
-<span class="k">def</span> <span class="nf">icon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">icon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">disk_location</span><span class="p">,</span>
@@ -712,7 +712,7 @@ below:</p>
 </div>
 <p>A simple implementation example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@property</span>
-<span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">    Creates a publish in Shotgun.</span>
@@ -759,7 +759,7 @@ as <code class="docutils literal notranslate"><span class="pre">hook</span></cod
 </ul>
 <p>Example implementation:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@property</span>
-<span class="k">def</span> <span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;Publish Template&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;template&quot;</span><span class="p">,</span>
@@ -853,7 +853,7 @@ used to decide whether to accept the item.</p>
 about the item, populated during collection. This data can be used to
 inform the acceptance logic.</p>
 <p>Example implementation:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 
     <span class="n">accept</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -897,7 +897,7 @@ item.</p>
 When an exception is raised, the error message will be displayed as a
 tooltip on the task as well as in the logging view of the publisher.</p>
 <p>Simple implementation example for a Maya session item validation:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 
      <span class="n">path</span> <span class="o">=</span> <span class="n">cmds</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -930,7 +930,7 @@ in the <a class="reference internal" href="#tk_multi_publish2.base_hooks.Publish
 <p>Any raised exceptions will indicate that the publish pass has failed and
 the publisher will stop execution.</p>
 <p>Simple implementation example for a Maya session item publish:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 
     <span class="n">path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
 
@@ -981,7 +981,7 @@ publishing is complete.</p>
 <p>Any raised exceptions will indicate that the finalize pass has failed
 and the publisher will stop execution.</p>
 <p>Simple implementation example for a Maya session item finalization:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 
     <span class="n">path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
 
@@ -1105,7 +1105,7 @@ task.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="tk_multi_publish2.base_hooks.PostPhaseHook">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.base_hooks.</span></span><span class="sig-name descname"><span class="pre">PostPhaseHook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/base_hooks/post_phase.html#PostPhaseHook"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.base_hooks.PostPhaseHook" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk.Hook" title="(in tk-core vv0.21.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hook</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk.Hook" title="(in tk-core vv0.21.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hook</span></code></a></p>
 <p>This hook defines methods that are executed after each phase of a publish:
 validation, publish, and finalization. Each method receives the
 <a class="reference internal" href="api.html#publish-api-tree"><span class="std std-ref">PublishTree</span></a> tree instance being used by the publisher, giving
@@ -1133,7 +1133,7 @@ of the item’s tasks failed. You could then include validation error
 messages in a <code class="docutils literal notranslate"><span class="pre">validation_errors</span></code> list on the item, appending error
 messages during task execution. Then, this method might look something
 like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">post_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_tree</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">post_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_tree</span><span class="p">):</span>
 
     <span class="n">all_errors</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -1230,14 +1230,14 @@ the items to be published.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Flow Production Tracking Publisher API reference, v2.10.1" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Flow Production Tracking Publisher API reference, v2.10.2" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="api.html" class="btn btn-neutral float-right" title="Publish API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, Autodesk.</p>
+    <p>&#169; Copyright 2025, Autodesk.</p>
   </div>
 
    

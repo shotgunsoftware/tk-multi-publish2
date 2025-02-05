@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Publish API &mdash; tk-multi-publish2 v2.10.1 documentation</title>
+  <title>Publish API &mdash; tk-multi-publish2 v2.10.2 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -179,7 +179,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.10.1.<br>
+    <b>tk-multi-publish2</b> v2.10.2.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -375,7 +375,7 @@ different way (different order or different criteria) you can provide
 a custom <code class="docutils literal notranslate"><span class="pre">task_generator</span></code> that yields <a class="reference internal" href="#tk_multi_publish2.api.PublishTask" title="tk_multi_publish2.api.PublishTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">PublishTask</span></code></a> instances.</p>
 <p>For example, to validate all items in the tree, without worrying about
 their active state:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">all_tasks_generator</span><span class="p">(</span><span class="n">publish_tree</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">all_tasks_generator</span><span class="p">(</span><span class="n">publish_tree</span><span class="p">):</span>
 
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">publish_tree</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">tasks</span><span class="p">:</span>
@@ -408,7 +408,7 @@ a custom <code class="docutils literal notranslate"><span class="pre">task_gener
 <p>For example, to publish all items in the tree that have a
 <code class="docutils literal notranslate"><span class="pre">local_publish</span></code> flag set in their properties dictionary, you could do
 the following:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">local_tasks_generator</span><span class="p">(</span><span class="n">publish_tree</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">local_tasks_generator</span><span class="p">(</span><span class="n">publish_tree</span><span class="p">):</span>
 
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">publish_tree</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;local_publish&quot;</span><span class="p">):</span>
@@ -440,7 +440,7 @@ a custom <code class="docutils literal notranslate"><span class="pre">task_gener
 <p>For example, to finalize all items in the tree that have a
 <code class="docutils literal notranslate"><span class="pre">generate_report</span></code> flag set in their properties dictionary, you could
 do the following:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">report_tasks_generator</span><span class="p">(</span><span class="n">publish_tree</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">report_tasks_generator</span><span class="p">(</span><span class="n">publish_tree</span><span class="p">):</span>
 
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">publish_tree</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;generate_report&quot;</span><span class="p">):</span>
@@ -531,7 +531,7 @@ method of the <a class="reference internal" href="customizing.html#tk_multi_publ
 like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in your publish plugin...</span>
 
-<span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 
     <span class="c1"># do your publish...</span>
 
@@ -542,7 +542,7 @@ like this:</p>
 
 <span class="c1"># then, in your post_finalize...</span>
 
-<span class="k">def</span> <span class="nf">post_finalize</span><span class="p">(</span><span class="n">publish_tree</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">post_finalize</span><span class="p">(</span><span class="n">publish_tree</span><span class="p">):</span>
 
     <span class="c1"># process files that were stored for later</span>
     <span class="n">files</span> <span class="o">=</span> <span class="n">publish_tree</span><span class="o">.</span><span class="n">root_item</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;process_later&quot;</span><span class="p">,</span> <span class="p">[])</span>
@@ -871,7 +871,7 @@ of this item.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="tk_multi_publish2.api.PublishItem.context">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">context</span></span><a class="headerlink" href="#tk_multi_publish2.api.PublishItem.context" title="Permalink to this definition"></a></dt>
-<dd><p>The <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk.Context" title="(in tk-core vv0.21.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sgtk.Context</span></code></a> associated with this item.</p>
+<dd><p>The <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/core.html#sgtk.Context" title="(in tk-core vv0.21.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sgtk.Context</span></code></a> associated with this item.</p>
 <p>If no context has been explicitly set for this item, the context will be
 inherited from the item’s parent. If none of this item’s parents have
 had a context set explicitly, the publisher’s launch context will be
@@ -1275,7 +1275,7 @@ configured <code class="docutils literal notranslate"><span class="pre">PluginSe
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, Autodesk.</p>
+    <p>&#169; Copyright 2025, Autodesk.</p>
   </div>
 
    

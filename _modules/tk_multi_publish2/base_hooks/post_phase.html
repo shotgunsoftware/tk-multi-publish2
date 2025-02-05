@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>tk_multi_publish2.base_hooks.post_phase &mdash; tk-multi-publish2 v2.10.1 documentation</title>
+  <title>tk_multi_publish2.base_hooks.post_phase &mdash; tk-multi-publish2 v2.10.2 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
@@ -82,7 +82,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.10.1.<br>
+    <b>tk-multi-publish2</b> v2.10.2.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -136,12 +136,12 @@
 <span class="c1"># agreement to the Shotgun Pipeline Toolkit Source Code License. All rights</span>
 <span class="c1"># not expressly granted therein are reserved by Shotgun Software Inc.</span>
 
-<span class="kn">import</span> <span class="nn">sgtk</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sgtk</span>
 
 <span class="n">HookBaseClass</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">get_hook_baseclass</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="PostPhaseHook"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PostPhaseHook">[docs]</a><span class="k">class</span> <span class="nc">PostPhaseHook</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
+<div class="viewcode-block" id="PostPhaseHook"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PostPhaseHook">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">PostPhaseHook</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This hook defines methods that are executed after each phase of a publish:</span>
 <span class="sd">    validation, publish, and finalization. Each method receives the</span>
@@ -152,7 +152,7 @@
 <span class="sd">    manipulate it.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="PostPhaseHook.post_validate"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PostPhaseHook.post_validate">[docs]</a>    <span class="k">def</span> <span class="nf">post_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_tree</span><span class="p">):</span>
+<div class="viewcode-block" id="PostPhaseHook.post_validate"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PostPhaseHook.post_validate">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">post_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_tree</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method is executed after the validation pass has completed for each</span>
 <span class="sd">        item in the tree, before the publish pass.</span>
@@ -201,7 +201,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Executing post validate hook method...&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PostPhaseHook.post_publish"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PostPhaseHook.post_publish">[docs]</a>    <span class="k">def</span> <span class="nf">post_publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_tree</span><span class="p">):</span>
+<div class="viewcode-block" id="PostPhaseHook.post_publish"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PostPhaseHook.post_publish">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">post_publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_tree</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method is executed after the publish pass has completed for each</span>
 <span class="sd">        item in the tree, before the finalize pass.</span>
@@ -226,7 +226,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Executing post publish hook method...&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PostPhaseHook.post_finalize"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PostPhaseHook.post_finalize">[docs]</a>    <span class="k">def</span> <span class="nf">post_finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_tree</span><span class="p">):</span>
+<div class="viewcode-block" id="PostPhaseHook.post_finalize"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PostPhaseHook.post_finalize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">post_finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_tree</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method is executed after the finalize pass has completed for each</span>
 <span class="sd">        item in the tree.</span>
@@ -260,7 +260,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, Autodesk.</p>
+    <p>&#169; Copyright 2025, Autodesk.</p>
   </div>
 
    
