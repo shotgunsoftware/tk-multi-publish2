@@ -1223,6 +1223,7 @@ class AppDialog(QtGui.QWidget):
 
         # hide the action buttons during publish
         self.ui.button_container.hide()
+        self.ui.item_settings.setEnabled(False)
 
         # Make sure that settings from the current selection are retrieved from the UI and applied
         # back on the tasks.
@@ -1241,6 +1242,7 @@ class AppDialog(QtGui.QWidget):
                         "Validation errors detected. " "Not proceeding with publish."
                     )
                     self.ui.button_container.show()
+                    self.ui.item_settings.setEnabled(True)
                     return
 
             # validation not required on publish, it has already run though
@@ -1263,6 +1265,7 @@ class AppDialog(QtGui.QWidget):
                 if button_clicked == QtGui.QMessageBox.Cancel:
                     # user does not want ot continue.
                     self.ui.button_container.show()
+                    self.ui.item_settings.setEnabled(True)
                     return
 
                 self._progress_handler.logger.info("User skipped validation step.")
@@ -1270,6 +1273,7 @@ class AppDialog(QtGui.QWidget):
             if self._stop_processing_flagged:
                 # stop processing
                 self.ui.button_container.show()
+                self.ui.item_settings.setEnabled(True)
                 return
 
             # inform the progress system of the current mode
@@ -1321,6 +1325,7 @@ class AppDialog(QtGui.QWidget):
             if self._stop_processing_flagged:
                 self._progress_handler.logger.info("Processing aborted by user.")
                 self.ui.button_container.show()
+                self.ui.item_settings.setEnabled(True)
                 return
 
         finally:
@@ -1374,6 +1379,7 @@ class AppDialog(QtGui.QWidget):
         self.ui.close.hide()
 
         self.ui.button_container.show()
+        self.ui.item_settings.setEnabled(True)
 
         # hide summary overlay
         self._overlay.hide()
