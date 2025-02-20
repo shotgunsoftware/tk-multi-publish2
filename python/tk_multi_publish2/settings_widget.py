@@ -67,7 +67,7 @@ class SettingsWidget(QtGui.QWidget):
         self.ui.setupUi(self)
 
         # Set spacing between widgets within the settings widget
-        self.layout().setSpacing(10)
+        self.layout().setSpacing(15)
 
         # Hide the settings scroll area until widgets are added
         self.ui.settings_scroll_area.hide()
