@@ -246,9 +246,28 @@ class AppDialog(QtGui.QWidget):
             self._progress_handler.show_details
         )
 
-        # hide settings for now
-        self.ui.item_settings_label.hide()
-        self.ui.item_settings.hide()
+        # If Background Publishing App available for the running engine, show
+        # the settings widget and add a UI option for turning background
+        # publishing on/off
+        bg_publish_app = self._bundle.engine.apps.get("tk-multi-bg-publish", None)
+        if bg_publish_app:
+            # Create the checkbox for enabling background processing
+            self.bg_publish_checkbox = QtGui.QCheckBox("Perform publish in a background process")
+            default_bg_process = self._bundle.get_setting("collector_settings", {}).get("Background Processing", False)
+            self.bg_publish_checkbox.setChecked(default_bg_process)
+            self.bg_publish_checkbox.stateChanged.connect(lambda state=None: self._set_bg_processing())
+            # Add the checkbox to the settings widget layout
+            settings_layout = self.ui.item_settings.layout()
+            settings_layout.addWidget(self.bg_publish_checkbox)
+            settings_layout.addStretch()
+            # Show the settings widget
+            self.ui.item_settings_label.show()
+            self.ui.item_settings.show()
+        else:
+            # No Background Publishing App available, so hide the settings widget
+            self.bg_publish_checkbox = None
+            self.ui.item_settings_label.hide()
+            self.ui.item_settings.hide()
 
         # create a publish manager
         self._publish_manager = PublishManager(self._progress_handler.logger)
@@ -859,6 +878,9 @@ class AppDialog(QtGui.QWidget):
         # reset the validation flag
         self._validation_run = False
 
+        # set Background Processing flag for the publish tree
+        self._set_bg_processing()
+
     def _on_drop(self, files):
         """
         When someone drops stuff into the publish.
@@ -1015,6 +1037,25 @@ class AppDialog(QtGui.QWidget):
         self.ui.item_inherited_item_label.setText(
             base_lbl.format("Description not inherited")
         )
+
+    def _set_bg_processing(self):
+        """
+        Set the background processing flag on the publish tree.
+
+        The flag will be set on the publish tree root item for all children to
+        inherit. This flag indicates if the publish should be performed in the
+        background or not.
+
+        This is only applicable if the current running engine supports the
+        Background Publishing App.
+        """
+
+        if not self.bg_publish_checkbox:
+            return
+
+        # Set the bg processing flag on the root item for children to inherit.
+        bg_processing = self.bg_publish_checkbox.isChecked()
+        self._publish_manager.tree.root_item.properties["bg_processing"] = bg_processing
 
     def _delete_selected(self):
         """
