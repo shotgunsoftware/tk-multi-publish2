@@ -167,7 +167,7 @@ class SettingsWidget(QtGui.QWidget):
             # now create new items - order alphabetically
             curr_row = 0
 
-            for (name, value) in settings:
+            for name, value in settings:
                 field_label = FieldNameLabel(self)
                 field_label.setText(name)
                 field_label.setWordWrap(True)

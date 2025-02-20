@@ -115,6 +115,7 @@ class ProgressHandler(object):
         """
         reveals the last log entry associated with the given publish instance.
         """
+
         # find the last message matching the task or item
         def _check_r(parent):
             for child_index in range(parent.childCount())[::-1]:
