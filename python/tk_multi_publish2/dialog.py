@@ -252,10 +252,19 @@ class AppDialog(QtGui.QWidget):
         bg_publish_app = self._bundle.engine.apps.get("tk-multi-bg-publish", None)
         if bg_publish_app:
             # Create the checkbox for enabling background processing
-            self.bg_publish_checkbox = QtGui.QCheckBox("Perform publish in a background process")
-            default_bg_process = self._bundle.get_setting("collector_settings", {}).get("Background Processing", False)
+            self.bg_publish_checkbox = QtGui.QCheckBox(
+                "Perform publish in the background"
+            )
+            self.bg_publish_checkbox.setToolTip(
+                "When checked, you may continue working in the DCC while the publish is performed in a background process. Open the Background Publish Monitor to see your publish progress."
+            )
+            default_bg_process = self._bundle.get_setting("collector_settings", {}).get(
+                "Background Processing", False
+            )
             self.bg_publish_checkbox.setChecked(default_bg_process)
-            self.bg_publish_checkbox.stateChanged.connect(lambda state=None: self._set_bg_processing())
+            self.bg_publish_checkbox.stateChanged.connect(
+                lambda state=None: self._set_bg_processing()
+            )
             # Add the checkbox to the settings widget layout
             settings_layout = self.ui.item_settings.layout()
             settings_layout.addWidget(self.bg_publish_checkbox)
