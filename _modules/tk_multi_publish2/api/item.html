@@ -5,10 +5,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>tk_multi_publish2.api.item &mdash; tk-multi-publish2 v2.10.2 documentation</title>
+  <title>tk_multi_publish2.api.item &mdash; tk-multi-publish2 v2.10.3 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -82,7 +83,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.10.2.<br>
+    <b>tk-multi-publish2</b> v2.10.3.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -274,7 +275,7 @@
         <span class="p">)</span>
 
         <span class="c1"># local</span>
-        <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">prop_dict</span><span class="p">)</span> <span class="ow">in</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;local_properties&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">prop_dict</span> <span class="ow">in</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;local_properties&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">new_item</span><span class="o">.</span><span class="n">_local_properties</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">PublishData</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">prop_dict</span><span class="p">)</span>
 
         <span class="n">new_item</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="n">parent</span>
@@ -358,7 +359,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">converted_local_properties</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">prop</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_properties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_properties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">converted_local_properties</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
 
         <span class="n">context_value</span> <span class="o">=</span> <span class="kc">None</span>
