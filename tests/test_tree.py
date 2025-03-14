@@ -12,7 +12,7 @@ from tank_vendor.six import StringIO
 import tempfile
 import datetime
 
-from mock import patch
+from unittest.mock import patch
 
 from publish_api_test_base import PublishApiTestBase
 from tank_test.tank_test_base import setUpModule  # noqa

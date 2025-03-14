@@ -14,7 +14,7 @@ import tempfile
 from publish_api_test_base import PublishApiTestBase
 from tank_test.tank_test_base import temp_env_var
 from tank_test.tank_test_base import setUpModule  # noqa
-from mock import patch, MagicMock
+from unittest.mock import patch, MagicMock
 
 import sgtk
 
