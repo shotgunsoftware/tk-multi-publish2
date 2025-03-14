@@ -35,7 +35,7 @@ class SummaryOverlay(QtGui.QWidget):
         :param parent: The model parent.
         :type parent: :class:`~PySide.QtGui.QObject`
         """
-        super(SummaryOverlay, self).__init__(parent)
+        super().__init__(parent)
 
         self._bundle = sgtk.platform.current_bundle()
 
@@ -113,7 +113,7 @@ class SummaryOverlay(QtGui.QWidget):
         """
         Subclassed show method
         """
-        super(SummaryOverlay, self).show()
+        super().show()
         self._on_parent_resized()
 
     def _on_parent_resized(self):

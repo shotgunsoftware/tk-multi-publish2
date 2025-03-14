@@ -41,7 +41,7 @@ class ProgressHandler(object):
         :param parent: The model parent.
         :type parent: :class:`~PySide.QtGui.QObject`
         """
-        super(ProgressHandler, self).__init__()
+        super().__init__()
 
         self._icon_label = icon_label
         self._status_label = status_label
@@ -115,6 +115,7 @@ class ProgressHandler(object):
         """
         reveals the last log entry associated with the given publish instance.
         """
+
         # find the last message matching the task or item
         def _check_r(parent):
             for child_index in range(parent.childCount())[::-1]:

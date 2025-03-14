@@ -17,7 +17,7 @@ HookBaseClass = sgtk.get_hook_baseclass()
 class BasicFilePublishPlugin(HookBaseClass):
     @property
     def settings(self):
-        settings = super(BasicFilePublishPlugin, self).settings or {}
+        settings = super().settings or {}
 
         # define the settings the custom plugin UI will set
         settings["set_in_review"] = {
@@ -129,7 +129,7 @@ class BasicFilePublishPlugin(HookBaseClass):
 class ReviewWidget(QtGui.QWidget):
     def __init__(self, parent, sg):
 
-        super(ReviewWidget, self).__init__(parent)
+        super().__init__(parent)
 
         self.__setup_ui()
         # Add the reviewers to the reviewer combo box

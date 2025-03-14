@@ -29,7 +29,7 @@ class TreeNodeContext(TreeNodeBase):
         :param parent: The parent QWidget for this control
         """
         self._context = context
-        super(TreeNodeContext, self).__init__(parent)
+        super().__init__(parent)
 
         # this object can have other items dropped on it
         # but cannot be dragged

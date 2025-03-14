@@ -30,7 +30,7 @@ class ProgressStatusLabel(QtGui.QLabel):
         """
         :param parent: The parent QWidget for this control
         """
-        super(ProgressStatusLabel, self).__init__(parent)
+        super().__init__(parent)
 
         # for the hover behavior
         self.setMouseTracking(True)
@@ -44,7 +44,7 @@ class ProgressStatusLabel(QtGui.QLabel):
         """
         Fires when the mouse is pressed
         """
-        super(ProgressStatusLabel, self).mousePressEvent(event)
+        super().mousePressEvent(event)
         self.clicked.emit()
 
     def resizeEvent(self, event):
@@ -52,7 +52,7 @@ class ProgressStatusLabel(QtGui.QLabel):
         When item is resized
         """
         self.__update_text_elide()
-        super(ProgressStatusLabel, self).resizeEvent(event)
+        super().resizeEvent(event)
 
     def __update_text_elide(self):
         """
@@ -85,4 +85,4 @@ class ProgressStatusLabel(QtGui.QLabel):
             self.__update_text_elide()
         else:
             # called from __update_text_elide()
-            super(ProgressStatusLabel, self).setText(message)
+            super().setText(message)

@@ -8,7 +8,6 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-from __future__ import print_function
 import traceback
 
 import datetime
@@ -348,7 +347,7 @@ class _PublishTreeEncoder(json.JSONEncoder):
         elif type(data) is datetime.datetime:
             return {"_sgtk_custom_type": "datetime.datetime", "value": data.isoformat()}
         else:
-            return super(_PublishTreeEncoder, self).default(data)
+            return super().default(data)
 
 
 def _json_to_objects(data):

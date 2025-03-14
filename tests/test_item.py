@@ -398,7 +398,7 @@ class TestPublishItem(PublishApiTestBase):
 
 class TestQtPixmapAvailability(PublishApiTestBase):
     def setUp(self):
-        super(TestQtPixmapAvailability, self).setUp()
+        super().setUp()
 
         # Make sure we're about to reset a flag that actually exists!
         self.assertTrue(hasattr(self.api.item, "_qt_pixmap_is_usable"))

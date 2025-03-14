@@ -28,7 +28,7 @@ class ProgressDetailsWidget(QtGui.QWidget):
         :param parent: The model parent.
         :type parent: :class:`~PySide.QtGui.QObject`
         """
-        super(ProgressDetailsWidget, self).__init__()
+        super().__init__()
 
         self._bundle = sgtk.platform.current_bundle()
 
@@ -94,7 +94,7 @@ class ProgressDetailsWidget(QtGui.QWidget):
             self.show()
 
     def show(self):
-        super(ProgressDetailsWidget, self).show()
+        super().show()
         self.__recompute_position()
         self.ui.log_tree.expandAll()
 

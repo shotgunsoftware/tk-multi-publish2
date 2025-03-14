@@ -66,6 +66,11 @@ class SettingsWidget(QtGui.QWidget):
         self.ui = Ui_SettingsWidget()
         self.ui.setupUi(self)
 
+        # Set spacing between widgets within the settings widget
+        self.layout().setSpacing(15)
+
+        # Hide the settings scroll area until widgets are added
+        self.ui.settings_scroll_area.hide()
         self._widgets = []
 
     def clear(self):
@@ -90,6 +95,7 @@ class SettingsWidget(QtGui.QWidget):
 
         finally:
             # make the window visible again and trigger a redraw
+            self.ui.settings_scroll_area.hide()
             self.setVisible(True)
 
     def set_data(self, settings):
@@ -139,6 +145,7 @@ class SettingsWidget(QtGui.QWidget):
             self.ui.settings_layout.setRowStretch(curr_row, 1)
         finally:
             # make the window visible again and trigger a redraw
+            self.ui.settings_scroll_area.show()
             self.setVisible(True)
 
     def set_static_data(self, settings):
@@ -160,7 +167,7 @@ class SettingsWidget(QtGui.QWidget):
             # now create new items - order alphabetically
             curr_row = 0
 
-            for (name, value) in settings:
+            for name, value in settings:
                 field_label = FieldNameLabel(self)
                 field_label.setText(name)
                 field_label.setWordWrap(True)
@@ -185,4 +192,5 @@ class SettingsWidget(QtGui.QWidget):
             self.ui.settings_layout.setRowStretch(curr_row, 1)
         finally:
             # make the window visible again and trigger a redraw
+            self.ui.settings_scroll_area.show()
             self.setVisible(True)
