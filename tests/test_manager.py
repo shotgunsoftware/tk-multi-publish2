@@ -13,7 +13,7 @@ import os
 from publish_api_test_base import PublishApiTestBase
 from tank_test.tank_test_base import setUpModule  # noqa
 
-from mock import Mock, MagicMock
+from unittest.mock import Mock, MagicMock
 
 
 class TestManager(PublishApiTestBase):

@@ -12,7 +12,7 @@ from publish_api_test_base import PublishApiTestBase
 from tank_test.tank_test_base import setUpModule  # noqa
 
 import logging
-from mock import Mock, MagicMock, patch
+from unittest.mock import Mock, MagicMock, patch
 from functools import wraps
 
 # We're going to make sure the plugin logs the proper messages, since those
