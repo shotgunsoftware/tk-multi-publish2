@@ -11,7 +11,7 @@
 import datetime
 import tempfile
 from io import StringIO
-from mock import patch
+from unittest.mock import patch
 
 import sgtk
 from publish_api_test_base import PublishApiTestBase
