@@ -428,7 +428,7 @@ class PublishPlugin(HookBaseClass):
         """
 
         # defer Qt-related imports
-        from sgtk.platform.qt import QtGui
+        from sgtk.platform.qt import QtCore, QtGui
 
         # create a group box to display the description
         description_group_box = QtGui.QGroupBox(parent)
@@ -440,6 +440,7 @@ class PublishPlugin(HookBaseClass):
         description_label = QtGui.QLabel(self.description)
         description_label.setWordWrap(True)
         description_label.setOpenExternalLinks(True)
+        description_label.setTextFormat(QtCore.Qt.TextFormat.RichText)
 
         # create the layout to use within the group box
         description_layout = QtGui.QVBoxLayout()
