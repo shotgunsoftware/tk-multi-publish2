@@ -13,11 +13,6 @@ import traceback
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
 
-try:
-    from tank_vendor import sgutils
-except ImportError:
-    from tank_vendor import six as sgutils
-
 from .api import PublishManager, PublishItem, PublishTask
 from .ui.dialog import Ui_Dialog
 from .progress import ProgressHandler
@@ -905,7 +900,7 @@ class AppDialog(QtGui.QWidget):
         self._progress_handler.push("Processing external files...")
 
         # pyside gives us back unicode. Make sure we convert it to strings
-        str_files = [sgutils.ensure_str(f) for f in files]
+        str_files = [str(f) for f in files]
 
         try:
             self.ui.main_stack.setCurrentIndex(self.PUBLISH_SCREEN)
