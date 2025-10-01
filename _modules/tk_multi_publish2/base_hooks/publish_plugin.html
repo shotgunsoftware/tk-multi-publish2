@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>tk_multi_publish2.base_hooks.publish_plugin &mdash; tk-multi-publish2 v2.10.3 documentation</title>
+  <title>tk_multi_publish2.base_hooks.publish_plugin &mdash; tk-multi-publish2 v2.10.5 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
@@ -83,7 +83,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.10.3.<br>
+    <b>tk-multi-publish2</b> v2.10.5.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -557,7 +557,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># defer Qt-related imports</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">sgtk.platform.qt</span><span class="w"> </span><span class="kn">import</span> <span class="n">QtGui</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sgtk.platform.qt</span><span class="w"> </span><span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
 
         <span class="c1"># create a group box to display the description</span>
         <span class="n">description_group_box</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGroupBox</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
@@ -569,6 +569,7 @@
         <span class="n">description_label</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
         <span class="n">description_label</span><span class="o">.</span><span class="n">setWordWrap</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">description_label</span><span class="o">.</span><span class="n">setOpenExternalLinks</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">description_label</span><span class="o">.</span><span class="n">setTextFormat</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">TextFormat</span><span class="o">.</span><span class="n">RichText</span><span class="p">)</span>
 
         <span class="c1"># create the layout to use within the group box</span>
         <span class="n">description_layout</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
