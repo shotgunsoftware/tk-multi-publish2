@@ -91,9 +91,9 @@ class Thumbnail(QtGui.QLabel):
         :param pixmap: QPixmap to show or None in order to show default one.
         """
         if pixmap is None:
-            self._set_screenshot_pixmap(self._no_thumb_pixmap)
+            self._set_screenshot_pixmap(self._no_thumb_pixmap, emit_signal=False)
         else:
-            self._set_screenshot_pixmap(pixmap)
+            self._set_screenshot_pixmap(pixmap, emit_signal=True)
 
     def mousePressEvent(self, event):
         """
@@ -175,14 +175,17 @@ class Thumbnail(QtGui.QLabel):
             # paint thumbnail
             QtGui.QLabel.paintEvent(self, paint_event)
 
-    def _set_screenshot_pixmap(self, pixmap):
+    def _set_screenshot_pixmap(self, pixmap, emit_signal=True):
         """
         Takes the given QPixmap and sets it to be the thumbnail
         image of the note input widget.
 
-        Emits thumbnail_changed signal.
+        Emits thumbnail_changed signal if emit_signal is True. Default is True.
+        The thumbnail_changed signal should only be emitted if the thumbnail
+        changed is for the currently selected item.
 
         :param pixmap:  A QPixmap object containing the screenshot image.
+        :param emit_signal: Whether to emit the thumbnail_changed signal.
         """
         self._thumbnail = pixmap
 
@@ -195,4 +198,5 @@ class Thumbnail(QtGui.QLabel):
         )
 
         self.setPixmap(thumb)
-        self.thumbnail_changed.emit(pixmap)
+        if emit_signal:
+            self.thumbnail_changed.emit(pixmap)
