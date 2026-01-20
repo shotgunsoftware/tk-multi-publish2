@@ -697,9 +697,36 @@ class AppDialog(QtGui.QWidget):
             self.ui.context_widget.show()
 
             if item.context_change_allowed:
-                self.ui.context_widget.enable_editing(
-                    True, "<p>Task and Entity Link to apply to the selected item:</p>"
-                )
+                # Check for task_required and change UI styling accordingly
+                if not self._validate_task_required():
+                    # Change task label color to SG_ALERT_COLOR
+                    self.ui.context_widget.ui.task_label.setStyleSheet(
+                        "color: "
+                        + sgtk.platform.current_bundle().style_constants[
+                            "SG_ALERT_COLOR"
+                        ]
+                    )
+                    # Also change the text and color of the label
+                    # Use SG_HIGHLIGHT_COLOR for better readability
+                    self.ui.context_widget.enable_editing(
+                        True,
+                        "<p>Task Required is <b>True</b> in your configuration. "
+                        "Please select a Task to continue.</p>",
+                    )
+                    self.ui.context_widget.ui.label.setStyleSheet(
+                        "color: "
+                        + sgtk.platform.current_bundle().style_constants[
+                            "SG_HIGHLIGHT_COLOR"
+                        ]
+                    )
+                else:
+                    self.ui.context_widget.enable_editing(
+                        True,
+                        "<p>Task and Entity Link to apply to the selected item:</p>",
+                    )
+                    # Ensure styling overrides are cleared
+                    self.ui.context_widget.ui.task_label.setStyleSheet("")
+                    self.ui.context_widget.ui.label.setStyleSheet("")
             else:
                 self.ui.context_widget.enable_editing(
                     False,
@@ -816,17 +843,63 @@ class AppDialog(QtGui.QWidget):
             # the summary view's context widget
             context_key = list(current_contexts.keys())[0]
             self.ui.context_widget.set_context(current_contexts[context_key])
-            context_label_text = "Task and Entity Link to apply to all items:"
+            # Check for task_required and change UI styling accordingly
+            if not self._validate_task_required():
+                # Change task label color to SG_ALERT_COLOR
+                self.ui.context_widget.ui.task_label.setStyleSheet(
+                    "color: "
+                    + sgtk.platform.current_bundle().style_constants["SG_ALERT_COLOR"]
+                )
+                # Also change the text and color of the label
+                # Use SG_HIGHLIGHT_COLOR for better readability
+                context_label_text = (
+                    "<p>Task Required is <b>True</b> in your configuration. "
+                    "Please confirm all Tasks are assigned to continue.</p>"
+                )
+                self.ui.context_widget.ui.label.setStyleSheet(
+                    "color: "
+                    + sgtk.platform.current_bundle().style_constants[
+                        "SG_HIGHLIGHT_COLOR"
+                    ]
+                )
+            else:
+                context_label_text = "Task and Entity Link to apply to all items:"
+                # Ensure styling overrides are cleared
+                self.ui.context_widget.ui.label.setStyleSheet("")
+                self.ui.context_widget.ui.task_label.setStyleSheet("")
         else:
             self.ui.context_widget.set_context(
                 None,
                 task_display_override=" -- Multiple values -- ",
                 link_display_override=" -- Multiple values -- ",
             )
-            context_label_text = (
-                "Currently publishing items to %s contexts. "
-                "Override all items here:" % (len(current_contexts),)
-            )
+            # Check for task_required and change UI styling accordingly
+            if not self._validate_task_required():
+                # Change task label color to SG_ALERT_COLOR
+                self.ui.context_widget.ui.task_label.setStyleSheet(
+                    "color: "
+                    + sgtk.platform.current_bundle().style_constants["SG_ALERT_COLOR"]
+                )
+                # Also change the text and color of the label
+                # Use SG_HIGHLIGHT_COLOR for better readability
+                context_label_text = (
+                    "<p>Task Required is <b>True</b> in your configuration. "
+                    "Please confirm all Tasks are assigned to continue.</p>"
+                )
+                self.ui.context_widget.ui.label.setStyleSheet(
+                    "color: "
+                    + sgtk.platform.current_bundle().style_constants[
+                        "SG_HIGHLIGHT_COLOR"
+                    ]
+                )
+            else:
+                context_label_text = (
+                    "Currently publishing items to %s contexts. "
+                    "Override all items here:" % (len(current_contexts),)
+                )
+                # Ensure styling overrides are cleared
+                self.ui.context_widget.ui.label.setStyleSheet("")
+                self.ui.context_widget.ui.task_label.setStyleSheet("")
 
         self.ui.context_widget.show()
         self.ui.context_widget.enable_editing(True, context_label_text)
@@ -1615,6 +1688,8 @@ class AppDialog(QtGui.QWidget):
 
         # Make the task validation if the setting `task_required` exists and it's True
         self._validate_task_required()
+        # Re-draw the summary for styling updates
+        self._create_master_summary_details()
 
     def _on_browse(self, folders=False):
         """Opens a file dialog to browse to files for publishing."""
@@ -1698,12 +1773,11 @@ class AppDialog(QtGui.QWidget):
     def _validate_task_required(self):
         """
         Validates that a task is selected for every item and disables/enables the
-        validate and publish buttons and finally change the color for the task
-        label.
+        validate and publish buttons
         """
         # Avoid validation if the setting `task_required` is False or not exists
         if not self._bundle.get_setting("task_required"):
-            return
+            return True
 
         all_items_selected_task = True
         for context_index in range(self.ui.items_tree.topLevelItemCount()):
@@ -1717,15 +1791,12 @@ class AppDialog(QtGui.QWidget):
             # disable buttons
             self.ui.publish.setEnabled(False)
             self.ui.validate.setEnabled(False)
-            # change task label color to RED
-            self.ui.context_widget.ui.task_label.setStyleSheet("color: red")
+            return False
         else:
             # enable buttons
             self.ui.publish.setEnabled(True)
             self.ui.validate.setEnabled(True)
-
-            # change task label color to the default value
-            self.ui.context_widget.ui.task_label.setStyleSheet("")
+            return True
 
 
 class _TaskSelection(object):
