@@ -693,7 +693,7 @@ class AppDialog(QtGui.QWidget):
         # Items with default thumbnails should still be able to have override thumbnails set by the user
         self.ui.item_thumbnail.setEnabled(True)
 
-        if item.parent.is_root:
+        if item.parent.is_root or item.context_widget:
             self.ui.context_widget.show()
 
             if item.context_change_allowed:
