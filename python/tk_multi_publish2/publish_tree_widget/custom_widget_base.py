@@ -137,7 +137,6 @@ class CustomTreeWidgetBase(QtGui.QFrame):
                     "ItemWidget",
                     "<p>%s</p>" % (message,),
                     None,
-                    QtGui.QApplication.UnicodeUTF8,
                 )
             )
 

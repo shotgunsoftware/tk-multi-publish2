@@ -69,17 +69,6 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         self.itemExpanded.connect(self.on_item_expand_state_change)
         self.itemCollapsed.connect(self.on_item_expand_state_change)
 
-        # workaround to make the scrollbar work properly for QT versions < 5 on macOS
-        # This look like a bug tracked on the QT side
-        # ( https://bugreports.qt.io/browse/QTBUG-27043 )
-        # ( https://stackoverflow.com/questions/15331256/qlistwidget-with-custom-widget-does-not-scroll-properly-in-mac-os )
-        if QtCore.__version__.startswith("4.") and sgtk.util.is_macos():
-            self.verticalScrollBar().actionTriggered.connect(
-                self.updateEditorGeometries
-            )
-            self.verticalScrollBar().sliderMoved.connect(self.updateEditorGeometries)
-            self.verticalScrollBar().rangeChanged.connect(self.updateEditorGeometries)
-
     def on_item_expand_state_change(self, item):
         # Since the item can be expanded/collapsed via the custom expand button
         # but also via the invisible native expand button (which can still be clicked),
