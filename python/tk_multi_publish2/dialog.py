@@ -912,7 +912,7 @@ class AppDialog(QtGui.QWidget):
             self._overlay.show_loading()
             self.ui.button_container.hide()
             new_items = self._publish_manager.collect_files(str_files)
-            num_items_created = len(new_items)
+            num_items_created = len([item for item in new_items if item.tasks])
             num_errors = self._progress_handler.pop()
 
             if num_errors == 0 and num_items_created == 0:
