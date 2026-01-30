@@ -131,7 +131,7 @@ class BasicSceneCollector(HookBaseClass):
                     "item_type": "file.image",
                 },
                 "Texture Image": {
-                    "extensions": ["tif", "tiff", "tx", "tga", "dds", "rat"],
+                    "extensions": ["tif", "tiff", "tex", "tx", "tga", "dds", "rat"],
                     "icon": self._get_icon_path("texture.png"),
                     "item_type": "file.texture",
                 },
