@@ -366,7 +366,7 @@ class TestPublishItem(PublishApiTestBase):
                 nb_items_processed = 0
                 for item in manager.tree:
                     for task in item.tasks:
-                        (is_valid, error) = yield task
+                        is_valid, error = yield task
                         # The validate method of both plugins will raise an error
                         # if the the values can be retrieved.
                         # We're raising if the test passes in the validate method

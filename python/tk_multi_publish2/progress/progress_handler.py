@@ -29,9 +29,9 @@ class ProgressHandler(object):
     Progress reporting and logging
     """
 
-    (INFO, ERROR, DEBUG, WARNING) = range(4)
+    INFO, ERROR, DEBUG, WARNING = range(4)
 
-    (PHASE_LOAD, PHASE_VALIDATE, PHASE_PUBLISH, PHASE_FINALIZE) = range(4)
+    PHASE_LOAD, PHASE_VALIDATE, PHASE_PUBLISH, PHASE_FINALIZE = range(4)
 
     _PUBLISH_INSTANCE_ROLE = QtCore.Qt.UserRole + 1001
     _NUM_ERRORS_ROLE = QtCore.Qt.UserRole + 1002

@@ -201,7 +201,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
                     # check that items are parented under the right context
                     if str(item.item.context) != str(top_level_item.context):
                         # this object needs moving!
-                        (item, state) = self.__take_item(top_level_item, item_index)
+                        item, state = self.__take_item(top_level_item, item_index)
                         items_to_move.append((item, state))
 
         # now put all the moved items back in the tree.

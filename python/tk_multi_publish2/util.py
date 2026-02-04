@@ -104,14 +104,14 @@ def get_file_path_components(path):
     logger.debug("Getting file path components for path: '%s'..." % (path,))
 
     # break it up into the major components
-    (folder, filename) = os.path.split(path)
+    folder, filename = os.path.split(path)
 
     if os.path.isdir(path):
         # folder
         extension = None
     else:
         # file. extract the extension and remove the "."
-        (_, extension) = os.path.splitext(filename)
+        _, extension = os.path.splitext(filename)
         if extension:
             extension = extension.lstrip(".")
         else:

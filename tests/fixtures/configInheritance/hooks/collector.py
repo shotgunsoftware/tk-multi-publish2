@@ -390,7 +390,7 @@ class BasicSceneCollector(HookBaseClass):
             # no common type match. try to use the mimetype category. this will
             # be a value like "image/jpeg" or "video/mp4". we'll extract the
             # portion before the "/" and use that for display.
-            (category_type, _) = mimetypes.guess_type(filename)
+            category_type, _ = mimetypes.guess_type(filename)
 
             if category_type:
 
