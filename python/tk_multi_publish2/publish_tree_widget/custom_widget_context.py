@@ -14,7 +14,6 @@ from sgtk.platform.qt import QtCore
 from .ui.context_widget import Ui_ContextWidget
 from .custom_widget_base import CustomTreeWidgetBase
 
-
 logger = sgtk.platform.get_logger(__name__)
 
 

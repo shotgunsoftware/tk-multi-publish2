@@ -41,7 +41,7 @@ class AppDialog(QtGui.QWidget):
     """
 
     # main drag and drop areas
-    (DRAG_SCREEN, PUBLISH_SCREEN) = range(2)
+    DRAG_SCREEN, PUBLISH_SCREEN = range(2)
 
     # details ui panes
     (
@@ -835,7 +835,7 @@ class AppDialog(QtGui.QWidget):
         # no need to have a summary since the main label says summary
         self.ui.item_summary_label.hide()
 
-        (num_items, summary) = self.ui.items_tree.get_full_summary()
+        num_items, summary = self.ui.items_tree.get_full_summary()
         self.ui.item_summary.setText(summary)
         self.ui.item_type.setText("%d tasks to execute" % num_items)
 
@@ -1485,7 +1485,7 @@ class AppDialog(QtGui.QWidget):
             try:
                 # yield each child item to be acted on by the publish api
                 if isinstance(ui_item, TreeNodeTask):
-                    (is_successful, error) = yield ui_item.task
+                    is_successful, error = yield ui_item.task
                     error_msg = str(error)
 
                 # all other nodes are UI-only and can handle their own

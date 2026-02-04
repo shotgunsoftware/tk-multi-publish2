@@ -309,7 +309,7 @@ class BasicPathInfo(HookBaseClass):
             # version number already in the path. return the original path
             return path
 
-        (basename, ext) = os.path.splitext(filename)
+        basename, ext = os.path.splitext(filename)
 
         # construct the new filename with the version number inserted
         version_filename = "%s.%s%s" % (basename, version, ext)

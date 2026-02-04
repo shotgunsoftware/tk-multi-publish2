@@ -167,9 +167,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         A file can be published multiple times however only the most recent
         publish will be available to other users. Warnings will be provided
         during validation if there are previous publishes.
-        """ % (
-            loader_url,
-        )
+        """ % (loader_url,)
 
     @property
     def settings(self):
@@ -1030,7 +1028,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         working/session file after publishing.
         """
 
-        (next_version_path, version) = self._get_next_version_info(path, item)
+        next_version_path, version = self._get_next_version_info(path, item)
 
         if version is None:
             self.logger.debug(
