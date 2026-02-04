@@ -472,7 +472,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         :param plugin: Plugin for which tasks should be manipulated
         :param state: checkstate to set.
         """
-        logger.debug("Setting state %d for all plugin %s" % (state, plugin))
+        logger.debug("Setting state %s for all plugin %s" % (state, plugin))
 
         def _check_r(parent):
             for child_index in range(parent.childCount()):
@@ -495,7 +495,6 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         super().dropEvent(event)
 
         for ui_item, state in self._selected_items_state:
-
             # make sure that the item picks up the new context
             if isinstance(ui_item, TopLevelTreeNodeItem):
                 ui_item.synchronize_context()
@@ -520,10 +519,8 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
         # process all selected items
         for item in self.selectedItems():
-
             # we only want to drag/drop top level items
             if isinstance(item, TopLevelTreeNodeItem):
-
                 # ensure context change is allowed before dragging/dropping
                 if not item.item.context_change_allowed:
                     # deselect to prevent drag/drop of items whose context
@@ -561,7 +558,6 @@ class PublishTreeWidget(QtGui.QTreeWidget):
 
 
 def _init_item_r(parent_item):
-
     # qt seems to drop the associated widget
     # (http://doc.qt.io/qt-4.8/qtreewidget.html#setItemWidget)
     # when a tree node is taken out of the tree, either via drag n drop
