@@ -8,6 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import contextlib
 import traceback
 
 import sgtk
@@ -70,6 +71,7 @@ class AppDialog(QtGui.QWidget):
         shotgun_globals.register_bg_task_manager(self._task_manager)
 
         self._bundle = sgtk.platform.current_bundle()
+        sgtk.platform.util.LogManager.global_debug = True
         self._validation_run = False
 
         # set up the UI
@@ -412,7 +414,6 @@ class AppDialog(QtGui.QWidget):
         first_task = items[0].get_publish_instance()
 
         for item in items:
-
             publish_instance = item.get_publish_instance()
             # User has mixed different types of publish instances, it's not just a task list.
             if not isinstance(publish_instance, PublishTask):
@@ -856,7 +857,7 @@ class AppDialog(QtGui.QWidget):
         new_session_items = self._publish_manager.collect_session()
 
         logger.debug(
-            "Refresh: Running collection on all previously collected external " "files"
+            "Refresh: Running collection on all previously collected external files"
         )
         new_file_items = self._publish_manager.collect_files(previously_collected_files)
 
@@ -988,7 +989,74 @@ class AppDialog(QtGui.QWidget):
             # main frame of the publish ui
             self._progress_handler.progress_details.set_parent(self.ui.main_frame)
 
-            self.ui.items_tree.build_tree()
+            with self._resize_window_for_tree():
+                self.ui.items_tree.build_tree()
+
+    @property
+    def _fit_width_to_items(self):  # type: () -> Literal["never", "initial", "always"]
+        """Calculate appropriate ``fit_width_to_items`` mode from app settings."""
+        known_values = ("never", "initial", "always")
+        default = known_values[1]
+
+        value = self._bundle.get_setting("fit_width_to_items", default).lower()
+        if value not in known_values:
+            msg = "fit_width_to_items '%s' is not one of: %r. Defaulting to %s."
+            logger.warning(msg, value, known_values, default)
+            value = default
+        return value
+
+    @contextlib.contextmanager
+    def _resize_window_for_tree(self):  # type: () -> Iterator[None]
+        """Context that resizes the main window to fit the tree items.
+
+        Only runs on successful exit of the context. Skips if any of:
+
+        - ``fit_width_to_items`` is 'never'
+        - There are no non-root items in the tree
+        - ``fit_width_to_items`` is 'initial' and the tree was already populated
+
+        """
+        mode = self._fit_width_to_items
+        if mode == "never":
+            yield
+            logger.debug("Skipping resize: fit_width_to_items is 'never'.")
+        else:
+            had_items = len(self._get_tree_items()) > 1
+            yield
+            current_items = self._get_tree_items()
+
+            if len(current_items) < 2:
+                logger.debug("Skipping resize: No non-root items in tree")
+            elif had_items and mode == "initial":
+                logger.debug(
+                    "Skipping resize: fit_width_to_items is 'initial' "
+                    "and tree was already populated."
+                )
+            else:
+                tree_size_hint = QtCore.QSize(0, 0)
+                for tree_item in current_items:
+                    widget = self.ui.items_tree.itemWidget(tree_item, 0)
+                    tree_size_hint = tree_size_hint.expandedTo(widget.sizeHint())
+
+                # Add additional padding
+                tree_size_hint.setWidth(tree_size_hint.width() + 10)
+
+                # Constraint against 70% of the screen size
+                safe_maximum = self.screen().availableGeometry().size() * 0.7
+                tree_size_hint = tree_size_hint.boundedTo(safe_maximum)
+
+                # Set the splitter sizes
+                old_split_widths = self.ui.splitter.sizes()
+                split_widths = [tree_size_hint.width(), *old_split_widths[1:]]
+                logger.debug("Resizing splitter to: %r", split_widths)
+                self.ui.splitter.setSizes(split_widths)
+
+                # Resize the main window to accommodate the new size
+                window = self.window()
+                old_size = window.size()
+                width_padding = old_size.width() - sum(old_split_widths)
+                window.resize(width_padding + sum(split_widths), old_size.height())
+                logger.debug("Resized window to: %s", window.size())
 
     def _set_tree_items_expanded(self, expanded):
         """
@@ -1235,7 +1303,7 @@ class AppDialog(QtGui.QWidget):
                 # do_validate returns the number of issues encountered
                 if self.do_validate(is_standalone=False) > 0:
                     self._progress_handler.logger.error(
-                        "Validation errors detected. " "Not proceeding with publish."
+                        "Validation errors detected. Not proceeding with publish."
                     )
                     self.ui.button_container.show()
                     self.ui.item_settings.setEnabled(True)
@@ -1344,7 +1412,6 @@ class AppDialog(QtGui.QWidget):
             )
             self._overlay.show_fail()
         else:
-
             # Publish succeeded
             # Log the toolkit "Published" metric
             try:
@@ -1452,7 +1519,6 @@ class AppDialog(QtGui.QWidget):
         list_items = self._get_tree_items()
 
         for ui_item in list_items:
-
             if self._stop_processing_flagged:
                 # jump out of the iteration
                 break
