@@ -63,7 +63,8 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         self._summary_node.setHidden(True)
 
         # forward double clicks on items to the items themselves
-        self.itemDoubleClicked.connect(lambda i, c: i.double_clicked(c))
+        self.itemDoubleClicked.connect(self._click_slot_factory("double"))
+        self.itemClicked.connect(self._click_slot_factory("single"))
 
         # Capture the native expand toggles and update the button state.
         self.itemExpanded.connect(self.on_item_expand_state_change)
@@ -558,6 +559,29 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         if self.state() != QtGui.QAbstractItemView.DragSelectingState:
             # bubble up all events that aren't drag select related
             super().mouseMoveEvent(event)
+
+    def _click_slot_factory(self, method_name):
+        """Create a slot to call the given hook method on click.
+
+        i.e. for both single and double clicks::
+
+            self.itemClicked.connect(self._click_slot_factory("single"))
+            self.itemDoubleClicked.connect(self._click_slot_factory("double"))
+
+        """
+
+        @QtCore.Slot(QtGui.QTreeWidgetItem, int)
+        def _on_click_slot(tree_node: QtGui.QTreeWidgetItem, column: int) -> None:
+            kwargs = {
+                "node": tree_node,
+                "widget": self.itemWidget(tree_node, column),
+                "api": tree_node.get_publish_instance(),
+                "buttons": QtGui.QApplication.mouseButtons(),
+                "modifiers": QtGui.QApplication.keyboardModifiers(),
+            }
+            self._bundle.execute_hook_method("tree_node_clicked", method_name, **kwargs)
+
+        return _on_click_slot
 
 
 def _init_item_r(parent_item):
