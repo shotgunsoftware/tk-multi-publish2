@@ -413,6 +413,7 @@ class AppDialog(QtGui.QWidget):
         first_task = items[0].get_publish_instance()
 
         for item in items:
+
             publish_instance = item.get_publish_instance()
             # User has mixed different types of publish instances, it's not just a task list.
             if not isinstance(publish_instance, PublishTask):
@@ -856,7 +857,7 @@ class AppDialog(QtGui.QWidget):
         new_session_items = self._publish_manager.collect_session()
 
         logger.debug(
-            "Refresh: Running collection on all previously collected external files"
+            "Refresh: Running collection on all previously collected external " "files"
         )
         new_file_items = self._publish_manager.collect_files(previously_collected_files)
 
@@ -1302,7 +1303,7 @@ class AppDialog(QtGui.QWidget):
                 # do_validate returns the number of issues encountered
                 if self.do_validate(is_standalone=False) > 0:
                     self._progress_handler.logger.error(
-                        "Validation errors detected. Not proceeding with publish."
+                        "Validation errors detected. " "Not proceeding with publish."
                     )
                     self.ui.button_container.show()
                     self.ui.item_settings.setEnabled(True)
@@ -1411,6 +1412,7 @@ class AppDialog(QtGui.QWidget):
             )
             self._overlay.show_fail()
         else:
+
             # Publish succeeded
             # Log the toolkit "Published" metric
             try:
@@ -1518,6 +1520,7 @@ class AppDialog(QtGui.QWidget):
         list_items = self._get_tree_items()
 
         for ui_item in list_items:
+
             if self._stop_processing_flagged:
                 # jump out of the iteration
                 break
