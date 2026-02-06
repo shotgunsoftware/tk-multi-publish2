@@ -71,7 +71,6 @@ class AppDialog(QtGui.QWidget):
         shotgun_globals.register_bg_task_manager(self._task_manager)
 
         self._bundle = sgtk.platform.current_bundle()
-        sgtk.platform.util.LogManager.global_debug = True
         self._validation_run = False
 
         # set up the UI
