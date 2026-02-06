@@ -11,6 +11,7 @@
 import contextlib
 import enum
 import traceback
+from typing import Iterator
 
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
@@ -1007,7 +1008,7 @@ class AppDialog(QtGui.QWidget):
             return cls.NEVER
 
     @contextlib.contextmanager
-    def _resize_window_for_tree(self):  # type: () -> Iterator[None]
+    def _resize_window_for_tree(self) -> Iterator[None]:
         """Context that resizes the main window to fit the tree items.
 
         Only runs on successful exit of the context. Skips if any of:
