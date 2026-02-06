@@ -134,15 +134,15 @@ configuration:
 
     fit_width_to_items:
         type: str
-        default_value: "always"
+        default_value: "never"
         description: |
             Determines when the publish dialog should automatically resize its width
             to fit the contents of the items tree. Valid values are:
 
-            - 'never'   the dialog will never auto resize its width
-            - 'initial' (default) the dialog will auto resize its width once,
+            - 'never'   (default) The dialog will never auto resize its width
+            - 'initial' The dialog will auto resize its width once,
                         when the items tree is first populated
-            - 'always'  the dialog will auto resize its width every time the items
+            - 'always'  The dialog will auto resize its width every time the items
                         tree is modified (items added/removed)
 
 
