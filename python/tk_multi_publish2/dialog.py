@@ -996,7 +996,7 @@ class AppDialog(QtGui.QWidget):
     def _fit_width_to_items(self):  # type: () -> Literal["never", "initial", "always"]
         """Calculate appropriate ``fit_width_to_items`` mode from app settings."""
         known_values = ("never", "initial", "always")
-        default = known_values[1]
+        default = known_values[0]
 
         value = self._bundle.get_setting("fit_width_to_items", default).lower()
         if value not in known_values:
