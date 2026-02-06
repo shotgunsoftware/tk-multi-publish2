@@ -281,8 +281,8 @@ class AppDialog(QtGui.QWidget):
         self._summary_thumbnail = None
 
         # set publish button text
-        self._display_action_name = self._bundle.get_setting("display_action_name")
-        self.ui.publish.setText(self._display_action_name)
+        self._display_action_name = self._bundle.display_hook.action_name
+        self.ui.publish.setText(self._bundle.display_hook.button_name)
 
         # Special UI tweaks based on the 'manual_load_enabled' property
         #
