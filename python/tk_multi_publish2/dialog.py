@@ -9,6 +9,7 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import contextlib
+import enum
 import traceback
 
 import sgtk
@@ -992,18 +993,18 @@ class AppDialog(QtGui.QWidget):
             with self._resize_window_for_tree():
                 self.ui.items_tree.build_tree()
 
-    @property
-    def _fit_width_to_items(self):  # type: () -> Literal["never", "initial", "always"]
-        """Calculate appropriate ``fit_width_to_items`` mode from app settings."""
-        known_values = ("never", "initial", "always")
-        default = known_values[0]
+    class FitWidthMode(enum.Enum):
+        """Possible values for the "fit_width_to_items" setting."""
 
-        value = self._bundle.get_setting("fit_width_to_items", default).lower()
-        if value not in known_values:
-            msg = "fit_width_to_items '%s' is not one of: %r. Defaulting to %s."
-            logger.warning(msg, value, known_values, default)
-            value = default
-        return value
+        NEVER = "never"
+        INITIAL = "initial"
+        ALWAYS = "always"
+
+        @classmethod
+        def _missing_(cls, value):
+            msg = "%r is not one of: %r. Defaulting to %s."
+            logger.warning(msg, value, [mem.value for mem in cls], cls.NEVER.value)
+            return cls.NEVER
 
     @contextlib.contextmanager
     def _resize_window_for_tree(self):  # type: () -> Iterator[None]
@@ -1016,10 +1017,10 @@ class AppDialog(QtGui.QWidget):
         - ``fit_width_to_items`` is 'initial' and the tree was already populated
 
         """
-        mode = self._fit_width_to_items
-        if mode == "never":
+        mode = self.FitWidthMode(self._bundle.get_setting("fit_width_to_items").lower())
+        if mode == self.FitWidthMode.NEVER:
             yield
-            logger.debug("Skipping resize: fit_width_to_items is 'never'.")
+            logger.debug("Skipping resize: fit_width_to_items is %r.", mode.value)
         else:
             had_items = len(self._get_tree_items()) > 1
             yield
@@ -1027,10 +1028,11 @@ class AppDialog(QtGui.QWidget):
 
             if len(current_items) < 2:
                 logger.debug("Skipping resize: No non-root items in tree")
-            elif had_items and mode == "initial":
+            elif had_items and mode == self.FitWidthMode.INITIAL:
                 logger.debug(
-                    "Skipping resize: fit_width_to_items is 'initial' "
-                    "and tree was already populated."
+                    "Skipping resize: fit_width_to_items is %r "
+                    "and tree was already populated.",
+                    mode.value,
                 )
             else:
                 tree_size_hint = QtCore.QSize(0, 0)
