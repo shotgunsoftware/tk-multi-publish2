@@ -84,6 +84,19 @@ class MultiPublish2(sgtk.platform.Application):
         return self._base_hooks
 
     @property
+    def summary_hook(self) -> sgtk.Hook:
+        """Exposes the extensible ``:summary:hook`` instance from app settings.
+
+        Used to fetch information related to summary overlay display content.
+        """
+        self._summary_hook = getattr(
+            self,
+            "_summary_hook",
+            self.create_hook_instance(self.get_setting("summary")["hook"]),
+        )
+        return self._summary_hook
+
+    @property
     def util(self):
         """
         Exposes the publish2 ``util`` module.
