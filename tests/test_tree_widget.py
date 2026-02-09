@@ -42,17 +42,11 @@ class TestPublishTreeWidget(PublishApiTestBase):
         from sgtk.platform.qt import QtCore, QtGui
 
         def iter_check_states(plugin):
-            yield from (
-                tree_item.check_state
-                for it in QtGui.QTreeWidgetItemIterator(tree_widget)
-                if (
-                    (tree_item := it.value())
-                    and isinstance(
-                        task := tree_item.get_publish_instance(), self.api.PublishTask
-                    )
-                    and task.plugin == plugin
-                )
-            )
+            for it in QtGui.QTreeWidgetItemIterator(tree_widget):
+                tree_item = it.value()
+                task = tree_item.get_publish_instance()
+                if isinstance(task, self.api.PublishTask) and task.plugin == plugin:
+                    yield tree_item.check_state
 
         tree_widget.set_check_state_for_all_plugins(local_plugin, QtCore.Qt.Checked)
         for check_state in iter_check_states(local_plugin):
