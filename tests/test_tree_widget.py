@@ -13,6 +13,55 @@ from tank_test.tank_test_base import setUpModule  # noqa
 
 
 class TestPublishTreeWidget(PublishApiTestBase):
+    def test_all_check_state(self):
+        """
+        If we have a bunch of active tasks followed by a bunch of inactive tasks, the addition
+        of the inactive tasks does not trigger an update of the parent's checkbox (because the update
+        relies on the checkbox.state_changed and the default is unchecked, so inactive tasks do not
+        trigger a state change). Test that we are forcing a recalculation to keep the parent's check_state
+        correct in all situations
+        """
+        tree = self.manager.tree
+        context = self.manager.context
+        local_plugin, remote_plugin = self.manager._load_publish_plugins(context)
+
+        item = tree.root_item.create_item("item.parent", "Parent", "Parent")
+        item.add_task(local_plugin).active = True
+        item.add_task(remote_plugin).active = False
+        item = item.create_item("item.child", "Child", "Child")
+        item.add_task(local_plugin)
+        item.add_task(remote_plugin)
+        item = item.create_item("item.grandchild", "Grand Child", "Grand Child")
+        item.add_task(local_plugin)
+        item.add_task(remote_plugin)
+
+        tree_widget = self.PublishTreeWidget(None)
+        tree_widget.set_publish_manager(self.manager)
+        tree_widget.build_tree()
+
+        from sgtk.platform.qt import QtCore, QtGui
+
+        def iter_check_states(plugin):
+            yield from (
+                tree_item.check_state
+                for it in QtGui.QTreeWidgetItemIterator(tree_widget)
+                if (
+                    (tree_item := it.value())
+                    and isinstance(
+                        task := tree_item.get_publish_instance(), self.api.PublishTask
+                    )
+                    and task.plugin == plugin
+                )
+            )
+
+        tree_widget.set_check_state_for_all_plugins(local_plugin, QtCore.Qt.Checked)
+        for check_state in iter_check_states(local_plugin):
+            assert check_state == QtCore.Qt.Checked
+
+        tree_widget.set_check_state_for_all_plugins(remote_plugin, QtCore.Qt.Unchecked)
+        for check_state in iter_check_states(remote_plugin):
+            assert check_state == QtCore.Qt.Unchecked
+
     def test_parent_partially_checked(self):
         """
         If we have a bunch of active tasks followed by a bunch of inactive tasks, the addition
