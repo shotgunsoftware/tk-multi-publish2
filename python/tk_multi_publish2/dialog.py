@@ -8,7 +8,10 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import contextlib
+import enum
 import traceback
+from typing import Iterator
 
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
@@ -988,7 +991,75 @@ class AppDialog(QtGui.QWidget):
             # main frame of the publish ui
             self._progress_handler.progress_details.set_parent(self.ui.main_frame)
 
-            self.ui.items_tree.build_tree()
+            with self._resize_window_for_tree():
+                self.ui.items_tree.build_tree()
+
+    class FitWidthMode(enum.Enum):
+        """Possible values for the "fit_width_to_items" setting."""
+
+        NEVER = "never"
+        INITIAL = "initial"
+        ALWAYS = "always"
+
+        @classmethod
+        def _missing_(cls, value):
+            msg = "%r is not one of: %r. Defaulting to %s."
+            logger.warning(msg, value, [mem.value for mem in cls], cls.NEVER.value)
+            return cls.NEVER
+
+    @contextlib.contextmanager
+    def _resize_window_for_tree(self) -> Iterator[None]:
+        """Context that resizes the main window to fit the tree items.
+
+        Only runs on successful exit of the context. Skips if any of:
+
+        - ``fit_width_to_items`` is 'never'
+        - There are no non-root items in the tree
+        - ``fit_width_to_items`` is 'initial' and the tree was already populated
+
+        """
+        mode = self.FitWidthMode(self._bundle.get_setting("fit_width_to_items").lower())
+        if mode == self.FitWidthMode.NEVER:
+            yield
+            logger.debug("Skipping resize: fit_width_to_items is %r.", mode.value)
+        else:
+            had_items = len(self._get_tree_items()) > 1
+            yield
+            current_items = self._get_tree_items()
+
+            if len(current_items) < 2:
+                logger.debug("Skipping resize: No non-root items in tree")
+            elif had_items and mode == self.FitWidthMode.INITIAL:
+                logger.debug(
+                    "Skipping resize: fit_width_to_items is %r "
+                    "and tree was already populated.",
+                    mode.value,
+                )
+            else:
+                tree_size_hint = QtCore.QSize(0, 0)
+                for tree_item in current_items:
+                    widget = self.ui.items_tree.itemWidget(tree_item, 0)
+                    tree_size_hint = tree_size_hint.expandedTo(widget.sizeHint())
+
+                # Add additional padding
+                tree_size_hint.setWidth(tree_size_hint.width() + 10)
+
+                # Constraint against 70% of the screen size
+                safe_maximum = self.screen().availableGeometry().size() * 0.7
+                tree_size_hint = tree_size_hint.boundedTo(safe_maximum)
+
+                # Set the splitter sizes
+                old_split_widths = self.ui.splitter.sizes()
+                split_widths = [tree_size_hint.width(), *old_split_widths[1:]]
+                logger.debug("Resizing splitter to: %r", split_widths)
+                self.ui.splitter.setSizes(split_widths)
+
+                # Resize the main window to accommodate the new size
+                window = self.window()
+                old_size = window.size()
+                width_padding = old_size.width() - sum(old_split_widths)
+                window.resize(width_padding + sum(split_widths), old_size.height())
+                logger.debug("Resized window to: %s", window.size())
 
     def _set_tree_items_expanded(self, expanded):
         """
