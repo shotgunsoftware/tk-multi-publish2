@@ -39,14 +39,6 @@ API = Union[TypeVar("PublishItem"), TypeVar("PublishTask"), None]
 
 
 class TreeNodeClicked(HookBaseClass):
-    @staticmethod
-    def flipped_state(check_state: QtCore.Qt.CheckState) -> QtCore.Qt.CheckState:
-        """Flips a unchecked state to checked and any other state to unchecked."""
-        return (
-            QtCore.Qt.Checked
-            if check_state == QtCore.Qt.Unchecked
-            else QtCore.Qt.Unchecked
-        )
 
     def single(
         self,
