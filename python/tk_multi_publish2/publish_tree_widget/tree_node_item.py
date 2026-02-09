@@ -73,9 +73,12 @@ class TreeNodeItem(TreeNodeBase):
     def __str__(self):
         return "%s %s" % (self._item.type_display, self._item.name)
 
-    def create_summary(self):
+    def create_summary(self, level=0):
         """
         Creates summary of actions
+
+        :param level: Indentation level of this item lives within the tree.
+        :type level: int
 
         :returns: List of strings
         """
@@ -91,16 +94,23 @@ class TreeNodeItem(TreeNodeBase):
                     task_summaries.extend(child_item.create_summary())
                 else:
                     # sub-items
-                    items_summaries.extend(child_item.create_summary())
+                    items_summaries.extend(child_item.create_summary(level + 1))
 
             summary = []
 
             if len(task_summaries) > 0:
 
-                summary_str = "<b>%s</b><br>" % self.item.name
-                summary_str += "<br>".join(
-                    ["&ndash; %s" % task_summary for task_summary in task_summaries]
+                summary_str = "<ul><li>" * level
+                summary_str += "<b>%s</b>" % self.item.name
+                summary_str += '<ul style="list-style-type:circle;">'
+                summary_str += "".join(
+                    [
+                        "<li><i>%s</i></li>" % task_summary
+                        for task_summary in task_summaries
+                    ]
                 )
+                summary_str += "</ul>"
+                summary_str += "</li></ul>" * level
                 summary.append(summary_str)
 
             summary.extend(items_summaries)
