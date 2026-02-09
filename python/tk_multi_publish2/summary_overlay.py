@@ -38,6 +38,7 @@ class SummaryOverlay(QtGui.QWidget):
         super().__init__(parent)
 
         self._bundle = sgtk.platform.current_bundle()
+        self._summary_hook = self._bundle.summary_hook
 
         # set up the UI
         self.ui = Ui_SummaryOverlay()
@@ -54,60 +55,54 @@ class SummaryOverlay(QtGui.QWidget):
         self.ui.info.clicked.connect(self.info_clicked.emit)
         self.ui.publish_again.clicked.connect(self.publish_again_clicked.emit)
 
+    def show_summary(
+        self,
+        icon_path: str,
+        label_text: str,
+        info_text: str,
+        publish_again_text: str = "",
+    ):
+        """Show summary with given messaging and icon.
+
+        :param icon_path: Path/value used directly to construct icon's QPixmap.
+        :param label_text: Main label text to display
+        :param info_text: Information text for the info button/label
+        :param publish_again_text: Text to show the publish again button with.
+                                   If empty (default) the button will be hidden.
+        """
+        self.ui.icon.setPixmap(QtGui.QPixmap(icon_path))
+        self.ui.label.setText(label_text)
+        self.ui.info.setText(info_text)
+
+        self.ui.publish_again.setText(publish_again_text or "")
+        self.ui.publish_again.setVisible(bool(publish_again_text))
+
+        self.show()
+
     def show_no_items_error(self):
         """
         Shows a special message when there is no items collected under an alternate
         UI operation determined by the 'enable_manual_load' application option.
         """
-        self.ui.icon.setPixmap(QtGui.QPixmap(":/tk_multi_publish2/publish_failed.png"))
-        # Hardcoding line break so the message displays on 2 lines.
-        # Usage of label's own word wrap displays the message below on 3 lines.
-        # NOTE: Can't manually break line when using <p></p>
-        self.ui.label.setText("Could not find any\nitems to publish.")
-        self.ui.info.setText("For more details, <b><u>click here</u></b>.")
-        self.ui.publish_again.hide()
-        self.show()
+        self._summary_hook.no_items_error(self)
 
     def show_success(self):
         """
         Shows standard "publish completed successfully!" prompt
         """
-        self.ui.icon.setPixmap(
-            QtGui.QPixmap(":/tk_multi_publish2/publish_complete.png")
-        )
-        self.ui.label.setText("Publish\nComplete")
-        self.ui.info.setText("For more details, <b><u>click here</u></b>.")
-
-        self.ui.publish_again.setText("To publish again, <b><u>click here</u></b>.")
-        self.ui.publish_again.show()
-
-        self.show()
+        self._summary_hook.success(self)
 
     def show_fail(self):
         """
         Shows standard "publish failed!" prompt
         """
-        self.ui.icon.setPixmap(QtGui.QPixmap(":/tk_multi_publish2/publish_failed.png"))
-        self.ui.label.setText("Publish\nFailed!")
-        self.ui.info.setText("For more details, <b><u>click here</u></b>.")
-
-        self.ui.publish_again.hide()
-        self.ui.publish_again.setText("")
-
-        self.show()
+        self._summary_hook.fail(self)
 
     def show_loading(self):
         """
         Shows standard "loading stuff" prompt
         """
-        self.ui.icon.setPixmap(QtGui.QPixmap(":/tk_multi_publish2/overlay_loading.png"))
-        self.ui.label.setText("Loading and processing")
-        self.ui.info.setText("Hold tight while we analyze your data")
-
-        self.ui.publish_again.hide()
-        self.ui.publish_again.setText("")
-
-        self.show()
+        self._summary_hook.loading(self)
 
     def show(self):
         """

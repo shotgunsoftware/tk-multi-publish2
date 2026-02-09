@@ -30,6 +30,42 @@ configuration:
         description: "Collector-specific configuration settings."
         default_value: {}
 
+    summary:
+        type: dict
+        description: Hook and settings that defines how the summary overlay is displayed
+        items:
+            hook: {type: hook}
+            settings: {type: dict, allows_empty: True}
+        default_value:
+            hook: "{self}/summary_hook.py"
+            settings:
+                no_item_error:
+                    icon_path: ":/tk_multi_publish2/publish_failed.png"
+                    label_text: |
+                        Could not find any
+                        items to publish.
+                    info_text: "For more details, <b><u>click here</u></b>."
+                    publish_again_text: ""
+                success:
+                    icon_path: ":/tk_multi_publish2/publish_complete.png"
+                    label_text: |
+                        Publish
+                        Complete
+                    info_text: "For more details, <b><u>click here</u></b>."
+                    publish_again_text: "To publish again, <b><u>click here</u></b>."
+                fail:
+                    icon_path: ":/tk_multi_publish2/publish_failed.png"
+                    label_text: |
+                        Publish
+                        Failed!
+                    info_text: "For more details, <b><u>click here</u></b>."
+                    publish_again_text: ""
+                loading:
+                    icon_path: ":/tk_multi_publish2/overlay_loading.png"
+                    label_text: "Loading and processing"
+                    info_text: "Hold tight while we analyze your data"
+                    publish_again_text: ""
+
     post_phase:
         type: hook
         description:
