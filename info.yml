@@ -15,17 +15,6 @@ configuration:
         description: Specify the name that should be used in menus and the main
                      publish dialog
 
-    summary:
-        type: dict
-        description: Hook and settings that defines how the summary overlay is displayed
-        items:
-            hook: {type: hook}
-            settings: {type: dict, allows_empty: True}
-        default_value:
-            hook: "{self}/summary_hook.py"
-            settings:
-
-
     display_action_name:
         type: str
         default_value: Publish
@@ -40,6 +29,16 @@ configuration:
         type: dict
         description: "Collector-specific configuration settings."
         default_value: {}
+
+    summary:
+        type: dict
+        description: Hook and settings that defines how the summary overlay is displayed
+        items:
+            hook: {type: hook}
+            settings: {type: dict, allows_empty: True}
+        default_value:
+            hook: "{self}/summary_hook.py"
+            settings: {}
 
     post_phase:
         type: hook
