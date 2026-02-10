@@ -25,7 +25,7 @@ def show_dialog(app):
     # defer imports so that the app works gracefully in batch modes
     from .dialog import AppDialog
 
-    display_name = sgtk.platform.current_bundle().get_setting("display_name")
+    display_name = sgtk.platform.current_bundle().display_hook.window_title
 
     if app.pre_publish_hook.validate():
         # start ui

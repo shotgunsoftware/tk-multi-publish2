@@ -38,22 +38,27 @@ class DisplayHook(HookBaseClass):
 
     @property
     def action_name(self) -> str:
-        """Create text used when inferring to the "Publish" action in the GUI."""
+        """Text (verb) used when referring to the _Publish_ action in the GUI."""
         return self.parent.get_setting("display_action_name")
 
     @property
     def button_name(self) -> str:
-        """Create the label text used when for "Publish" button."""
+        """Label text used for the _Publish_ button."""
         return self.action_name
 
     @property
+    def window_title(self) -> str:
+        """Window title used for `.Engine.show_modal`/`.Engine.show_dialog`."""
+        return self.parent.get_setting("display_name")
+
+    @property
     def menu_name(self) -> str:
-        """Create the command name used when registering the show dialog command."""
+        """Command name used when registering the show dialog command to menus."""
         return f"{self.parent.get_setting('display_name')}..."
 
     @property
     def menu_properties(self) -> dict[str, Any]:
-        """Create the properties used when registering the show dialog command.
+        """Properties used when registering the show dialog command.
 
         See expected property details at `.sgtk.platform.Application.register_command`.
         """
