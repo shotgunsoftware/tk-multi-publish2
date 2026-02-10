@@ -7,9 +7,7 @@
 # By accessing, using, copying or modifying this work you indicate your
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
-import os
 import sgtk
-from tank.util import sgre as re
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -40,29 +38,17 @@ class MultiPublish2(sgtk.platform.Application):
         # make the base plugins available via the app
         self._base_hooks = tk_multi_publish2.base_hooks
 
-        display_name = self.get_setting("display_name")
-        # "Publish Render" ---> publish_render
-        command_name = display_name.lower()
-        # replace all non alphanumeric characters by '_'
-        command_name = re.sub(r"[^0-9a-zA-Z]+", "_", command_name)
-
         self.modal = self.get_setting("modal")
 
         pre_publish_hook_path = self.get_setting(self.CONFIG_PRE_PUBLISH_HOOK_PATH)
         self.pre_publish_hook = self.create_hook_instance(pre_publish_hook_path)
 
         # register command
-        cb = lambda: tk_multi_publish2.show_dialog(self)
-        menu_caption = "%s..." % display_name
-        menu_options = {
-            "short_name": command_name,
-            "description": "Publishing of data to Flow Production Tracking",
-            # dark themed icon for engines that recognize this format
-            "icons": {
-                "dark": {"png": os.path.join(self.disk_location, "icon_256_dark.png")}
-            },
-        }
-        self.engine.register_command(menu_caption, cb, menu_options)
+        self.engine.register_command(
+            self.display_hook.menu_name,
+            lambda: tk_multi_publish2.show_dialog(self),
+            properties=self.display_hook.menu_properties,
+        )
 
     @property
     def base_hooks(self):
@@ -82,6 +68,19 @@ class MultiPublish2(sgtk.platform.Application):
         :return: A handle on the app's ``base_hooks`` module.
         """
         return self._base_hooks
+
+    @property
+    def display_hook(self) -> sgtk.Hook:
+        """Exposes the extensible ``:display:hook`` instance from app settings.
+
+        Used to fetch information related to the display and UI of the app.
+        """
+        self._display_hook = getattr(
+            self,
+            "_display_hook",
+            self.create_hook_instance(self.get_setting("display")["hook"]),
+        )
+        return self._display_hook
 
     @property
     def util(self):
