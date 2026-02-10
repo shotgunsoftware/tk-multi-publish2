@@ -40,6 +40,7 @@ class Ui_MoreInfoWidget(object):
 
         self.message_label = QLabel(MoreInfoWidget)
         self.message_label.setObjectName(u"message_label")
+        self.message_label.setWordWrap(True)
 
         self.horizontalLayout.addWidget(self.message_label)
 
