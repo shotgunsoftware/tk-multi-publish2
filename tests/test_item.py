@@ -469,11 +469,18 @@ def _make_tga_file(img_type):
     # 18-byte header: descriptor=0x20 sets top-left origin (no vertical flip)
     header = struct.pack(
         "<BBBHHBHHHHBB",
-        0, 0, img_type,
-        0, 0, 0,
-        0, 0,
-        width, height,
-        bpp, 0x20,
+        0,
+        0,
+        img_type,
+        0,
+        0,
+        0,
+        0,
+        0,
+        width,
+        height,
+        bpp,
+        0x20,
     )
     if img_type == 10:
         # RLE: each pixel as a raw packet (0x00 header + BGR bytes)
