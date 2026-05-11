@@ -70,8 +70,9 @@ def _load_tga_as_pixmap(path):
         # 2. Decode pixels
         npix = width * height
         pixels = bytearray(npix * psize)
+        mv = memoryview(pixels)
 
-        if img_type in (10, 11):
+        if img_type in _TGA_RLE_TYPES:
             # RLE: alternate between run packets (repeated pixel) and raw packets
             p = offset
             o = 0
@@ -83,17 +84,17 @@ def _load_tga_as_pixmap(path):
                 if head & 0x80:
                     pix = data[p : p + psize]
                     p += psize
-                    pixels[o : o + n * psize] = pix * n
+                    mv[o : o + n * psize] = pix * n
                     o += n * psize
                 else:
                     size = n * psize
-                    pixels[o : o + size] = data[p : p + size]
+                    mv[o : o + size] = data[p : p + size]
                     p += size
                     o += size
                 done += n
         elif img_type in (2, 3):
             # Uncompressed: copy bytes directly
-            pixels[:] = data[offset : offset + npix * psize]
+            mv[:] = data[offset : offset + npix * psize]
         else:
             raise ValueError("unsupported TGA image type %d" % img_type)
 
@@ -111,7 +112,9 @@ def _load_tga_as_pixmap(path):
         if psize == 3:
             img = img.rgbSwapped()  # TGA stores BGR, Qt expects RGB
         if not (descriptor & 0x20):
-            img = img.mirrored(False, True)  # origin bit: 0=bottom-left
+            img = img.mirrored(False, True)  # vertical origin: 0=bottom-left
+        if descriptor & 0x10:
+            img = img.mirrored(True, False)  # horizontal origin: 1=right-to-left
 
         # 4. Return QPixmap
         return QtGui.QPixmap.fromImage(img.copy())
