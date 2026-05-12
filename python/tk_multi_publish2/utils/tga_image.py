@@ -125,9 +125,7 @@ def tga_to_pixmap(path: str):
         else:
             fmt = QtGui.QImage.Format_Grayscale8
 
-        img = QtGui.QImage(
-            bytes(pixels), width, height, width * psize, fmt
-        )
+        img = QtGui.QImage(bytes(pixels), width, height, width * psize, fmt)
         if psize == 3:
             img = img.rgbSwapped()  # TGA stores BGR, Qt expects RGB
         if not (descriptor & 0x20):  # vertical origin: 0=bottom-left
