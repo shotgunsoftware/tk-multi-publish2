@@ -12,11 +12,11 @@ from collections import defaultdict
 
 import inspect
 import os
-import struct
 import tempfile
 
 import sgtk
 
+from .. import util_tga as publish_util
 from .data import PublishData
 from .task import PublishTask
 
@@ -24,99 +24,41 @@ logger = sgtk.platform.get_logger(__name__)
 
 _qt_pixmap_is_usable = None
 
-# TGA image types that require RLE decoding (Qt's TGA plugin only supports type 2).
-_TGA_RLE_TYPES = (10, 11)
 
-
-def _is_tga_rle(path):
-    """Return True if the file is an RLE-encoded TGA (type 10 or 11)."""
-    try:
-        with open(path, "rb") as f:
-            header = f.read(3)
-        return len(header) == 3 and header[2] in _TGA_RLE_TYPES
-    except Exception:
-        return False
-
-
-def _load_tga_as_pixmap(path):
+def _tga_to_pixmap(path):
     """
-    Decode a TGA file (including RLE types 10/11) into a QPixmap using only
-    stdlib + Qt - no third-party dependencies required.
+    Decode a TGA file into a QPixmap.
 
-    Returns a QPixmap, which may be null if decoding fails.
+    Delegates binary decoding to :func:`publish_util.decode_tga_to_raw` and
+    constructs the QPixmap from the returned raw pixel data.
+
+    :param str path: Path to the TGA file.
+    :returns: Decoded image as a QPixmap, which may be null if decoding fails.
+    :rtype: QtGui.QPixmap
     """
     from sgtk.platform.qt import QtGui
 
     try:
-        with open(path, "rb") as f:
-            data = f.read()
+        tga = publish_util.decode_tga_to_raw(path)
+        psize = tga["psize"]
 
-        # 1. Parse TGA header
-        id_len = data[0]
-        cmap_type = data[1]
-        img_type = data[2]
-        width = struct.unpack_from("<H", data, 12)[0]
-        height = struct.unpack_from("<H", data, 14)[0]
-        bpp = data[16]
-        descriptor = data[17]
-        psize = bpp // 8
-
-        offset = 18 + id_len
-        if cmap_type == 1:
-            cmap_len = struct.unpack_from("<H", data, 5)[0]
-            cmap_size = data[7] // 8
-            offset += cmap_len * cmap_size
-
-        # 2. Decode pixels
-        npix = width * height
-        pixels = bytearray(npix * psize)
-        mv = memoryview(pixels)
-
-        if img_type in _TGA_RLE_TYPES:
-            # RLE: alternate between run packets (repeated pixel) and raw packets
-            p = offset
-            o = 0
-            done = 0
-            while done < npix:
-                head = data[p]
-                p += 1
-                n = (head & 0x7F) + 1
-                if head & 0x80:
-                    pix = data[p : p + psize]
-                    p += psize
-                    mv[o : o + n * psize] = pix * n
-                    o += n * psize
-                else:
-                    size = n * psize
-                    mv[o : o + size] = data[p : p + size]
-                    p += size
-                    o += size
-                done += n
-        elif img_type in (2, 3):
-            # Uncompressed: copy bytes directly
-            mv[:] = data[offset : offset + npix * psize]
-        else:
-            raise ValueError("unsupported TGA image type %d" % img_type)
-
-        # 3. Map to Qt format: 32bpp->ARGB32, 24bpp->RGB888, 8bpp->Grayscale8
         if psize == 4:
             fmt = QtGui.QImage.Format_ARGB32
         elif psize == 3:
             fmt = QtGui.QImage.Format_RGB888
-        elif psize == 1:
-            fmt = QtGui.QImage.Format_Grayscale8
         else:
-            raise ValueError("unsupported bpp %d" % bpp)
+            fmt = QtGui.QImage.Format_Grayscale8
 
-        img = QtGui.QImage(bytes(pixels), width, height, width * psize, fmt)
+        img = QtGui.QImage(
+            tga["pixels"], tga["width"], tga["height"], tga["width"] * psize, fmt
+        )
         if psize == 3:
             img = img.rgbSwapped()  # TGA stores BGR, Qt expects RGB
-        if not (descriptor & 0x20):
-            img = img.mirrored(False, True)  # vertical origin: 0=bottom-left
-        if descriptor & 0x10:
-            img = img.mirrored(True, False)  # horizontal origin: 1=right-to-left
+        if tga["flip_v"]:
+            img = img.mirrored(False, True)
+        if tga["flip_h"]:
+            img = img.mirrored(True, False)
 
-        # 4. Return QPixmap
         return QtGui.QPixmap.fromImage(img.copy())
     except Exception as e:
         logger.warning("Could not decode TGA file '%s': %s" % (path, e))
@@ -609,12 +551,12 @@ class PublishItem(object):
             # Qt can't render this format directly (e.g. RLE-encoded TGA).
             # Return the original path so FPT upload still works; display
             # fallback is handled in _get_image().
-            if _is_tga_rle(path):
+            if publish_util.is_tga_rle(path):
                 return path
         except Exception as e:
             logger.warning("%r: Could not load icon '%s': %s" % (self, path, e))
             return None
-        return None
+        return
 
     @property
     def active(self):
@@ -845,8 +787,8 @@ class PublishItem(object):
             # we have a path but haven't yet created the pixmap. create it
             try:
                 pixmap = QtGui.QPixmap(get_img_path())
-                if pixmap.isNull() and _is_tga_rle(get_img_path()):
-                    pixmap = _load_tga_as_pixmap(get_img_path())
+                if pixmap.isNull() and publish_util.is_tga_rle(get_img_path()):
+                    pixmap = _tga_to_pixmap(get_img_path())
                 set_pixmap(pixmap)
             except Exception as e:
                 logger.warning(

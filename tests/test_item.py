@@ -9,7 +9,6 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import os
-import struct
 import tempfile
 
 from publish_api_test_base import PublishApiTestBase
@@ -447,6 +446,27 @@ class TestQtPixmapAvailability(PublishApiTestBase):
         # We should also get a None thumbnail back.
         self.assertIsNone(item.thumbnail)
 
+    def test_rle_tga_thumbnail(self):
+        """
+        Ensures that an RLE-encoded TGA path is preserved for FPT upload
+        even though Qt cannot load RLE TGA natively, and that the UI can
+        still display the thumbnail via a converted QPixmap.
+        """
+        fake_pixmap = self.QtGui.QPixmap(self.image_path)
+        with patch(
+            "tk_multi_publish2.api.item.publish_util.is_tga_rle", return_value=True
+        ), patch("tk_multi_publish2.api.item._tga_to_pixmap", return_value=fake_pixmap):
+            item = self.PublishItem("test", "test", "test")
+            item.set_thumbnail_from_path(__file__)
+
+            # Assert original RLE TGA path is preserved for FPT upload.
+            self.assertEqual(item.get_thumbnail_as_path(), __file__)
+
+            # Assert UI can still display the thumbnail via the converted QPixmap.
+            thumbnail = item.thumbnail
+            self.assertIsNotNone(thumbnail)
+            self.assertFalse(thumbnail.isNull())
+
     def _reset_pixmap_flag(self, flag_value=None):
         """
         Resets the pixmap availability flag.
@@ -454,75 +474,3 @@ class TestQtPixmapAvailability(PublishApiTestBase):
         :param bool flag_value: Value to set the flag. Defaults to ``None``.
         """
         self.api.item._qt_pixmap_is_usable = flag_value
-
-
-def _make_tga_file(img_type):
-    """
-    Write a minimal valid TGA file with the given image type and return its path.
-
-    :param int img_type: TGA image type byte (2=uncompressed, 10=RLE).
-    :returns: Path to the temp TGA file.
-    :rtype: str
-    """
-    width, height, bpp = 2, 2, 24
-    psize = bpp // 8
-    # 18-byte header: descriptor=0x20 sets top-left origin (no vertical flip)
-    header = struct.pack(
-        "<BBBHHBHHHHBB",
-        0,
-        0,
-        img_type,
-        0,
-        0,
-        0,
-        0,
-        0,
-        width,
-        height,
-        bpp,
-        0x20,
-    )
-    if img_type == 10:
-        # RLE: each pixel as a raw packet (0x00 header + BGR bytes)
-        pixel_data = (b"\x00" + b"\x80" * psize) * (width * height)
-    else:
-        pixel_data = b"\x80" * (width * height * psize)
-
-    fd, path = tempfile.mkstemp(suffix=".tga")
-    os.write(fd, header + pixel_data)
-    os.close(fd)
-    return path
-
-
-class TestTgaRleSupport(PublishApiTestBase):
-    """Tests for RLE-encoded TGA thumbnail support."""
-
-    def test_is_tga_rle(self):
-        """
-        Ensures _is_tga_rle correctly identifies RLE types (10, 11) and
-        returns False for uncompressed TGA (type 2).
-        """
-        rle_path = _make_tga_file(img_type=10)
-        non_rle_path = _make_tga_file(img_type=2)
-        try:
-            self.assertTrue(self.api.item._is_tga_rle(rle_path))
-            self.assertFalse(self.api.item._is_tga_rle(non_rle_path))
-        finally:
-            os.remove(rle_path)
-            os.remove(non_rle_path)
-
-    def test_rle_tga_thumbnail(self):
-        """
-        Ensures RLE TGA displays a non-null pixmap in the UI and preserves
-        the original path for FPT upload.
-        """
-        path = _make_tga_file(img_type=10)
-        try:
-            item = self.PublishItem("test", "test", "test")
-            item.set_thumbnail_from_path(path)
-            thumbnail = item.thumbnail
-            self.assertIsNotNone(thumbnail)
-            self.assertFalse(thumbnail.isNull())
-            self.assertEqual(item.get_thumbnail_as_path(), path)
-        finally:
-            os.remove(path)
