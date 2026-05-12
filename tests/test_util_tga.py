@@ -51,9 +51,9 @@ def _make_tga_file(path, img_type, width=2, height=2, bpp=24):
     )
     if img_type == _TGA_IMG_TYPE_RLE:
         # RLE: each pixel as a raw packet (raw-packet header + BGR bytes)
-        pixel_data = (
-            _TGA_RLE_RAW_PACKET_HEADER + _TEST_PIXEL_VALUE * psize
-        ) * (width * height)
+        pixel_data = (_TGA_RLE_RAW_PACKET_HEADER + _TEST_PIXEL_VALUE * psize) * (
+            width * height
+        )
     else:
         pixel_data = _TEST_PIXEL_VALUE * (width * height * psize)
 
@@ -70,9 +70,9 @@ class TestUtilTga(PublishApiTestBase):
         uncompressed type 2.
         """
         util_tga = self.app.import_module("tk_multi_publish2").util_tga
-        with tempfile.NamedTemporaryFile(suffix=".tga") as rle_path, tempfile.NamedTemporaryFile(
+        with tempfile.NamedTemporaryFile(
             suffix=".tga"
-        ) as non_rle_path:
+        ) as rle_path, tempfile.NamedTemporaryFile(suffix=".tga") as non_rle_path:
             _make_tga_file(rle_path.name, img_type=_TGA_IMG_TYPE_RLE)
             _make_tga_file(non_rle_path.name, img_type=_TGA_IMG_TYPE_UNCOMPRESSED)
             self.assertTrue(util_tga.is_tga_rle(rle_path.name))
@@ -85,7 +85,9 @@ class TestUtilTga(PublishApiTestBase):
         """
         util_tga = self.app.import_module("tk_multi_publish2").util_tga
         with tempfile.NamedTemporaryFile(suffix=".tga") as path:
-            _make_tga_file(path.name, img_type=_TGA_IMG_TYPE_RLE, width=2, height=2, bpp=24)
+            _make_tga_file(
+                path.name, img_type=_TGA_IMG_TYPE_RLE, width=2, height=2, bpp=24
+            )
             result = util_tga.decode_tga_to_raw(path.name)
             self.assertEqual(result["width"], 2)
             self.assertEqual(result["height"], 2)
@@ -97,5 +99,8 @@ class TestUtilTga(PublishApiTestBase):
             # Each pixel was encoded as _TEST_PIXEL_VALUE repeated for each channel (BGR)
             self.assertEqual(
                 result["pixels"],
-                _TEST_PIXEL_VALUE * result["width"] * result["height"] * result["psize"],
+                _TEST_PIXEL_VALUE
+                * result["width"]
+                * result["height"]
+                * result["psize"],
             )
