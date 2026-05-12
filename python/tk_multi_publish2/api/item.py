@@ -16,53 +16,13 @@ import tempfile
 
 import sgtk
 
-from .. import util_tga as publish_util
+from ..utils import tga_image
 from .data import PublishData
 from .task import PublishTask
 
 logger = sgtk.platform.get_logger(__name__)
 
 _qt_pixmap_is_usable = None
-
-
-def _tga_to_pixmap(path):
-    """
-    Decode a TGA file into a QPixmap.
-
-    Delegates binary decoding to :func:`publish_util.decode_tga_to_raw` and
-    constructs the QPixmap from the returned raw pixel data.
-
-    :param str path: Path to the TGA file.
-    :returns: Decoded image as a QPixmap, which may be null if decoding fails.
-    :rtype: QtGui.QPixmap
-    """
-    from sgtk.platform.qt import QtGui
-
-    try:
-        tga = publish_util.decode_tga_to_raw(path)
-        psize = tga["psize"]
-
-        if psize == 4:
-            fmt = QtGui.QImage.Format_ARGB32
-        elif psize == 3:
-            fmt = QtGui.QImage.Format_RGB888
-        else:
-            fmt = QtGui.QImage.Format_Grayscale8
-
-        img = QtGui.QImage(
-            tga["pixels"], tga["width"], tga["height"], tga["width"] * psize, fmt
-        )
-        if psize == 3:
-            img = img.rgbSwapped()  # TGA stores BGR, Qt expects RGB
-        if tga["flip_v"]:
-            img = img.mirrored(False, True)
-        if tga["flip_h"]:
-            img = img.mirrored(True, False)
-
-        return QtGui.QPixmap.fromImage(img.copy())
-    except Exception as e:
-        logger.warning("Could not decode TGA file '%s': %s" % (path, e))
-        return QtGui.QPixmap()
 
 
 def _is_qt_pixmap_usable():
@@ -551,12 +511,10 @@ class PublishItem(object):
             # Qt can't render this format directly (e.g. RLE-encoded TGA).
             # Return the original path so FPT upload still works; display
             # fallback is handled in _get_image().
-            if publish_util.is_tga_rle(path):
+            if tga_image.is_tga_rle(path):
                 return path
         except Exception as e:
             logger.warning("%r: Could not load icon '%s': %s" % (self, path, e))
-            return None
-        return
 
     @property
     def active(self):
@@ -787,8 +745,8 @@ class PublishItem(object):
             # we have a path but haven't yet created the pixmap. create it
             try:
                 pixmap = QtGui.QPixmap(get_img_path())
-                if pixmap.isNull() and publish_util.is_tga_rle(get_img_path()):
-                    pixmap = _tga_to_pixmap(get_img_path())
+                if pixmap.isNull() and tga_image.is_tga_rle(get_img_path()):
+                    pixmap = tga_image.tga_to_pixmap(get_img_path())
                 set_pixmap(pixmap)
             except Exception as e:
                 logger.warning(

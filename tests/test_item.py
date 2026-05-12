@@ -454,8 +454,11 @@ class TestQtPixmapAvailability(PublishApiTestBase):
         """
         fake_pixmap = self.QtGui.QPixmap(self.image_path)
         with patch(
-            "tk_multi_publish2.api.item.publish_util.is_tga_rle", return_value=True
-        ), patch("tk_multi_publish2.api.item._tga_to_pixmap", return_value=fake_pixmap):
+            "tk_multi_publish2.utils.tga_image.is_tga_rle", return_value=True
+        ), patch(
+            "tk_multi_publish2.utils.tga_image.tga_to_pixmap",
+            return_value=fake_pixmap,
+        ):
             item = self.PublishItem("test", "test", "test")
             item.set_thumbnail_from_path(__file__)
 
