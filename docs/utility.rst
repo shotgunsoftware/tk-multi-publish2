@@ -13,8 +13,8 @@ identification, publish display name, image sequence paths, etc.
    hook. Studios can override these path processing methods to account for their
    own naming conventions and path structures.
 
-The utilty method are documented below:
+The utility method are documented below:
 
-.. automodule:: tk_multi_publish2.util
+.. automodule:: tk_multi_publish2.utils.publish
     :members:
     :exclude-members: get_conflicting_publishes, clear_status_for_conflicting_publishes

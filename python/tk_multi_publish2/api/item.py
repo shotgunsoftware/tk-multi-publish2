@@ -746,7 +746,7 @@ class PublishItem(object):
             try:
                 pixmap = QtGui.QPixmap(get_img_path())
                 if pixmap.isNull() and tga_image.is_tga_rle(get_img_path()):
-                    pixmap = tga_image.tga_to_pixmap(get_img_path())
+                    pixmap = tga_image.tga_to_qpixmap(get_img_path())
                 set_pixmap(pixmap)
             except Exception as e:
                 logger.warning(

@@ -44,7 +44,7 @@ def is_tga_rle(path: str) -> bool:
         return False
 
 
-def tga_to_pixmap(path: str):
+def tga_to_qpixmap(path: str):
     """
     Decode a TGA file (including RLE-encoded types) into a QPixmap.
 

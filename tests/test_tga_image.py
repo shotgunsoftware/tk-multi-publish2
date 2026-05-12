@@ -1,4 +1,4 @@
-# Copyright (c) 2018 Shotgun Software Inc.
+# Copyright (c) 2026 Shotgun Software Inc.
 #
 # CONFIDENTIAL AND PROPRIETARY
 #
@@ -8,57 +8,16 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-import struct
-import tempfile
+import os
 
 from publish_api_test_base import PublishApiTestBase
 from tank_test.tank_test_base import setUpModule  # noqa
 
-_BITS_PER_BYTE = 8
-_TGA_IMG_TYPE_UNCOMPRESSED = 2
-_TGA_IMG_TYPE_RLE = 10
-_TGA_DESCRIPTOR_TOP_LEFT = 0x20
-_TGA_RLE_RAW_PACKET_HEADER = b"\x00"
-_TEST_PIXEL_VALUE = b"\x80"
-
-
-def _make_tga_file(path, img_type, width=2, height=2, bpp=24):
-    """
-    Write a minimal valid TGA file to the given path.
-
-    :param str path: Path to write the TGA file to.
-    :param int img_type: TGA image type byte (2=uncompressed, 10=RLE).
-    :param int width: Image width in pixels.
-    :param int height: Image height in pixels.
-    :param int bpp: Bits per pixel (24=RGB, 32=RGBA).
-    """
-    psize = bpp // _BITS_PER_BYTE
-    # 18-byte header: descriptor=0x20 sets top-left origin (no vertical flip)
-    header = struct.pack(
-        "<BBBHHBHHHHBB",
-        0,
-        0,
-        img_type,
-        0,
-        0,
-        0,
-        0,
-        0,
-        width,
-        height,
-        bpp,
-        _TGA_DESCRIPTOR_TOP_LEFT,
-    )
-    if img_type == _TGA_IMG_TYPE_RLE:
-        # RLE: each pixel as a raw packet (raw-packet header + BGR bytes)
-        pixel_data = (_TGA_RLE_RAW_PACKET_HEADER + _TEST_PIXEL_VALUE * psize) * (
-            width * height
-        )
-    else:
-        pixel_data = _TEST_PIXEL_VALUE * (width * height * psize)
-
-    with open(path, "wb") as f:
-        f.write(header + pixel_data)
+_FIXTURES_DIR = os.path.join(
+    os.path.dirname(__file__), "fixtures", "files", "images"
+)
+_RLE_TGA_PATH = os.path.join(_FIXTURES_DIR, "test_rle.tga")
+_UNCOMPRESSED_TGA_PATH = os.path.join(_FIXTURES_DIR, "test_uncompressed.tga")
 
 
 class TestTgaImage(PublishApiTestBase):
@@ -70,26 +29,17 @@ class TestTgaImage(PublishApiTestBase):
         uncompressed type 2.
         """
         tga_image = self.app.import_module("tk_multi_publish2").utils.tga_image
-        with tempfile.NamedTemporaryFile(
-            suffix=".tga"
-        ) as rle_path, tempfile.NamedTemporaryFile(suffix=".tga") as non_rle_path:
-            _make_tga_file(rle_path.name, img_type=_TGA_IMG_TYPE_RLE)
-            _make_tga_file(non_rle_path.name, img_type=_TGA_IMG_TYPE_UNCOMPRESSED)
-            self.assertTrue(tga_image.is_tga_rle(rle_path.name))
-            self.assertFalse(tga_image.is_tga_rle(non_rle_path.name))
+        self.assertTrue(tga_image.is_tga_rle(_RLE_TGA_PATH))
+        self.assertFalse(tga_image.is_tga_rle(_UNCOMPRESSED_TGA_PATH))
 
-    def test_tga_to_pixmap_rle(self):
+    def test_tga_to_qpixmap_rle(self):
         """
-        Ensures tga_to_pixmap correctly decodes an RLE TGA file:
-        pixel buffer has the right length and pixel values match the encoded data.
+        Ensures tga_to_qpixmap correctly decodes an RLE TGA file:
+        the returned QPixmap is non-null and has the correct dimensions.
         """
         tga_image = self.app.import_module("tk_multi_publish2").utils.tga_image
-        with tempfile.NamedTemporaryFile(suffix=".tga") as path:
-            _make_tga_file(
-                path.name, img_type=_TGA_IMG_TYPE_RLE, width=2, height=2, bpp=24
-            )
-            pixmap = tga_image.tga_to_pixmap(path.name)
-            self.assertIsNotNone(pixmap)
-            self.assertFalse(pixmap.isNull())
-            self.assertEqual(pixmap.width(), 2)
-            self.assertEqual(pixmap.height(), 2)
+        pixmap = tga_image.tga_to_qpixmap(_RLE_TGA_PATH)
+        self.assertIsNotNone(pixmap)
+        self.assertFalse(pixmap.isNull())
+        self.assertEqual(pixmap.width(), 2)
+        self.assertEqual(pixmap.height(), 2)
