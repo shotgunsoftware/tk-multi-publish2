@@ -13,9 +13,7 @@ import os
 from publish_api_test_base import PublishApiTestBase
 from tank_test.tank_test_base import setUpModule  # noqa
 
-_FIXTURES_DIR = os.path.join(
-    os.path.dirname(__file__), "fixtures", "files", "images"
-)
+_FIXTURES_DIR = os.path.join(os.path.dirname(__file__), "fixtures", "files", "images")
 _RLE_TGA_PATH = os.path.join(_FIXTURES_DIR, "test_rle.tga")
 _UNCOMPRESSED_TGA_PATH = os.path.join(_FIXTURES_DIR, "test_uncompressed.tga")
 
