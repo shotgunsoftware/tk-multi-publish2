@@ -489,8 +489,9 @@ class PublishItem(object):
 
         :param str path: Path of the image to validate.
 
-        :returns: If the image was successfully loaded, the path is returned.
-            If the image couldn't be loaded, ``None`` is returned.
+        :returns: The path if the image was loaded, or if it is an
+            RLE-encoded TGA (Qt cannot render it directly, but FPT upload
+            still works). ``None`` if the image could not be loaded.
         """
         if not path:
             return None

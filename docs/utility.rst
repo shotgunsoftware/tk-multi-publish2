@@ -13,7 +13,7 @@ identification, publish display name, image sequence paths, etc.
    hook. Studios can override these path processing methods to account for their
    own naming conventions and path structures.
 
-The utility method are documented below:
+ The utility methods are documented below:
 
 .. automodule:: tk_multi_publish2.utils.publish
     :members:
