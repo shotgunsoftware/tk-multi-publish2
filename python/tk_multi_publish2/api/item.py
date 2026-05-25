@@ -16,6 +16,7 @@ import tempfile
 
 import sgtk
 
+from ..utils import tga_image
 from .data import PublishData
 from .task import PublishTask
 
@@ -488,8 +489,9 @@ class PublishItem(object):
 
         :param str path: Path of the image to validate.
 
-        :returns: If the image was successfully loaded, the path is returned.
-            If the image couldn't be loaded, ``None`` is returned.
+        :returns: The path if the image was loaded, or if it is an
+            RLE-encoded TGA (Qt cannot render it directly, but FPT upload
+            still works). ``None`` if the image could not be loaded.
         """
         if not path:
             return None
@@ -504,11 +506,16 @@ class PublishItem(object):
 
         try:
             icon = QtGui.QPixmap(path)
+            if not icon.isNull():
+                return path
+
+            # Qt can't render this format directly (e.g. RLE-encoded TGA).
+            # Return the original path so FPT upload still works; display
+            # fallback is handled in _get_image().
+            if tga_image.is_tga_rle(path):
+                return path
         except Exception as e:
             logger.warning("%r: Could not load icon '%s': %s" % (self, path, e))
-            return None
-        else:
-            return None if icon.isNull() else path
 
     @property
     def active(self):
@@ -738,7 +745,10 @@ class PublishItem(object):
         if get_img_path() and not get_pixmap():
             # we have a path but haven't yet created the pixmap. create it
             try:
-                set_pixmap(QtGui.QPixmap(get_img_path()))
+                pixmap = QtGui.QPixmap(get_img_path())
+                if pixmap.isNull() and tga_image.is_tga_rle(get_img_path()):
+                    pixmap = tga_image.tga_to_qpixmap(get_img_path())
+                set_pixmap(pixmap)
             except Exception as e:
                 logger.warning(
                     "%r: Could not load icon '%s': %s" % (self, get_img_path(), e)
