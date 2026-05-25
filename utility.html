@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Utilities &mdash; tk-multi-publish2 v2.10.8 documentation</title>
+  <title>Utilities &mdash; tk-multi-publish2 v2.11.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -64,14 +64,14 @@
 <li class="toctree-l1"><a class="reference internal" href="api.html">Publish API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Utilities</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#tk_multi_publish2.util.get_version_path"><code class="docutils literal notranslate"><span class="pre">get_version_path()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#tk_multi_publish2.util.get_next_version_path"><code class="docutils literal notranslate"><span class="pre">get_next_version_path()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#tk_multi_publish2.util.get_file_path_components"><code class="docutils literal notranslate"><span class="pre">get_file_path_components()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#tk_multi_publish2.util.get_frame_sequence_path"><code class="docutils literal notranslate"><span class="pre">get_frame_sequence_path()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#tk_multi_publish2.util.get_frame_sequences"><code class="docutils literal notranslate"><span class="pre">get_frame_sequences()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#tk_multi_publish2.util.get_publish_name"><code class="docutils literal notranslate"><span class="pre">get_publish_name()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#tk_multi_publish2.util.get_version_number"><code class="docutils literal notranslate"><span class="pre">get_version_number()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#tk_multi_publish2.util.get_thumbnail"><code class="docutils literal notranslate"><span class="pre">get_thumbnail()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tk_multi_publish2.utils.publish.get_version_path"><code class="docutils literal notranslate"><span class="pre">get_version_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tk_multi_publish2.utils.publish.get_next_version_path"><code class="docutils literal notranslate"><span class="pre">get_next_version_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tk_multi_publish2.utils.publish.get_file_path_components"><code class="docutils literal notranslate"><span class="pre">get_file_path_components()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tk_multi_publish2.utils.publish.get_frame_sequence_path"><code class="docutils literal notranslate"><span class="pre">get_frame_sequence_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tk_multi_publish2.utils.publish.get_frame_sequences"><code class="docutils literal notranslate"><span class="pre">get_frame_sequences()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tk_multi_publish2.utils.publish.get_publish_name"><code class="docutils literal notranslate"><span class="pre">get_publish_name()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tk_multi_publish2.utils.publish.get_version_number"><code class="docutils literal notranslate"><span class="pre">get_version_number()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tk_multi_publish2.utils.publish.get_thumbnail"><code class="docutils literal notranslate"><span class="pre">get_thumbnail()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="application.html">App Interface</a></li>
@@ -96,7 +96,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.10.8.<br>
+    <b>tk-multi-publish2</b> v2.11.0.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -147,15 +147,17 @@ templates are not available. This includes version and frame number
 identification, publish display name, image sequence paths, etc.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>These utility methods are exposed via the publisher’s <code class="docutils literal notranslate"><span class="pre">util</span></code> module,
-but the implementation for most of them lives within the app’s <code class="docutils literal notranslate"><span class="pre">path_info</span></code>
+<dl class="simple">
+<dt>These utility methods are exposed via the publisher’s <code class="docutils literal notranslate"><span class="pre">util</span></code> module,</dt><dd><p>but the implementation for most of them lives within the app’s <code class="docutils literal notranslate"><span class="pre">path_info</span></code>
 hook. Studios can override these path processing methods to account for their
 own naming conventions and path structures.</p>
+</dd>
+</dl>
+<p>The utility methods are documented below:</p>
 </div>
-<p>The utilty method are documented below:</p>
-<span class="target" id="module-tk_multi_publish2.util"></span><dl class="py function">
-<dt class="sig sig-object py" id="tk_multi_publish2.util.get_version_path">
-<span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.util.</span></span><span class="sig-name descname"><span class="pre">get_version_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/util.html#get_version_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.util.get_version_path" title="Permalink to this definition"></a></dt>
+<span class="target" id="module-tk_multi_publish2.utils.publish"></span><dl class="py function">
+<dt class="sig sig-object py" id="tk_multi_publish2.utils.publish.get_version_path">
+<span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.utils.publish.</span></span><span class="sig-name descname"><span class="pre">get_version_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/utils/publish.html#get_version_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.utils.publish.get_version_path" title="Permalink to this definition"></a></dt>
 <dd><p>Given a path without a version number, return the path with the supplied
 version number.</p>
 <p>If a version number is detected in the supplied path, the path will be
@@ -174,8 +176,8 @@ returned as-is.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="tk_multi_publish2.util.get_next_version_path">
-<span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.util.</span></span><span class="sig-name descname"><span class="pre">get_next_version_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/util.html#get_next_version_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.util.get_next_version_path" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="tk_multi_publish2.utils.publish.get_next_version_path">
+<span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.utils.publish.</span></span><span class="sig-name descname"><span class="pre">get_next_version_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/utils/publish.html#get_next_version_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.utils.publish.get_next_version_path" title="Permalink to this definition"></a></dt>
 <dd><p>Given a file path, return a path to the next version.</p>
 <p>This is typically used by auto-versioning logic in plugins that need to
 save the current work file to the next version number.</p>
@@ -192,8 +194,8 @@ returned, indicating that the next version path can’t be determined.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="tk_multi_publish2.util.get_file_path_components">
-<span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.util.</span></span><span class="sig-name descname"><span class="pre">get_file_path_components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/util.html#get_file_path_components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.util.get_file_path_components" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="tk_multi_publish2.utils.publish.get_file_path_components">
+<span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.utils.publish.</span></span><span class="sig-name descname"><span class="pre">get_file_path_components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/utils/publish.html#get_file_path_components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.utils.publish.get_file_path_components" title="Permalink to this definition"></a></dt>
 <dd><p>Convenience method for determining file components for a given path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -223,8 +225,8 @@ returned, indicating that the next version path can’t be determined.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="tk_multi_publish2.util.get_frame_sequence_path">
-<span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.util.</span></span><span class="sig-name descname"><span class="pre">get_frame_sequence_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/util.html#get_frame_sequence_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.util.get_frame_sequence_path" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="tk_multi_publish2.utils.publish.get_frame_sequence_path">
+<span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.utils.publish.</span></span><span class="sig-name descname"><span class="pre">get_frame_sequence_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/utils/publish.html#get_frame_sequence_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.utils.publish.get_frame_sequence_path" title="Permalink to this definition"></a></dt>
 <dd><p>Given a path with a frame number, return the sequence path where the frame
 number is replaced with a given frame specification such as <code class="docutils literal notranslate"><span class="pre">{FRAME}</span></code> or
 <code class="docutils literal notranslate"><span class="pre">%04d</span></code> or <code class="docutils literal notranslate"><span class="pre">$F</span></code>.</p>
@@ -242,8 +244,8 @@ number is replaced with a given frame specification such as <code class="docutil
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="tk_multi_publish2.util.get_frame_sequences">
-<span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.util.</span></span><span class="sig-name descname"><span class="pre">get_frame_sequences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extensions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/util.html#get_frame_sequences"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.util.get_frame_sequences" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="tk_multi_publish2.utils.publish.get_frame_sequences">
+<span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.utils.publish.</span></span><span class="sig-name descname"><span class="pre">get_frame_sequences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extensions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/utils/publish.html#get_frame_sequences"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.utils.publish.get_frame_sequences" title="Permalink to this definition"></a></dt>
 <dd><p>Given a folder, inspect the contained files to find what appear to be
 files with frame numbers.</p>
 <dl class="field-list simple">
@@ -288,8 +290,8 @@ in the file.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="tk_multi_publish2.util.get_publish_name">
-<span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.util.</span></span><span class="sig-name descname"><span class="pre">get_publish_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/util.html#get_publish_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.util.get_publish_name" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="tk_multi_publish2.utils.publish.get_publish_name">
+<span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.utils.publish.</span></span><span class="sig-name descname"><span class="pre">get_publish_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/utils/publish.html#get_publish_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.utils.publish.get_publish_name" title="Permalink to this definition"></a></dt>
 <dd><p>Given a file path, return the display name to use for publishing.</p>
 <p>Typically, this is a name where the path and any version number are removed
 in order to keep the publish name consistent as subsequent versions are
@@ -314,8 +316,8 @@ the frame number with placeholder</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="tk_multi_publish2.util.get_version_number">
-<span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.util.</span></span><span class="sig-name descname"><span class="pre">get_version_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/util.html#get_version_number"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.util.get_version_number" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="tk_multi_publish2.utils.publish.get_version_number">
+<span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.utils.publish.</span></span><span class="sig-name descname"><span class="pre">get_version_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/utils/publish.html#get_version_number"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.utils.publish.get_version_number" title="Permalink to this definition"></a></dt>
 <dd><p>Extract a version number from the supplied path.</p>
 <p>This is used by plugins that need to know what version number to associate
 with the file when publishing.</p>
@@ -336,8 +338,8 @@ If no version found, <code class="docutils literal notranslate"><span class="pre
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="tk_multi_publish2.util.get_thumbnail">
-<span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.util.</span></span><span class="sig-name descname"><span class="pre">get_thumbnail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/util.html#get_thumbnail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.util.get_thumbnail" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="tk_multi_publish2.utils.publish.get_thumbnail">
+<span class="sig-prename descclassname"><span class="pre">tk_multi_publish2.utils.publish.</span></span><span class="sig-name descname"><span class="pre">get_thumbnail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_multi_publish2/utils/publish.html#get_thumbnail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tk_multi_publish2.utils.publish.get_thumbnail" title="Permalink to this definition"></a></dt>
 <dd><p>Given a path and context, attempt to automatically generate a thumbnail.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

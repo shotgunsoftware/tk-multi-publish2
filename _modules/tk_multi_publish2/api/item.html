@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>tk_multi_publish2.api.item &mdash; tk-multi-publish2 v2.10.8 documentation</title>
+  <title>tk_multi_publish2.api.item &mdash; tk-multi-publish2 v2.11.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
@@ -83,7 +83,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.10.8.<br>
+    <b>tk-multi-publish2</b> v2.11.0.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -145,6 +145,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">sgtk</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">tga_image</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">PublishData</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.task</span><span class="w"> </span><span class="kn">import</span> <span class="n">PublishTask</span>
 
@@ -617,8 +618,9 @@
 
 <span class="sd">        :param str path: Path of the image to validate.</span>
 
-<span class="sd">        :returns: If the image was successfully loaded, the path is returned.</span>
-<span class="sd">            If the image couldn&#39;t be loaded, ``None`` is returned.</span>
+<span class="sd">        :returns: The path if the image was loaded, or if it is an</span>
+<span class="sd">            RLE-encoded TGA (Qt cannot render it directly, but FPT upload</span>
+<span class="sd">            still works). ``None`` if the image could not be loaded.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -633,11 +635,16 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">icon</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">icon</span><span class="o">.</span><span class="n">isNull</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">path</span>
+
+            <span class="c1"># Qt can&#39;t render this format directly (e.g. RLE-encoded TGA).</span>
+            <span class="c1"># Return the original path so FPT upload still works; display</span>
+            <span class="c1"># fallback is handled in _get_image().</span>
+            <span class="k">if</span> <span class="n">tga_image</span><span class="o">.</span><span class="n">is_tga_rle</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">path</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%r</span><span class="s2">: Could not load icon &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-            <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">icon</span><span class="o">.</span><span class="n">isNull</span><span class="p">()</span> <span class="k">else</span> <span class="n">path</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">active</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -867,7 +874,10 @@
         <span class="k">if</span> <span class="n">get_img_path</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">get_pixmap</span><span class="p">():</span>
             <span class="c1"># we have a path but haven&#39;t yet created the pixmap. create it</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">set_pixmap</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span><span class="p">(</span><span class="n">get_img_path</span><span class="p">()))</span>
+                <span class="n">pixmap</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span><span class="p">(</span><span class="n">get_img_path</span><span class="p">())</span>
+                <span class="k">if</span> <span class="n">pixmap</span><span class="o">.</span><span class="n">isNull</span><span class="p">()</span> <span class="ow">and</span> <span class="n">tga_image</span><span class="o">.</span><span class="n">is_tga_rle</span><span class="p">(</span><span class="n">get_img_path</span><span class="p">()):</span>
+                    <span class="n">pixmap</span> <span class="o">=</span> <span class="n">tga_image</span><span class="o">.</span><span class="n">tga_to_qpixmap</span><span class="p">(</span><span class="n">get_img_path</span><span class="p">())</span>
+                <span class="n">set_pixmap</span><span class="p">(</span><span class="n">pixmap</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="s2">&quot;</span><span class="si">%r</span><span class="s2">: Could not load icon &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get_img_path</span><span class="p">(),</span> <span class="n">e</span><span class="p">)</span>
