@@ -11,6 +11,7 @@
 
 import sgtk
 import logging
+import uuid
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -93,7 +94,13 @@ class PublishLogWrapper(object):
         self._bundle = sgtk.platform.current_bundle()
 
         # set up a logger
-        full_log_path = "%s.hook" % self._bundle.logger.name
+        # Use a unique suffix per instance so that simultaneously open
+        # publisher dialogs do not share the same Logger object (and
+        # therefore each other's handlers). logging.getLogger(name) is
+        # cached by name, so a shared name would cause cross-talk
+        # between progress widgets.
+        unique_id = uuid.uuid4().hex
+        full_log_path = "%s.hook.%s" % (self._bundle.logger.name, unique_id)
 
         self._logger = logging.getLogger(full_log_path)
 
