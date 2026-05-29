@@ -18,9 +18,12 @@ HookBaseClass = sgtk.get_hook_baseclass()
 
 class FlowPublishPlugin(HookBaseClass):
     """
-    Taken from https://github.com/shotgunsoftware/tk-multi-publish2/blob/master/hooks/publish_file.py
+    Base publish plugin for Flow Asset Management integration.
 
-    Documentation: https://developers.shotgridsoftware.com/tk-multi-publish2/customizing.html#publish-plugin
+    Originally derived from ``hooks/publish_file.py`` and adapted to
+    call the Flow AM SDK instead of creating an FPT ``PublishedFile`` entity.
+    Child classes (DCC, desktop) implement ``_publish_to_flow`` for their
+    specific publish workflows.
     """
 
     DRAFT_VERSION_IDENTIFIER = -1
@@ -141,7 +144,7 @@ class FlowPublishPlugin(HookBaseClass):
     def publish(self, settings, item):
         """Publish the item to Flow AM."""
         try:
-            pub_info = self._publish_to_flow(settings, item)
+            pub_info = self._publish_to_flow(item)
 
             # Check if user cancelled (child process return None)
             if pub_info is None:
@@ -202,7 +205,7 @@ class FlowPublishPlugin(HookBaseClass):
     ############################################################################
     # protected methods
 
-    def _publish_to_flow(self, settings, item):
+    def _publish_to_flow(self, item):
         """
         Publish the given item to the Flow AM platform.
         To be implemented in a child class (DCC, desktop, etc)

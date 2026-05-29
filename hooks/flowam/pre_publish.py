@@ -9,6 +9,8 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 from __future__ import annotations  # needed for Houdini 19.5 support
 
+from types import ModuleType
+
 import sgtk
 from sgtk.platform.qt import QtGui
 
@@ -22,7 +24,7 @@ class PrePublishHook(HookBaseClass):
     the user to proceed to publishing.
     """
 
-    def _get_flow_module(self):
+    def _get_flow_module(self) -> ModuleType:
         """
         Load the Flow AM framework and return the flow module.
         Caches the module as a member variable to avoid repeated framework loading.
@@ -34,7 +36,7 @@ class PrePublishHook(HookBaseClass):
             self._flow_module = flow_am_fw.import_module("flow")
         return self._flow_module
 
-    def _get_draft_id(self):
+    def _get_draft_id(self) -> str | None:
         """
         Get the current draft ID from the Flow AM context.
 
