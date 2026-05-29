@@ -17,13 +17,13 @@ HookBaseClass = sgtk.get_hook_baseclass()
 
 class FlowDccPublishPlugin(HookBaseClass):
     """
-    Publish plugin for Flow AM integration.
+    DCC-specific publish plugin for Flow AM integration. Must be used together
+    with ``hooks/flowam/publish_to_flow.py`` in the hook chain::
 
-    This publish plugin class should inherit from `publish_to_flow.FlowPublishPlugin`.
+        hook: "{self}/publish_file.py:{self}/flowam/publish_to_flow.py:{self}/flowam/publish_to_flow_dcc.py"
 
-    It extends the base functionality to include Flow AM specific logic for
-    validating the context, publishing items, and updating publish proxies when executing
-    on a DCC like Maya or Houdini.
+    Extends ``publish_to_flow.FlowPublishPlugin`` with DCC-specific logic:
+    draft validation and ``publish_dcc_draft`` via the Flow AM SDK.
     """
 
     def validate(self, settings, item):
@@ -55,7 +55,7 @@ class FlowDccPublishPlugin(HookBaseClass):
 
         return True
 
-    def _publish_to_flow(self, settings, item):
+    def _publish_to_flow(self, item):
         # Step 1: Prepare. Add the Flow AM specific data
         flow_args = self._get_flow_args(item)
         flow_args["am_draft_id"] = self.draft_id

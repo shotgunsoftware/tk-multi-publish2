@@ -17,9 +17,13 @@ HookBaseClass = sgtk.get_hook_baseclass()
 
 class FlowPublishAlembicDerivativePlugin(HookBaseClass):
     """
-    Taken from https://github.com/shotgunsoftware/tk-multi-publish2/blob/master/hooks/publish_file.py
+    Publish plugin that registers an Alembic derivative against the
+    Flow AM revision created by the main publish plugin earlier in the
+    chain.
 
-    Documentation: https://developers.shotgridsoftware.com/tk-multi-publish2/customizing.html#publish-plugin
+    Originally derived from ``hooks/publish_file.py`` and adapted to
+    call ``flow_module.asset_management.generate_derivative`` instead
+    of creating an FPT ``PublishedFile`` entity.
     """
 
     PUBLISH_TYPE = "Alembic"
@@ -34,7 +38,7 @@ class FlowPublishAlembicDerivativePlugin(HookBaseClass):
         """
 
         # look for icon one level up from this hook's folder in "icons" folder
-        return os.path.join(self.disk_location, "icons", "alembic.png")
+        return os.path.join(self.disk_location, "..", "icons", "alembic.png")
 
     @property
     def name(self):
@@ -131,4 +135,10 @@ class FlowPublishAlembicDerivativePlugin(HookBaseClass):
             raise
 
     def finalize(self, settings, item):
+        """
+        No-op override. Flow AM derivatives go through the Flow AM SDK,
+        not the FPT PublishedFile API, so the inherited
+        ``publish_file.py.finalize`` (which reads
+        ``item.properties.sg_publish_data``) must be suppressed.
+        """
         pass
