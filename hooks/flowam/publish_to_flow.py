@@ -16,35 +16,38 @@ import sgtk
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
-class FlowPublishPlugin(HookBaseClass):
+class DccFlowPublishPlugin(HookBaseClass):
     """
-    Base publish plugin for Flow Asset Management integration.
+    Self-contained DCC publish plugin for Flow Asset Management integration.
 
-    Originally derived from ``hooks/publish_file.py`` and adapted to
-    call the Flow AM SDK instead of creating an FPT ``PublishedFile`` entity.
-    Child classes (DCC, desktop) implement ``_publish_to_flow`` for their
-    specific publish workflows.
+    Subclasses ``publish_file.py`` directly via the hook chain::
+
+        hook: "{self}/publish_file.py:{self}/flowam/publish_to_flow.py:{engine}/tk-multi-publish2/basic/publish_session.py"
+
+    Handles the full DCC publish workflow: framework loading, project
+    validation, draft validation, conflict checking, and publishing via
+    ``publish_dcc_draft`` in the Flow AM SDK.
+
+    The desktop counterpart lives in
+    ``tk-desktop/hooks/tk-multi-publish2/flowam/publish_to_flow.py``
+    (``DesktopFlowPublishPlugin``). Shared logic (properties, ``publish``,
+    ``finalize``, ``get_publish_user``) is duplicated between the two so
+    each plugin can evolve independently across separate release cycles.
+    When updating shared logic, apply the change to both files.
     """
-
-    DRAFT_VERSION_IDENTIFIER = -1
 
     def __init__(self, *args, **kwargs):
         """Initialize the plugin."""
         super().__init__(*args, **kwargs)
-        # Initialize attributes used by child classes
         self.draft_id = None
         self.flow_module = None
+        self.sg_flow_am_id = None
 
     ############################################################################
     # standard publish plugin properties
 
     @property
     def icon(self):
-        """
-        Path to an png icon on disk
-        """
-
-        # look for icon one level up from this hook's folder in "icons" folder
         return os.path.join(self.disk_location, "icons", "flow.png")
 
     @property
@@ -86,7 +89,6 @@ class FlowPublishPlugin(HookBaseClass):
         interest to this plugin. Only items matching the filters defined via the
         item_filters property will be presented to this method.
         """
-
         path = item.get_property("path")
         if path is None:
             raise AttributeError("'PublishData' object has no attribute 'path'")
@@ -101,9 +103,9 @@ class FlowPublishPlugin(HookBaseClass):
 
     def validate(self, settings, item):
         """
-        Common validation for all Flow AM publish plugins.
-        Validates project configuration and AM project ID.
-        Child classes should override this to add specific validations (e.g., draft validation for DCC).
+        Validates project configuration, AM project ID, open draft, and asset
+        conflicts. Combines base project validation with DCC-specific draft
+        validation - no super() call needed.
         """
         # FlowAM framework import
         # TODO: We have an issue on FPTR desktop where the `adsk` cannot be found
@@ -127,16 +129,30 @@ class FlowPublishPlugin(HookBaseClass):
             )
             return False
 
-        # We need to validate the project ID against the collection ID we added on initialisation
         self.logger.info("Validating AM Project ID")
         am = self.flow_module.asset_management
         project_valid, project_err = am.validate_project(self.sg_flow_am_id)
-
-        # If the project is not valid, we cannot proceed
         if not project_valid:
             self.logger.error(
                 f"No Flow project associated with current SG project: {project_err}"
             )
+            return False
+
+        # DCC publishing requires a draft to be opened
+        self.draft_id = am.FlowContext.draft_id
+        if not self.draft_id:
+            self.logger.error(
+                "No draft associated with the current context. "
+                "Please make sure you have a draft opened."
+            )
+            return False
+
+        self.logger.debug(f"Using AM draft_id: {self.draft_id}")
+
+        # Ensure parent has no other children of the same dcc workfile type
+        has_conflict, conflict_err = am.has_asset_conflict(self.draft_id)
+        if has_conflict:
+            self.logger.error(f"Asset conflict detected: {conflict_err}")
             return False
 
         return True
@@ -207,14 +223,28 @@ class FlowPublishPlugin(HookBaseClass):
 
     def _publish_to_flow(self, item):
         """
-        Publish the given item to the Flow AM platform.
-        To be implemented in a child class (DCC, desktop, etc)
+        Performs the DCC publish by calling ``publish_dcc_draft`` in the Flow
+        AM SDK. Uses ``self.draft_id`` set during ``validate()``.
         """
-        pass
-
-    def _get_flow_args(self, item) -> dict:
-        sg_flow_thumbnail_path = item.get_thumbnail_as_path()
-        return dict(
-            thumbnail_path=sg_flow_thumbnail_path,
+        flow_args = dict(
             comment=item.description or "",
+            thumbnail_path=item.get_thumbnail_as_path(),
         )
+        flow_args["am_draft_id"] = self.draft_id
+        publish_inputs = self.flow_module.asset_management.PublishInputs(**flow_args)
+
+        self.logger.debug(
+            "Data for FlowAM is ready:",
+            extra={
+                "action_show_more_info": {
+                    "label": "See contents",
+                    "text": "<pre>" f"{pprint.pformat(flow_args)}\n" "</pre>",
+                }
+            },
+        )
+
+        # Note: No try-except here. If this fails, the exception propagates to
+        # publish() which handles error logging.
+        pub_info = self.flow_module.asset_management.publish_dcc_draft(publish_inputs)
+
+        return pub_info
