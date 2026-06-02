@@ -93,14 +93,13 @@ class PublishLogWrapper(object):
 
         self._bundle = sgtk.platform.current_bundle()
 
-        # set up a logger
-        # Use a unique suffix per instance so that simultaneously open
-        # publisher dialogs do not share the same Logger object (and
-        # therefore each other's handlers). logging.getLogger(name) is
-        # cached by name, so a shared name would cause cross-talk
-        # between progress widgets.
+        # Insert a unique id before the "hook" suffix to give each dialog
+        # its own Logger (logging.getLogger caches by name, so a shared name
+        # would cross-talk handlers). "hook" must stay the trailing segment
+        # because the formatter renders it as record.basename, e.g.
+        # "[INFO hook] One item discovered by publisher.".
         unique_id = uuid.uuid4().hex
-        full_log_path = "%s.hook.%s" % (self._bundle.logger.name, unique_id)
+        full_log_path = "%s.%s.hook" % (self._bundle.logger.name, unique_id)
 
         self._logger = logging.getLogger(full_log_path)
 
