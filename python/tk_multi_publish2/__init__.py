@@ -17,11 +17,23 @@ from . import publish_tree_widget  # noqa
 from .utils import publish as util  # noqa
 
 
-def show_dialog(app, single_file_mode=False):  # pragma: no cover
+def show_dialog(  # pragma: no cover
+    app,
+    context=None,
+    root_item_properties=None,
+    single_file_mode=False,
+):
     """
     Show the main dialog ui
 
     :param app: The parent App
+    :param context: Optional sgtk.Context to use for this dialog. When set,
+        the dialog is pinned to this context instead of the current engine
+        context. Useful for callers (e.g. Loader) that cannot call
+        engine.change_context() before opening the dialog.
+    :param root_item_properties: Optional dict of properties to pre-seed on
+        the root publish item before collection runs (e.g.
+        ``{"am_revision_id": "123"}``).
     :param single_file_mode: If True, restrict publisher to accepting only a single file.
     """
     # defer imports so that the app works gracefully in batch modes
@@ -30,14 +42,26 @@ def show_dialog(app, single_file_mode=False):  # pragma: no cover
     display_name = sgtk.platform.current_bundle().get_setting("display_name")
 
     if app.pre_publish_hook.validate():
-        # start ui
+        # pass context and root_item_properties as kwargs so they reach
+        # AppDialog.__init__ without colliding with the parent QWidget arg
+        # that the engine manages separately via _get_dialog_parent()
         if app.modal:
             app.engine.show_modal(
-                display_name, app, AppDialog, single_file_mode=single_file_mode
+                display_name,
+                app,
+                AppDialog,
+                context=context,
+                root_item_properties=root_item_properties,
+                single_file_mode=single_file_mode,
             )
         else:
             app.engine.show_dialog(
-                display_name, app, AppDialog, single_file_mode=single_file_mode
+                display_name,
+                app,
+                AppDialog,
+                context=context,
+                root_item_properties=root_item_properties,
+                single_file_mode=single_file_mode,
             )
     else:
         app.logger.debug(

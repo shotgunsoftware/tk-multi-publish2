@@ -25,11 +25,12 @@ class PublishManager(object):
 
     __slots__ = [
         "_bundle",
-        "_logger",
-        "_tree",
         "_collector_instance",
-        "_processed_contexts",
+        "_logger",
         "_post_phase_hook",
+        "_pre_fill_context",
+        "_processed_contexts",
+        "_tree",
     ]
 
     ############################################################################
@@ -52,7 +53,9 @@ class PublishManager(object):
     ############################################################################
     # instance methods
 
-    def __init__(self, publish_logger=None):
+    def __init__(
+        self, publish_logger=None, context=None, root_item_properties=None
+    ):
         """
         Initialize the manager.
 
@@ -60,6 +63,13 @@ class PublishManager(object):
             publishing. A default logger will be provided if not supplied. This
             can be useful when implementing a custom UI, for example, with a
             specialized log handler (as is the case with the Publisher)
+        :param context: Optional sgtk.Context to snapshot onto the root item.
+            When set, item context resolution stops at the root and never falls
+            back to the process-wide engine singleton - isolating this dialog
+            from concurrent context changes.
+        :param root_item_properties: Optional dict of properties to pre-seed
+            on the root item before collection runs (e.g.
+            ``{"am_revision_id": "123"}``).
         """
 
         # the current bundle (the publisher instance)
@@ -70,6 +80,20 @@ class PublishManager(object):
 
         # the underlying tree representation of the items to publish
         self._tree = PublishTree()
+
+        if context is not None and context != self._bundle.context:
+            # Caller supplied a context that differs from the engine's own context
+            # (e.g. Loader passing a Task context into a project-level engine).
+            # Store this context separately and apply it to top-level items after collection
+            self._pre_fill_context = context
+        else:
+            # Caller passed the same context as the engine. Snapshot onto root_item 
+            # to isolate this dialog from concurrent engine.change_context() calls
+            self._tree.root_item._context = context
+            self._pre_fill_context = None
+            
+        if root_item_properties:
+            self._tree.root_item.properties.update(root_item_properties)
 
         # collector instance for this context
         self._collector_instance = None
@@ -388,6 +412,39 @@ class PublishManager(object):
     def context(self):
         """Returns the execution context of the manager."""
         return self._bundle.context
+    
+    @property
+    def pre_fill_context(self):
+        """Returns the pre-fill context if one was supplied by the caller."""
+        return self._pre_fill_context
+
+    def apply_pre_fill_context(self):
+        """Apply pre-fill context to top-level items after collection.
+
+        Only applied when the caller passed a context that differs from
+        bundle.context (e.g. Loader passing a Task context into a
+        project-level engine). When the engine is already in task context,
+        items inherit it via the fallback chain and no pre-fill is needed.
+        Skips items where the collector already set an explicit context.
+        """
+        if self._pre_fill_context:
+            for item in self._tree.root_item.children:
+                if item._context is None:
+                    item._context = self._pre_fill_context
+
+    def apply_context_lock_gate(self):
+        """Lock context widget for items whose context is fully resolved.
+
+        Only applied when engine already in task context. When the caller 
+        passed a different context, the context is a suggestion and the 
+        user should still be able to change it.
+        """
+        if self._pre_fill_context is not None:
+            return
+        for item in self._tree.root_item.children:
+            ctx = item.context
+            if ctx and ctx.entity and ctx.task:
+                item.context_change_allowed = False
 
     @property
     def logger(self):
