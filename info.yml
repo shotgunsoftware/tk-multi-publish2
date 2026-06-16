@@ -144,6 +144,7 @@ description: "Provides UI and functionality to publish files to Flow Production 
 requires_shotgun_version:
 requires_core_version: "v0.19.4"
 requires_engine_version:
+minimum_python_version: "3.9"
 
 # this app works in all engines - it does not contain
 # any host application specific commands
