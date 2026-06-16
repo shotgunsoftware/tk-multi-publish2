@@ -11,6 +11,7 @@
 
 import sgtk
 import logging
+import uuid
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -92,8 +93,13 @@ class PublishLogWrapper(object):
 
         self._bundle = sgtk.platform.current_bundle()
 
-        # set up a logger
-        full_log_path = "%s.hook" % self._bundle.logger.name
+        # Insert a unique id before the "hook" suffix to give each dialog
+        # its own Logger (logging.getLogger caches by name, so a shared name
+        # would cross-talk handlers). "hook" must stay the trailing segment
+        # because the formatter renders it as record.basename, e.g.
+        # "[INFO hook] One item discovered by publisher.".
+        unique_id = uuid.uuid4().hex
+        full_log_path = "%s.%s.hook" % (self._bundle.logger.name, unique_id)
 
         self._logger = logging.getLogger(full_log_path)
 
