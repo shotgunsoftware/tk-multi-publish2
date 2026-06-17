@@ -106,3 +106,4 @@ for publish workflow building and customization.
     logging
     utility
     application
+    hooks
