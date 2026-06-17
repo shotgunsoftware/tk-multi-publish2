@@ -11,14 +11,7 @@
 
 import sgtk
 import copy
-import sys
-
-if sys.version_info.major < 3 or (
-    sys.version_info.major == 3 and sys.version_info.minor < 3
-):
-    from collections import MutableMapping
-else:
-    from collections.abc import MutableMapping
+from collections.abc import MutableMapping
 
 logger = sgtk.platform.get_logger(__name__)
 
