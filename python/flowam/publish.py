@@ -29,12 +29,16 @@ from tank_vendor.flow_integration_sdk.exceptions import (
     PublishConflictError,
 )
 from tank_vendor.flow_integration_sdk.globals import DER_SOURCE_COMP
-from tank_vendor.flow_integration_sdk.objects import FlowAsset, FlowRevision, FlowVersion
+from tank_vendor.flow_integration_sdk.objects import (
+    FlowAsset,
+    FlowProject,
+    FlowRevision,
+    FlowVersion,
+)
 from tank_vendor.flow_integration_sdk.publish import (
     DerivativeSourceComponentSpec,
     publish_new_asset,
     publish_new_revision,
-    TypeComponentSpec,
 )
 from tank_vendor.flow_integration_sdk.sandbox import (
     CheckoutDraftInfo,
@@ -45,7 +49,7 @@ from tank_vendor.flow_integration_sdk.sandbox import (
 )
 from tank_vendor.flow_integration_sdk.schema import get_schema_id
 from tank_vendor.flow_integration_sdk.storage import get_storage_key, get_storage_root, FLOW_STORAGE_ROOT
-from tank_vendor.flow_integration_sdk.utils import get_logger, trace
+from tank_vendor.flow_integration_sdk.utils import cleanpath, get_logger, trace
 
 from tank.flowam.create import create_asset_hierarchy, ensure_unique_name
 from tank.flowam.open import checkout_revision, open_draft
@@ -155,6 +159,19 @@ def publish_dcc_draft(inputs: PublishInputs) -> PublishInfo | None:
     # Get unique list of versions "used" by current asset - i.e. version ids
     # of all internal dependencies found
     used_versions = list(set([dep.version_id for dep in int_deps]))
+
+    # Ensure draft name is unique under its parent
+    if draft_info.draft_type == "new":
+        parent_id = draft_info.parent_id
+        if FlowAsset.is_asset_id(parent_id):
+            draft_parent = FlowAsset(parent_id)
+        else:
+            draft_parent = FlowProject(parent_id)
+        draft_name = ensure_unique_name(draft_info.name, draft_parent)
+        if draft_name != draft_info.name:
+            draft_info.name = draft_name
+            draft_info_path = cleanpath(get_draft_folder(draft_id), ".draft")
+            draft_info.write_file(draft_info_path)
 
     # Do publish
     try:
