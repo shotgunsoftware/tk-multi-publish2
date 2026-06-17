@@ -186,7 +186,30 @@ class BasicSceneCollector(HookBaseClass):
         """
 
         # default implementation does not do anything
-        pass
+
+        # -- Flow AM: capture revision id from env var for Desktop publish
+        if not self._flowam_active_for_desktop():
+            return
+        parent_item.context = self.parent.context
+        task = parent_item.context.task
+        if task:
+            env_var = f"TK_FLOWAM_REVISION_ID_{task['id']}"
+        else:
+            project = parent_item.context.project
+            env_var = (
+                f"TK_FLOWAM_REVISION_ID_PROJECT_{project['id']}"
+                if project
+                else None
+            )
+        if env_var and env_var in os.environ:
+            revision_id = os.environ.pop(env_var)
+            parent_item.properties["am_revision_id"] = revision_id
+            context_type = "task" if task else "project"
+            context_id = task["id"] if task else project["id"]
+            self.logger.debug(
+                f"Captured revision_id {revision_id} for {context_type} {context_id} "
+                f"from env var {env_var}"
+            )
 
     def process_file(self, settings, parent_item, path):
         """
@@ -207,6 +230,40 @@ class BasicSceneCollector(HookBaseClass):
             publish_templates = publish_templates_setting.value
 
         # handle files and folders differently
+
+        # -- Flow AM: block DCC files from being published via Desktop
+        if self._flowam_active_for_desktop():
+            file_info = self.parent.util.get_file_path_components(path)
+            extension = file_info["extension"]
+            if extension in self.parent.flowam.constants.FLOWAM_DCC_EXTENSIONS:
+                # Get the file type display name
+                file_type = "Unknown"
+                for display_name, type_info in self.common_file_info.items():
+                    if extension in type_info["extensions"]:
+                        file_type = display_name
+                        break
+                self.logger.error(
+                    "Cannot publish {file_type} files from Desktop. "
+                    "Please publish from within the application instead.".format(
+                        file_type=file_type
+                    ),
+                    extra={
+                        "action_show_more_info": {
+                            "label": "Learn More",
+                            "text": (
+                                "<b>DCC files must be published from within their application.</b><br><br>"
+                                "Files like Maya scenes (.ma, .mb), Nuke scripts (.nk, .nkple), Houdini scenes "
+                                "(.hip, .hipnc, .hiplc), 3ds Max scenes (.max), Photoshop images (.psd, .psb), "
+                                "and other DCC-specific formats contain application-specific data that requires "
+                                "the DCC to be open for proper publishing.<br><br>"
+                                "The Desktop Publisher is designed for publishing rendered images, textures, "
+                                "Alembic caches, and other standalone files."
+                            ),
+                        }
+                    },
+                )
+                return None
+
         if os.path.isdir(path):
             file_items = self._collect_folder(parent_item, path)
             for file_item in file_items:
@@ -510,3 +567,14 @@ class BasicSceneCollector(HookBaseClass):
             self._image_extensions = list(image_extensions)
 
         return self._image_extensions
+
+    ############################################################################
+    # Flow AM helpers
+
+    def _flowam_active_for_desktop(self):
+        """Return True only when current engine is Desktop AND the app
+        context is a Flow project."""
+        if self.parent.context.flow_project_id is None:
+            return False
+        engine = sgtk.platform.current_engine()
+        return engine is not None and engine.name == "tk-desktop"

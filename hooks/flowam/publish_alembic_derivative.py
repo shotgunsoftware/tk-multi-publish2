@@ -11,6 +11,10 @@
 import os
 
 import sgtk
+from tank_vendor.flow_integration_sdk.exceptions import FlowError
+from tank_vendor.flow_integration_sdk.objects import FlowAsset
+from tank_vendor.flow_integration_sdk.schema import get_schema_id
+from tank_vendor.flow_integration_sdk.storage import storage_key_to_asset_id
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -65,21 +69,19 @@ class FlowPublishAlembicDerivativePlugin(HookBaseClass):
         if settings.get("Publish Template").value:
             item.context_change_allowed = False
 
-        flow_am_fw = self.load_framework("tk-framework-flowam_v1.x.x")
-        flow_module = flow_am_fw.import_module("flow")
-        draft_id = flow_module.asset_management.FlowContext.draft_id
+        draft_id = item.context.flow_draft_id
 
         # Check if this is a template asset via AM type system
         accepted = True
         if draft_id:
             try:
-                asset_id = flow_module.data.Asset.storage_key_to_asset_id(draft_id)
-                asset = flow_module.data.Asset(asset_id)
-                template_type_id = flow_module.schema.get_schema_id("type.template")
+                asset_id = storage_key_to_asset_id(draft_id)
+                asset = FlowAsset(asset_id)
+                template_type_id = get_schema_id("type.template")
                 # Templates have template_type_id in their type_ids
                 if template_type_id in asset.type_ids:
                     accepted = False  # Skip derivatives for templates
-            except flow_module.FlowError as e:
+            except FlowError as e:
                 self.logger.debug(
                     f"This draft template has not been published yet. {e}"
                 )
@@ -94,9 +96,6 @@ class FlowPublishAlembicDerivativePlugin(HookBaseClass):
         return True
 
     def publish(self, settings, item):
-        flow_am_fw = self.load_framework("tk-framework-flowam_v1.x.x")
-        flow_module = flow_am_fw.import_module("flow")
-
         # Get source revision from the main publish plugin's result
         pub_info = item.properties.get("am_publish_info")
         if not pub_info:
@@ -109,13 +108,13 @@ class FlowPublishAlembicDerivativePlugin(HookBaseClass):
             )
 
         try:
-            inputs = flow_module.asset_management.CreateDerivativeInputs(
+            inputs = self.parent.flowam.CreateDerivativeInputs(
                 source_revision_id=pub_info.revision_id,
-                derivative_type=flow_module.asset_management.DerivativeType.ALEMBIC,
+                derivative_type=self.parent.flowam.constants.DerivativeType.ALEMBIC,
                 description=item.description,
                 thumbnail_path=item.get_thumbnail_as_path(),
             )
-            derivative_pub_info = flow_module.asset_management.generate_derivative(
+            derivative_pub_info = self.parent.flowam.generate_derivative(
                 inputs
             )
             self.logger.info("Generate derivative in Flow AM successful")
