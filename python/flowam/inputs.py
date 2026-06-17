@@ -14,7 +14,10 @@ from tank_vendor.flow_integration_sdk.exceptions import (
     PublishAssetError,
 )
 
-from .constants import CreateMode, DerivativeType  # noqa: F401 (re-exported for callers)
+from .constants import (
+    CreateMode,
+    DerivativeType,
+)  # noqa: F401 (re-exported for callers)
 
 
 @dataclass
@@ -122,9 +125,7 @@ class PublishInputs(BaseInputs):
             PublishAssetError
         """
         if not self.am_draft_id:
-            raise PublishAssetError(
-                data=self.asdict(), details="No draft id provided."
-            )
+            raise PublishAssetError(data=self.asdict(), details="No draft id provided.")
 
 
 @dataclass
@@ -143,9 +144,7 @@ class GenericPublishInputs(PublishInputs):
             PublishAssetError
         """
         if not self.am_asset_id:
-            raise PublishAssetError(
-                data=self.asdict(), details="No asset id provided."
-            )
+            raise PublishAssetError(data=self.asdict(), details="No asset id provided.")
         if not self.source_path:
             raise PublishAssetError(
                 data=self.asdict(), details="No source path provided."

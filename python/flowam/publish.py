@@ -48,7 +48,11 @@ from tank_vendor.flow_integration_sdk.sandbox import (
     read_draft_info,
 )
 from tank_vendor.flow_integration_sdk.schema import get_schema_id
-from tank_vendor.flow_integration_sdk.storage import get_storage_key, get_storage_root, FLOW_STORAGE_ROOT
+from tank_vendor.flow_integration_sdk.storage import (
+    get_storage_key,
+    get_storage_root,
+    FLOW_STORAGE_ROOT,
+)
 from tank_vendor.flow_integration_sdk.utils import cleanpath, get_logger, trace
 
 from tank.flowam.create import create_asset_hierarchy, ensure_unique_name
@@ -438,17 +442,17 @@ def generate_derivative(inputs: CreateDerivativeInputs) -> PublishInfo:
                 msg = 'Could not retrieve parent of source asset "{src_asset.name}".'
                 raise GenerateDerivativeError(data=asdict(inputs), details=msg) from exc
             medm_asset = publish_new_asset(
-                    name=ensure_unique_name(der_name, parent),
-                    parent_id=parent.id,
-                    description=inputs.description,
-                    components=components,
-                )
+                name=ensure_unique_name(der_name, parent),
+                parent_id=parent.id,
+                description=inputs.description,
+                components=components,
+            )
             der_asset = FlowAsset(medm_asset)
 
         # NOTE: For now continue to return revision info to caller.
         #       This allows toolkit side implementation to remain largely
         #       the same until we are ready to remove PublishedFile proxies.
-        #       This is ok because we expect each revision to be a new version.  
+        #       This is ok because we expect each revision to be a new version.
         publish_info = PublishInfo(
             asset_name=der_asset.name,
             revision_id=der_asset.revision_id,
@@ -469,7 +473,9 @@ def generate_derivative(inputs: CreateDerivativeInputs) -> PublishInfo:
 
 
 @trace
-def _create_generic_workfile_asset(parent: FlowAsset, inputs: CreateGenericInputs) -> FlowAsset:
+def _create_generic_workfile_asset(
+    parent: FlowAsset, inputs: CreateGenericInputs
+) -> FlowAsset:
     """Called when creating a new generic workfile asset.
     This function will create the workfile asset in sandbox under the given parent.
 
@@ -517,8 +523,8 @@ def _create_generic_workfile_asset(parent: FlowAsset, inputs: CreateGenericInput
 
     # Generate components
     components = create_components_for_publish(
-        source_paths, 
-        thumbnail_path, 
+        source_paths,
+        thumbnail_path,
         comment=inputs.comment,
         type_ids=[type_id],
     )
@@ -528,10 +534,10 @@ def _create_generic_workfile_asset(parent: FlowAsset, inputs: CreateGenericInput
         f'Creating a workfile asset of type "{workfile_type}" under parent "{parent.name}" in sandbox...'
     )
     medm_asset = publish_new_asset(
-            name=ensure_unique_name(name, parent),
-            parent_id=parent.id,
-            description=inputs.description,
-            components=components,
+        name=ensure_unique_name(name, parent),
+        parent_id=parent.id,
+        description=inputs.description,
+        components=components,
     )
     asset = FlowAsset(medm_asset)
     return asset
@@ -629,7 +635,7 @@ def _handle_publish_conflict(host, draft_id: str, exc: PublishConflictError) -> 
         True to continue publish, and False to abort publish.
     """
     logger = get_logger(__name__)
-    
+
     asset = FlowAsset(exc.asset)
     options = [
         "Cancel",

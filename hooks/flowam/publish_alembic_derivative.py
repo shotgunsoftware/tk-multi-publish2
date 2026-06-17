@@ -114,9 +114,7 @@ class FlowPublishAlembicDerivativePlugin(HookBaseClass):
                 description=item.description,
                 thumbnail_path=item.get_thumbnail_as_path(),
             )
-            derivative_pub_info = self.parent.flowam.generate_derivative(
-                inputs
-            )
+            derivative_pub_info = self.parent.flowam.generate_derivative(inputs)
             self.logger.info("Generate derivative in Flow AM successful")
 
             # Store derivative publish info

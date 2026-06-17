@@ -197,9 +197,7 @@ class BasicSceneCollector(HookBaseClass):
         else:
             project = parent_item.context.project
             env_var = (
-                f"TK_FLOWAM_REVISION_ID_PROJECT_{project['id']}"
-                if project
-                else None
+                f"TK_FLOWAM_REVISION_ID_PROJECT_{project['id']}" if project else None
             )
         if env_var and env_var in os.environ:
             revision_id = os.environ.pop(env_var)

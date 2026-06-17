@@ -40,7 +40,7 @@ class PrePublishHook(HookBaseClass):
                 QtGui.QMessageBox.critical(None, "Error", message)
                 return False
         return True
-    
+
     ############################################################################
     # Flow AM helpers
 

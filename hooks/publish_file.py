@@ -299,33 +299,31 @@ class BasicFilePublishPlugin(HookBaseClass):
                 )
                 if revision_id:
                     asset_id = FlowAsset.get_asset_id(revision_id)
-                    self.logger.debug("Flow AM: revision_id=%r  asset_id=%r" % (revision_id, asset_id))
-                    ok, err = (
-                        self.parent.flowam.validate_generic_asset(asset_id)
+                    self.logger.debug(
+                        "Flow AM: revision_id=%r  asset_id=%r" % (revision_id, asset_id)
                     )
+                    ok, err = self.parent.flowam.validate_generic_asset(asset_id)
                     if not ok:
                         self.logger.error(
                             "Cannot publish new revision of this asset",
-                            extra={"action_show_more_info": {
-                                "label": "Error Details",
-                                "text": f"<pre>{err}</pre>",
-                            }},
+                            extra={
+                                "action_show_more_info": {
+                                    "label": "Error Details",
+                                    "text": f"<pre>{err}</pre>",
+                                }
+                            },
                         )
                         return False
             else:
                 draft_id = self._flow_draft_id
                 if not draft_id:
-                    self.logger.error(
-                        "No draft associated with the current context."
-                    )
+                    self.logger.error("No draft associated with the current context.")
                     return False
-                has_conflict, conflict_err = (
-                    self.parent.flowam.has_asset_conflict(draft_id)
+                has_conflict, conflict_err = self.parent.flowam.has_asset_conflict(
+                    draft_id
                 )
                 if has_conflict:
-                    self.logger.error(
-                        f"Asset conflict detected: {conflict_err}"
-                    )
+                    self.logger.error(f"Asset conflict detected: {conflict_err}")
                     return False
             return True
 
@@ -419,9 +417,7 @@ class BasicFilePublishPlugin(HookBaseClass):
                 if pub_info is None:
                     raise self.parent.flowam.PublishCancelledException
                 item.properties["am_publish_info"] = pub_info
-                item.properties["entity"] = (
-                    item.context.entity or item.context.project
-                )
+                item.properties["entity"] = item.context.entity or item.context.project
                 item.properties["task"] = item.context.task
                 self.logger.info("Publish to Flow AM successful")
                 return
@@ -430,10 +426,12 @@ class BasicFilePublishPlugin(HookBaseClass):
             except Exception as e:
                 self.logger.error(
                     "Failed to publish to Flow AM",
-                    extra={"action_show_more_info": {
-                        "label": "Error Details",
-                        "text": f"<pre>{e}</pre>",
-                    }},
+                    extra={
+                        "action_show_more_info": {
+                            "label": "Error Details",
+                            "text": f"<pre>{e}</pre>",
+                        }
+                    },
                 )
                 raise
 

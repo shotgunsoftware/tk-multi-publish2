@@ -18,18 +18,33 @@ FILE_SEQ_TYPE = "type.fileSequence"
 # File extensions that must be published from within their DCC application,
 # not from the Desktop publisher.
 FLOWAM_DCC_EXTENSIONS = [
-    "aep", "aet", "hip", "hipnc", "hiplc", "hrox", "ma", "max",
-    "mb", "nk", "nkple", "osb", "psb", "psd", "vpb", "vpe",
+    "aep",
+    "aet",
+    "hip",
+    "hipnc",
+    "hiplc",
+    "hrox",
+    "ma",
+    "max",
+    "mb",
+    "nk",
+    "nkple",
+    "osb",
+    "psb",
+    "psd",
+    "vpb",
+    "vpe",
     "wire",
 ]
+
 
 class CreateMode(Enum):
     """Determines which initial source file to use when creating an asset."""
 
-    CURRENT = "CURRENT"    #: Use the currently open scene.
-    NEW = "NEW"            #: Start from an empty scene.
+    CURRENT = "CURRENT"  #: Use the currently open scene.
+    NEW = "NEW"  #: Start from an empty scene.
     TEMPLATE = "TEMPLATE"  #: Copy from a template file.
-    GENERIC = "GENERIC"    #: Copy source file(s) directly (no DCC scene).
+    GENERIC = "GENERIC"  #: Copy source file(s) directly (no DCC scene).
 
 
 class DerivativeType(Enum):
