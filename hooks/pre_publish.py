@@ -30,7 +30,8 @@ class PrePublishHook(HookBaseClass):
 
         # -- Flow AM: DCC engine require an open draft before showing the publish dialog
         if self._flowam_active_for_dcc():
-            return self._flow_validate(app)
+            if not self._flow_validate(app):
+                return False
         return True
 
     ############################################################################
