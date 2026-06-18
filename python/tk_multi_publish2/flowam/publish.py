@@ -4,12 +4,6 @@
 # agreement provided at the time of installation or download, or which
 # otherwise accompanies this software in either electronic or hard copy form.
 
-"""
-This module contains utilities for publishing medm assets.
-Some of these functions handle publishing first and subsequent versions of assets.
-Some handle publishing of existing assets.
-"""
-
 from __future__ import annotations  # needed for Houdini support
 
 import mimetypes
@@ -21,45 +15,30 @@ from dataclasses import asdict, dataclass
 
 import sgtk
 
-from tank_vendor.flow_integration_sdk.dependency import DependencyData
+from tank_vendor.flow_integration_sdk import (
+    dependency,
+    globals,  
+    publish, 
+    sandbox, 
+    schema, 
+    storage, 
+    utils
+)
 from tank_vendor.flow_integration_sdk.exceptions import (
     CreateAssetError,
     FlowError,
     PublishAssetError,
     PublishConflictError,
 )
-from tank_vendor.flow_integration_sdk.globals import DER_SOURCE_COMP
 from tank_vendor.flow_integration_sdk.objects import (
     FlowAsset,
     FlowProject,
     FlowRevision,
     FlowVersion,
 )
-from tank_vendor.flow_integration_sdk.publish import (
-    DerivativeSourceComponentSpec,
-    publish_new_asset,
-    publish_new_revision,
-)
-from tank_vendor.flow_integration_sdk.sandbox import (
-    CheckoutDraftInfo,
-    get_draft_folder,
-    is_new_asset,
-    publish_draft,
-    read_draft_info,
-)
-from tank_vendor.flow_integration_sdk.schema import get_schema_id
-from tank_vendor.flow_integration_sdk.storage import (
-    get_storage_key,
-    get_storage_root,
-    FLOW_STORAGE_ROOT,
-)
-from tank_vendor.flow_integration_sdk.utils import cleanpath, get_logger, trace
+from tank.flowam import create, open, utils as flowam_utils
 
-from tank.flowam.create import create_asset_hierarchy, ensure_unique_name
-from tank.flowam.open import checkout_revision, open_draft
-from tank.flowam.utils import create_components_for_publish, open_explorer
-
-from .constants import DerivativeType, GENERIC_WORKFILE_TYPE
+from .constants import DerivativeType
 from .exceptions import GenerateDerivativeError, IllegalDependencyError
 from .inputs import (
     CreateDerivativeInputs,
@@ -90,7 +69,7 @@ class PublishInfo:
 # =============================================================================
 
 
-@trace
+@utils.trace
 def publish_dcc_draft(inputs: PublishInputs) -> PublishInfo | None:
     """Publish a draft revision of a new asset or existing asset from current DCC scene.
     See documentation for PublishInputs for expected inputs.
@@ -107,7 +86,7 @@ def publish_dcc_draft(inputs: PublishInputs) -> PublishInfo | None:
     """
     inputs.log_intro("Publishing DCC draft")
     inputs.validate()
-    logger = get_logger(__name__)
+    logger = utils.get_logger(__name__)
 
     engine = sgtk.platform.current_engine()
     host = engine.flow_host
@@ -120,14 +99,14 @@ def publish_dcc_draft(inputs: PublishInputs) -> PublishInfo | None:
         raise PublishAssetError(data=inputs.asdict(), details=msg)
 
     # Make sure draft can be found locally and has valid source path
-    draft_info = read_draft_info(draft_id)
+    draft_info = sandbox.read_draft_info(draft_id)
     draft_path = draft_info.source_path
     if not os.path.exists(draft_path):
         msg = f'Draft "{draft_id}" has an invalid source path: {draft_path}'
         raise PublishAssetError(data=inputs.asdict(), details=msg)
 
     # Make sure draft is currently open in dcc
-    if sgtk.platform.current_engine().context.flow_draft_id != draft_id:
+    if engine.context.flow_draft_id != draft_id:
         name = draft_info.name
         msg = f'Draft of asset "{name}" is not currently open in DCC.'
         raise PublishAssetError(data=inputs.asdict(), details=msg)
@@ -136,7 +115,7 @@ def publish_dcc_draft(inputs: PublishInputs) -> PublishInfo | None:
     # (Users can choose to check out a version that is not the latest
     # and then publish it. At publish time, warn them if this is the case
     # to make sure it is fully intended.)
-    if not is_new_asset(draft_id):
+    if not sandbox.is_new_asset(draft_id):
         if not _outdated_checkout_warning(host, draft_info):
             return None  # User chose to cancel
 
@@ -151,11 +130,11 @@ def publish_dcc_draft(inputs: PublishInputs) -> PublishInfo | None:
         raise PublishAssetError(data=inputs.asdict(), details=msg)
 
     # Save current scene to draft path
-    int_deps = _save_scene(host, draft_path)
+    int_deps = _save_scene(host, draft_path, draft_id)
 
     # Generate components — sandbox (publish_draft) handles comment and
     # type components internally, so only source + thumbnail needed here
-    components = create_components_for_publish(
+    components = flowam_utils.create_components_for_publish(
         [draft_path],
         thumbnail_path,
     )
@@ -171,15 +150,15 @@ def publish_dcc_draft(inputs: PublishInputs) -> PublishInfo | None:
             draft_parent = FlowAsset(parent_id)
         else:
             draft_parent = FlowProject(parent_id)
-        draft_name = ensure_unique_name(draft_info.name, draft_parent)
+        draft_name = create.ensure_unique_name(draft_info.name, draft_parent)
         if draft_name != draft_info.name:
             draft_info.name = draft_name
-            draft_info_path = cleanpath(get_draft_folder(draft_id), ".draft")
+            draft_info_path = sandbox.get_draft_info_file(draft_id)
             draft_info.write_file(draft_info_path)
 
     # Do publish
     try:
-        medm_asset = publish_draft(
+        medm_asset = sandbox.publish_draft(
             draft_id=draft_id,
             comment=inputs.comment,
             components=components,
@@ -189,12 +168,12 @@ def publish_dcc_draft(inputs: PublishInputs) -> PublishInfo | None:
         result = _handle_publish_conflict(host, draft_id, exc)
         if result is False:
             # Re-open the draft before exiting
-            if sgtk.platform.current_engine().context.flow_draft_id != draft_id:
-                open_draft(draft_id)
+            if engine.context.flow_draft_id != draft_id:
+                open.open_draft(draft_id)
             # Abort the publish
             return None
         # Attempt publish again with force flag
-        medm_asset = publish_draft(
+        medm_asset = sandbox.publish_draft(
             draft_id=draft_id,
             comment=inputs.comment,
             components=components,
@@ -203,10 +182,10 @@ def publish_dcc_draft(inputs: PublishInputs) -> PublishInfo | None:
         )
 
     asset = FlowAsset(medm_asset)
-    new_draft_id = get_storage_key(asset.id)
+    new_draft_id = sandbox.get_draft_id(asset.id)
 
     # If the source path has changed, we must open the new source file
-    draft_info = read_draft_info(new_draft_id)
+    draft_info = sandbox.read_draft_info(new_draft_id)
     source_path = draft_info.source_path
     if source_path != host.current_file():
         logger.info(f"Opening new source file: {source_path}")
@@ -225,7 +204,7 @@ def publish_dcc_draft(inputs: PublishInputs) -> PublishInfo | None:
 # =============================================================================
 
 
-@trace
+@utils.trace
 def publish_new_generic_workfile(inputs: CreateGenericInputs) -> PublishInfo:
     """Create a generic workfile asset on remote based on criteria provided in inputs.
     See documentation for CreateGenericInputs for expected inputs.
@@ -241,15 +220,13 @@ def publish_new_generic_workfile(inputs: CreateGenericInputs) -> PublishInfo:
     Raises:
         CreateAssetError
     """
-    from tank_vendor.flow_integration_sdk.exceptions import CreateAssetError
-
     inputs.log_intro("Creating new generic workfile asset")
     inputs.validate()
-    logger = get_logger(__name__)
+    logger = utils.get_logger(__name__)
 
     if not inputs.parent_id:
         # Create any necessary hierarchy above current asset
-        parent = create_asset_hierarchy(inputs)
+        parent = create.create_asset_hierarchy(inputs)
     else:
         # Use override parent
         parent = FlowAsset(inputs.parent_id)
@@ -272,7 +249,7 @@ def publish_new_generic_workfile(inputs: CreateGenericInputs) -> PublishInfo:
     )
 
 
-@trace
+@utils.trace
 def publish_generic_revision(inputs: GenericPublishInputs) -> PublishInfo:
     """Publish a new revision of an existing generic asset direct to remote.
     See documentation for PublishInputs for expected inputs.
@@ -333,7 +310,7 @@ def publish_generic_revision(inputs: GenericPublishInputs) -> PublishInfo:
 
     # Generate components — publish_new_revision preserves type ids internally,
     # only pass comment
-    components = create_components_for_publish(
+    components = flowam_utils.create_components_for_publish(
         source_paths,
         thumbnail_path,
         comment=inputs.comment,
@@ -341,7 +318,7 @@ def publish_generic_revision(inputs: GenericPublishInputs) -> PublishInfo:
     )
 
     # Do publish
-    medm_asset = publish_new_revision(
+    medm_asset = publish.publish_new_revision(
         asset_id=asset.id,
         components=components,
     )
@@ -358,7 +335,7 @@ def publish_generic_revision(inputs: GenericPublishInputs) -> PublishInfo:
 # =============================================================================
 
 
-@trace
+@utils.trace
 def generate_derivative(inputs: CreateDerivativeInputs) -> PublishInfo:
     """Publish a derivative asset that is associated with the provided source revision.
     Create the derivative asset if one does not already exist.
@@ -375,7 +352,7 @@ def generate_derivative(inputs: CreateDerivativeInputs) -> PublishInfo:
     """
     inputs.log_intro("Generating a derivative asset")
     inputs.validate()
-    logger = get_logger(__name__)
+    logger = utils.get_logger(__name__)
 
     engine = sgtk.platform.current_engine()
     host = engine.flow_host
@@ -403,7 +380,7 @@ def generate_derivative(inputs: CreateDerivativeInputs) -> PublishInfo:
 
     # Export derivative file to temp location
     with tempfile.TemporaryDirectory() as temp_dir:
-        der_file = os.path.join(temp_dir, f"{der_name}.{der_ext}").replace("\\", "/")
+        der_file = utils.cleanpath(temp_dir, f"{der_name}.{der_ext}")
         logger.info(f"Exporting derivative file to: {der_file}")
         try:
             host.export(der_file)
@@ -412,23 +389,23 @@ def generate_derivative(inputs: CreateDerivativeInputs) -> PublishInfo:
             raise GenerateDerivativeError(data=inputs.asdict(), details=msg) from exc
 
         # Check for existing derivative asset
-        der_asset = src_asset.find_derivative(der_type_id, DER_SOURCE_COMP)
+        der_asset = src_asset.find_derivative(der_type_id, globals.DER_SOURCE_COMP)
 
         # Generate components
-        components = create_components_for_publish(
+        components = flowam_utils.create_components_for_publish(
             [der_file],
             thumbnail_path,
             type_ids=der_asset.type_ids if der_asset else [der_type_id],
         )
 
         # Add derivative component to point back to source revision
-        components.append(DerivativeSourceComponentSpec(src_rev.id))
+        components.append(publish.DerivativeSourceComponentSpec(src_rev.id))
 
         if der_asset:
             logger.info(f"Existing derivative asset found: {der_asset.name}")
             logger.info("Publishing new version of derivative asset...")
             # Publish new revision of existing asset
-            medm_asset = publish_new_revision(
+            medm_asset = publish.publish_new_revision(
                 asset_id=der_asset.id,
                 components=components,
             )
@@ -441,8 +418,8 @@ def generate_derivative(inputs: CreateDerivativeInputs) -> PublishInfo:
             except FlowError as exc:
                 msg = 'Could not retrieve parent of source asset "{src_asset.name}".'
                 raise GenerateDerivativeError(data=asdict(inputs), details=msg) from exc
-            medm_asset = publish_new_asset(
-                name=ensure_unique_name(der_name, parent),
+            medm_asset = publish.publish_new_asset(
+                name=create.ensure_unique_name(der_name, parent),
                 parent_id=parent.id,
                 description=inputs.description,
                 components=components,
@@ -472,7 +449,7 @@ def generate_derivative(inputs: CreateDerivativeInputs) -> PublishInfo:
 # =============================================================================
 
 
-@trace
+@utils.trace
 def _create_generic_workfile_asset(
     parent: FlowAsset, inputs: CreateGenericInputs
 ) -> FlowAsset:
@@ -489,11 +466,11 @@ def _create_generic_workfile_asset(
     Raises:
         CreateAssetError
     """
-    logger = get_logger(__name__)
+    logger = utils.get_logger(__name__)
 
     # Determine workfile type to be created
-    workfile_type = GENERIC_WORKFILE_TYPE
-    type_id = get_schema_id(workfile_type)
+    workfile_type = create.GENERIC_WORKFILE_TYPE
+    type_id = schema.get_schema_id(workfile_type)
 
     # Ensure source path(s) is/are valid
     if isinstance(inputs.source_path, list):
@@ -522,7 +499,7 @@ def _create_generic_workfile_asset(
             thumbnail_path = source_paths[0]
 
     # Generate components
-    components = create_components_for_publish(
+    components = flowam_utils.create_components_for_publish(
         source_paths,
         thumbnail_path,
         comment=inputs.comment,
@@ -533,8 +510,8 @@ def _create_generic_workfile_asset(
     logger.info(
         f'Creating a workfile asset of type "{workfile_type}" under parent "{parent.name}" in sandbox...'
     )
-    medm_asset = publish_new_asset(
-        name=ensure_unique_name(name, parent),
+    medm_asset = publish.publish_new_asset(
+        name=create.ensure_unique_name(name, parent),
         parent_id=parent.id,
         description=inputs.description,
         components=components,
@@ -557,8 +534,8 @@ def _get_generic_name(source_paths: list[str]) -> str:
         return os.path.splitext(os.path.basename(source_paths[0]))[0]
 
 
-@trace
-def _save_scene(host, draft_path: str) -> list[DependencyData]:
+@utils.trace
+def _save_scene(host, draft_path: str, draft_id: str) -> list[dependency.DependencyData]:
     """Save current scene to given location while handling
     dependencies properly.
 
@@ -568,45 +545,43 @@ def _save_scene(host, draft_path: str) -> list[DependencyData]:
         IllegalDependencyError
         PublishAssetError
     """
-    # NOTE(SG-43461): get_dependency_tree not yet supported on FlowHost.
-    # Pretend there are no deps and return empty list until SG-43461 is resolved.
+    # Retrieve all the dependencies within the scene
+    # NOTE: pretend there are no dep, return empty list
+    dep_tree = host.get_dependency_tree()
 
-    # dep_tree = host.get_dependency_tree()
+    # Local (external) dependencies aren't supported for now
+    ext_deps = dep_tree.get_external_dependencies()
+    if len(ext_deps) > 0:
+        dep_paths = [e.file_path for e in ext_deps]
+        msg = "Non-asset dependencies are not supported currently."
+        msg += " Please convert the following dependencies into assets before proceeding.\n"
+        msg += "\n".join(dep_paths)
+        raise IllegalDependencyError(dep_paths=dep_paths, details=msg)
 
-    # # Local (external) dependencies aren't supported for now
-    # ext_deps = dep_tree.get_external_dependencies()
-    # if len(ext_deps) > 0:
-    #     dep_paths = [e.file_path for e in ext_deps]
-    #     msg = "Non-asset dependencies are not supported currently."
-    #     msg += " Please convert the following dependencies into assets before proceeding.\n"
-    #     msg += "\n".join(dep_paths)
-    #     raise IllegalDependencyError(dep_paths=dep_paths, details=msg)
+    # Convert all asset dependencies to be storage root agnostic
+    # Also check for self references! (Not applicable for new assets)
+    if sandbox.is_new_asset(draft_id):
+        current_asset_id = None
+    else:
+        try:
+            current_asset_id = storage.storage_key_to_asset_id(draft_id)
+        except FlowError:
+            # This shouldn't happen, but it's such an edge case that
+            # we won't worry about self references here
+            current_asset_id = None
 
-    # # Convert all asset dependencies to be storage root agnostic
-    # # Also check for self references! (Not applicable for new assets)
-    # flow_draft_id = sgtk.platform.current_engine().context.flow_draft_id
-    # if is_new_asset(flow_draft_id):
-    #     current_asset_id = None
-    # else:
-    #     try:
-    #         current_asset_id = storage_key_to_asset_id(flow_draft_id)
-    #     except FlowError:
-    #         # This shouldn't happen, but it's such an edge case that
-    #         # we won't worry about self references here
-    #         current_asset_id = None
+    int_deps = dep_tree.get_internal_dependencies()
+    for dep in int_deps:
+        if dep.asset_id == current_asset_id:
+            msg = f"Self reference found: {dep.file_path}"
+            raise IllegalDependencyError(dep_paths=[dep.file_path], details=msg)
 
-    # int_deps = dep_tree.get_internal_dependencies()
-    # for dep in int_deps:
-    #     if dep.asset_id == current_asset_id:
-    #         msg = f"Self reference found: {dep.file_path}"
-    #         raise IllegalDependencyError(dep_paths=[dep.file_path], details=msg)
-
-    #     remote_path = dep.file_path.replace(
-    #         get_storage_root(),
-    #         host.env_var_marker(FLOW_STORAGE_ROOT),
-    #     )
-    #     if dep.raw_path != remote_path:
-    #         host.update_dependency(dep, remote_path)
+        remote_path = dep.file_path.replace(
+            storage.get_storage_root(),
+            host.env_var_marker(storage.FLOW_STORAGE_ROOT),
+        )
+        if dep.raw_path != remote_path:
+            host.update_dependency(dep, remote_path)
 
     # Save current scene to draft path
     try:
@@ -618,7 +593,7 @@ def _save_scene(host, draft_path: str) -> list[DependencyData]:
     return []
 
 
-@trace
+@utils.trace
 def _handle_publish_conflict(host, draft_id: str, exc: PublishConflictError) -> bool:
     """Give user options on how to handle a publish conflict
     that has been detected.
@@ -634,14 +609,14 @@ def _handle_publish_conflict(host, draft_id: str, exc: PublishConflictError) -> 
     Returns:
         True to continue publish, and False to abort publish.
     """
-    logger = get_logger(__name__)
+    logger = utils.get_logger(__name__)
 
     asset = FlowAsset(exc.asset)
     options = [
-        "Cancel",
-        "Stash changes and update",
-        "Force publish",
-        "Discard and update",
+        "Cancel",            # 0
+        "Stash changes and update",  # 1
+        "Force publish",     # 2
+        "Discard and update",  # 3
     ]
 
     msg = str(exc) + "\n\n How would you like to proceed?"
@@ -662,7 +637,7 @@ def _handle_publish_conflict(host, draft_id: str, exc: PublishConflictError) -> 
         if _stash_draft(host, draft_id):
             latest_rev = asset.get_latest_revision()
             logger.info(f"Checking out revision {latest_rev.revision_number}...")
-            checkout_revision(latest_rev.id, force=True)
+            open.checkout_revision(latest_rev.id, force=True)
         return False
     elif action == 2:
         # Force publish
@@ -698,14 +673,14 @@ def _handle_publish_conflict(host, draft_id: str, exc: PublishConflictError) -> 
         raise RuntimeError(msg)
 
 
-@trace
+@utils.trace
 def _stash_draft(host, draft_id: str) -> bool:
     """Allow user to stash their current draft to a selected location.
 
     Returns:
         False if operation is cancelled.
     """
-    logger = get_logger(__name__)
+    logger = utils.get_logger(__name__)
 
     # Trigger confirmation dialog
     msg = "Choosing to stash your current draft will copy your draft folder "
@@ -738,8 +713,8 @@ def _stash_draft(host, draft_id: str) -> bool:
     # We will move the parent directory of the draft folder which includes the
     # draft id for easier tracking
     stash_dir = selected_paths[0]
-    draft_dir = os.path.dirname(get_draft_folder(draft_id))
-    new_draft_loc = os.path.join(stash_dir, draft_id).replace("\\", "/")
+    draft_dir = os.path.dirname(sandbox.get_draft_folder(draft_id))
+    new_draft_loc = utils.cleanpath(stash_dir, draft_id)    
     logger.info(f"Stashing draft in: {new_draft_loc}")
     if os.path.exists(new_draft_loc):
         msg = f'A draft folder for id "{draft_id}" already exists in:\n'
@@ -758,13 +733,13 @@ def _stash_draft(host, draft_id: str) -> bool:
     shutil.move(draft_dir, stash_dir)
 
     # Open file explorer to stash as a courtesy
-    open_explorer(new_draft_loc)
+    flowam_utils.open_explorer(new_draft_loc)
 
     return True
 
 
-@trace
-def _outdated_checkout_warning(host, draft_info: CheckoutDraftInfo) -> bool:
+@utils.trace
+def _outdated_checkout_warning(host, draft_info: sandbox.CheckoutDraftInfo) -> bool:
     """If the user, at the time of checkout, had checked out a version
     that was not the latest, give a warning and verify whether to
     proceed with publish.

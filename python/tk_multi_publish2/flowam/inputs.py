@@ -4,24 +4,23 @@
 # agreement provided at the time of installation or download, or which
 # otherwise accompanies this software in either electronic or hard copy form.
 
-from __future__ import annotations
+from __future__ import annotations  # needed for Houdini 19.5 support
 
 from dataclasses import dataclass
 
-from tank.flowam.utils import BaseInputs
 from tank_vendor.flow_integration_sdk.exceptions import (
     CreateAssetError,
     PublishAssetError,
 )
+from tank.flowam import create, utils as flowam_utils
 
 from .constants import (
-    CreateMode,
     DerivativeType,
 )  # noqa: F401 (re-exported for callers)
 
 
 @dataclass
-class CreateGenericInputs(BaseInputs):
+class CreateGenericInputs(flowam_utils.BaseInputs):
     """Inputs for creating a new generic workfile asset via the Desktop publish hook.
 
     Generic assets are files that are not tied to a specific DCC (e.g. reference
@@ -41,7 +40,7 @@ class CreateGenericInputs(BaseInputs):
     #: The AM project under which the asset should be added.
     am_project_id: str = ""
     # Create mode determines the source of the initial asset file(s).
-    create_mode: CreateMode = CreateMode.GENERIC
+    create_mode: create.CreateMode = create.CreateMode.GENERIC
     #: Path(s) to the source file(s) to copy directly to the asset.
     source_path: str | list[str] = ""
     #: SG entity type (e.g. "Shot", "Asset"). Optional — project-level publish
@@ -94,7 +93,7 @@ class CreateGenericInputs(BaseInputs):
 
 
 @dataclass
-class CreateDerivativeInputs(BaseInputs):
+class CreateDerivativeInputs(flowam_utils.BaseInputs):
     """Inputs for the derivative generation step."""
 
     #: Id of the asset revision that the derivative will be attributed to.
@@ -108,7 +107,7 @@ class CreateDerivativeInputs(BaseInputs):
 
 
 @dataclass
-class PublishInputs(BaseInputs):
+class PublishInputs(flowam_utils.BaseInputs):
     """Inputs for a DCC draft publish."""
 
     #: Path to the thumbnail file stored with the AM asset.

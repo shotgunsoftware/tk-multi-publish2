@@ -30,24 +30,31 @@ class PrePublishHook(HookBaseClass):
 
         # -- Flow AM: DCC engine require an open draft before showing the publish dialog
         if self._flowam_active_for_dcc():
-            app.logger.info(f"Validating publish for draft id: {self._flow_draft_id}")
-            if not self._flow_draft_id:
-                message = (
-                    "No draft associated with the current context. "
-                    "Please make sure you have a draft opened."
-                )
-                app.logger.error(message)
-                QtGui.QMessageBox.critical(None, "Error", message)
-                return False
+            return self._flow_validate(app)
         return True
 
     ############################################################################
     # Flow AM helpers
 
-    @property
-    def _flow_draft_id(self):
-        """Return the Flow draft id from the app context, or None."""
-        return self.parent.context.flow_draft_id
+    def _flow_validate(self, app):
+        """
+        Flow AM branch for ``validate``.
+
+        Ensures a draft is open in the DCC before the publish dialog is shown.
+        Returns False (with a dialog) if no draft is associated with the context.
+        """
+        flow_draft_id = self.parent.context.flow_draft_id
+        app.logger.info(f"Validating publish for draft id: {flow_draft_id}")
+
+        if not flow_draft_id:
+            message = (
+                "No draft associated with the current context. "
+                "Please make sure you have a draft opened."
+            )
+            app.logger.error(message)
+            QtGui.QMessageBox.critical(None, "Error", message)
+            return False
+        return True
 
     def _flowam_active_for_dcc(self):
         """Return True only when current engine is DCC AND the app

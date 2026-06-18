@@ -4,14 +4,12 @@
 # agreement provided at the time of installation or download, or which
 # otherwise accompanies this software in either electronic or hard copy form.
 
-from __future__ import annotations
+from __future__ import annotations  # needed for Houdini 19.5 support
 
+from tank_vendor.flow_integration_sdk import sandbox, schema
 from tank_vendor.flow_integration_sdk.objects import FlowAsset
-from tank_vendor.flow_integration_sdk.sandbox import is_new_asset, read_draft_info
-from tank_vendor.flow_integration_sdk.schema import get_schema_id
 from tank_vendor.flow_integration_sdk.utils import trace
-
-from .constants import GENERIC_WORKFILE_TYPE
+from tank.flowam import create
 
 
 @trace
@@ -28,13 +26,13 @@ def has_asset_conflict(draft_id: str) -> tuple[bool, str]:
     Returns:
         Tuple of (conflict_found, reason_message).
     """
-    if not is_new_asset(draft_id):
+    if not sandbox.is_new_asset(draft_id):
         return False, ""
 
-    draft_info = read_draft_info(draft_id)
+    draft_info = sandbox.read_draft_info(draft_id)
     type_ids = draft_info.type_ids
 
-    generic_type_id = get_schema_id(GENERIC_WORKFILE_TYPE)
+    generic_type_id = schema.get_schema_id(create.GENERIC_WORKFILE_TYPE)
     if generic_type_id in type_ids:
         return False, ""
 
@@ -60,7 +58,7 @@ def validate_generic_asset(asset_id: str) -> tuple[bool, str]:
         Tuple of (valid, reason_message).
     """
     asset = FlowAsset(asset_id)
-    if get_schema_id(GENERIC_WORKFILE_TYPE) not in asset.type_ids:
+    if schema.get_schema_id(create.GENERIC_WORKFILE_TYPE) not in asset.type_ids:
         msg = f"Invalid asset type provided. Asset {asset.name} is not of generic workfile type."
         return False, msg
     return True, ""

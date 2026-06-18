@@ -291,41 +291,7 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         # -- Flow AM: validate project, draft, and asset before stock SG checks
         if self._flow_active():
-            if self._flow_is_desktop_engine():
-                revision_id = (
-                    item.parent.properties.get("am_revision_id")
-                    if item.parent
-                    else None
-                )
-                if revision_id:
-                    asset_id = FlowAsset.get_asset_id(revision_id)
-                    self.logger.debug(
-                        "Flow AM: revision_id=%r  asset_id=%r" % (revision_id, asset_id)
-                    )
-                    ok, err = self.parent.flowam.validate_generic_asset(asset_id)
-                    if not ok:
-                        self.logger.error(
-                            "Cannot publish new revision of this asset",
-                            extra={
-                                "action_show_more_info": {
-                                    "label": "Error Details",
-                                    "text": f"<pre>{err}</pre>",
-                                }
-                            },
-                        )
-                        return False
-            else:
-                draft_id = self._flow_draft_id
-                if not draft_id:
-                    self.logger.error("No draft associated with the current context.")
-                    return False
-                has_conflict, conflict_err = self.parent.flowam.has_asset_conflict(
-                    draft_id
-                )
-                if has_conflict:
-                    self.logger.error(f"Asset conflict detected: {conflict_err}")
-                    return False
-            return True
+            return self._flow_validate(settings, item)
 
         # ---- determine the information required to validate
 
@@ -408,32 +374,8 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         # -- Flow AM: publish to Flow AM and bypass SG register_publish
         if self._flow_active():
-            try:
-                if self._flow_is_desktop_engine():
-                    pub_info = self._publish_flow_desktop(item)
-                else:
-                    pub_info = self._publish_flow_dcc(item)
-
-                if pub_info is None:
-                    raise self.parent.flowam.PublishCancelledException
-                item.properties["am_publish_info"] = pub_info
-                item.properties["entity"] = item.context.entity or item.context.project
-                item.properties["task"] = item.context.task
-                self.logger.info("Publish to Flow AM successful")
-                return
-            except self.parent.flowam.PublishCancelledException:
-                raise
-            except Exception as e:
-                self.logger.error(
-                    "Failed to publish to Flow AM",
-                    extra={
-                        "action_show_more_info": {
-                            "label": "Error Details",
-                            "text": f"<pre>{e}</pre>",
-                        }
-                    },
-                )
-                raise
+            self._flow_publish(settings, item)
+            return
 
         # ---- determine the information required to publish
 
@@ -526,8 +468,6 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         # -- Flow AM: no sg_publish_data produced; skip stock finalize
         if self._flow_active():
-            # finalize (which would call clear_status_for_conflicting_publishes
-            # and reference item.properties.sg_publish_data).
             return
 
         # get the data for the publish that was just created in PTR
@@ -857,7 +797,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
         # -- Flow AM: return the context user instead of the publish_user property
         if self._flow_active():
-            return item.context.user
+            return self._flow_get_publish_user(item)
         return item.get_property("publish_user", default_value=None)
 
     def get_publish_fields(self, settings, item):
@@ -1185,6 +1125,87 @@ class BasicFilePublishPlugin(HookBaseClass):
         """Return the Flow draft id from the app context, or None."""
         return self.parent.context.flow_draft_id
 
+    def _flow_validate(self, settings, item):
+        """
+        Flow AM branch for ``validate``.
+
+        Validates that the Flow AM asset or draft is in a publishable state.
+        Returns True if validation passes, False otherwise.
+        """
+        if self._flow_is_desktop_engine():
+            revision_id = (
+                item.parent.properties.get("am_revision_id") if item.parent else None
+            )
+            if revision_id:
+                asset_id = FlowAsset.get_asset_id(revision_id)
+                self.logger.debug(
+                    "Flow AM: revision_id=%r  asset_id=%r" % (revision_id, asset_id)
+                )
+                ok, err = self.parent.flowam.validate_generic_asset(asset_id)
+                if not ok:
+                    self.logger.error(
+                        "Cannot publish new revision of this asset",
+                        extra={
+                            "action_show_more_info": {
+                                "label": "Error Details",
+                                "text": f"<pre>{err}</pre>",
+                            }
+                        },
+                    )
+                    return False
+        else:
+            draft_id = self._flow_draft_id
+            if not draft_id:
+                self.logger.error("No draft associated with the current context.")
+                return False
+            has_conflict, conflict_err = self.parent.flowam.has_asset_conflict(draft_id)
+            if has_conflict:
+                self.logger.error(f"Asset conflict detected: {conflict_err}")
+                return False
+        return True
+
+    def _flow_publish(self, settings, item):
+        """
+        Flow AM branch for ``publish``.
+
+        Dispatches to the DCC or Desktop publish path, stores the result on
+        the item, and raises ``PublishCancelledException`` if the user aborted.
+        """
+        try:
+            if self._flow_is_desktop_engine():
+                pub_info = self._publish_flow_desktop(item)
+            else:
+                pub_info = self._publish_flow_dcc(item)
+
+            if pub_info is None:
+                raise self.parent.flowam.PublishCancelledException
+            item.properties["am_publish_info"] = pub_info
+            item.properties["entity"] = item.context.entity or item.context.project
+            item.properties["task"] = item.context.task
+            self.logger.info("Publish to Flow AM successful")
+        except self.parent.flowam.PublishCancelledException:
+            raise
+        except Exception as e:
+            self.logger.error(
+                "Failed to publish to Flow AM",
+                extra={
+                    "action_show_more_info": {
+                        "label": "Error Details",
+                        "text": f"<pre>{e}</pre>",
+                    }
+                },
+            )
+            raise
+
+    def _flow_get_publish_user(self, item):
+        """
+        Flow AM branch for ``get_publish_user``.
+
+        Returns the context user rather than the publish_user item property,
+        since Flow AM resolves the author from the authenticated session.
+        """
+        return item.context.user
+
     def _get_flow_args(self, item) -> dict:
         """
         Build the common SDK arguments shared by all Flow AM publishes.
@@ -1192,7 +1213,6 @@ class BasicFilePublishPlugin(HookBaseClass):
         (e.g. ``am_draft_id`` for DCC, ``am_asset_id`` / ``source_path``
         for Desktop).
         """
-        self.logger.debug("Flow AM: item.description = %r" % item.description)
         return dict(
             comment=item.description or "",
             thumbnail_path=item.get_thumbnail_as_path(),

@@ -4,7 +4,7 @@
 # agreement provided at the time of installation or download, or which
 # otherwise accompanies this software in either electronic or hard copy form.
 
-from __future__ import annotations
+from __future__ import annotations  # needed for Houdini 19.5 support
 
 from tank_vendor.flow_integration_sdk.exceptions import FlowError
 
