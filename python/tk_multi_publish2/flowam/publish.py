@@ -17,12 +17,12 @@ import sgtk
 
 from tank_vendor.flow_integration_sdk import (
     dependency,
-    globals,  
-    publish, 
-    sandbox, 
-    schema, 
-    storage, 
-    utils
+    globals,
+    publish,
+    sandbox,
+    schema,
+    storage,
+    utils,
 )
 from tank_vendor.flow_integration_sdk.exceptions import (
     CreateAssetError,
@@ -535,7 +535,9 @@ def _get_generic_name(source_paths: list[str]) -> str:
 
 
 @utils.trace
-def _save_scene(host, draft_path: str, draft_id: str) -> list[dependency.DependencyData]:
+def _save_scene(
+    host, draft_path: str, draft_id: str
+) -> list[dependency.DependencyData]:
     """Save current scene to given location while handling
     dependencies properly.
 
@@ -613,9 +615,9 @@ def _handle_publish_conflict(host, draft_id: str, exc: PublishConflictError) -> 
 
     asset = FlowAsset(exc.asset)
     options = [
-        "Cancel",            # 0
+        "Cancel",  # 0
         "Stash changes and update",  # 1
-        "Force publish",     # 2
+        "Force publish",  # 2
         "Discard and update",  # 3
     ]
 
@@ -714,7 +716,7 @@ def _stash_draft(host, draft_id: str) -> bool:
     # draft id for easier tracking
     stash_dir = selected_paths[0]
     draft_dir = os.path.dirname(sandbox.get_draft_folder(draft_id))
-    new_draft_loc = utils.cleanpath(stash_dir, draft_id)    
+    new_draft_loc = utils.cleanpath(stash_dir, draft_id)
     logger.info(f"Stashing draft in: {new_draft_loc}")
     if os.path.exists(new_draft_loc):
         msg = f'A draft folder for id "{draft_id}" already exists in:\n'
