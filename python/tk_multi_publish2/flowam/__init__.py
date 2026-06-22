@@ -8,7 +8,7 @@ from . import constants  # noqa: F401 — exposes full constants module
 from .exceptions import (  # noqa: F401
     GenerateDerivativeError,
     IllegalDependencyError,
-    PublishCancelledException,
+    PublishCanceledException,
 )
 from .inputs import (  # noqa: F401
     CreateDerivativeInputs,

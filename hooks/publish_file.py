@@ -1165,7 +1165,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         Flow AM branch for ``publish``.
 
         Dispatches to the DCC or Desktop publish path, stores the result on
-        the item, and raises ``PublishCancelledException`` if the user aborted.
+        the item, and raises ``PublishCanceledException`` if the user aborted.
         """
         try:
             if self._flow_is_desktop_engine():
@@ -1174,12 +1174,12 @@ class BasicFilePublishPlugin(HookBaseClass):
                 pub_info = self._publish_flow_dcc(item)
 
             if pub_info is None:
-                raise self.parent.flowam.PublishCancelledException
+                raise self.parent.flowam.PublishCanceledException
             item.properties["am_publish_info"] = pub_info
             item.properties["entity"] = item.context.entity or item.context.project
             item.properties["task"] = item.context.task
             self.logger.info("Publish to Flow AM successful")
-        except self.parent.flowam.PublishCancelledException:
+        except self.parent.flowam.PublishCanceledException:
             raise
         except Exception as e:
             self.logger.error(

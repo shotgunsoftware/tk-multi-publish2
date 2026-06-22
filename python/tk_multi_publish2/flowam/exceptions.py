@@ -31,7 +31,7 @@ class IllegalDependencyError(FlowError):
         self.dep_paths = dep_paths
 
 
-class PublishCancelledException(FlowError):
+class PublishCanceledException(FlowError):
     """
     Exception raised when user cancels publish operation.
     This can happen in various scenarios:
