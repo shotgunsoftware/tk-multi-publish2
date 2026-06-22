@@ -51,9 +51,10 @@ class AppDialog(QtGui.QWidget):
         MULTI_EDIT_NOT_SUPPORTED,
     ) = range(4)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, single_file_mode=False):
         """
         :param parent: The parent QWidget for this control
+        :param single_file_mode: If True, the publisher will only accept a single file.
         """
         QtGui.QWidget.__init__(self, parent)
 
@@ -71,6 +72,7 @@ class AppDialog(QtGui.QWidget):
 
         self._bundle = sgtk.platform.current_bundle()
         self._validation_run = False
+        self._single_file_mode = single_file_mode
 
         # set up the UI
         self.ui = Ui_Dialog()
@@ -298,6 +300,15 @@ class AppDialog(QtGui.QWidget):
     def manual_load_enabled(self):
         """Returns whether user is allowed to load file to the UI"""
         return self._bundle.get_setting("enable_manual_load")
+    
+    @property
+    def single_file_mode(self):
+        """
+        Returns True if the publisher should only accept a single file.
+
+        This is set via the single_file_mode parameter when calling show_dialog().
+        """
+        return self._single_file_mode
 
     def keyPressEvent(self, event):
         """
@@ -895,6 +906,22 @@ class AppDialog(QtGui.QWidget):
         if not self.manual_load_enabled:
             self._progress_handler.logger.error("Drag & drop disabled.")
             return
+
+        if self.single_file_mode:
+            if len(self._publish_manager.collected_files) >= 1:
+                self._progress_handler.logger.error(
+                    "Single file publisher already has "
+                    "%d collected file(s). "
+                    "Cannot add more files.",
+                    len(self._publish_manager.collected_files),
+                )
+                return
+            if len(files) > 1:
+                self._progress_handler.logger.warning(
+                    "This instance of the publisher is for a single file and "
+                    "multiple files were dropped. Using only the first file."
+                )
+                files = files[:1]
 
         # add files and rebuild tree
         self._progress_handler.set_phase(self._progress_handler.PHASE_LOAD)
@@ -1640,7 +1667,11 @@ class AppDialog(QtGui.QWidget):
         else:
             # browse files specifics
             caption = "Browse files to publish"
-            file_mode = QtGui.QFileDialog.ExistingFiles
+            file_mode = (
+                QtGui.QFileDialog.ExistingFile
+                if self.single_file_mode
+                else QtGui.QFileDialog.ExistingFiles
+            )
 
         # create the dialog
         file_dialog = QtGui.QFileDialog(parent=self, caption=caption)
