@@ -17,11 +17,12 @@ from . import publish_tree_widget  # noqa
 from .utils import publish as util  # noqa
 
 
-def show_dialog(app):
+def show_dialog(app, single_file_mode=False):
     """
     Show the main dialog ui
 
     :param app: The parent App
+    :param single_file_mode: If True, restrict publisher to accepting only a single file.
     """
     # defer imports so that the app works gracefully in batch modes
     from .dialog import AppDialog
@@ -31,9 +32,13 @@ def show_dialog(app):
     if app.pre_publish_hook.validate():
         # start ui
         if app.modal:
-            app.engine.show_modal(display_name, app, AppDialog)
+            app.engine.show_modal(
+                display_name, app, AppDialog, single_file_mode=single_file_mode
+            )
         else:
-            app.engine.show_dialog(display_name, app, AppDialog)
+            app.engine.show_dialog(
+                display_name, app, AppDialog, single_file_mode=single_file_mode
+            )
     else:
         app.logger.debug(
             "%s validate returned False -- abort publish."
