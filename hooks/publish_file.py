@@ -1108,8 +1108,11 @@ class BasicFilePublishPlugin(HookBaseClass):
     # Flow AM helpers
 
     def _flow_active(self):
-        """Return True when the app context is a Flow project."""
-        return self.parent.context.flow_project_id is not None
+        """Return True when the app context is a Flow project and the engine has a Flow host."""
+        return (
+            self.parent.context.flow_project_id is not None
+            and sgtk.platform.current_engine().flow_host is not None
+        )
 
     def _flow_is_desktop_engine(self):
         """Return True when the current engine is the Desktop engine."""

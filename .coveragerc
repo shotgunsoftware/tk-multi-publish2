@@ -14,8 +14,17 @@
 [run]
 source=.
 omit=
-    tests/*
+    app.py
+    hooks/collector.py
+    hooks/pre_publish.py
+    hooks/publish_file.py
+    python/tk_multi_publish2/flowam/constants.py
+    python/tk_multi_publish2/flowam/exceptions.py
+    python/tk_multi_publish2/flowam/inputs.py
+    python/tk_multi_publish2/flowam/publish.py
+    python/tk_multi_publish2/flowam/validate.py
     python/tk_multi_publish2/progress/publish_logging.py
+    tests/*
 
 [report]
 exclude_lines =

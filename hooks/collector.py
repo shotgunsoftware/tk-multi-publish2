@@ -591,9 +591,13 @@ class BasicSceneCollector(HookBaseClass):
         return True
 
     def _flowam_active_for_desktop(self):
-        """Return True only when current engine is Desktop AND the app
-        context is a Flow project."""
+        """Return True only when the app context is a Flow project, the current
+        engine is tk-desktop, and the engine has a Flow host."""
         if self.parent.context.flow_project_id is None:
             return False
         engine = sgtk.platform.current_engine()
-        return engine is not None and engine.name == "tk-desktop"
+        return (
+            engine is not None
+            and engine.name == "tk-desktop"
+            and engine.flow_host
+        )
