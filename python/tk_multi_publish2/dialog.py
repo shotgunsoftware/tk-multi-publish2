@@ -300,7 +300,7 @@ class AppDialog(QtGui.QWidget):
     def manual_load_enabled(self):
         """Returns whether user is allowed to load file to the UI"""
         return self._bundle.get_setting("enable_manual_load")
-    
+
     @property
     def single_file_mode(self):
         """
@@ -908,12 +908,12 @@ class AppDialog(QtGui.QWidget):
             return
 
         if self.single_file_mode:
-            if len(self._publish_manager.collected_files) >= 1:
+            num_collected_files = len(self._publish_manager.collected_files)
+            if num_collected_files >= 1:
                 self._progress_handler.logger.error(
-                    "Single file publisher already has "
-                    "%d collected file(s). "
-                    "Cannot add more files.",
-                    len(self._publish_manager.collected_files),
+                    f"Single file publisher already has "
+                    f"{num_collected_files} collected file(s). "
+                    "Cannot add more files."
                 )
                 return
             if len(files) > 1:
