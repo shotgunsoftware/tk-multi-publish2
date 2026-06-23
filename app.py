@@ -87,7 +87,7 @@ class MultiPublish2(sgtk.platform.Application):
         return self._base_hooks
 
     @property
-    def flowam(self):
+    def flowam(self):  # pragma: no cover
         """
         Exposes the publisher's ``flowam`` package.
 

@@ -596,8 +596,4 @@ class BasicSceneCollector(HookBaseClass):
         if self.parent.context.flow_project_id is None:
             return False
         engine = sgtk.platform.current_engine()
-        return (
-            engine is not None
-            and engine.name == "tk-desktop"
-            and engine.flow_host
-        )
+        return engine is not None and engine.name == "tk-desktop" and engine.flow_host

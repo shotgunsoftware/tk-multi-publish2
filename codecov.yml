@@ -1,0 +1,14 @@
+coverage:
+  ignore:
+    # TODO: These files contain Flow AM integration logic that requires a live
+    # Flow AM environment to test. Coverage will be revisited once integration
+    # tests are in place.
+    - hooks/collector.py
+    - hooks/pre_publish.py
+    - hooks/publish_file.py
+    - python/tk_multi_publish2/flowam/constants.py
+    - python/tk_multi_publish2/flowam/exceptions.py
+    - python/tk_multi_publish2/flowam/inputs.py
+    - python/tk_multi_publish2/flowam/publish.py
+    - python/tk_multi_publish2/flowam/validate.py
+    - python/tk_multi_publish2/progress/publish_logging.py

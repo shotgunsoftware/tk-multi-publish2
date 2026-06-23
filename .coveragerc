@@ -14,7 +14,6 @@
 [run]
 source=.
 omit=
-    app.py
     hooks/collector.py
     hooks/pre_publish.py
     hooks/publish_file.py
