@@ -15,6 +15,7 @@ import traceback
 import sgtk
 from sgtk.util.filesystem import copy_file, ensure_folder_exists
 from tank.errors import TankError
+
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
