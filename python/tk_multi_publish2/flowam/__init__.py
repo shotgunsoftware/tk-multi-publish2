@@ -30,10 +30,11 @@ try:
     )
     from .validate import has_asset_conflict, validate_generic_asset  # noqa: F401
 except ImportError as e:
-    logger.debug(
-        "tk-multi-publish2: Flow AM features are unavailable because the current "
-        "version of tk-core does not include the Flow Integration SDK "
+    logger.error(
+        "tk-desktop: There was an error importing the 'flowam' module. "
+        "This is likely due to Flow AM features being unavailable in the "
+        "current version of tk-core - i.e. it is missing the Flow Integration SDK "
         "('tank_vendor.flow_integration_sdk' / 'tank.flowam'). "
         "This is safe to ignore if you are not working on a Flow AM project. "
-        f"Upgrade tk-core to enable Flow AM publishing. (ImportError: {e})"
+        f"Upgrade tk-core to enable Flow AM publishing. (ImportError: {exc})"
     )
