@@ -41,7 +41,7 @@ class MultiPublish2(sgtk.platform.Application):
         self._base_hooks = tk_multi_publish2.base_hooks
 
         # make the flowam workflow functions available via the app
-        self._flowam = tk_multi_publish2.flowam
+        self._flowam = tk_multi_publish2.flowam  # pragma: no cover
 
         display_name = self.get_setting("display_name")
         # "Publish Render" ---> publish_render

@@ -11,10 +11,6 @@
 import os
 
 import sgtk
-from tank_vendor.flow_integration_sdk.exceptions import FlowError
-from tank_vendor.flow_integration_sdk.objects import FlowAsset
-from tank_vendor.flow_integration_sdk.schema import get_schema_id
-from tank_vendor.flow_integration_sdk.storage import storage_key_to_asset_id
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -69,11 +65,16 @@ class FlowPublishAlembicDerivativePlugin(HookBaseClass):
         if settings.get("Publish Template").value:
             item.context_change_allowed = False
 
-        draft_id = item.context.flow_draft_id
+        draft_id = getattr(item.context, "flow_draft_id", None)
 
         # Check if this is a template asset via AM type system
         accepted = True
         if draft_id:
+            from tank_vendor.flow_integration_sdk.exceptions import FlowError
+            from tank_vendor.flow_integration_sdk.objects import FlowAsset
+            from tank_vendor.flow_integration_sdk.schema import get_schema_id
+            from tank_vendor.flow_integration_sdk.storage import storage_key_to_asset_id
+
             try:
                 asset_id = storage_key_to_asset_id(draft_id)
                 asset = FlowAsset(asset_id)

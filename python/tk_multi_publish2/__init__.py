@@ -17,7 +17,7 @@ from . import publish_tree_widget  # noqa
 from .utils import publish as util  # noqa
 
 
-def show_dialog(app, single_file_mode=False):
+def show_dialog(app, single_file_mode=False):  # pragma: no cover
     """
     Show the main dialog ui
 

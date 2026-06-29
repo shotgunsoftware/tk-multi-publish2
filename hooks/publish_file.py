@@ -15,8 +15,6 @@ import traceback
 import sgtk
 from sgtk.util.filesystem import copy_file, ensure_folder_exists
 from tank.errors import TankError
-from tank_vendor.flow_integration_sdk.objects import FlowAsset
-
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
@@ -1109,10 +1107,10 @@ class BasicFilePublishPlugin(HookBaseClass):
 
     def _flow_active(self):
         """Return True when the app context is a Flow project and the engine has a Flow host."""
-        return (
-            self.parent.context.flow_project_id is not None
-            and sgtk.platform.current_engine().flow_host is not None
-        )
+        if getattr(self.parent.context, "flow_project_id", None) is None:
+            return False
+        engine = sgtk.platform.current_engine()
+        return engine is not None and getattr(engine, "flow_host", None) is not None
 
     def _flow_is_desktop_engine(self):
         """Return True when the current engine is the Desktop engine."""
@@ -1122,7 +1120,7 @@ class BasicFilePublishPlugin(HookBaseClass):
     @property
     def _flow_draft_id(self):
         """Return the Flow draft id from the app context, or None."""
-        return self.parent.context.flow_draft_id
+        return getattr(self.parent.context, "flow_draft_id", None)
 
     def _flow_validate(self, settings, item):
         """
@@ -1131,6 +1129,8 @@ class BasicFilePublishPlugin(HookBaseClass):
         Validates that the Flow AM asset or draft is in a publishable state.
         Returns True if validation passes, False otherwise.
         """
+        from tank_vendor.flow_integration_sdk.objects import FlowAsset
+
         if self._flow_is_desktop_engine():
             revision_id = (
                 item.parent.properties.get("am_revision_id") if item.parent else None
@@ -1223,7 +1223,9 @@ class BasicFilePublishPlugin(HookBaseClass):
         asset creation. Called by ``_publish_flow_create_asset`` to populate
         ``CreateGenericInputs``.
         """
-        am_project_id = sgtk.platform.current_engine().context.flow_project_id
+        am_project_id = getattr(
+            sgtk.platform.current_engine().context, "flow_project_id", None
+        )
         entity = item.context.entity or item.context.project
         entity_type = entity["type"]
         # When creating from project context, sg entity related parameters are not relevant

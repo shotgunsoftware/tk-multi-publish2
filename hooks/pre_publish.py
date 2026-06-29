@@ -44,7 +44,7 @@ class PrePublishHook(HookBaseClass):
         Ensures a draft is open in the DCC before the publish dialog is shown.
         Returns False (with a dialog) if no draft is associated with the context.
         """
-        flow_draft_id = self.parent.context.flow_draft_id
+        flow_draft_id = getattr(self.parent.context, "flow_draft_id", None)
         app.logger.info(f"Validating publish for draft id: {flow_draft_id}")
 
         if not flow_draft_id:
@@ -60,7 +60,11 @@ class PrePublishHook(HookBaseClass):
     def _flowam_active_for_dcc(self):
         """Return True only when the app context is a Flow project, the current
         engine is a DCC (not tk-desktop), and the engine has a Flow host."""
-        if self.parent.context.flow_project_id is None:
+        if getattr(self.parent.context, "flow_project_id", None) is None:
             return False
         engine = sgtk.platform.current_engine()
-        return engine is not None and engine.name != "tk-desktop" and engine.flow_host
+        return (
+            engine is not None
+            and engine.name != "tk-desktop"
+            and getattr(engine, "flow_host", None)
+        )
