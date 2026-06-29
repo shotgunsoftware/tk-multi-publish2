@@ -167,7 +167,9 @@ class BasicFilePublishPlugin(HookBaseClass):
         A file can be published multiple times however only the most recent
         publish will be available to other users. Warnings will be provided
         during validation if there are previous publishes.
-        """ % (loader_url,)
+        """ % (
+            loader_url,
+        )
 
     @property
     def settings(self):
@@ -1174,6 +1176,8 @@ class BasicFilePublishPlugin(HookBaseClass):
         try:
             if self._flow_is_desktop_engine():
                 pub_info = self._publish_flow_desktop(item)
+            elif item.properties.get("is_nuke_flow_write", False):
+                pub_info = self._publish_flow_generic(item)
             else:
                 pub_info = self._publish_flow_dcc(item)
 
@@ -1266,6 +1270,64 @@ class BasicFilePublishPlugin(HookBaseClass):
         )
 
         return self.parent.flowam.publish_dcc_draft(publish_inputs)
+
+    def _publish_flow_generic(self, item):
+        """
+        Same functionality as `_publish_flow_desktop` but processing
+        inputs slightly differently to accommodate publishing of
+        Nuke FlowWrite node renders.
+        """
+        from tank_vendor.flow_integration_sdk.objects import FlowProject
+
+        parent_id = item.properties.get("flow_parent_id", "")
+        asset_id = item.properties.get("flow_asset_id")
+        project_id = FlowProject.get_project_id(parent_id)
+
+        if ("sequence_paths" in item.properties) and len(
+            item.properties["sequence_paths"]
+        ) > 1:
+            source_path = item.properties["sequence_paths"]
+        else:
+            source_path = item.properties.get("path", "")
+        flow_args = {
+            "source_path": source_path,
+            "thumbnail_path": item.get_thumbnail_as_path(),
+            "comment": item.description or "",
+        }
+
+        if asset_id:
+            # Create new revision on existin generic asset
+            flow_args["am_asset_id"] = asset_id
+            publish_inputs = self.parent.flowam.GenericPublishInputs(**flow_args)
+
+            self.logger.debug(
+                "Calling publish_generic_revision with:",
+                extra={
+                    "action_show_more_info": {
+                        "label": "See contents",
+                        "text": "<pre>" f"{pprint.pformat(flow_args)}\n" "</pre>",
+                    }
+                },
+            )
+
+            return self.parent.flowam.publish_generic_revision(publish_inputs)
+
+        else:
+            # Create new generic asset
+            flow_args["parent_id"] = parent_id
+            flow_args["am_project_id"] = project_id
+            create_inputs = self.parent.flowam.CreateGenericInputs(**flow_args)
+
+            self.logger.debug(
+                "Calling publish_new_generic_workfile with:",
+                extra={
+                    "action_show_more_info": {
+                        "label": "See contents",
+                        "text": "<pre>" f"{pprint.pformat(create_inputs)}\n" "</pre>",
+                    }
+                },
+            )
+            return self.parent.flowam.publish_new_generic_workfile(create_inputs)
 
     def _publish_flow_desktop(self, item):
         """
