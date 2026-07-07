@@ -9,6 +9,7 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import sgtk
+from sgtk.platform.qt import QtGui
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -22,8 +23,48 @@ class PrePublishHook(HookBaseClass):
 
     def validate(self):
         """
-        Returns True if the user can proceed to publish. Override thsi hook
+        Returns True if the user can proceed to publish. Override this hook
         method to execute any custom validation steps.
         """
+        app = self.parent
 
+        # -- Flow AM: DCC engine require an open draft before showing the publish dialog
+        if self._flowam_active_for_dcc():
+            if not self._flow_validate(app):
+                return False
         return True
+
+    ############################################################################
+    # Flow AM helpers
+
+    def _flow_validate(self, app):
+        """
+        Flow AM branch for ``validate``.
+
+        Ensures a draft is open in the DCC before the publish dialog is shown.
+        Returns False (with a dialog) if no draft is associated with the context.
+        """
+        flow_draft_id = getattr(self.parent.context, "flow_draft_id", None)
+        app.logger.info(f"Validating publish for draft id: {flow_draft_id}")
+
+        if not flow_draft_id:
+            message = (
+                "No draft associated with the current context. "
+                "Please make sure you have a draft opened."
+            )
+            app.logger.error(message)
+            QtGui.QMessageBox.critical(None, "Error", message)
+            return False
+        return True
+
+    def _flowam_active_for_dcc(self):
+        """Return True only when the app context is a Flow project, the current
+        engine is a DCC (not tk-desktop), and the engine has a Flow host."""
+        if getattr(self.parent.context, "flow_project_id", None) is None:
+            return False
+        engine = sgtk.platform.current_engine()
+        return (
+            engine is not None
+            and engine.name != "tk-desktop"
+            and getattr(engine, "flow_host", None)
+        )

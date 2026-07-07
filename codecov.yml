@@ -1,0 +1,11 @@
+coverage:
+  ignore:
+    # TODO: These files require either a live Flow AM environment (flowam modules)
+    # or a full Qt/Toolkit runtime (dialog.py) to test meaningfully. Coverage
+    # will be revisited once integration tests are in place.
+    - hooks/collector.py
+    - hooks/pre_publish.py
+    - hooks/publish_file.py
+    - python/tk_multi_publish2/dialog.py
+    - python/tk_multi_publish2/flowam/*
+    - python/tk_multi_publish2/progress/publish_logging.py

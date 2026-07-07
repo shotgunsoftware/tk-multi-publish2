@@ -46,3 +46,4 @@ jobs:
     - name: tk-framework-qtwidgets
     - name: tk-framework-shotgunutils
     - name: tk-shell
+    tk_core_ref: ticket/sg-43461/migrate-host-base

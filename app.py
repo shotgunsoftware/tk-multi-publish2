@@ -40,6 +40,9 @@ class MultiPublish2(sgtk.platform.Application):
         # make the base plugins available via the app
         self._base_hooks = tk_multi_publish2.base_hooks
 
+        # make the flowam workflow functions available via the app
+        self._flowam = tk_multi_publish2.flowam  # pragma: no cover
+
         display_name = self.get_setting("display_name")
         # "Publish Render" ---> publish_render
         command_name = display_name.lower()
@@ -82,6 +85,25 @@ class MultiPublish2(sgtk.platform.Application):
         :return: A handle on the app's ``base_hooks`` module.
         """
         return self._base_hooks
+
+    @property
+    def flowam(self):  # pragma: no cover
+        """
+        Exposes the publisher's ``flowam`` package.
+
+        Provides Flow AM workflow functions callable from hooks:
+
+        .. code-block:: python
+
+            # get a handle on the publish2 app
+            app = self.parent
+
+            # call a flowam workflow function
+            app.flowam.publish_dcc_draft(inputs)
+
+        :return: A handle on the ``flowam`` package.
+        """
+        return self._flowam
 
     @property
     def util(self):

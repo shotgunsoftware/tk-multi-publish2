@@ -288,6 +288,11 @@ class BasicFilePublishPlugin(HookBaseClass):
         publisher = self.parent
         path = item.properties.get("path")
 
+        # -- Flow AM: validate project, draft, and asset before stock SG checks
+        if self._flow_active():
+            if not self._flow_validate(settings, item):
+                return False
+
         # ---- determine the information required to validate
 
         # We allow the information to be pre-populated by the collector or a
@@ -366,6 +371,10 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
 
         publisher = self.parent
+
+        # -- Flow AM: publish to Flow AM, then continue to SG register_publish
+        if self._flow_active():
+            self._flow_publish(settings, item)
 
         # ---- determine the information required to publish
 
@@ -781,6 +790,9 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         :return: A user entity dictionary or ``None`` if not defined.
         """
+        # -- Flow AM: return the context user instead of the publish_user property
+        if self._flow_active():
+            return self._flow_get_publish_user(item)
         return item.get_property("publish_user", default_value=None)
 
     def get_publish_fields(self, settings, item):
@@ -1090,3 +1102,242 @@ class BasicFilePublishPlugin(HookBaseClass):
         if "extension" in missing_keys and file_extension:
             fields["extension"] = file_extension
             missing_keys.remove("extension")
+
+    ############################################################################
+    # Flow AM helpers
+
+    def _flow_active(self):
+        """Return True when the app context is a Flow project and the engine has a Flow host."""
+        if getattr(self.parent.context, "flow_project_id", None) is None:
+            return False
+        engine = sgtk.platform.current_engine()
+        return engine is not None and getattr(engine, "flow_host", None) is not None
+
+    def _flow_is_desktop_engine(self):
+        """Return True when the current engine is the Desktop engine."""
+        engine = sgtk.platform.current_engine()
+        return engine is not None and engine.name == "tk-desktop"
+
+    @property
+    def _flow_draft_id(self):
+        """Return the Flow draft id from the app context, or None."""
+        return getattr(self.parent.context, "flow_draft_id", None)
+
+    def _flow_validate(self, settings, item):
+        """
+        Flow AM branch for ``validate``.
+
+        Validates that the Flow AM asset or draft is in a publishable state.
+        Returns True if validation passes, False otherwise.
+        """
+        from tank_vendor.flow_integration_sdk.objects import FlowAsset
+
+        if self._flow_is_desktop_engine():
+            revision_id = (
+                item.parent.properties.get("am_revision_id") if item.parent else None
+            )
+            if revision_id:
+                asset_id = FlowAsset.get_asset_id(revision_id)
+                self.logger.debug(
+                    "Flow AM: revision_id=%r  asset_id=%r" % (revision_id, asset_id)
+                )
+                ok, err = self.parent.flowam.validate_generic_asset(asset_id)
+                if not ok:
+                    self.logger.error(
+                        "Cannot publish new revision of this asset",
+                        extra={
+                            "action_show_more_info": {
+                                "label": "Error Details",
+                                "text": f"<pre>{err}</pre>",
+                            }
+                        },
+                    )
+                    return False
+        else:
+            draft_id = self._flow_draft_id
+            if not draft_id:
+                self.logger.error("No draft associated with the current context.")
+                return False
+            has_conflict, conflict_err = self.parent.flowam.has_asset_conflict(draft_id)
+            if has_conflict:
+                self.logger.error(f"Asset conflict detected: {conflict_err}")
+                return False
+        return True
+
+    def _flow_publish(self, settings, item):
+        """
+        Flow AM branch for ``publish``.
+
+        Dispatches to the DCC or Desktop publish path, stores the result on
+        the item, and raises ``PublishCanceledException`` if the user aborted.
+        """
+        try:
+            if self._flow_is_desktop_engine():
+                pub_info = self._publish_flow_desktop(item)
+            else:
+                pub_info = self._publish_flow_dcc(item)
+
+            if pub_info is None:
+                raise self.parent.flowam.PublishCanceledException
+            item.properties["am_publish_info"] = pub_info
+            item.properties["entity"] = item.context.entity or item.context.project
+            item.properties["task"] = item.context.task
+            self.logger.info("Publish to Flow AM successful")
+        except self.parent.flowam.PublishCanceledException:
+            raise
+        except Exception as e:
+            self.logger.error(
+                "Failed to publish to Flow AM",
+                extra={
+                    "action_show_more_info": {
+                        "label": "Error Details",
+                        "text": f"<pre>{e}</pre>",
+                    }
+                },
+            )
+            raise
+
+    def _flow_get_publish_user(self, item):
+        """
+        Flow AM branch for ``get_publish_user``.
+
+        Returns the context user rather than the publish_user item property,
+        since Flow AM resolves the author from the authenticated session.
+        """
+        return item.context.user
+
+    def _get_flow_args(self, item) -> dict:
+        """
+        Build the common SDK arguments shared by all Flow AM publishes.
+        Subclasses extend this dict with their surface-specific keys
+        (e.g. ``am_draft_id`` for DCC, ``am_asset_id`` / ``source_path``
+        for Desktop).
+        """
+        return dict(
+            comment=item.description or "",
+            thumbnail_path=item.get_thumbnail_as_path(),
+        )
+
+    def _get_flow_generic_inputs(self, item) -> dict:
+        """
+        Build the SG entity inputs required by the Flow AM SDK for generic
+        asset creation. Called by ``_publish_flow_create_asset`` to populate
+        ``CreateGenericInputs``.
+        """
+        am_project_id = getattr(
+            sgtk.platform.current_engine().context, "flow_project_id", None
+        )
+        entity = item.context.entity or item.context.project
+        entity_type = entity["type"]
+        # When creating from project context, sg entity related parameters are not relevant
+        sg_entity_type = entity_type if entity_type != "Project" else None
+        sg_entity_name = entity["name"] if entity_type != "Project" else None
+        sg_pipeline_step = (
+            item.context.step["name"] if entity_type != "Project" else None
+        )
+        sg_task_name = item.context.task["name"] if entity_type != "Project" else None
+
+        return dict(
+            am_project_id=am_project_id,
+            sg_entity_name=sg_entity_name,
+            sg_entity_type=sg_entity_type,
+            sg_pipeline_step=sg_pipeline_step,
+            sg_task_name=sg_task_name,
+            source_path=item.get_property("path"),
+        )
+
+    def _publish_flow_dcc(self, item):
+        """
+        Perform the DCC publish by calling ``publish_dcc_draft`` in the Flow
+        AM SDK.
+        """
+        flow_args = self._get_flow_args(item)
+        flow_args["am_draft_id"] = self._flow_draft_id
+        publish_inputs = self.parent.flowam.PublishInputs(**flow_args)
+
+        self.logger.debug(
+            "Data for FlowAM is ready:",
+            extra={
+                "action_show_more_info": {
+                    "label": "See contents",
+                    "text": "<pre>" f"{pprint.pformat(flow_args)}\n" "</pre>",
+                }
+            },
+        )
+
+        return self.parent.flowam.publish_dcc_draft(publish_inputs)
+
+    def _publish_flow_desktop(self, item):
+        """
+        Delegate to ``_publish_flow_revision`` or ``_publish_flow_create_asset``
+        depending on whether a revision ID is present on the parent item.
+        """
+        flow_args = self._get_flow_args(item)
+
+        revision_id = (
+            item.parent.properties.get("am_revision_id") if item.parent else None
+        )
+
+        if revision_id:
+            return self._publish_flow_revision(item, flow_args, revision_id)
+        else:
+            return self._publish_flow_create_asset(item, flow_args)
+
+    def _publish_flow_revision(self, item, flow_args: dict, revision_id: str):
+        """
+        Publish a new revision of an existing generic asset via the Flow AM SDK.
+        Called by ``_publish_flow_desktop`` when a revision ID is present on the
+        parent item.
+        """
+        self.logger.info(
+            f"Publishing new revision of existing generic asset (revision_id: {revision_id})"
+        )
+
+        flow_args.update(
+            {
+                "am_asset_id": revision_id,  # Revision id can be used as an asset id in MEDM
+                "source_path": item.get_property("path"),
+            }
+        )
+        publish_inputs = self.parent.flowam.GenericPublishInputs(**flow_args)
+
+        self.logger.debug(
+            "Calling publish_generic_revision with:",
+            extra={
+                "action_show_more_info": {
+                    "label": "See contents",
+                    "text": "<pre>" f"{pprint.pformat(flow_args)}\n" "</pre>",
+                }
+            },
+        )
+
+        return self.parent.flowam.publish_generic_revision(publish_inputs)
+
+    def _publish_flow_create_asset(self, item, flow_args: dict):
+        """
+        Create a new generic asset via the Flow AM SDK. Called by
+        ``_publish_flow_desktop`` when no revision ID is present on the parent
+        item, indicating this is a first-time publish.
+        """
+        self.logger.info("Creating new generic asset")
+
+        create_args = self._get_flow_generic_inputs(item)
+        create_args.update(
+            {
+                "comment": flow_args.get("comment", ""),
+                "thumbnail_path": flow_args.get("thumbnail_path", ""),
+            }
+        )
+        create_inputs = self.parent.flowam.CreateGenericInputs(**create_args)
+
+        self.logger.debug(
+            "Calling publish_new_generic_workfile with:",
+            extra={
+                "action_show_more_info": {
+                    "label": "See contents",
+                    "text": "<pre>" f"{pprint.pformat(create_inputs)}\n" "</pre>",
+                }
+            },
+        )
+
+        return self.parent.flowam.publish_new_generic_workfile(create_inputs)
