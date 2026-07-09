@@ -1160,10 +1160,6 @@ class BasicFilePublishPlugin(HookBaseClass):
             if not draft_id:
                 self.logger.error("No draft associated with the current context.")
                 return False
-            has_conflict, conflict_err = self.parent.flowam.has_asset_conflict(draft_id)
-            if has_conflict:
-                self.logger.error(f"Asset conflict detected: {conflict_err}")
-                return False
         return True
 
     def _flow_publish(self, settings, item):
@@ -1239,14 +1235,12 @@ class BasicFilePublishPlugin(HookBaseClass):
         sg_pipeline_step = (
             item.context.step["name"] if entity_type != "Project" else None
         )
-        sg_task_name = item.context.task["name"] if entity_type != "Project" else None
 
         return dict(
             am_project_id=am_project_id,
             sg_entity_name=sg_entity_name,
             sg_entity_type=sg_entity_type,
             sg_pipeline_step=sg_pipeline_step,
-            sg_task_name=sg_task_name,
             source_path=item.get_property("path"),
         )
 

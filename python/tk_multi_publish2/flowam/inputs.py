@@ -50,8 +50,6 @@ class CreateGenericInputs(flowam_utils.BaseInputs):
     sg_entity_name: str | None = None
     #: Name/code of the SG pipeline step.
     sg_pipeline_step: str | None = None
-    #: Name of the current SG task.
-    sg_task_name: str | None = None
     #: Description stored with the AM asset.
     description: str = ""
     #: Path to the thumbnail file stored with the AM asset.
@@ -84,11 +82,6 @@ class CreateGenericInputs(flowam_utils.BaseInputs):
             raise CreateAssetError(
                 data=self.asdict(),
                 details="sg_entity_name requires sg_pipeline_step.",
-            )
-        if self.sg_pipeline_step and not self.sg_task_name:
-            raise CreateAssetError(
-                data=self.asdict(),
-                details="sg_pipeline_step requires sg_task_name.",
             )
 
 
