@@ -67,26 +67,31 @@ class FlowPublishAlembicDerivativePlugin(HookBaseClass):
 
         draft_id = getattr(item.context, "flow_draft_id", None)
 
-        # Check if this is a template asset via AM type system
+        # Check if this is a template asset - templates never get alembic derivatives
         accepted = True
         if draft_id:
             from tank_vendor.flow_integration_sdk.exceptions import FlowError
             from tank_vendor.flow_integration_sdk.objects import FlowAsset
+            from tank_vendor.flow_integration_sdk.sandbox import NewDraftInfo, read_draft_info
             from tank_vendor.flow_integration_sdk.schema import get_schema_id
             from tank_vendor.flow_integration_sdk.storage import storage_key_to_asset_id
 
+            template_type_id = get_schema_id("type.template")
+
             try:
-                asset_id = storage_key_to_asset_id(draft_id)
-                asset = FlowAsset(asset_id)
-                template_type_id = get_schema_id("type.template")
-                # Templates have template_type_id in their type_ids
-                if template_type_id in asset.type_ids:
-                    accepted = False  # Skip derivatives for templates
+                draft_info = read_draft_info(draft_id)
+                if isinstance(draft_info, NewDraftInfo):
+                    # Asset not yet published - check type_ids from local draft info
+                    if template_type_id in draft_info.type_ids:
+                        accepted = False
+                else:
+                    # Asset already published - check type_ids from MEDM
+                    asset_id = storage_key_to_asset_id(draft_id)
+                    asset = FlowAsset(asset_id)
+                    if template_type_id in asset.type_ids:
+                        accepted = False
             except FlowError as e:
-                self.logger.debug(
-                    f"This draft template has not been published yet. {e}"
-                )
-                accepted = False
+                self.logger.debug(f"Could not determine asset type for draft. {e}")
 
         return {"accepted": accepted}
 
