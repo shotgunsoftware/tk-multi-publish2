@@ -292,8 +292,7 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         # -- Flow AM: validate project, draft, and asset before stock SG checks
         if self._flow_active():
-            if not self._flow_validate(settings, item):
-                return False
+            return self._flow_validate(settings, item)
 
         # ---- determine the information required to validate
 
@@ -377,6 +376,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         # -- Flow AM: publish to Flow AM, then continue to SG register_publish
         if self._flow_active():
             self._flow_publish(settings, item)
+            return
 
         # ---- determine the information required to publish
 
@@ -463,9 +463,11 @@ class BasicFilePublishPlugin(HookBaseClass):
             the keys returned in the settings property. The values are `Setting`
             instances.
         :param item: Item to process
-        """
-
+        """ 
         publisher = self.parent
+
+        if self._flow_active():
+            return
 
         # get the data for the publish that was just created in PTR
         publish_data = item.properties.sg_publish_data
