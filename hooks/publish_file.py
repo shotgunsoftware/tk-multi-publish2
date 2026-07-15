@@ -463,7 +463,8 @@ class BasicFilePublishPlugin(HookBaseClass):
             the keys returned in the settings property. The values are `Setting`
             instances.
         :param item: Item to process
-        """ 
+        """
+
         publisher = self.parent
 
         if self._flow_active():
