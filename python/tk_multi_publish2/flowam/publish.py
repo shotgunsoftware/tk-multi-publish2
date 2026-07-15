@@ -137,6 +137,7 @@ def publish_dcc_draft(inputs: PublishInputs) -> PublishInfo | None:
     components = flowam_utils.create_components_for_publish(
         [draft_path],
         thumbnail_path,
+        int_deps=int_deps,
     )
 
     # Get unique list of versions "used" by current asset - i.e. version ids
