@@ -72,7 +72,10 @@ class FlowPublishAlembicDerivativePlugin(HookBaseClass):
         if draft_id:
             from tank_vendor.flow_integration_sdk.exceptions import FlowError
             from tank_vendor.flow_integration_sdk.objects import FlowAsset
-            from tank_vendor.flow_integration_sdk.sandbox import NewDraftInfo, read_draft_info
+            from tank_vendor.flow_integration_sdk.sandbox import (
+                NewDraftInfo,
+                read_draft_info,
+            )
             from tank_vendor.flow_integration_sdk.schema import get_schema_id
             from tank_vendor.flow_integration_sdk.storage import storage_key_to_asset_id
 
