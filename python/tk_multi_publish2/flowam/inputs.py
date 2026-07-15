@@ -29,7 +29,7 @@ class CreateGenericInputs(flowam_utils.BaseInputs):
     - **Project level** - leave all ``sg_entity_*`` fields as ``None``.
       The asset lands under a flat ``GENERIC FOLDER`` at the project root.
     - **Entity level** (Shot, Asset, etc.) - populate ``sg_entity_type``,
-      ``sg_entity_name``, ``sg_pipeline_step``, and ``sg_task_name``.
+      ``sg_entity_name``, and ``sg_pipeline_step``.
       The asset lands under the matching entity -> pipeline step -> task
       hierarchy in AM.
 

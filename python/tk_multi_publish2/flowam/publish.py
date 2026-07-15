@@ -449,7 +449,7 @@ def generate_derivative(inputs: CreateDerivativeInputs) -> PublishInfo:
                     components=components,
                 )
             except PublishAssetError as exc:
-                msg = "Derivative publish failed. {exc}"
+                msg = f"Derivative publish failed. {exc}"
                 raise GenerateDerivativeError(data=asdict(inputs), details=msg) from exc
             der_asset = FlowAsset(medm_asset)
         else:
@@ -458,7 +458,7 @@ def generate_derivative(inputs: CreateDerivativeInputs) -> PublishInfo:
             try:
                 parent = src_asset.get_parent()
             except FlowError as exc:
-                msg = 'Could not retrieve parent of source asset "{src_asset.name}".'
+                msg = f'Could not retrieve parent of source asset "{src_asset.name}".'
                 raise GenerateDerivativeError(data=asdict(inputs), details=msg) from exc
             try:
                 medm_asset = publish.publish_new_asset(
@@ -468,7 +468,7 @@ def generate_derivative(inputs: CreateDerivativeInputs) -> PublishInfo:
                     components=components,
                 )
             except CreateAssetError as exc:
-                msg = "Derivative asset creation failed. {exc}"
+                msg = f"Derivative asset creation failed. {exc}"
                 raise GenerateDerivativeError(data=asdict(inputs), details=msg) from exc
 
             der_asset = FlowAsset(medm_asset)
