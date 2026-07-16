@@ -376,7 +376,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         # -- Flow AM: publish to Flow AM, then continue to SG register_publish
         if self._flow_active():
             self._flow_publish(settings, item)
-            return
+            return None
 
         # ---- determine the information required to publish
 
@@ -468,7 +468,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         publisher = self.parent
 
         if self._flow_active():
-            return
+            return None
 
         # get the data for the publish that was just created in PTR
         publish_data = item.properties.sg_publish_data
