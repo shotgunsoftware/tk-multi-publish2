@@ -167,9 +167,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         A file can be published multiple times however only the most recent
         publish will be available to other users. Warnings will be provided
         during validation if there are previous publishes.
-        """ % (
-            loader_url,
-        )
+        """ % (loader_url,)
 
     @property
     def settings(self):
@@ -292,8 +290,7 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         # -- Flow AM: validate project, draft, and asset before stock SG checks
         if self._flow_active():
-            if not self._flow_validate(settings, item):
-                return False
+            return self._flow_validate(settings, item)
 
         # ---- determine the information required to validate
 
@@ -377,6 +374,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         # -- Flow AM: publish to Flow AM, then continue to SG register_publish
         if self._flow_active():
             self._flow_publish(settings, item)
+            return None
 
         # ---- determine the information required to publish
 
@@ -466,6 +464,9 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
 
         publisher = self.parent
+
+        if self._flow_active():
+            return None
 
         # get the data for the publish that was just created in PTR
         publish_data = item.properties.sg_publish_data

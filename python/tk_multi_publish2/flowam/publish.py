@@ -548,7 +548,6 @@ def _save_scene(
         PublishAssetError
     """
     # Retrieve all the dependencies within the scene
-    # NOTE: pretend there are no dep, return empty list
     dep_tree = host.get_dependency_tree()
 
     # Local (external) dependencies aren't supported for now
@@ -592,7 +591,7 @@ def _save_scene(
         msg = f"Could not save current scene to draft path: {draft_path}"
         raise PublishAssetError(data={"draft_path": draft_path}, details=msg) from exc
 
-    return []
+    return int_deps
 
 
 @utils.trace
