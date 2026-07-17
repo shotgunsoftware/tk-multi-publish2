@@ -53,9 +53,7 @@ class PublishManager(object):
     ############################################################################
     # instance methods
 
-    def __init__(
-        self, publish_logger=None, context=None, root_item_properties=None
-    ):
+    def __init__(self, publish_logger=None, context=None, root_item_properties=None):
         """
         Initialize the manager.
 
@@ -63,10 +61,12 @@ class PublishManager(object):
             publishing. A default logger will be provided if not supplied. This
             can be useful when implementing a custom UI, for example, with a
             specialized log handler (as is the case with the Publisher)
-        :param context: Optional sgtk.Context to snapshot onto the root item.
-            When set, item context resolution stops at the root and never falls
-            back to the process-wide engine singleton - isolating this dialog
-            from concurrent context changes.
+        :param context: Optional sgtk.Context for this manager. When it matches
+            the engine context, it is snapshotted onto the root item to isolate
+            the dialog from concurrent engine.change_context() calls. When it
+            differs (e.g. Loader passing a Task context into a project-level
+            engine), it is stored and applied as a pre-fill suggestion to
+            top-level items after collection via apply_pre_fill_context().
         :param root_item_properties: Optional dict of properties to pre-seed
             on the root item before collection runs (e.g.
             ``{"am_revision_id": "123"}``).
@@ -87,11 +87,11 @@ class PublishManager(object):
             # Store this context separately and apply it to top-level items after collection
             self._pre_fill_context = context
         else:
-            # Caller passed the same context as the engine. Snapshot onto root_item 
+            # Caller passed the same context as the engine. Snapshot onto root_item
             # to isolate this dialog from concurrent engine.change_context() calls
             self._tree.root_item._context = context
             self._pre_fill_context = None
-            
+
         if root_item_properties:
             self._tree.root_item.properties.update(root_item_properties)
 
@@ -412,7 +412,7 @@ class PublishManager(object):
     def context(self):
         """Returns the execution context of the manager."""
         return self._bundle.context
-    
+
     @property
     def pre_fill_context(self):
         """Returns the pre-fill context if one was supplied by the caller."""
@@ -427,16 +427,16 @@ class PublishManager(object):
         items inherit it via the fallback chain and no pre-fill is needed.
         Skips items where the collector already set an explicit context.
         """
-        if self._pre_fill_context:
+        if self._pre_fill_context is not None:
             for item in self._tree.root_item.children:
                 if item._context is None:
-                    item._context = self._pre_fill_context
+                    item.context = self._pre_fill_context
 
     def apply_context_lock_gate(self):
         """Lock context widget for items whose context is fully resolved.
 
-        Only applied when engine already in task context. When the caller 
-        passed a different context, the context is a suggestion and the 
+        Only applied when engine already in task context. When the caller
+        passed a different context, the context is a suggestion and the
         user should still be able to change it.
         """
         if self._pre_fill_context is not None:

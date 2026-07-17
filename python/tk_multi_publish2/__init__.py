@@ -27,10 +27,12 @@ def show_dialog(  # pragma: no cover
     Show the main dialog ui
 
     :param app: The parent App
-    :param context: Optional sgtk.Context to use for this dialog. When set,
-        the dialog is pinned to this context instead of the current engine
-        context. Useful for callers (e.g. Loader) that cannot call
-        engine.change_context() before opening the dialog.
+    :param context: Optional sgtk.Context for this dialog. When it matches
+        the engine context, it is snapshotted onto the root item to isolate
+        the dialog from concurrent engine.change_context() calls. When it
+        differs (e.g. Loader passing a Task context into a project-level
+        engine), it is applied as a pre-fill suggestion after collection and
+        remains editable by the user.
     :param root_item_properties: Optional dict of properties to pre-seed on
         the root publish item before collection runs (e.g.
         ``{"am_revision_id": "123"}``).

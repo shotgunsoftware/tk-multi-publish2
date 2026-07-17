@@ -60,9 +60,12 @@ class AppDialog(QtGui.QWidget):
     ):
         """
         :param parent: The parent QWidget for this control
-        :param context: Optional sgtk.Context to pin this dialog to. When set,
-            overrides the current engine context for this dialog's item tree.
-            Useful for callers that cannot call engine.change_context() first.
+        :param context: Optional sgtk.Context for this dialog. When it matches
+            the engine context, it is snapshotted to isolate the dialog from
+            concurrent engine.change_context() calls. When it differs (e.g.
+            Loader passing a Task context into a project-level engine), it is
+            applied as a pre-fill suggestion after collection and remains
+            editable by the user.
         :param root_item_properties: Optional dict of properties to pre-seed on
             the root publish item before collection runs (e.g.
             ``{"am_revision_id": "123"}``). Passed through to
@@ -291,7 +294,7 @@ class AppDialog(QtGui.QWidget):
             self.ui.item_settings.hide()
 
         # create a publish manager - snapshot the launch context onto the root
-        # item so that this dialog is isolated from concurrent engine.change_context() calls. 
+        # item so that this dialog is isolated from concurrent engine.change_context() calls.
         # An explicit context takes priority over the current engine context.
         self._publish_manager = PublishManager(
             self._progress_handler.logger,
