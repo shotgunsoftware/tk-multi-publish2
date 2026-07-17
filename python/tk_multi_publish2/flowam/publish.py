@@ -662,7 +662,7 @@ def _handle_publish_conflict(host, draft_id: str, exc: PublishConflictError) -> 
             latest_rev = asset.get_latest_revision()
             msg = f"Discarding current draft and checking out revision {latest_rev.revision_number}..."
             logger.info(msg)
-            checkout_revision(latest_rev.id, force=True)
+            open.checkout_revision(latest_rev.id, force=True)
         elif result == 1:
             logger.warning("Publish operation cancelled.")
         else:
