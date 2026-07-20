@@ -8,4 +8,5 @@ coverage:
     - hooks/publish_file.py
     - python/tk_multi_publish2/dialog.py
     - python/tk_multi_publish2/flowam/*
+    - python/tk_multi_publish2/api/manager.py
     - python/tk_multi_publish2/progress/publish_logging.py

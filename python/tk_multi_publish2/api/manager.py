@@ -81,7 +81,7 @@ class PublishManager(object):
         # the underlying tree representation of the items to publish
         self._tree = PublishTree()
 
-        if context is not None and context != self._bundle.context:
+        if context and context != self._bundle.context:
             # Caller supplied a context that differs from the engine's own context
             # (e.g. Loader passing a Task context into a project-level engine).
             # Store this context separately and apply it to top-level items after collection
