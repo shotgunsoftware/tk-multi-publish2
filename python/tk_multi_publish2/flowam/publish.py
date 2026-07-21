@@ -130,9 +130,9 @@ def publish_dcc_draft(inputs: PublishInputs) -> PublishInfo | None:
     # Generate components — sandbox (publish_draft) handles comment and
     # type components internally, so only source + thumbnail needed here
     components = flowam_utils.create_components_for_publish(
-        [draft_path],
-        thumbnail_path,
-        int_deps,
+        source_paths=[draft_path],
+        thumbnail_path=thumbnail_path,
+        deps=int_deps,
     )
 
     # Get unique list of versions "used" by current asset - i.e. version ids
