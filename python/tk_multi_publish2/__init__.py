@@ -19,9 +19,9 @@ from .utils import publish as util  # noqa
 
 def show_dialog(  # pragma: no cover
     app,
+    single_file_mode=False,
     context=None,
     root_item_properties=None,
-    single_file_mode=False,
 ):
     """
     Show the main dialog ui

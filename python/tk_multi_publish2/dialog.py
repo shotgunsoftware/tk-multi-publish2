@@ -54,9 +54,9 @@ class AppDialog(QtGui.QWidget):
     def __init__(
         self,
         parent=None,
+        single_file_mode=False,
         context=None,
         root_item_properties=None,
-        single_file_mode=False,
     ):
         """
         :param parent: The parent QWidget for this control
