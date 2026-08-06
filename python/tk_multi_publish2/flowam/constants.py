@@ -49,3 +49,7 @@ class DerivativeType(Enum):
         if self == DerivativeType.ALEMBIC:
             return schema.get_schema_id("type.derivative.abc")
         return ""  # type: ignore[unreachable]
+
+
+# Supported variant sets
+REP_VARIANT_SET = "representation"

@@ -15,9 +15,9 @@ from dataclasses import asdict, dataclass
 
 import sgtk
 
+from tank_vendor.flow_data_sdk.base import model as medm_model
 from tank_vendor.flow_integration_sdk import (
     dependency,
-    globals,
     publish,
     sandbox,
     schema,
@@ -38,7 +38,7 @@ from tank_vendor.flow_integration_sdk.objects import (
 )
 from tank.flowam import create, open, utils as flowam_utils
 
-from .constants import DerivativeType
+from .constants import DerivativeType, REP_VARIANT_SET
 from .exceptions import GenerateDerivativeError, IllegalDependencyError
 from .inputs import (
     CreateDerivativeInputs,
@@ -46,7 +46,6 @@ from .inputs import (
     GenericPublishInputs,
     PublishInputs,
 )
-from .validate import has_asset_conflict, validate_generic_asset
 
 
 @dataclass
@@ -115,7 +114,8 @@ def publish_dcc_draft(inputs: PublishInputs) -> PublishInfo | None:
     # (Users can choose to check out a version that is not the latest
     # and then publish it. At publish time, warn them if this is the case
     # to make sure it is fully intended.)
-    if not sandbox.is_new_asset(draft_id):
+    is_new_asset = sandbox.is_new_asset(draft_id)
+    if not is_new_asset:
         if not _outdated_checkout_warning(host, draft_info):
             return None  # User chose to cancel
 
@@ -124,19 +124,15 @@ def publish_dcc_draft(inputs: PublishInputs) -> PublishInfo | None:
         msg = f"Thumbnail path provided does not exist: {thumbnail_path}"
         raise PublishAssetError(data=inputs.asdict(), details=msg)
 
-    # Ensure there are no asset conflicts
-    has_conflict, msg = has_asset_conflict(draft_id)
-    if has_conflict:
-        raise PublishAssetError(data=inputs.asdict(), details=msg)
-
     # Save current scene to draft path
     int_deps = _save_scene(host, draft_path, draft_id)
 
     # Generate components — sandbox (publish_draft) handles comment and
     # type components internally, so only source + thumbnail needed here
     components = flowam_utils.create_components_for_publish(
-        [draft_path],
-        thumbnail_path,
+        source_paths=[draft_path],
+        thumbnail_path=thumbnail_path,
+        deps=int_deps,
     )
 
     # Get unique list of versions "used" by current asset - i.e. version ids
@@ -144,7 +140,7 @@ def publish_dcc_draft(inputs: PublishInputs) -> PublishInfo | None:
     used_versions = list(set([dep.version_id for dep in int_deps]))
 
     # Ensure draft name is unique under its parent
-    if draft_info.draft_type == "new":
+    if is_new_asset:
         parent_id = draft_info.parent_id
         if FlowAsset.is_asset_id(parent_id):
             draft_parent = FlowAsset(parent_id)
@@ -155,6 +151,8 @@ def publish_dcc_draft(inputs: PublishInputs) -> PublishInfo | None:
             draft_info.name = draft_name
             draft_info_path = sandbox.get_draft_info_file(draft_id)
             draft_info.write_file(draft_info_path)
+    else:
+        draft_parent = None
 
     # Do publish
     try:
@@ -190,6 +188,30 @@ def publish_dcc_draft(inputs: PublishInputs) -> PublishInfo | None:
     if source_path != host.current_file():
         logger.info(f"Opening new source file: {source_path}")
         host.open_file(source_path)
+
+    # If this is a new asset, we must update the parent root asset
+    # to add a variant set component with this dcc variant.
+    # Add to default set which is "representation"
+    # Name variant after current engine since we should be in a dcc
+    if is_new_asset:
+        # NOTE: draft parent should be defined in this case
+        set_name = REP_VARIANT_SET
+        variant_name = engine.name.rsplit("-", maxsplit=1)[-1]
+        display_name = f"{set_name.capitalize()}-{variant_name.capitalize()}"
+        logger.info(
+            f'Appending "{display_name}" component to parent asset "{draft_parent.name}"...'
+        )
+        try:
+            draft_parent = _add_variant_set_component(
+                asset_id=draft_parent.id,
+                set_name=set_name,
+                variant_name=variant_name,
+                target_asset_id=asset.id,
+                display_name=display_name,
+            )
+        except PublishAssetError as exc:
+            msg = f"Parent publish failed - variant set component could not be added. {exc}"
+            raise PublishAssetError(data=inputs.asdict(), details=msg) from exc
 
     return PublishInfo(
         asset_name=asset.name,
@@ -330,6 +352,23 @@ def publish_generic_revision(inputs: GenericPublishInputs) -> PublishInfo:
     )
 
 
+@utils.trace
+def validate_generic_asset(asset_id: str) -> tuple[bool, str]:
+    """Validate that the given asset id corresponds to a generic workfile asset.
+
+    Args:
+        asset_id: Asset id to be checked.
+
+    Returns:
+        Tuple of (valid, reason_message).
+    """
+    asset = FlowAsset(asset_id)
+    if schema.get_schema_id(create.GENERIC_WORKFILE_TYPE) not in asset.type_ids:
+        msg = f"Invalid asset type provided. Asset {asset.name} is not of generic workfile type."
+        return False, msg
+    return True, ""
+
+
 # =============================================================================
 # Derivative Publish
 # =============================================================================
@@ -389,7 +428,7 @@ def generate_derivative(inputs: CreateDerivativeInputs) -> PublishInfo:
             raise GenerateDerivativeError(data=inputs.asdict(), details=msg) from exc
 
         # Check for existing derivative asset
-        der_asset = src_asset.find_derivative(der_type_id, globals.DER_SOURCE_COMP)
+        der_asset = src_asset.find_derivative(der_type_id)
 
         # Generate components
         components = flowam_utils.create_components_for_publish(
@@ -399,16 +438,20 @@ def generate_derivative(inputs: CreateDerivativeInputs) -> PublishInfo:
         )
 
         # Add derivative component to point back to source revision
-        components.append(publish.DerivativeSourceComponentSpec(src_rev.id))
+        components.append(publish.DerivativeSourceComponentSpec(src_rev.version_id))
 
         if der_asset:
             logger.info(f"Existing derivative asset found: {der_asset.name}")
             logger.info("Publishing new version of derivative asset...")
             # Publish new revision of existing asset
-            medm_asset = publish.publish_new_revision(
-                asset_id=der_asset.id,
-                components=components,
-            )
+            try:
+                medm_asset = publish.publish_new_revision(
+                    asset_id=der_asset.id,
+                    components=components,
+                )
+            except PublishAssetError as exc:
+                msg = f"Derivative publish failed. {exc}"
+                raise GenerateDerivativeError(data=asdict(inputs), details=msg) from exc
             der_asset = FlowAsset(medm_asset)
         else:
             logger.info(f"Creating new derivative asset: {der_name}")
@@ -416,15 +459,38 @@ def generate_derivative(inputs: CreateDerivativeInputs) -> PublishInfo:
             try:
                 parent = src_asset.get_parent()
             except FlowError as exc:
-                msg = 'Could not retrieve parent of source asset "{src_asset.name}".'
+                msg = f'Could not retrieve parent of source asset "{src_asset.name}".'
                 raise GenerateDerivativeError(data=asdict(inputs), details=msg) from exc
-            medm_asset = publish.publish_new_asset(
-                name=create.ensure_unique_name(der_name, parent),
-                parent_id=parent.id,
-                description=inputs.description,
-                components=components,
-            )
+            try:
+                medm_asset = publish.publish_new_asset(
+                    name=create.ensure_unique_name(der_name, parent),
+                    parent_id=parent.id,
+                    description=inputs.description,
+                    components=components,
+                )
+            except CreateAssetError as exc:
+                msg = f"Derivative asset creation failed. {exc}"
+                raise GenerateDerivativeError(data=asdict(inputs), details=msg) from exc
+
             der_asset = FlowAsset(medm_asset)
+            # Add new derivative asset to the "representation" variant set of parent asset
+            set_name = REP_VARIANT_SET
+            variant_name = der_type.name.lower()
+            display_name = f"{set_name.capitalize()}-{variant_name.capitalize()}"
+            logger.info(
+                f'Appending "{display_name}" component to parent asset "{parent.name}"...'
+            )
+            try:
+                parent = _add_variant_set_component(
+                    asset_id=parent.id,
+                    set_name=set_name,
+                    variant_name=variant_name,
+                    target_asset_id=der_asset.id,
+                    display_name=display_name,
+                )
+            except PublishAssetError as exc:
+                msg = f"Parent publish failed - variant set component could not be added. {exc}"
+                raise GenerateDerivativeError(data=asdict(inputs), details=msg) from exc
 
         # NOTE: For now continue to return revision info to caller.
         #       This allows toolkit side implementation to remain largely
@@ -438,7 +504,7 @@ def generate_derivative(inputs: CreateDerivativeInputs) -> PublishInfo:
 
     logger.info(f'Publish of derivative asset "{der_name}" complete!')
     msg = f'Derivative revision "{der_name}" (r{publish_info.version}) '
-    msg += f'points to source revision "{src_rev.name}" (r{src_rev.revision_number}).'
+    msg += f'points to source version "{src_rev.name}" (r{src_rev.version_number}).'
     logger.info(msg)
 
     return publish_info
@@ -798,3 +864,41 @@ def _get_derivative_name(revision: FlowRevision, dtype: DerivativeType) -> str:
         Name of derivative asset by convention.
     """
     return f"{revision.name} - {dtype.value}"
+
+
+def _add_variant_set_component(
+    asset_id: str,
+    set_name: str,
+    variant_name: str,
+    target_asset_id: str,
+    display_name: str = "",
+) -> FlowAsset:
+    """Create a variant set component and add it to the given asset via a remote publish.
+
+    Args:
+        asset_id: Id of asset to be updated.
+        set_name: Name of set that the new variant belongs to.
+        variant_name: Name of new variant.
+        target_asset_id: Id of asset which is the variant.
+        display_name: Optional display name for set/variant combo.
+
+    Returns:
+        Updated FlowAsset object.
+
+    Raises:
+        PublishAssetError
+    """
+    variant_set_comp = publish.VariantSetComponentSpec(
+        set_name=set_name,
+        variant_name=variant_name,
+        display_name=display_name,
+        asset_id=target_asset_id,
+    )
+    # NOTE: New component is being appended to asset.
+    #       All other components will be carried over from previous revision.
+    medm_asset = publish.publish_new_revision(
+        asset_id=asset_id,
+        components=[variant_set_comp],
+        components_action=medm_model.ListAction.ADD,
+    )
+    return FlowAsset(medm_asset)

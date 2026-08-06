@@ -27,8 +27,8 @@ try:
         publish_generic_revision,
         publish_new_generic_workfile,
         PublishInfo,
+        validate_generic_asset,
     )
-    from .validate import has_asset_conflict, validate_generic_asset  # noqa: F401
 except ImportError as exc:
     logger.error(
         "tk-desktop: There was an error importing the 'flowam' module.\n"
