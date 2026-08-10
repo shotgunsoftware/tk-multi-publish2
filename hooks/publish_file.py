@@ -167,7 +167,9 @@ class BasicFilePublishPlugin(HookBaseClass):
         A file can be published multiple times however only the most recent
         publish will be available to other users. Warnings will be provided
         during validation if there are previous publishes.
-        """ % (loader_url,)
+        """ % (
+            loader_url,
+        )
 
     @property
     def settings(self):
@@ -290,6 +292,12 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         # -- Flow AM: validate project, draft, and asset before stock SG checks
         if self._flow_active():
+            # Do not allow background publish to be enabled for Flow publish for now
+            if self._is_deferred_to_bg(item):
+                self.logger.error(
+                    "Background publishing is not currently supported in Flow integration."
+                )
+                return False
             return self._flow_validate(settings, item)
 
         # ---- determine the information required to validate
@@ -373,7 +381,17 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         # -- Flow AM: publish to Flow AM, then continue to SG register_publish
         if self._flow_active():
+            # NOTE: Because we are checking during validation step that bg publish is
+            #       not enabled for flow publishes, we can ignore this case for
+            #       background publishing.
             self._flow_publish(settings, item)
+            return None
+
+        # Exit early if in the live session part of a bg-enabled publish
+        if self._is_deferred_to_bg(item):
+            self.logger.info(
+                "Background publish enabled — deferring publish registration to the background process."
+            )
             return None
 
         # ---- determine the information required to publish
@@ -466,6 +484,13 @@ class BasicFilePublishPlugin(HookBaseClass):
         publisher = self.parent
 
         if self._flow_active():
+            return None
+
+        # Exit early if in the live session part of a bg-enabled publish
+        if self._is_deferred_to_bg(item):
+            self.logger.info(
+                "Background publish enabled — deferring finalize to the background process."
+            )
             return None
 
         # get the data for the publish that was just created in PTR
@@ -1105,6 +1130,17 @@ class BasicFilePublishPlugin(HookBaseClass):
         if "extension" in missing_keys and file_extension:
             fields["extension"] = file_extension
             missing_keys.remove("extension")
+
+    def _is_deferred_to_bg(self, item) -> bool:
+        """Return True if publish item or any ancestor of it has bg publish enabled
+        but we are not currently in a bg process.
+        """
+        root = item
+        while not root.is_root:
+            root = root.parent
+        return bool(root.properties.get("bg_processing")) and not bool(
+            root.properties.get("in_bg_process")
+        )
 
     ############################################################################
     # Flow AM helpers
