@@ -51,12 +51,30 @@ class AppDialog(QtGui.QWidget):
         MULTI_EDIT_NOT_SUPPORTED,
     ) = range(4)
 
-    def __init__(self, parent=None, single_file_mode=False):
+    def __init__(
+        self,
+        parent=None,
+        single_file_mode=False,
+        context=None,
+        root_item_properties=None,
+    ):
         """
         :param parent: The parent QWidget for this control
+        :param context: Optional sgtk.Context for this dialog. When it matches
+            the engine context, it is snapshotted to isolate the dialog from
+            concurrent engine.change_context() calls. When it differs (e.g.
+            Loader passing a Task context into a project-level engine), it is
+            applied as a pre-fill suggestion after collection and remains
+            editable by the user.
+        :param root_item_properties: Optional dict of properties to pre-seed on
+            the root publish item before collection runs (e.g.
+            ``{"am_revision_id": "123"}``). Passed through to
+            :class:`~.api.PublishManager`.
         :param single_file_mode: If True, the publisher will only accept a single file.
         """
         QtGui.QWidget.__init__(self, parent)
+
+        self._root_item_properties = root_item_properties or {}
 
         # create a settings manager where we can pull and push prefs later
         # prefs in this manager are shared
@@ -275,8 +293,14 @@ class AppDialog(QtGui.QWidget):
             self.ui.item_settings_label.hide()
             self.ui.item_settings.hide()
 
-        # create a publish manager
-        self._publish_manager = PublishManager(self._progress_handler.logger)
+        # create a publish manager - snapshot the launch context onto the root
+        # item so that this dialog is isolated from concurrent engine.change_context() calls.
+        # An explicit context takes priority over the current engine context.
+        self._publish_manager = PublishManager(
+            self._progress_handler.logger,
+            context=context or self._bundle.context,
+            root_item_properties=self._root_item_properties,
+        )
         self.ui.items_tree.set_publish_manager(self._publish_manager)
 
         # this is the pixmap in the summary thumbnail
@@ -883,6 +907,9 @@ class AppDialog(QtGui.QWidget):
         elif num_errors > 0:
             self._progress_handler.logger.error("Errors reported. See log for details.")
 
+        self._publish_manager.apply_pre_fill_context()
+        self._publish_manager.apply_context_lock_gate()
+
         # make sure the ui is up to date
         self._synchronize_tree()
 
@@ -959,6 +986,9 @@ class AppDialog(QtGui.QWidget):
                 self._progress_handler.logger.error(
                     "%d errors reported. Please see the log for details." % num_errors
                 )
+
+            self._publish_manager.apply_pre_fill_context()
+            self._publish_manager.apply_context_lock_gate()
 
             # rebuild the tree
             self._synchronize_tree()

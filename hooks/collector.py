@@ -187,10 +187,6 @@ class BasicSceneCollector(HookBaseClass):
 
         # default implementation does not do anything
 
-        # -- Flow AM: capture revision id from env var for Desktop publish
-        if self._flowam_active_for_desktop():
-            self._flow_process_current_session(parent_item)
-
     def process_file(self, settings, parent_item, path):
         """
         Analyzes the given file and creates one or more items
@@ -522,33 +518,6 @@ class BasicSceneCollector(HookBaseClass):
 
     ############################################################################
     # Flow AM helpers
-
-    def _flow_process_current_session(self, parent_item):
-        """
-        Flow AM branch for ``process_current_session``.
-
-        Captures the Flow AM revision id stored in an environment variable by
-        the Desktop launcher and attaches it to the parent item so downstream
-        publish steps can use it.
-        """
-        parent_item.context = self.parent.context
-        task = parent_item.context.task
-        if task:
-            env_var = f"TK_FLOWAM_REVISION_ID_{task['id']}"
-        else:
-            project = parent_item.context.project
-            env_var = (
-                f"TK_FLOWAM_REVISION_ID_PROJECT_{project['id']}" if project else None
-            )
-        if env_var and env_var in os.environ:
-            revision_id = os.environ.pop(env_var)
-            parent_item.properties["am_revision_id"] = revision_id
-            context_type = "task" if task else "project"
-            context_id = task["id"] if task else project["id"]
-            self.logger.debug(
-                f"Captured revision_id {revision_id} for {context_type} {context_id} "
-                f"from env var {env_var}"
-            )
 
     def _flow_block_dcc_file(self, path):
         """
