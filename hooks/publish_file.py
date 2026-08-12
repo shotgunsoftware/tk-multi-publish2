@@ -379,17 +379,7 @@ class BasicFilePublishPlugin(HookBaseClass):
 
         # -- Flow AM: publish to Flow AM, then continue to SG register_publish
         if self._flow_active():
-            # NOTE: Because we are checking during validation step that bg publish is
-            #       not enabled for flow publishes, we can ignore this case for
-            #       background publishing.
             self._flow_publish(settings, item)
-            return None
-
-        # Exit early if in the live session part of a bg-enabled publish
-        if self._is_deferred_to_bg(item):
-            self.logger.info(
-                "Background publish enabled — deferring publish registration to the background process."
-            )
             return None
 
         # ---- determine the information required to publish
@@ -482,13 +472,6 @@ class BasicFilePublishPlugin(HookBaseClass):
         publisher = self.parent
 
         if self._flow_active():
-            return None
-
-        # Exit early if in the live session part of a bg-enabled publish
-        if self._is_deferred_to_bg(item):
-            self.logger.info(
-                "Background publish enabled — deferring finalize to the background process."
-            )
             return None
 
         # get the data for the publish that was just created in PTR
