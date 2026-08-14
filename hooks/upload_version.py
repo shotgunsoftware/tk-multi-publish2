@@ -229,6 +229,16 @@ class UploadVersionPlugin(HookBaseClass):
 
         :returns: True if item is valid, False otherwise.
         """
+        if self._is_deferred_to_bg(item):
+            # If bg publish is enabled, check that we are running in an engine which supports it.
+            # Otherwise, disallow publish.
+            engine_name = sgtk.platform.current_engine().name
+            BG_SUPPORTED_ENGINES = ["tk-vred", "tk-alias", "tk-maya"]
+            if engine_name not in BG_SUPPORTED_ENGINES:
+                self.logger.error(
+                    f"Background publishing is not currently supported in {engine_name} engine."
+                )
+                return False
         return True
 
     def publish(self, settings, item):
