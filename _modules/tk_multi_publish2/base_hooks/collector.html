@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>tk_multi_publish2.base_hooks.collector &mdash; tk-multi-publish2 v2.11.0 documentation</title>
+  <title>tk_multi_publish2.base_hooks.collector &mdash; tk-multi-publish2 v2.11.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
@@ -83,7 +83,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.11.0.<br>
+    <b>tk-multi-publish2</b> v2.11.1.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -131,7 +131,7 @@
 <span class="c1">#</span>
 <span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
 <span class="c1">#</span>
-<span class="c1"># This work is provided &quot;AS IS&quot; and subject to the Shotgun Pipeline Toolkit</span>
+<span class="c1"># This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit</span>
 <span class="c1"># Source Code License included in this distribution package. See LICENSE.</span>
 <span class="c1"># By accessing, using, copying or modifying this work you indicate your</span>
 <span class="c1"># agreement to the Shotgun Pipeline Toolkit Source Code License. All rights</span>
@@ -143,32 +143,32 @@
 
 
 <div class="viewcode-block" id="CollectorPlugin"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.CollectorPlugin">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CollectorPlugin</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This class defines the required interface for a collector plugin.</span>
 <span class="sd">    Collectors are used to gather individual files that are loaded via the</span>
 <span class="sd">    file browser or dragged and dropped into the Publish2 UI. It is also used</span>
 <span class="sd">    to gather items to be published within the current DCC session.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Unique string identifying this plugin.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span>
 
     <span class="nd">@id</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_id</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Allows to set the unique string identifying this plugin.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">new_id</span>
 
     <span class="c1">############################################################################</span>
     <span class="c1"># Collector properties</span>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        A :class:`dict` defining the configuration interface for this collector.</span>
 
 <span class="sd">        The values configured for the collector will be supplied via settings</span>
@@ -180,14 +180,14 @@
 
 <span class="sd">            {</span>
 <span class="sd">                &lt;setting_name&gt;: {</span>
-<span class="sd">                    &quot;type&quot;: &lt;type&gt;,</span>
-<span class="sd">                    &quot;default&quot;: &lt;default&gt;,</span>
-<span class="sd">                    &quot;description&quot;: &lt;description&gt;</span>
+<span class="sd">                    "type": &lt;type&gt;,</span>
+<span class="sd">                    "default": &lt;default&gt;,</span>
+<span class="sd">                    "description": &lt;description&gt;</span>
 <span class="sd">                },</span>
 <span class="sd">                &lt;setting_name&gt;: {</span>
-<span class="sd">                    &quot;type&quot;: &lt;type&gt;,</span>
-<span class="sd">                    &quot;default&quot;: &lt;default&gt;,</span>
-<span class="sd">                    &quot;description&quot;: &lt;description&gt;</span>
+<span class="sd">                    "type": &lt;type&gt;,</span>
+<span class="sd">                    "default": &lt;default&gt;,</span>
+<span class="sd">                    "description": &lt;description&gt;</span>
 <span class="sd">                },</span>
 <span class="sd">                ...</span>
 <span class="sd">            }</span>
@@ -208,35 +208,35 @@
 <span class="sd">            @property</span>
 <span class="sd">            def settings(self):</span>
 <span class="sd">                return {</span>
-<span class="sd">                    &quot;Work Template&quot;: {</span>
-<span class="sd">                        &quot;type&quot;: &quot;template&quot;,</span>
-<span class="sd">                        &quot;default&quot;: None,</span>
-<span class="sd">                        &quot;description&quot;: &quot;A work file template required by this collector.&quot;</span>
+<span class="sd">                    "Work Template": {</span>
+<span class="sd">                        "type": "template",</span>
+<span class="sd">                        "default": None,</span>
+<span class="sd">                        "description": "A work file template required by this collector."</span>
 <span class="sd">                    },</span>
-<span class="sd">                    &quot;Exclude Objects&quot;: {</span>
-<span class="sd">                        &quot;type&quot;: &quot;list&quot;,</span>
-<span class="sd">                        &quot;default&quot;: [&quot;obj1&quot;, &quot;obj2&quot;, &quot;obj3&quot;],</span>
-<span class="sd">                        &quot;description&quot;: &quot;A list of objects to ignore.&quot;</span>
+<span class="sd">                    "Exclude Objects": {</span>
+<span class="sd">                        "type": "list",</span>
+<span class="sd">                        "default": ["obj1", "obj2", "obj3"],</span>
+<span class="sd">                        "description": "A list of objects to ignore."</span>
 <span class="sd">                    }</span>
 <span class="sd">                }</span>
 
 <span class="sd">        The settings are exposed via the ``collector_settings`` setting in the</span>
-<span class="sd">        app&#39;s configuration. Example::</span>
+<span class="sd">        app's configuration. Example::</span>
 
 <span class="sd">            collector_settings:</span>
 <span class="sd">                Work Template: my_work_template</span>
 <span class="sd">                Exclude Objects: [obj1, obj4]</span>
 
-<span class="sd">        .. note:: See the hooks defined in the publisher app&#39;s ``hooks/`` folder</span>
+<span class="sd">        .. note:: See the hooks defined in the publisher app's ``hooks/`` folder</span>
 <span class="sd">           for additional example implementations.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="p">{}</span>
 
     <span class="c1">############################################################################</span>
     <span class="c1"># Collection methods</span>
 
 <div class="viewcode-block" id="CollectorPlugin.process_current_session"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.CollectorPlugin.process_current_session">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_current_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">parent_item</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This method analyzes the current engine session and creates a hierarchy</span>
 <span class="sd">        of items for publishing.</span>
 
@@ -277,30 +277,30 @@
 <span class="sd">                path = cmds.file(query=True, sn=True)</span>
 
 <span class="sd">                session_item = parent_item.create_item(</span>
-<span class="sd">                    &quot;maya.session&quot;,</span>
-<span class="sd">                    &quot;Maya Session&quot;,</span>
+<span class="sd">                    "maya.session",</span>
+<span class="sd">                    "Maya Session",</span>
 <span class="sd">                    os.path.basename(path)</span>
 <span class="sd">                )</span>
 
 <span class="sd">                # additional work here to prep the session item such as defining</span>
 <span class="sd">                # an icon, populating the properties dictionary, etc.</span>
-<span class="sd">                session_item.properties[&quot;path&quot;] = path</span>
+<span class="sd">                session_item.properties["path"] = path</span>
 
 <span class="sd">                # collect additional file types, parented under the session</span>
 <span class="sd">                self._collect_geometry(settings, session_item)</span>
 
-<span class="sd">        .. note:: See the hooks defined in the publisher app&#39;s ``hooks/`` folder</span>
+<span class="sd">        .. note:: See the hooks defined in the publisher app's ``hooks/`` folder</span>
 <span class="sd">           for additional example implementations.</span>
 
 <span class="sd">        :param dict settings: A dictionary of configured</span>
 <span class="sd">            :ref:`publish-api-setting` objects for this collector.</span>
 <span class="sd">        :param parent_item: The root :ref:`publish-api-item` instance to</span>
 <span class="sd">            collect child items for.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="CollectorPlugin.process_file"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.CollectorPlugin.process_file">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">parent_item</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This method creates one or more items to publish for the supplied file</span>
 <span class="sd">        path.</span>
 
@@ -347,16 +347,16 @@
 
 <span class="sd">                # additional work here to prep the session item such as defining</span>
 <span class="sd">                # an icon, populating the properties dictionary, etc.</span>
-<span class="sd">                session_item.properties[&quot;path&quot;] = path</span>
+<span class="sd">                session_item.properties["path"] = path</span>
 
-<span class="sd">        .. note:: See the hooks defined in the publisher app&#39;s ``hooks/`` folder</span>
+<span class="sd">        .. note:: See the hooks defined in the publisher app's ``hooks/`` folder</span>
 <span class="sd">           for additional example implementations.</span>
 
 <span class="sd">        :param dict settings: A dictionary of configured</span>
 <span class="sd">            :ref:`publish-api-setting` objects for this collector.</span>
 <span class="sd">        :param parent_item: The root :ref:`publish-api-item` instance to</span>
 <span class="sd">            collect child items for.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 </pre></div>
 

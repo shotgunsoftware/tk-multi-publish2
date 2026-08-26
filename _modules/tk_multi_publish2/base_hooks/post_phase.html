@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>tk_multi_publish2.base_hooks.post_phase &mdash; tk-multi-publish2 v2.11.0 documentation</title>
+  <title>tk_multi_publish2.base_hooks.post_phase &mdash; tk-multi-publish2 v2.11.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
@@ -83,7 +83,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.11.0.<br>
+    <b>tk-multi-publish2</b> v2.11.1.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -131,7 +131,7 @@
 <span class="c1">#</span>
 <span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
 <span class="c1">#</span>
-<span class="c1"># This work is provided &quot;AS IS&quot; and subject to the Shotgun Pipeline Toolkit</span>
+<span class="c1"># This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit</span>
 <span class="c1"># Source Code License included in this distribution package. See LICENSE.</span>
 <span class="c1"># By accessing, using, copying or modifying this work you indicate your</span>
 <span class="c1"># agreement to the Shotgun Pipeline Toolkit Source Code License. All rights</span>
@@ -143,7 +143,7 @@
 
 
 <div class="viewcode-block" id="PostPhaseHook"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PostPhaseHook">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">PostPhaseHook</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This hook defines methods that are executed after each phase of a publish:</span>
 <span class="sd">    validation, publish, and finalization. Each method receives the</span>
 <span class="sd">    :ref:`publish-api-tree` tree instance being used by the publisher, giving</span>
@@ -151,10 +151,10 @@
 <span class="sd">    and the tasks attached to them. See the :ref:`publish-api-tree`</span>
 <span class="sd">    documentation for additional details on how to traverse the tree and</span>
 <span class="sd">    manipulate it.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="PostPhaseHook.post_validate"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PostPhaseHook.post_validate">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">post_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_tree</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This method is executed after the validation pass has completed for each</span>
 <span class="sd">        item in the tree, before the publish pass.</span>
 
@@ -170,7 +170,7 @@
 <span class="sd">        customizing your publish plugins to populate any specific validation</span>
 <span class="sd">        information (failure/success) as well. You might, for example, set a</span>
 <span class="sd">        ``validation_failed`` boolean in the item properties, indicating if any</span>
-<span class="sd">        of the item&#39;s tasks failed. You could then include validation error</span>
+<span class="sd">        of the item's tasks failed. You could then include validation error</span>
 <span class="sd">        messages in a ``validation_errors`` list on the item, appending error</span>
 <span class="sd">        messages during task execution. Then, this method might look something</span>
 <span class="sd">        like this:</span>
@@ -192,18 +192,18 @@
 
 <span class="sd">                # process all validation issues here...</span>
 
-<span class="sd">        .. warning:: You will not be able to use the item&#39;s</span>
+<span class="sd">        .. warning:: You will not be able to use the item's</span>
 <span class="sd">            :py:attr:`~.api.PublishItem.local_properties` in this hook since</span>
 <span class="sd">            :py:attr:`~.api.PublishItem.local_properties` are only accessible</span>
 <span class="sd">            during the execution of a publish plugin.</span>
 
 <span class="sd">        :param publish_tree: The :ref:`publish-api-tree` instance representing</span>
 <span class="sd">            the items to be published.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Executing post validate hook method...&quot;</span><span class="p">)</span></div>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Executing post validate hook method..."</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PostPhaseHook.post_publish"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PostPhaseHook.post_publish">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">post_publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_tree</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This method is executed after the publish pass has completed for each</span>
 <span class="sd">        item in the tree, before the finalize pass.</span>
 
@@ -217,18 +217,18 @@
 <span class="sd">        customizing your publish plugins to populate any specific publish</span>
 <span class="sd">        information that you want to process collectively here.</span>
 
-<span class="sd">        .. warning:: You will not be able to use the item&#39;s</span>
+<span class="sd">        .. warning:: You will not be able to use the item's</span>
 <span class="sd">            :py:attr:`~.api.PublishItem.local_properties` in this hook since</span>
 <span class="sd">            :py:attr:`~.api.PublishItem.local_properties` are only accessible</span>
 <span class="sd">            during the execution of a publish plugin.</span>
 
 <span class="sd">        :param publish_tree: The :ref:`publish-api-tree` instance representing</span>
 <span class="sd">            the items to be published.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Executing post publish hook method...&quot;</span><span class="p">)</span></div>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Executing post publish hook method..."</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PostPhaseHook.post_finalize"><a class="viewcode-back" href="../../../customizing.html#tk_multi_publish2.base_hooks.PostPhaseHook.post_finalize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">post_finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publish_tree</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This method is executed after the finalize pass has completed for each</span>
 <span class="sd">        item in the tree.</span>
 
@@ -243,15 +243,15 @@
 <span class="sd">        customizing your publish plugins to populate any specific finalize</span>
 <span class="sd">        information that you want to process collectively here.</span>
 
-<span class="sd">        .. warning:: You will not be able to use the item&#39;s</span>
+<span class="sd">        .. warning:: You will not be able to use the item's</span>
 <span class="sd">            :py:attr:`~.api.PublishItem.local_properties` in this hook since</span>
 <span class="sd">            :py:attr:`~.api.PublishItem.local_properties` are only accessible</span>
 <span class="sd">            during the execution of a publish plugin.</span>
 
 <span class="sd">        :param publish_tree: The :ref:`publish-api-tree` instance representing</span>
 <span class="sd">            the items to be published.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Executing post finalize hook method...&quot;</span><span class="p">)</span></div></div>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Executing post finalize hook method..."</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

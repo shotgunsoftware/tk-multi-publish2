@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Logging &mdash; tk-multi-publish2 v2.11.0 documentation</title>
+  <title>Logging &mdash; tk-multi-publish2 v2.11.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -93,7 +93,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.11.0.<br>
+    <b>tk-multi-publish2</b> v2.11.1.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -150,11 +150,11 @@ These special action button types are detailed below:</p>
 <h2>Generic Action<a class="headerlink" href="#generic-action" title="Permalink to this heading"></a></h2>
 <p>A generic button to execute a callback method when clicked.</p>
 <p>The <a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> supplied takes the following form:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;action_button&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">,</span>
-    <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">tooltip</span><span class="o">&gt;</span><span class="p">,</span>
-    <span class="s2">&quot;callback&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">callback</span><span class="o">&gt;</span><span class="p">,</span>
-    <span class="s2">&quot;args&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">args</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">"action_button"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"label"</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="s2">"tooltip"</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">tooltip</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="s2">"callback"</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">callback</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="s2">"args"</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">args</span><span class="o">&gt;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -167,15 +167,15 @@ These special action button types are detailed below:</p>
 </ul>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-    <span class="s2">&quot;Validation failed! Here&#39;s a quick fix that might work!&quot;</span><span class="p">,</span>
+    <span class="s2">"Validation failed! Here's a quick fix that might work!"</span><span class="p">,</span>
     <span class="n">extra</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;action_button&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Fix Geometry&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="s2">&quot;Click this button to auto-fix the bad geometry.&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;callback&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_geometry_fix</span><span class="p">,</span>
-            <span class="s2">&quot;args&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;local&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="s2">&quot;verts&quot;</span><span class="p">:</span> <span class="kc">False</span>
+        <span class="s2">"action_button"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"Fix Geometry"</span><span class="p">,</span>
+            <span class="s2">"tooltip"</span><span class="p">:</span> <span class="s2">"Click this button to auto-fix the bad geometry."</span><span class="p">,</span>
+            <span class="s2">"callback"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_geometry_fix</span><span class="p">,</span>
+            <span class="s2">"args"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">"local"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">"verts"</span><span class="p">:</span> <span class="kc">False</span>
             <span class="p">}</span>
         <span class="p">}</span>
     <span class="p">}</span>
@@ -192,10 +192,10 @@ of the publish UI:</p>
 <p>A common action for showing the folder for a supplied path in the system’s file
 browser.</p>
 <p>The <a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> supplied takes the following form:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;action_button&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">,</span>
-    <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">tooltip</span><span class="o">&gt;</span><span class="p">,</span>
-    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">path</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">"action_button"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"label"</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="s2">"tooltip"</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">tooltip</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="s2">"path"</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">path</span><span class="o">&gt;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -209,10 +209,10 @@ button. The default value is <code class="docutils literal notranslate"><span cl
 </ul>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-    <span class="s2">&quot;File is not named correctly. Open enclosing folder...&quot;</span><span class="p">,</span>
+    <span class="s2">"File is not named correctly. Open enclosing folder..."</span><span class="p">,</span>
     <span class="n">extra</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;action_show_folder&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">file_path</span>
+        <span class="s2">"action_show_folder"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"path"</span><span class="p">:</span> <span class="n">file_path</span>
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">)</span>
@@ -227,10 +227,10 @@ of the publish UI.</p>
 <h2>Show in Flow Production Tracking Action<a class="headerlink" href="#show-in-flow-production-tracking-action" title="Permalink to this heading"></a></h2>
 <p>A common action for showing an entity’s detail page in Flow Production Tracking.</p>
 <p>The <a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> supplied takes the following form:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;action_show_in_shotgun&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">,</span>
-    <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">tooltip</span><span class="o">&gt;</span><span class="p">,</span>
-    <span class="s2">&quot;entity&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">entity</span><span class="o">&gt;</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">"action_show_in_shotgun"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"label"</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="s2">"tooltip"</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">tooltip</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="s2">"entity"</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">entity</span><span class="o">&gt;</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -244,12 +244,12 @@ button. The default value is <code class="docutils literal notranslate"><span cl
 </ul>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-    <span class="s2">&quot;Publish created for file: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,),</span>
+    <span class="s2">"Publish created for file: </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,),</span>
     <span class="n">extra</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;action_show_in_shotgun&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;entity&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;PublishedFile,</span>
-                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1234</span>
+        <span class="s2">"action_show_in_shotgun"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"entity"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"PublishedFile,</span>
+                <span class="s2">"id"</span><span class="p">:</span> <span class="mi">1234</span>
             <span class="p">}</span>
         <span class="p">}</span>
     <span class="p">}</span>
@@ -267,10 +267,10 @@ of the publish UI.</p>
 single line of logging output. The output will be shown in a text browser popup
 dialog.</p>
 <p>The <a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> supplied takes the following form:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;action_show_more_info&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">,</span>
-    <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">tooltip</span><span class="o">&gt;</span><span class="p">,</span>
-    <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">text</span><span class="o">&gt;</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">"action_show_more_info"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"label"</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="s2">"tooltip"</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">tooltip</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="s2">"text"</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">text</span><span class="o">&gt;</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -290,12 +290,12 @@ window (any html tags supported by Qt’s rich text engine).</p></li>
 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-        <span class="s2">&quot;Failed to publish file: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,),</span>
+        <span class="s2">"Failed to publish file: </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,),</span>
         <span class="n">extra</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;action_show_more_info&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Error Details&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="s2">&quot;Show the full error stack trace&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;pre&gt;</span><span class="si">%s</span><span class="s2">&lt;/pre&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">(),)</span>
+            <span class="s2">"action_show_more_info"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"Error Details"</span><span class="p">,</span>
+                <span class="s2">"tooltip"</span><span class="p">:</span> <span class="s2">"Show the full error stack trace"</span><span class="p">,</span>
+                <span class="s2">"text"</span><span class="p">:</span> <span class="s2">"&lt;pre&gt;</span><span class="si">%s</span><span class="s2">&lt;/pre&gt;"</span> <span class="o">%</span> <span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">(),)</span>
             <span class="p">}</span>
         <span class="p">}</span>
     <span class="p">)</span>
@@ -311,10 +311,10 @@ of the publish UI.</p>
 <h2>Open URL Action<a class="headerlink" href="#open-url-action" title="Permalink to this heading"></a></h2>
 <p>A common action for opening a supplied URL in the default browser.</p>
 <p>The <a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> supplied takes the following form:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;action_show_more_info&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">,</span>
-    <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">tooltip</span><span class="o">&gt;</span><span class="p">,</span>
-    <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">url</span><span class="o">&gt;</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">"action_show_more_info"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"label"</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="s2">"tooltip"</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">tooltip</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="s2">"url"</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">url</span><span class="o">&gt;</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -328,11 +328,11 @@ button. The default value is <code class="docutils literal notranslate"><span cl
 </ul>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-    <span class="s2">&quot;Render submitted. Time for coffee...&quot;</span><span class="p">,</span>
+    <span class="s2">"Render submitted. Time for coffee..."</span><span class="p">,</span>
     <span class="n">extra</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;action_open_url&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Find Coffee&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://www.google.com/search?q=best+coffee+near+me&quot;</span>
+        <span class="s2">"action_open_url"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"Find Coffee"</span><span class="p">,</span>
+            <span class="s2">"url"</span><span class="p">:</span> <span class="s2">"https://www.google.com/search?q=best+coffee+near+me"</span>
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">)</span>

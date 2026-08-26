@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>App Interface &mdash; tk-multi-publish2 v2.11.0 documentation</title>
+  <title>App Interface &mdash; tk-multi-publish2 v2.11.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -66,6 +66,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">App Interface</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#app.MultiPublish2"><code class="docutils literal notranslate"><span class="pre">MultiPublish2</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#app.MultiPublish2.base_hooks"><code class="docutils literal notranslate"><span class="pre">MultiPublish2.base_hooks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#app.MultiPublish2.flowam"><code class="docutils literal notranslate"><span class="pre">MultiPublish2.flowam</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#app.MultiPublish2.util"><code class="docutils literal notranslate"><span class="pre">MultiPublish2.util</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#app.MultiPublish2.create_publish_manager"><code class="docutils literal notranslate"><span class="pre">MultiPublish2.create_publish_manager()</span></code></a></li>
 </ul>
@@ -93,7 +94,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.11.0.<br>
+    <b>tk-multi-publish2</b> v2.11.1.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -140,7 +141,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="app.MultiPublish2">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">MultiPublish2</span></span><a class="reference internal" href="_modules/app.html#MultiPublish2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.MultiPublish2" title="Permalink to this definition"></a></dt>
-<dd><p>This is the <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/platform.html#sgtk.platform.Application" title="(in tk-core vv0.23.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sgtk.platform.Application</span></code></a> subclass that defines the
+<dd><p>This is the <a class="reference external" href="https://developers.shotgridsoftware.com/tk-core/platform.html#sgtk.platform.Application" title="(in tk-core vv0.24.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sgtk.platform.Application</span></code></a> subclass that defines the
 top-level publish2 interface.</p>
 <p>Application instances are constructed by the toolkit launch process
 and various factory methods such as <code class="xref py py-meth docutils literal notranslate"><span class="pre">start_engine()</span></code>.</p>
@@ -169,6 +170,25 @@ collector or publish plugins configured.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A handle on the app’s <code class="docutils literal notranslate"><span class="pre">base_hooks</span></code> module.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="app.MultiPublish2.flowam">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flowam</span></span><a class="headerlink" href="#app.MultiPublish2.flowam" title="Permalink to this definition"></a></dt>
+<dd><p>Exposes the publisher’s <code class="docutils literal notranslate"><span class="pre">flowam</span></code> package.</p>
+<p>Provides Flow AM workflow functions callable from hooks:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># get a handle on the publish2 app</span>
+<span class="n">app</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span>
+
+<span class="c1"># call a flowam workflow function</span>
+<span class="n">app</span><span class="o">.</span><span class="n">flowam</span><span class="o">.</span><span class="n">publish_dcc_draft</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A handle on the <code class="docutils literal notranslate"><span class="pre">flowam</span></code> package.</p>
 </dd>
 </dl>
 </dd></dl>

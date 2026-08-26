@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>tk_multi_publish2.api.item &mdash; tk-multi-publish2 v2.11.0 documentation</title>
+  <title>tk_multi_publish2.api.item &mdash; tk-multi-publish2 v2.11.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
@@ -83,7 +83,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.11.0.<br>
+    <b>tk-multi-publish2</b> v2.11.1.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -131,7 +131,7 @@
 <span class="c1">#</span>
 <span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
 <span class="c1">#</span>
-<span class="c1"># This work is provided &quot;AS IS&quot; and subject to the Shotgun Pipeline Toolkit</span>
+<span class="c1"># This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit</span>
 <span class="c1"># Source Code License included in this distribution package. See LICENSE.</span>
 <span class="c1"># By accessing, using, copying or modifying this work you indicate your</span>
 <span class="c1"># agreement to the Shotgun Pipeline Toolkit Source Code License. All rights</span>
@@ -155,13 +155,13 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_is_qt_pixmap_usable</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Tries to import QtGui and access QPixmap. If it fails, the method returns False.</span>
 
 <span class="sd">    On failure, a warning will be logged. It will be logged only once.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="c1"># We&#39;re using a cached state of the result of this method in order to display a warning</span>
+    <span class="c1"># We're using a cached state of the result of this method in order to display a warning</span>
     <span class="c1"># only once.</span>
     <span class="k">global</span> <span class="n">_qt_pixmap_is_usable</span>
     <span class="k">if</span> <span class="n">_qt_pixmap_is_usable</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -173,7 +173,7 @@
         <span class="k">return</span> <span class="n">_qt_pixmap_is_usable</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="c1"># We can fail importing if the engine doesn&#39;t even support Qt.</span>
+        <span class="c1"># We can fail importing if the engine doesn't even support Qt.</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">sgtk.platform.qt</span><span class="w"> </span><span class="kn">import</span> <span class="n">QtGui</span>
 
         <span class="c1"># We can also fail at using the QPixmap object in an engine like tk-shell</span>
@@ -181,15 +181,15 @@
         <span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="s2">&quot;Could not import QtGui.QPixmap. Thumbnail validation will not be available: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">"Could not import QtGui.QPixmap. Thumbnail validation will not be available: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
             <span class="n">e</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">_qt_pixmap_is_usable</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># If QApplication is not available, we can&#39;t create QPixmap objects.</span>
+        <span class="c1"># If QApplication is not available, we can't create QPixmap objects.</span>
         <span class="k">if</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="s2">&quot;QApplication does not exist. Thumbnail validation will not be available.&quot;</span>
+                <span class="s2">"QApplication does not exist. Thumbnail validation will not be available."</span>
             <span class="p">)</span>
             <span class="n">_qt_pixmap_is_usable</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
@@ -199,40 +199,40 @@
 
 
 <div class="viewcode-block" id="PublishItem"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishItem">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">PublishItem</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Publish items represent what is being published. They are the nodes in the</span>
 <span class="sd">    :class:`~tk_multi_publish2.api.PublishTree`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;_active&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_allows_context_change&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_children&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_context&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_created_temp_files&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_current_temp_file_path&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_description&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_enabled&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_expanded&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_global_properties&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_icon_path&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_icon_pixmap&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_local_properties&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_name&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_parent&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_persistent&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_tasks&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_thumbnail_enabled&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_thumbnail_explicit&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_thumbnail_path&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_thumbnail_pixmap&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_type_display&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_type_spec&quot;</span><span class="p">,</span>
+        <span class="s2">"_active"</span><span class="p">,</span>
+        <span class="s2">"_allows_context_change"</span><span class="p">,</span>
+        <span class="s2">"_children"</span><span class="p">,</span>
+        <span class="s2">"_context"</span><span class="p">,</span>
+        <span class="s2">"_created_temp_files"</span><span class="p">,</span>
+        <span class="s2">"_current_temp_file_path"</span><span class="p">,</span>
+        <span class="s2">"_description"</span><span class="p">,</span>
+        <span class="s2">"_enabled"</span><span class="p">,</span>
+        <span class="s2">"_expanded"</span><span class="p">,</span>
+        <span class="s2">"_global_properties"</span><span class="p">,</span>
+        <span class="s2">"_icon_path"</span><span class="p">,</span>
+        <span class="s2">"_icon_pixmap"</span><span class="p">,</span>
+        <span class="s2">"_local_properties"</span><span class="p">,</span>
+        <span class="s2">"_name"</span><span class="p">,</span>
+        <span class="s2">"_parent"</span><span class="p">,</span>
+        <span class="s2">"_persistent"</span><span class="p">,</span>
+        <span class="s2">"_tasks"</span><span class="p">,</span>
+        <span class="s2">"_thumbnail_enabled"</span><span class="p">,</span>
+        <span class="s2">"_thumbnail_explicit"</span><span class="p">,</span>
+        <span class="s2">"_thumbnail_path"</span><span class="p">,</span>
+        <span class="s2">"_thumbnail_pixmap"</span><span class="p">,</span>
+        <span class="s2">"_type_display"</span><span class="p">,</span>
+        <span class="s2">"_type_spec"</span><span class="p">,</span>
     <span class="p">]</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">item_dict</span><span class="p">,</span> <span class="n">serialization_version</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create a publish item instance given the supplied dictionary. The</span>
 <span class="sd">        supplied dictionary is typically the result of calling ``to_dict`` on</span>
 <span class="sd">        a publish item instance during serialization.</span>
@@ -242,26 +242,26 @@
 <span class="sd">        :param int serialization_version: The version of publish item</span>
 <span class="sd">            serialization used for this item.</span>
 <span class="sd">        :param parent: An optional parent to assign to this deserialized item.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># create the instance</span>
         <span class="n">new_item</span> <span class="o">=</span> <span class="n">PublishItem</span><span class="p">(</span>
-            <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;type_spec&quot;</span><span class="p">],</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;type_display&quot;</span><span class="p">]</span>
+            <span class="n">item_dict</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">"type_spec"</span><span class="p">],</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">"type_display"</span><span class="p">]</span>
         <span class="p">)</span>
 
         <span class="c1"># populate all the instance data from the dictionary</span>
-        <span class="n">new_item</span><span class="o">.</span><span class="n">_active</span> <span class="o">=</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;active&quot;</span><span class="p">]</span>
-        <span class="n">new_item</span><span class="o">.</span><span class="n">_allows_context_change</span> <span class="o">=</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;allows_context_change&quot;</span><span class="p">]</span>
-        <span class="n">new_item</span><span class="o">.</span><span class="n">_description</span> <span class="o">=</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
-        <span class="n">new_item</span><span class="o">.</span><span class="n">_enabled</span> <span class="o">=</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;enabled&quot;</span><span class="p">]</span>
-        <span class="n">new_item</span><span class="o">.</span><span class="n">_expanded</span> <span class="o">=</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;expanded&quot;</span><span class="p">]</span>
-        <span class="n">new_item</span><span class="o">.</span><span class="n">_icon_path</span> <span class="o">=</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;icon_path&quot;</span><span class="p">]</span>
-        <span class="n">new_item</span><span class="o">.</span><span class="n">_thumbnail_enabled</span> <span class="o">=</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;thumbnail_enabled&quot;</span><span class="p">]</span>
-        <span class="n">new_item</span><span class="o">.</span><span class="n">_thumbnail_explicit</span> <span class="o">=</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;thumbnail_explicit&quot;</span><span class="p">]</span>
-        <span class="n">new_item</span><span class="o">.</span><span class="n">_thumbnail_path</span> <span class="o">=</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;thumbnail_path&quot;</span><span class="p">]</span>
+        <span class="n">new_item</span><span class="o">.</span><span class="n">_active</span> <span class="o">=</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">"active"</span><span class="p">]</span>
+        <span class="n">new_item</span><span class="o">.</span><span class="n">_allows_context_change</span> <span class="o">=</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">"allows_context_change"</span><span class="p">]</span>
+        <span class="n">new_item</span><span class="o">.</span><span class="n">_description</span> <span class="o">=</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">"description"</span><span class="p">]</span>
+        <span class="n">new_item</span><span class="o">.</span><span class="n">_enabled</span> <span class="o">=</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">"enabled"</span><span class="p">]</span>
+        <span class="n">new_item</span><span class="o">.</span><span class="n">_expanded</span> <span class="o">=</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">"expanded"</span><span class="p">]</span>
+        <span class="n">new_item</span><span class="o">.</span><span class="n">_icon_path</span> <span class="o">=</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">"icon_path"</span><span class="p">]</span>
+        <span class="n">new_item</span><span class="o">.</span><span class="n">_thumbnail_enabled</span> <span class="o">=</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">"thumbnail_enabled"</span><span class="p">]</span>
+        <span class="n">new_item</span><span class="o">.</span><span class="n">_thumbnail_explicit</span> <span class="o">=</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">"thumbnail_explicit"</span><span class="p">]</span>
+        <span class="n">new_item</span><span class="o">.</span><span class="n">_thumbnail_path</span> <span class="o">=</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">"thumbnail_path"</span><span class="p">]</span>
 
         <span class="c1"># create the children of this item</span>
-        <span class="k">for</span> <span class="n">child_dict</span> <span class="ow">in</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;children&quot;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">child_dict</span> <span class="ow">in</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">"children"</span><span class="p">]:</span>
             <span class="n">new_item</span><span class="o">.</span><span class="n">_children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">PublishItem</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span>
                     <span class="n">child_dict</span><span class="p">,</span> <span class="n">serialization_version</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">new_item</span>
@@ -272,24 +272,24 @@
 
         <span class="c1"># global</span>
         <span class="n">new_item</span><span class="o">.</span><span class="n">_global_properties</span> <span class="o">=</span> <span class="n">PublishData</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span>
-            <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;global_properties&quot;</span><span class="p">]</span>
+            <span class="n">item_dict</span><span class="p">[</span><span class="s2">"global_properties"</span><span class="p">]</span>
         <span class="p">)</span>
 
         <span class="c1"># local</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">prop_dict</span> <span class="ow">in</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;local_properties&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">prop_dict</span> <span class="ow">in</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">"local_properties"</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">new_item</span><span class="o">.</span><span class="n">_local_properties</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">PublishData</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">prop_dict</span><span class="p">)</span>
 
         <span class="n">new_item</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="n">parent</span>
-        <span class="n">new_item</span><span class="o">.</span><span class="n">_persistent</span> <span class="o">=</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;persistent&quot;</span><span class="p">]</span>
+        <span class="n">new_item</span><span class="o">.</span><span class="n">_persistent</span> <span class="o">=</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">"persistent"</span><span class="p">]</span>
 
         <span class="c1"># set the context</span>
-        <span class="k">if</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;context&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">"context"</span><span class="p">]:</span>
             <span class="n">new_item</span><span class="o">.</span><span class="n">_context</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">Context</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span>
-                <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_bundle</span><span class="p">()</span><span class="o">.</span><span class="n">sgtk</span><span class="p">,</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;context&quot;</span><span class="p">]</span>
+                <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_bundle</span><span class="p">()</span><span class="o">.</span><span class="n">sgtk</span><span class="p">,</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">"context"</span><span class="p">]</span>
             <span class="p">)</span>
 
         <span class="c1"># finally, create any tasks for this item</span>
-        <span class="k">for</span> <span class="n">task_dict</span> <span class="ow">in</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">&quot;tasks&quot;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">task_dict</span> <span class="ow">in</span> <span class="n">item_dict</span><span class="p">[</span><span class="s2">"tasks"</span><span class="p">]:</span>
             <span class="n">new_item</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">PublishTask</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">task_dict</span><span class="p">,</span> <span class="n">serialization_version</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="n">new_item</span><span class="p">)</span>
             <span class="p">)</span>
@@ -297,7 +297,7 @@
         <span class="k">return</span> <span class="n">new_item</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">type_spec</span><span class="p">,</span> <span class="n">type_display</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        .. warning:: You should not create item instances directly. Instead, use</span>
 <span class="sd">            the :meth:`~PublishItem.create_item` method of the parent you wish</span>
 <span class="sd">            to create the item under.</span>
@@ -306,7 +306,7 @@
 <span class="sd">        :param type_spec: The type specification for this item.</span>
 <span class="sd">        :param type_display: The type display string.</span>
 <span class="sd">        :param parent: The parent item for this instance.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># NOTE: since this object is serializable, care should be taken to</span>
         <span class="c1"># ensure data is maintained between the `to_dict` and `from_dict`</span>
@@ -337,9 +337,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_type_spec</span> <span class="o">=</span> <span class="n">type_spec</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Destructor.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># clean up temp files created by this item</span>
         <span class="k">for</span> <span class="n">temp_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_created_temp_files</span><span class="p">:</span>
@@ -348,16 +348,16 @@
                     <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">temp_file</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                        <span class="s2">&quot;Could not remove temporary file &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">temp_file</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                        <span class="s2">"Could not remove temporary file '</span><span class="si">%s</span><span class="s2">': </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">temp_file</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Removed temp file &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">temp_file</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Removed temp file '</span><span class="si">%s</span><span class="s2">'"</span> <span class="o">%</span> <span class="n">temp_file</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns a dictionary representation of the publish item. Typically used</span>
 <span class="sd">        during serialization.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">converted_local_properties</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_properties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -373,40 +373,40 @@
 
         <span class="c1"># build the full dictionary representation of this item</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;active&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="p">,</span>
-            <span class="s2">&quot;allows_context_change&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allows_context_change</span><span class="p">,</span>
-            <span class="s2">&quot;children&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_children</span><span class="p">],</span>
-            <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="n">context_value</span><span class="p">,</span>
-            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
-            <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span><span class="p">,</span>
-            <span class="s2">&quot;expanded&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">expanded</span><span class="p">,</span>
-            <span class="s2">&quot;global_properties&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_global_properties</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
-            <span class="s2">&quot;icon_path&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_icon_path</span><span class="p">,</span>
-            <span class="s2">&quot;local_properties&quot;</span><span class="p">:</span> <span class="n">converted_local_properties</span><span class="p">,</span>
-            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="s2">&quot;persistent&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span><span class="p">,</span>
-            <span class="s2">&quot;tasks&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">],</span>
-            <span class="s2">&quot;thumbnail_enabled&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thumbnail_enabled</span><span class="p">,</span>
-            <span class="s2">&quot;thumbnail_explicit&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thumbnail_explicit</span><span class="p">,</span>
-            <span class="s2">&quot;thumbnail_path&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thumbnail_path</span><span class="p">,</span>
-            <span class="s2">&quot;type_display&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_display</span><span class="p">,</span>
-            <span class="s2">&quot;type_spec&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_spec</span><span class="p">,</span>
+            <span class="s2">"active"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="p">,</span>
+            <span class="s2">"allows_context_change"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allows_context_change</span><span class="p">,</span>
+            <span class="s2">"children"</span><span class="p">:</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_children</span><span class="p">],</span>
+            <span class="s2">"context"</span><span class="p">:</span> <span class="n">context_value</span><span class="p">,</span>
+            <span class="s2">"description"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+            <span class="s2">"enabled"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span><span class="p">,</span>
+            <span class="s2">"expanded"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">expanded</span><span class="p">,</span>
+            <span class="s2">"global_properties"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_global_properties</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
+            <span class="s2">"icon_path"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_icon_path</span><span class="p">,</span>
+            <span class="s2">"local_properties"</span><span class="p">:</span> <span class="n">converted_local_properties</span><span class="p">,</span>
+            <span class="s2">"name"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">"persistent"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span><span class="p">,</span>
+            <span class="s2">"tasks"</span><span class="p">:</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">],</span>
+            <span class="s2">"thumbnail_enabled"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thumbnail_enabled</span><span class="p">,</span>
+            <span class="s2">"thumbnail_explicit"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thumbnail_explicit</span><span class="p">,</span>
+            <span class="s2">"thumbnail_path"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thumbnail_path</span><span class="p">,</span>
+            <span class="s2">"type_display"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_display</span><span class="p">,</span>
+            <span class="s2">"type_spec"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_spec</span><span class="p">,</span>
         <span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Representation of the item as a string.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;&lt;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""Representation of the item as a string."""</span>
+        <span class="k">return</span> <span class="s2">"&lt;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&gt;"</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Human readable string representation of the item&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_display</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""Human readable string representation of the item"""</span>
+        <span class="k">return</span> <span class="s2">"</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)"</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_display</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create a new publish task and attach it to this item.</span>
 
 <span class="sd">        :param plugin: The plugin instance this task will represent/execute.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># create the task item and add it to the tree</span>
         <span class="n">child_task</span> <span class="o">=</span> <span class="n">PublishTask</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
@@ -415,13 +415,13 @@
         <span class="k">return</span> <span class="n">child_task</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">clear_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Clear all tasks for this item.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span> <span class="o">=</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="PublishItem.create_item"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishItem.create_item">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_spec</span><span class="p">,</span> <span class="n">type_display</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Factory method for generating new items.</span>
 
 <span class="sd">        The ``type_spec`` is a string that represents the type of the item. This</span>
@@ -475,7 +475,7 @@
 <span class="sd">            purposes.</span>
 <span class="sd">        :param str name: The name to represent the item in a UI. This can be an</span>
 <span class="sd">            item name in a DCC or a file name.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">child_item</span> <span class="o">=</span> <span class="n">PublishItem</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">type_spec</span><span class="p">,</span> <span class="n">type_display</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child_item</span><span class="p">)</span>
@@ -483,7 +483,7 @@
         <span class="k">return</span> <span class="n">child_item</span></div>
 
 <div class="viewcode-block" id="PublishItem.get_property"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishItem.get_property">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This is a convenience method that will retrieve a property set on the</span>
 <span class="sd">        item.</span>
 
@@ -497,7 +497,7 @@
 <span class="sd">            the item.</span>
 
 <span class="sd">        :return: The value of the supplied property.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">local_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_local_properties</span><span class="p">()</span>
 
@@ -509,8 +509,8 @@
             <span class="k">return</span> <span class="n">default_value</span></div>
 
 <div class="viewcode-block" id="PublishItem.get_thumbnail_as_path"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishItem.get_thumbnail_as_path">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_thumbnail_as_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the item&#39;s thumbnail as a path to a file on disk. If the</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Returns the item's thumbnail as a path to a file on disk. If the</span>
 <span class="sd">        thumbnail was originally supplied as a file path, that path will be</span>
 <span class="sd">        returned. If the thumbnail was created via screen grab or set directly</span>
 <span class="sd">        via :class:`QtGui.QPixmap`, this method will generate an image as a temp file</span>
@@ -520,7 +520,7 @@
 <span class="sd">            present and no thumbnail path has been set on the item.</span>
 
 <span class="sd">        :returns: Path to a file on disk or None if no thumbnail set</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># the thumbnail path was explicitly provided</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thumbnail_path</span><span class="p">:</span>
@@ -537,7 +537,7 @@
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="n">temp_path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span>
-            <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.jpg&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;sgtk_thumb&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span>
+            <span class="n">suffix</span><span class="o">=</span><span class="s2">".jpg"</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">"sgtk_thumb"</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span><span class="o">.</span><span class="n">name</span>
         <span class="n">success</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">thumbnail</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">temp_path</span><span class="p">)</span>
 
@@ -548,72 +548,72 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_created_temp_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_path</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="s2">&quot;A zero-size thumbnail was written for </span><span class="si">%s</span><span class="s2">, &quot;</span>
-                    <span class="s2">&quot;no thumbnail will be returned.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+                    <span class="s2">"A zero-size thumbnail was written for </span><span class="si">%s</span><span class="s2">, "</span>
+                    <span class="s2">"no thumbnail will be returned."</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="kc">None</span>
             <span class="k">return</span> <span class="n">temp_path</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="s2">&quot;Thumbnail save to disk failed. No thumbnail will be returned &quot;</span>
-                <span class="s2">&quot;for </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+                <span class="s2">"Thumbnail save to disk failed. No thumbnail will be returned "</span>
+                <span class="s2">"for </span><span class="si">%s</span><span class="s2">."</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="PublishItem.remove_item"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishItem.remove_item">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">remove_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child_item</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Remove the supplied child :ref:`publish-api-item` of this item.</span>
 
 <span class="sd">        :param child_item: The child :ref:`publish-api-item` to remove.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="n">child_item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">TankError</span><span class="p">(</span>
-                <span class="s2">&quot;Unable to remove child item. Item </span><span class="si">%s</span><span class="s2"> is not a child of </span><span class="si">%s</span><span class="s2"> in &quot;</span>
-                <span class="s2">&quot;the publish tree.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">child_item</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+                <span class="s2">"Unable to remove child item. Item </span><span class="si">%s</span><span class="s2"> is not a child of </span><span class="si">%s</span><span class="s2"> in "</span>
+                <span class="s2">"the publish tree."</span> <span class="o">%</span> <span class="p">(</span><span class="n">child_item</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
             <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_children</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">child_item</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PublishItem.set_icon_from_path"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishItem.set_icon_from_path">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_icon_from_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Sets the icon for the item given a path to an image on disk. This path</span>
 <span class="sd">        will be converted to a :class:`QtGui.QPixmap` when the item is displayed.</span>
 
 <span class="sd">        .. note:: The :py:attr:`~icon` is for use only in the publisher UI and</span>
 <span class="sd">            is a small representation of item being published. The icon should</span>
-<span class="sd">            not be confused with the item&#39;s :py:attr:`~thumbnail` which is</span>
+<span class="sd">            not be confused with the item's :py:attr:`~thumbnail` which is</span>
 <span class="sd">            typically associated with the resulting published item in Shotgun.</span>
 
 <span class="sd">        :param str path: Path to a file on disk</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Do not remove this. The original version of the API validated the icon</span>
         <span class="c1"># path and ensured it could be loaded into a pixmap.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_icon_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_image</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PublishItem.set_thumbnail_from_path"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishItem.set_thumbnail_from_path">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_thumbnail_from_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Sets the thumbnail for the item given a path to an image on disk. This</span>
 <span class="sd">        path will be converted to a :class:`QtGui.QPixmap` when the item is</span>
 <span class="sd">        displayed.</span>
 
 <span class="sd">        .. note:: The :py:attr:`~thumbnail` is typically associated with the</span>
 <span class="sd">            resulting published item in Shotgun. The :py:attr:`~thumbnail`</span>
-<span class="sd">            should not be confused with the item&#39;s :py:attr:`~icon` which is for</span>
+<span class="sd">            should not be confused with the item's :py:attr:`~icon` which is for</span>
 <span class="sd">            use only in the publisher UI and is a small representation of the</span>
 <span class="sd">            item.</span>
 
 <span class="sd">        :param str path: Path to a file on disk</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Do not remove this. The original version of the API validated the thumbnail</span>
         <span class="c1"># path and ensured it could be loaded into a pixmap.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_thumbnail_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_image</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Validates that the path points to an actual image.</span>
 
-<span class="sd">        If the file can&#39;t be loaded, a warning is logged and ``None`` is</span>
+<span class="sd">        If the file can't be loaded, a warning is logged and ``None`` is</span>
 <span class="sd">        returned.</span>
 
 <span class="sd">        :param str path: Path of the image to validate.</span>
@@ -621,11 +621,11 @@
 <span class="sd">        :returns: The path if the image was loaded, or if it is an</span>
 <span class="sd">            RLE-encoded TGA (Qt cannot render it directly, but FPT upload</span>
 <span class="sd">            still works). ``None`` if the image could not be loaded.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
-        <span class="c1"># We can&#39;t validate the path by creating a QPixmap, so bail out and</span>
+        <span class="c1"># We can't validate the path by creating a QPixmap, so bail out and</span>
         <span class="c1"># return the unvalidated path.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_qt_pixmap_usable</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">path</span>
@@ -638,43 +638,43 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">icon</span><span class="o">.</span><span class="n">isNull</span><span class="p">():</span>
                 <span class="k">return</span> <span class="n">path</span>
 
-            <span class="c1"># Qt can&#39;t render this format directly (e.g. RLE-encoded TGA).</span>
+            <span class="c1"># Qt can't render this format directly (e.g. RLE-encoded TGA).</span>
             <span class="c1"># Return the original path so FPT upload still works; display</span>
             <span class="c1"># fallback is handled in _get_image().</span>
             <span class="k">if</span> <span class="n">tga_image</span><span class="o">.</span><span class="n">is_tga_rle</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">path</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%r</span><span class="s2">: Could not load icon &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"</span><span class="si">%r</span><span class="s2">: Could not load icon '</span><span class="si">%s</span><span class="s2">': </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">active</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the item&#39;s active state if it has been explicitly set, `None``</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Returns the item's active state if it has been explicitly set, `None``</span>
 <span class="sd">        otherwise.</span>
 
 <span class="sd">        .. note:: This property is shared with :py:attr:`~checked` and can be</span>
 <span class="sd">            used interchangeably to make code more readable depending on the</span>
 <span class="sd">            context (with/without the UI).</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_active</span>
 
     <span class="nd">@active</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">active</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_active</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Explicitly set the active state.</span>
 
 <span class="sd">        There are 3 active states that can be supplied:</span>
 
 <span class="sd">        * ``True``: Set the item to be active</span>
 <span class="sd">        * ``False``: Set the item to be inactive</span>
-<span class="sd">        * ``None``: Clear the item&#39;s state, rely on inheritance within the tree</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        * ``None``: Clear the item's state, rely on inheritance within the tree</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_active</span> <span class="o">=</span> <span class="n">is_active</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">checked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Boolean property to indicate that this item should be checked by</span>
 <span class="sd">        default when displayed in a publish UI.</span>
 
@@ -693,7 +693,7 @@
 <span class="sd">        - If one or more child tasks return ``checked: True`` and the item</span>
 <span class="sd">          checked state is False, the item and all its sub-items will be</span>
 <span class="sd">          unchecked.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_active</span>
 
     <span class="nd">@checked</span><span class="o">.</span><span class="n">setter</span>
@@ -703,26 +703,26 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">children</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        A generator that yields the immediate :ref:`publish-api-item` children of</span>
 <span class="sd">        this item.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_children</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">child</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">descendants</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        A generator that yields all the :ref:`publish-api-item` children and their children</span>
 <span class="sd">        of this item.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visit_recursive</span><span class="p">():</span>
             <span class="k">yield</span> <span class="n">item</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_visit_recursive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Yields all the children from an item and their descendants.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">c</span>
             <span class="k">for</span> <span class="n">sub_c</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">descendants</span><span class="p">:</span>
@@ -730,14 +730,14 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">context</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        The :class:`sgtk.Context` associated with this item.</span>
 
 <span class="sd">        If no context has been explicitly set for this item, the context will be</span>
-<span class="sd">        inherited from the item&#39;s parent. If none of this item&#39;s parents have</span>
-<span class="sd">        had a context set explicitly, the publisher&#39;s launch context will be</span>
+<span class="sd">        inherited from the item's parent. If none of this item's parents have</span>
+<span class="sd">        had a context set explicitly, the publisher's launch context will be</span>
 <span class="sd">        returned.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_context</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_context</span>
@@ -748,49 +748,49 @@
 
     <span class="nd">@context</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_context</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Explicitly set the context of the item.</span>
 
 <span class="sd">        :param item_context:</span>
 <span class="sd">        :return:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_context</span> <span class="o">=</span> <span class="n">item_context</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">context_change_allowed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Enable/disable context change for this item.</span>
 
 <span class="sd">        Default is ``True``</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allows_context_change</span>
 
     <span class="nd">@context_change_allowed</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">context_change_allowed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">allow</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Enable/disable context change for this item.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_allows_context_change</span> <span class="o">=</span> <span class="n">allow</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        The description of the item if it has been explicitly set, ``None``</span>
 <span class="sd">        otherwise.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_description</span>
 
     <span class="nd">@description</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_description</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets a new description for the item with the given string.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Sets a new description for the item with the given string."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_description</span> <span class="o">=</span> <span class="n">new_description</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Boolean property which indicates whether this item and its children</span>
 <span class="sd">        should be enabled within a publish UI.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enabled</span>
 
     <span class="nd">@enabled</span><span class="o">.</span><span class="n">setter</span>
@@ -800,20 +800,20 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">expanded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Boolean property which indicates whether this item should be expanded to</span>
 <span class="sd">        show its children when shown in a publish UI.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span>
 
     <span class="nd">@expanded</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">expanded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_expanded</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setter for the expanded property.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Setter for the expanded property."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span> <span class="o">=</span> <span class="n">is_expanded</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">icon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        The associated icon, as a :class:`QtGui.QPixmap`.</span>
 
 <span class="sd">        The icon is a small square image used to represent the item visually</span>
@@ -830,15 +830,15 @@
 
 <span class="sd">        .. note:: The :py:attr:`~icon` is for use only in the publisher UI and</span>
 <span class="sd">            is a small representation of item being published. The icon should</span>
-<span class="sd">            not be confused with the item&#39;s :py:attr:`~thumbnail` which is</span>
+<span class="sd">            not be confused with the item's :py:attr:`~thumbnail` which is</span>
 <span class="sd">            typically associated with the resulting published item in Shotgun.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_image</span><span class="p">(</span>
             <span class="n">get_img_path</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_icon_path</span><span class="p">,</span>
             <span class="n">get_pixmap</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_icon_pixmap</span><span class="p">,</span>
-            <span class="n">set_pixmap</span><span class="o">=</span><span class="k">lambda</span> <span class="n">pixmap</span><span class="p">:</span> <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_icon_pixmap&quot;</span><span class="p">,</span> <span class="n">pixmap</span><span class="p">),</span>
+            <span class="n">set_pixmap</span><span class="o">=</span><span class="k">lambda</span> <span class="n">pixmap</span><span class="p">:</span> <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_icon_pixmap"</span><span class="p">,</span> <span class="n">pixmap</span><span class="p">),</span>
             <span class="n">get_parent_pixmap</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">icon</span><span class="p">,</span>
-            <span class="n">default_image_path</span><span class="o">=</span><span class="s2">&quot;:/tk_multi_publish2/item.png&quot;</span><span class="p">,</span>
+            <span class="n">default_image_path</span><span class="o">=</span><span class="s2">":/tk_multi_publish2/item.png"</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_image</span><span class="p">(</span>
@@ -849,7 +849,7 @@
         <span class="n">get_parent_pixmap</span><span class="p">,</span>
         <span class="n">default_image_path</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves the image for the icon or thumbnail of this item.</span>
 
 <span class="sd">        This method is written in a generic fashion in order to avoid complex logic duplicated</span>
@@ -863,7 +863,7 @@
 <span class="sd">        :param function set_pixmap: Function used to set the in-memory pixmap for the image.</span>
 <span class="sd">        :param function get_parent_pixmap: Function used to get the pixmap of the parent item.</span>
 <span class="sd">        :param str default_image_path: Path to the default pixmap.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># nothing to do if running without a UI</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_qt_pixmap_usable</span><span class="p">():</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -872,7 +872,7 @@
         <span class="kn">from</span><span class="w"> </span><span class="nn">sgtk.platform.qt</span><span class="w"> </span><span class="kn">import</span> <span class="n">QtGui</span>
 
         <span class="k">if</span> <span class="n">get_img_path</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">get_pixmap</span><span class="p">():</span>
-            <span class="c1"># we have a path but haven&#39;t yet created the pixmap. create it</span>
+            <span class="c1"># we have a path but haven't yet created the pixmap. create it</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">pixmap</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span><span class="p">(</span><span class="n">get_img_path</span><span class="p">())</span>
                 <span class="k">if</span> <span class="n">pixmap</span><span class="o">.</span><span class="n">isNull</span><span class="p">()</span> <span class="ow">and</span> <span class="n">tga_image</span><span class="o">.</span><span class="n">is_tga_rle</span><span class="p">(</span><span class="n">get_img_path</span><span class="p">()):</span>
@@ -880,7 +880,7 @@
                 <span class="n">set_pixmap</span><span class="p">(</span><span class="n">pixmap</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="s2">&quot;</span><span class="si">%r</span><span class="s2">: Could not load icon &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get_img_path</span><span class="p">(),</span> <span class="n">e</span><span class="p">)</span>
+                    <span class="s2">"</span><span class="si">%r</span><span class="s2">: Could not load icon '</span><span class="si">%s</span><span class="s2">': </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get_img_path</span><span class="p">(),</span> <span class="n">e</span><span class="p">)</span>
                 <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">get_pixmap</span><span class="p">():</span>
@@ -896,27 +896,27 @@
 
     <span class="nd">@icon</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">icon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pixmap</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the icon.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Sets the icon."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_icon_pixmap</span> <span class="o">=</span> <span class="n">pixmap</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_root</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns ``True`` if this the root :ref:`publish-api-item` in the tree,</span>
 <span class="sd">        ``False`` otherwise.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">local_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        A :class:`~.api.PublishData` instance that houses item properties local</span>
 <span class="sd">        to the current :class:`~.base_hooks.PublishPlugin` instance. As such, it</span>
 <span class="sd">        is expected that this property is only accessed from within a publish</span>
 <span class="sd">        plugin. Attempts to access this property outside of a publish plugin</span>
 <span class="sd">        will raise an ``AttributeError``.</span>
 
-<span class="sd">        This property behaves like the local storage in Python&#39;s threading</span>
+<span class="sd">        This property behaves like the local storage in Python's threading</span>
 <span class="sd">        module, except here, the data is local to the current publish plugin.</span>
 
 <span class="sd">        You can get and set values for this property using standard dictionary</span>
@@ -928,79 +928,79 @@
 <span class="sd">        Setting the values on :py:attr:`~properties` is a way to globally share</span>
 <span class="sd">        information between publish plugins. Values set via</span>
 <span class="sd">        :py:attr:`~local_properties` will only be applied during the execution</span>
-<span class="sd">        of the current plugin (similar to Python&#39;s ``threading.local`` storage).</span>
+<span class="sd">        of the current plugin (similar to Python's ``threading.local`` storage).</span>
 
 <span class="sd">        A common scenario to consider is when you have multiple publish plugins</span>
 <span class="sd">        acting on the same item. You may, for example, want the ``publish_name``</span>
 <span class="sd">        and ``publish_version`` properties to be shared by each plugin, while</span>
 <span class="sd">        setting the remaining properties on each plugin instance since they will</span>
-<span class="sd">        be specific to that plugin&#39;s output. Example:</span>
+<span class="sd">        be specific to that plugin's output. Example:</span>
 
 <span class="sd">        .. code-block:: python</span>
 
 <span class="sd">            # set shared properties on the item (potentially in the collector or</span>
 <span class="sd">            # the first publish plugin). these values will be available to all</span>
 <span class="sd">            # publish plugins attached to the item.</span>
-<span class="sd">            item.properties.publish_name = &quot;Gorilla&quot;</span>
-<span class="sd">            item.properties.publish_version = &quot;0003&quot;</span>
+<span class="sd">            item.properties.publish_name = "Gorilla"</span>
+<span class="sd">            item.properties.publish_version = "0003"</span>
 
 <span class="sd">            # set specific properties in subclasses of the base file publish</span>
 <span class="sd">            # (this class). first publish plugin...</span>
-<span class="sd">            item.local_properties.publish_template = &quot;asset_fbx_template&quot;</span>
-<span class="sd">            item.local_properties.publish_type = &quot;FBX File&quot;</span>
+<span class="sd">            item.local_properties.publish_template = "asset_fbx_template"</span>
+<span class="sd">            item.local_properties.publish_type = "FBX File"</span>
 
 <span class="sd">            # in another publish plugin...</span>
-<span class="sd">            item.local_properties.publish_template = &quot;asset_abc_template&quot;</span>
-<span class="sd">            item.local_properties.publish_type = &quot;Alembic Cache&quot;</span>
+<span class="sd">            item.local_properties.publish_template = "asset_abc_template"</span>
+<span class="sd">            item.local_properties.publish_type = "Alembic Cache"</span>
 
 <span class="sd">        .. note:: If you plan to serialize your publish tree, you may run into</span>
 <span class="sd">            issues if you add complex or non-serializable objects to the</span>
 <span class="sd">            properties dictionary. You should stick to data that can be</span>
 <span class="sd">            JSON-serialized.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_local_properties</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The display name of the item.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The display name of the item."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
 
     <span class="nd">@name</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_name</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets a new display name for the item with the given string.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Sets a new display name for the item with the given string."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">new_name</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">parent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The item&#39;s parent :ref:`publish-api-item`.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The item's parent :ref:`publish-api-item`."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">persistent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Boolean indicator that the item should not be removed when the tree is</span>
 <span class="sd">        cleared.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_persistent</span>
 
     <span class="nd">@persistent</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">persistent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_persistent</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the item to persistent or not.</span>
+<span class="w">        </span><span class="sd">"""Set the item to persistent or not.</span>
 
 <span class="sd">        Only top-level items can be set to persistent.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># It&#39;s not a crime to turn persistence off, so raise an error when</span>
+<span class="sd">        """</span>
+        <span class="c1"># It's not a crime to turn persistence off, so raise an error when</span>
         <span class="c1"># actually trying it on an invalid item.</span>
         <span class="k">if</span> <span class="n">is_persistent</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">is_root</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">TankError</span><span class="p">(</span><span class="s2">&quot;Only top-level tree items can be made persistent.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">TankError</span><span class="p">(</span><span class="s2">"Only top-level tree items can be made persistent."</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_persistent</span> <span class="o">=</span> <span class="n">is_persistent</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">properties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        A :class:`PublishData` instance where arbitrary data can be stored on</span>
-<span class="sd">        the item. The property itself is read-only. You can&#39;t assign a different</span>
+<span class="sd">        the item. The property itself is read-only. You can't assign a different</span>
 <span class="sd">        :class:`PublishData` instance.</span>
 
 <span class="sd">        This property provides a way to store data that is global across all</span>
@@ -1011,26 +1011,26 @@
 <span class="sd">        :py:attr:`~local_properties`.</span>
 
 <span class="sd">        This property can also be used to store data on an items that may then</span>
-<span class="sd">        be accessed by plugins attached to the item&#39;s children.</span>
+<span class="sd">        be accessed by plugins attached to the item's children.</span>
 
 <span class="sd">        .. note:: If you plan to serialize your publish tree, you may run into</span>
 <span class="sd">          issues if you add complex or non-serializable objects to the</span>
 <span class="sd">          properties dictionary. You should stick to data that can be</span>
 <span class="sd">          JSON-serialized.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_global_properties</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns a list of all :ref:`publish-api-task` instances attached to</span>
 <span class="sd">        this item.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">thumbnail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        The associated thumbnail, as a :class:`QtGui.QPixmap`.</span>
 
 <span class="sd">        The thumbnail is an image to represent the item visually such as a</span>
@@ -1044,28 +1044,28 @@
 
 <span class="sd">        .. note:: The :py:attr:`~thumbnail` is typically associated with the</span>
 <span class="sd">            resulting published item in Shotgun. The :py:attr:`~thumbnail`</span>
-<span class="sd">            should not be confused with the item&#39;s :py:attr:`~icon` which is for</span>
+<span class="sd">            should not be confused with the item's :py:attr:`~icon` which is for</span>
 <span class="sd">            use only in the publisher UI and is a small representation of the</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_image</span><span class="p">(</span>
             <span class="n">get_img_path</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thumbnail_path</span><span class="p">,</span>
             <span class="n">get_pixmap</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thumbnail_pixmap</span><span class="p">,</span>
-            <span class="n">set_pixmap</span><span class="o">=</span><span class="k">lambda</span> <span class="n">pixmap</span><span class="p">:</span> <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_thumbnail_pixmap&quot;</span><span class="p">,</span> <span class="n">pixmap</span><span class="p">),</span>
+            <span class="n">set_pixmap</span><span class="o">=</span><span class="k">lambda</span> <span class="n">pixmap</span><span class="p">:</span> <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_thumbnail_pixmap"</span><span class="p">,</span> <span class="n">pixmap</span><span class="p">),</span>
             <span class="n">get_parent_pixmap</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">thumbnail</span><span class="p">,</span>
             <span class="n">default_image_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="nd">@thumbnail</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">thumbnail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pixmap</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the thumbnail&quot;&quot;&quot;</span>
-        <span class="c1"># If we&#39;re changing the thumbnail, the cached path is no longer valid.</span>
+<span class="w">        </span><span class="sd">"""Sets the thumbnail"""</span>
+        <span class="c1"># If we're changing the thumbnail, the cached path is no longer valid.</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thumbnail_pixmap</span> <span class="o">!=</span> <span class="n">pixmap</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_current_temp_file_path</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_thumbnail_pixmap</span> <span class="o">=</span> <span class="n">pixmap</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">thumbnail_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Boolean property to indicate whether thumbnails can be interacted with</span>
 <span class="sd">        for items displayed in a publish UI.</span>
 
@@ -1076,7 +1076,7 @@
 <span class="sd">          screen capture will be disabled.</span>
 <span class="sd">        * If ``False`` and no thumbnail has been specified, no thumbnail will</span>
 <span class="sd">          appear in the UI.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thumbnail_enabled</span>
 
     <span class="nd">@thumbnail_enabled</span><span class="o">.</span><span class="n">setter</span>
@@ -1086,43 +1086,43 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">thumbnail_explicit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Boolean property to indicate that a thumbnail has been explicitly set.</span>
 <span class="sd">        When this flag is on, the summary thumbnail should be ignored for this</span>
 <span class="sd">        this specific item.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thumbnail_explicit</span>
 
     <span class="nd">@thumbnail_explicit</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">thumbnail_explicit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enabled</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setter for _thumbnail_explicit.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Setter for _thumbnail_explicit."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_thumbnail_explicit</span> <span class="o">=</span> <span class="n">enabled</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">type_spec</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        The type specification for this item. This specification typically</span>
-<span class="sd">        follows a hierarchical dot notation. For example, &#39;file&#39;, &#39;file.image&#39;,</span>
-<span class="sd">        or &#39;file.movie&#39;. This allows for a system whereby some publish plugins</span>
-<span class="sd">        act on &#39;file.*&#39; items (publish to PTR for example) while other plugins</span>
+<span class="sd">        follows a hierarchical dot notation. For example, 'file', 'file.image',</span>
+<span class="sd">        or 'file.movie'. This allows for a system whereby some publish plugins</span>
+<span class="sd">        act on 'file.*' items (publish to PTR for example) while other plugins</span>
 <span class="sd">        may perform actions on a more specific set of items (for example</span>
-<span class="sd">        uploading the media represented by &#39;file.image&#39; or &#39;file.movie&#39; items to</span>
+<span class="sd">        uploading the media represented by 'file.image' or 'file.movie' items to</span>
 <span class="sd">        PTR as Versions). This is how the default integrations use this property</span>
 <span class="sd">        on collected items.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_spec</span>
 
     <span class="nd">@type_spec</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">type_spec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_type_spec</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the type spec for this object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Sets the type spec for this object."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_type_spec</span> <span class="o">=</span> <span class="n">new_type_spec</span>
 
-    <span class="c1"># leaving this as a property() definition because it is called &#39;type&#39;.</span>
-    <span class="c1"># don&#39;t want to risk bad mojo with Python trying to define `def type`.</span>
+    <span class="c1"># leaving this as a property() definition because it is called 'type'.</span>
+    <span class="c1"># don't want to risk bad mojo with Python trying to define `def type`.</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        .. warning:: **DEPRECATED**.  Use :py:attr:`~type_spec` instead</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_spec</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_set_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_type_spec</span><span class="p">):</span>
@@ -1133,59 +1133,59 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">type_display</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        The display string for this item&#39;s type.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        The display string for this item's type.</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_display</span>
 
     <span class="nd">@type_display</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">type_display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_type_display</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the type display for this object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the type display for this object."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_type_display</span> <span class="o">=</span> <span class="n">new_type_display</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">display_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        .. warning:: **DEPRECATED**.  Use :py:attr:`~type_display` instead</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_display</span>
 
     <span class="nd">@display_type</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">display_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_type_display</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;DEPRECATED setter.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""DEPRECATED setter."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type_display</span> <span class="o">=</span> <span class="n">new_type_display</span>
 
     <span class="c1">############################################################################</span>
     <span class="c1"># internal methods</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_local_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return properties local to the currently executing publish plugin.</span>
 
 <span class="sd">        This is done by walking up the call stack to find a caller that is a</span>
 <span class="sd">        Hook. This method will raise if no caller in the stack is a hook.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">hook_object</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">for</span> <span class="n">frame_record</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">():</span>
             <span class="n">frame_object</span> <span class="o">=</span> <span class="n">frame_record</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">frame_object</span><span class="p">:</span>
-                <span class="n">calling_object</span> <span class="o">=</span> <span class="n">frame_object</span><span class="o">.</span><span class="n">f_locals</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;self&quot;</span><span class="p">)</span>
+                <span class="n">calling_object</span> <span class="o">=</span> <span class="n">frame_object</span><span class="o">.</span><span class="n">f_locals</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"self"</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">calling_object</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">calling_object</span><span class="p">,</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">hook</span><span class="o">.</span><span class="n">Hook</span><span class="p">):</span>
                     <span class="n">hook_object</span> <span class="o">=</span> <span class="n">calling_object</span>
                     <span class="k">break</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">hook_object</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
-                <span class="s2">&quot;Could not determine the current publish plugin when accessing &quot;</span>
-                <span class="s2">&quot;an item&#39;s local properties. Item: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,)</span>
+                <span class="s2">"Could not determine the current publish plugin when accessing "</span>
+                <span class="s2">"an item's local properties. Item: </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,)</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">hook_object</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">hook_object</span><span class="p">,</span> <span class="s2">"id"</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
-                <span class="s2">&quot;Could not determine the id for this publish plugin. This is &quot;</span>
-                <span class="s2">&quot;required for storing local properties. Plugin: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">hook_object</span><span class="p">,)</span>
+                <span class="s2">"Could not determine the id for this publish plugin. This is "</span>
+                <span class="s2">"required for storing local properties. Plugin: </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">hook_object</span><span class="p">,)</span>
             <span class="p">)</span>
 
         <span class="n">plugin_id</span> <span class="o">=</span> <span class="n">hook_object</span><span class="o">.</span><span class="n">id</span>
@@ -1193,15 +1193,15 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_properties</span><span class="p">[</span><span class="n">plugin_id</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_traverse_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        A recursive method for generating all items in the tree, depth-first.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># yield each child item</span>
         <span class="k">for</span> <span class="n">child_item</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">child_item</span>
 
-            <span class="c1"># now recurse over the each child&#39;s children. the recursion will</span>
+            <span class="c1"># now recurse over the each child's children. the recursion will</span>
             <span class="c1"># yield  the grand children back to this method. we need to yield</span>
             <span class="c1"># these back to the calling method. in later versions of Python, the</span>
             <span class="c1"># `yield from` could be used to make this cleaner/clearer</span>

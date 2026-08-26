@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>tk_multi_publish2.api.plugins.setting &mdash; tk-multi-publish2 v2.11.0 documentation</title>
+  <title>tk_multi_publish2.api.plugins.setting &mdash; tk-multi-publish2 v2.11.1 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
@@ -83,7 +83,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.11.0.<br>
+    <b>tk-multi-publish2</b> v2.11.1.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -131,7 +131,7 @@
 <span class="c1">#</span>
 <span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
 <span class="c1">#</span>
-<span class="c1"># This work is provided &quot;AS IS&quot; and subject to the Shotgun Pipeline Toolkit</span>
+<span class="c1"># This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit</span>
 <span class="c1"># Source Code License included in this distribution package. See LICENSE.</span>
 <span class="c1"># By accessing, using, copying or modifying this work you indicate your</span>
 <span class="c1"># agreement to the Shotgun Pipeline Toolkit Source Code License. All rights</span>
@@ -141,13 +141,13 @@
 
 
 <div class="viewcode-block" id="PluginSetting"><a class="viewcode-back" href="../../../../api.html#tk_multi_publish2.api.PluginSetting">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">PluginSetting</span><span class="p">(</span><span class="n">PublishData</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This class provides an interface to settings defined for a given</span>
 <span class="sd">    :ref:`publish-api-task`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">default_value</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This class derives from :ref:`publish-api-data`.  A few special keys</span>
 <span class="sd">        are set by default and are accessible after initialization. Those keys</span>
 <span class="sd">        are:</span>
@@ -161,7 +161,7 @@
 <span class="sd">        .. note:: There is typically no need to create instances of this class</span>
 <span class="sd">            manually. Each :ref:`publish-api-task` will expose a dictionary of</span>
 <span class="sd">            configured ``PluginSettings``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -173,7 +173,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">string_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The setting value as a string.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The setting value as a string."""</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
 </pre></div>
 
