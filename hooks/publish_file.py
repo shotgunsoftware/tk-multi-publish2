@@ -1231,16 +1231,27 @@ class BasicFilePublishPlugin(HookBaseClass):
         entity = item.context.entity or item.context.project
         entity_type = entity["type"]
         # When creating from project context, sg entity related parameters are not relevant
-        sg_entity_type = entity_type if entity_type != "Project" else None
-        sg_entity_name = entity["name"] if entity_type != "Project" else None
-        sg_pipeline_step = (
-            item.context.step["name"] if entity_type != "Project" else None
-        )
+        sg_entity = sg_pipeline_step = None
+        if entity_type != "Project":
+            # Create sg entity dict as expected by CreateGenericInputs class
+            sg_entity = {
+                "name": entity["name"],
+                "id": entity["id"],
+                "type": entity_type,
+            }
+            # Must re-query step info to get its entity type
+            sg = sgtk.platform.current_engine().shotgun
+            sg_pipeline_step = sg.find_one(
+                "Step",
+                [["id", "is", item.context.step["id"]]],
+                ["entity_type"],
+            )
+            sg_pipeline_step["name"] = item.context.step["name"]
+            self.logger.info(f'PIPELINE STEP: {sg_pipeline_step}')
 
         return dict(
             am_project_id=am_project_id,
-            sg_entity_name=sg_entity_name,
-            sg_entity_type=sg_entity_type,
+            sg_entity=sg_entity,
             sg_pipeline_step=sg_pipeline_step,
             source_path=item.get_property("path"),
         )

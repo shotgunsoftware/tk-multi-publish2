@@ -18,6 +18,7 @@ import sgtk
 from tank_vendor.flow_data_sdk.base import model as medm_model
 from tank_vendor.flow_integration_sdk import (
     dependency,
+    globals,
     publish,
     sandbox,
     schema,
@@ -232,7 +233,7 @@ def publish_new_generic_workfile(inputs: CreateGenericInputs) -> PublishInfo:
     See documentation for CreateGenericInputs for expected inputs.
 
     .. note:: Inputs can be passed in as a CreateGenericInputs object assigned to the keyword
-              argument _inputs_ or as a set of individual parameters. (e.g. sg_entity_name="my_name")
+              argument _inputs_ or as a set of individual parameters. (e.g. am_project_id=<project id>)
     .. note:: Generic assets do not pass through sandbox!
 
     Returns:
@@ -248,7 +249,10 @@ def publish_new_generic_workfile(inputs: CreateGenericInputs) -> PublishInfo:
 
     if not inputs.parent_id:
         # Create any necessary hierarchy above current asset
-        parent = create.create_asset_hierarchy(inputs)
+        if inputs.sg_entity:
+            parent = create.create_federated_hierarchy(inputs)
+        else:
+            parent = create.create_generic_hierarchy(inputs)
     else:
         # Use override parent
         parent = FlowAsset(inputs.parent_id)
@@ -338,6 +342,20 @@ def publish_generic_revision(inputs: GenericPublishInputs) -> PublishInfo:
         comment=inputs.comment,
         type_ids=asset.type_ids,
     )
+    # If a FOR_PIPELINE_STEP_TYPE component exists on the asset
+    # we must carry it over to maintain its SG context
+    orig_pipestep_comp = asset.find_component(
+        type_id=schema.get_schema_id(globals.FOR_PIPELINE_STEP_TYPE)
+    )
+    if orig_pipestep_comp:
+        deliverable_id = orig_pipestep_comp.properties["targetDeliverable"]
+        pipeline_step_id = orig_pipestep_comp.properties["targetStep"]
+        components.append(
+            publish.ForPipelineStepComponentSpec(
+                deliverable_id=deliverable_id,
+                pipeline_step_id=pipeline_step_id,
+            )
+        )
 
     # Do publish
     medm_asset = publish.publish_new_revision(
@@ -571,6 +589,22 @@ def _create_generic_workfile_asset(
         comment=inputs.comment,
         type_ids=[type_id],
     )
+    # If we're given an sg context, add a component to designate that
+    if inputs.sg_entity and inputs.sg_pipeline_step:
+        project_id = inputs.am_project_id
+        sg_entity = inputs.sg_entity
+        sg_pipeline_step = inputs.sg_pipeline_step
+        deliverable = create._find_deliverable(project_id, sg_entity)
+        pipeline_step = create._find_pipeline_step(project_id, sg_pipeline_step)
+        if not deliverable or not pipeline_step:
+            msg = "MEDM proxies for sg context could not be found."
+            raise CreateAssetError(data=inputs.asdict(), details=msg)
+        components.append(
+            publish.ForPipelineStepComponentSpec(
+                pipeline_step_id=pipeline_step.id,
+                deliverable_id=deliverable.id,
+            )
+        )
 
     # Create a new asset on remote
     logger.info(
