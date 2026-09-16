@@ -1350,13 +1350,15 @@ class BasicFilePublishPlugin(HookBaseClass):
                     )
                     return False
             elif not self._flow_asset_name(settings):
-                # Creating a new generic asset requires an asset name.
-                self.logger.error(
+                # Creating a new generic asset requires an asset name. Raise so
+                # the reason is surfaced on the task (not just buried in the log).
+                error_msg = (
                     "An Asset Name is required to publish a new Flow AM generic "
-                    "asset. Enter an Asset Name or select an existing Flow AM "
-                    "Asset."
+                    "asset. Enter an Asset Name, or select an existing Flow AM "
+                    "Asset to publish a new revision instead."
                 )
-                return False
+                self.logger.error(error_msg)
+                raise Exception(error_msg)
         else:
             draft_id = self._flow_draft_id
             if not draft_id:
