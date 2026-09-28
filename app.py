@@ -51,6 +51,9 @@ class MultiPublish2(sgtk.platform.Application):
         pre_publish_hook_path = self.get_setting(self.CONFIG_PRE_PUBLISH_HOOK_PATH)
         self.pre_publish_hook = self.create_hook_instance(pre_publish_hook_path)
 
+        if not self.engine.has_ui:
+            return
+
         # register command
         cb = lambda: tk_multi_publish2.show_dialog(self)
         menu_caption = "%s..." % display_name

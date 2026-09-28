@@ -13,7 +13,6 @@ import sgtk
 from .api import PublishManager  # noqa
 from . import base_hooks  # noqa
 from . import util  # noqa
-from . import publish_tree_widget  # noqa
 
 
 def show_dialog(app):
