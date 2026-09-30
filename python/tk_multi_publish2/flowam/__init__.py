@@ -23,6 +23,7 @@ try:
     )
     from .publish import (  # noqa: F401
         generate_derivative,
+        list_generic_assets,
         publish_dcc_draft,
         publish_generic_revision,
         publish_new_generic_workfile,

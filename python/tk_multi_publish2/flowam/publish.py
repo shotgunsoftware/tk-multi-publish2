@@ -353,6 +353,74 @@ def publish_generic_revision(inputs: GenericPublishInputs) -> PublishInfo:
 
 
 @utils.trace
+def list_generic_assets(
+    am_project_id: str,
+    sg_entity_type: str | None = None,
+    sg_entity_name: str | None = None,
+    sg_pipeline_step: str | None = None,
+) -> list[FlowAsset]:
+    """Return the existing generic workfile assets for a given context.
+
+    Walks the same folder hierarchy that :func:`tank.flowam.create.create_asset_hierarchy`
+    would create, but strictly read-only: if any folder in the path is missing,
+    an empty list is returned. When ``sg_entity_name`` is omitted the lookup is
+    performed at the project level (the flat ``Generic`` folder).
+
+    Args:
+        am_project_id: The AM project id to search within.
+        sg_entity_type: SG entity type (e.g. "Shot", "Asset"). Optional.
+        sg_entity_name: Name of the SG entity. Optional (project-level when absent).
+        sg_pipeline_step: Name/code of the SG pipeline step. Required with
+                          ``sg_entity_name``.
+
+    Returns:
+        A list of generic workfile :class:`FlowAsset` objects scoped to the
+        context, sorted by name. Empty when the context resolves to no assets.
+    """
+    logger = utils.get_logger(__name__)
+
+    type_id = schema.get_schema_id(create.GENERIC_WORKFILE_TYPE)
+    if not type_id:
+        # Without a resolvable type id we cannot reliably distinguish generic
+        # workfile assets from folders / DCC root assets, so bail out safely.
+        logger.warning(
+            "Could not resolve schema id for generic workfile type; "
+            "returning no generic assets."
+        )
+        return []
+
+    try:
+        project = FlowProject(am_project_id)
+    except FlowError:
+        logger.warning(f"Invalid Flow project id provided: {am_project_id}")
+        return []
+
+    # Resolve the top-level folder, mirroring get_or_create_root_folder().
+    if sg_entity_type == create.SHOT_TYPE:
+        root_folder = project.find_child(create.SHOT_TYPE)
+    elif sg_entity_type == create.ASSET_TYPE:
+        root_folder = project.find_child(create.ASSET_FOLDER)
+    else:
+        root_folder = project.find_child(create.GENERIC_FOLDER)
+    if not root_folder:
+        return []
+
+    if sg_entity_name:
+        container = root_folder.find_child(sg_entity_name)
+        if not container:
+            return []
+        parent = container.find_child(sg_pipeline_step)
+        if not parent:
+            return []
+    else:
+        # Project-level generic assets live directly under the Generic folder.
+        parent = root_folder
+
+    assets = parent.find_children(type_id=type_id)
+    return sorted(assets, key=lambda asset: asset.name.lower())
+
+
+@utils.trace
 def validate_generic_asset(asset_id: str) -> tuple[bool, str]:
     """Validate that the given asset id corresponds to a generic workfile asset.
 
@@ -548,8 +616,9 @@ def _create_generic_workfile_asset(
             msg = f"Source path does not exist: {source_path}"
             raise CreateAssetError(data=inputs.asdict(), details=msg)
 
-    # Use the name of the source file for generic assets
-    name = _get_generic_name(source_paths)
+    # Use the explicit name when provided, otherwise derive it from the source
+    # file name for generic assets.
+    name = inputs.name or _get_generic_name(source_paths)
 
     # Ensure thumbnail path is valid
     thumbnail_path = inputs.thumbnail_path

@@ -52,6 +52,9 @@ class CreateGenericInputs(flowam_utils.BaseInputs):
     sg_pipeline_step: str | None = None
     #: Description stored with the AM asset.
     description: str = ""
+    #: Optional explicit name for the new asset.  When empty, the asset name is
+    #: derived from the source file name.
+    name: str = ""
     #: Path to the thumbnail file stored with the AM asset.
     thumbnail_path: str = ""
     #: Comment stored with the new revision.
