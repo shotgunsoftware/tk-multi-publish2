@@ -472,7 +472,7 @@ class PublishTreeWidget(QtGui.QTreeWidget):
         :param plugin: Plugin for which tasks should be manipulated
         :param state: checkstate to set.
         """
-        logger.debug("Setting state %d for all plugin %s" % (state, plugin))
+        logger.debug("Setting state %s for all plugin %s" % (state, plugin))
 
         def _check_r(parent):
             for child_index in range(parent.childCount()):
