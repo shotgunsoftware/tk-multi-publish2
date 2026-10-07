@@ -48,6 +48,14 @@ configuration:
            identification, publish display name, image sequence paths, etc."
         default_value: "{self}/path_info.py"
 
+    tree_node_clicked:
+        type: hook
+        default_value: "{self}/tree_node_clicked.py"
+        description:
+          "Actions to take for clicking on a tree node (an instance of subclass
+          of TreeNodeBase). The methods 'single' and 'double' are called
+          respectively for single and double clicks."
+
     thumbnail_generator:
         type: hook
         description:
