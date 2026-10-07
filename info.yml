@@ -132,6 +132,19 @@ configuration:
           "If true the app dialog will be opened in modal window mode, else if
            false (default) the dialog will be opened in non-modal window mode."
 
+    fit_width_to_items:
+        type: str
+        default_value: "never"
+        description: |
+            Determines when the publish dialog should automatically resize its width
+            to fit the contents of the items tree. Valid values are:
+
+            - 'never'   (default) The dialog will never auto resize its width
+            - 'initial' The dialog will auto resize its width once,
+                        when the items tree is first populated
+            - 'always'  The dialog will auto resize its width every time the items
+                        tree is modified (items added/removed)
+
 
 # the Shotgun fields that this app needs in order to operate correctly
 requires_shotgun_fields:
