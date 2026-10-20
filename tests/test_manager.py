@@ -8,6 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import logging
 import os
 
 from publish_api_test_base import PublishApiTestBase
@@ -42,6 +43,37 @@ class TestManager(PublishApiTestBase):
         # Turning persistence off on an item should not collect it.
         next(self.manager.tree.root_item.children).persistent = False
         self.assertEqual(self.manager.collected_files, [D_PNG])
+
+    def test_hook_logs_reach_publish_logger(self):
+        """
+        Ensures the hooks log through the publish logger supplied to the
+        manager, so that the Publisher can display their records.
+        """
+        publish_logger = logging.getLogger("test_hook_logs_reach_publish_logger")
+        manager = self.app.create_publish_manager(publish_logger)
+
+        with self.assertLogs(publish_logger, level=logging.DEBUG) as logs:
+            manager.collect_session()
+            manager.validate()
+
+        messages = [record.getMessage() for record in logs.records]
+        self.assertIn("Executing local plugin validate.", messages)
+        self.assertIn("Executing post validate hook method...", messages)
+
+    def test_hook_logs_without_publish_logger(self):
+        """
+        Ensures the hooks keep the standard hook loggers when no publish logger
+        is supplied to the manager.
+        """
+        hook_logger = logging.getLogger("%s.hook" % self.app.logger.name)
+
+        with self.assertLogs(hook_logger, level=logging.DEBUG) as logs:
+            self.manager.collect_session()
+            self.manager.validate()
+
+        messages = [record.getMessage() for record in logs.records]
+        self.assertIn("Executing local plugin validate.", messages)
+        self.assertIn("Executing post validate hook method...", messages)
 
     def test_publish_workflow(self):
         """
