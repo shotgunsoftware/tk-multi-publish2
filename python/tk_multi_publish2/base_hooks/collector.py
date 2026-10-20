@@ -21,6 +21,9 @@ class CollectorPlugin(HookBaseClass):
     to gather items to be published within the current DCC session.
     """
 
+    # set by the publisher so that records reach its log handler
+    _publish_logger = None
+
     @property
     def id(self):
         """
@@ -34,6 +37,23 @@ class CollectorPlugin(HookBaseClass):
         Allows to set the unique string identifying this plugin.
         """
         self._id = new_id
+
+    @property
+    def logger(self):
+        """
+        Standard python :class:`~logging.Logger` for this plugin.
+
+        When run by the Publisher, records logged here are displayed in its
+        progress details.
+        """
+        return self._publish_logger or super().logger
+
+    @logger.setter
+    def logger(self, new_logger):
+        """
+        Allows to set the logger used by this plugin.
+        """
+        self._publish_logger = new_logger
 
     ############################################################################
     # Collector properties

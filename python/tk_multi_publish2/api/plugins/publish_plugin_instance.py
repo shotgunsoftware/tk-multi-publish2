@@ -26,19 +26,23 @@ class PublishPluginInstance(PluginInstanceBase):
     Each plugin object reflects an instance in the app configuration.
     """
 
-    def __init__(self, name, path, settings, publish_logger=None):
+    def __init__(
+        self, name, path, settings, publish_logger=None, hook_logger_parent=None
+    ):
         """
         :param name: Name to be used for this plugin instance
         :param path: Path to publish plugin hook
         :param settings: Dictionary of plugin-specific settings
         :param publish_logger: a logger object that will be used by the hook
+        :param hook_logger_parent: Optional logger to parent the hook's logger
+            under. If not supplied, the hook uses the standard hook logger.
         """
         # all plugins need a hook and a name
         self._name = name
 
         self._icon_pixmap = None
 
-        super().__init__(path, settings, publish_logger)
+        super().__init__(path, settings, publish_logger, hook_logger_parent)
 
     def _create_hook_instance(self, path):
         """

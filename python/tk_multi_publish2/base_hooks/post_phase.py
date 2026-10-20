@@ -24,6 +24,26 @@ class PostPhaseHook(HookBaseClass):
     manipulate it.
     """
 
+    # set by the publisher so that records reach its log handler
+    _publish_logger = None
+
+    @property
+    def logger(self):
+        """
+        Standard python :class:`~logging.Logger` for this hook.
+
+        When run by the Publisher, records logged here are displayed in its
+        progress details.
+        """
+        return self._publish_logger or super().logger
+
+    @logger.setter
+    def logger(self, new_logger):
+        """
+        Allows to set the logger used by this hook.
+        """
+        self._publish_logger = new_logger
+
     def post_validate(self, publish_tree):
         """
         This method is executed after the validation pass has completed for each
