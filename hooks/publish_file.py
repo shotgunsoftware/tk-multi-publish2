@@ -1225,9 +1225,9 @@ class BasicFilePublishPlugin(HookBaseClass):
         asset creation. Called by ``_publish_flow_create_asset`` to populate
         ``CreateGenericInputs``.
         """
-        am_project_id = getattr(
-            sgtk.platform.current_engine().context, "flow_project_id", None
-        )
+        context = sgtk.platform.current_engine().context
+        am_project_id = context.flow_project_id
+        federated = context.flow_federated_project
         entity = item.context.entity or item.context.project
         entity_type = entity["type"]
         # When creating from project context, sg entity related parameters are not relevant
@@ -1247,10 +1247,12 @@ class BasicFilePublishPlugin(HookBaseClass):
                 ["entity_type"],
             )
             sg_pipeline_step["name"] = item.context.step["name"]
-            self.logger.info(f'PIPELINE STEP: {sg_pipeline_step}')
+            sg_pipeline_step["id"] = item.context.step["id"]
+            self.logger.info(f"PIPELINE STEP: {sg_pipeline_step}")
 
         return dict(
             am_project_id=am_project_id,
+            federated=federated,
             sg_entity=sg_entity,
             sg_pipeline_step=sg_pipeline_step,
             source_path=item.get_property("path"),
@@ -1285,6 +1287,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
         from tank_vendor.flow_integration_sdk.objects import FlowProject
 
+        context = sgtk.platform.current_engine().context
         parent_id = item.properties.get("flow_parent_id", "")
         asset_id = item.properties.get("flow_asset_id")
         project_id = FlowProject.get_project_id(parent_id)
@@ -1322,6 +1325,7 @@ class BasicFilePublishPlugin(HookBaseClass):
             # Create new generic asset
             flow_args["parent_id"] = parent_id
             flow_args["am_project_id"] = project_id
+            flow_args["federated"] = context.flow_federated_project
             create_inputs = self.parent.flowam.CreateGenericInputs(**flow_args)
 
             self.logger.debug(

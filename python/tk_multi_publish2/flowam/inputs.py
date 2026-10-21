@@ -39,6 +39,8 @@ class CreateGenericInputs(flowam_utils.BaseInputs):
 
     #: The AM project under which the asset should be added.
     am_project_id: str = ""
+    #: Project is Flow-FPT federated
+    federated: bool = False
     # Create mode determines the source of the initial asset file(s).
     create_mode: create.CreateMode = create.CreateMode.GENERIC
     #: Path(s) to the source file(s) to copy directly to the asset.
@@ -95,7 +97,10 @@ class CreateGenericInputs(flowam_utils.BaseInputs):
                 msg = msg % "name"
                 raise CreateAssetError(data=self.asdict(), details=msg)
             if "entity_type" not in self.sg_pipeline_step:
-                msg = msg % "name"
+                msg = msg % "entity_type"
+                raise CreateAssetError(data=self.asdict(), details=msg)
+            if "id" not in self.sg_pipeline_step:
+                msg = msg % "id"
                 raise CreateAssetError(data=self.asdict(), details=msg)
 
             if not self.sg_entity:

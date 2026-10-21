@@ -250,7 +250,10 @@ def publish_new_generic_workfile(inputs: CreateGenericInputs) -> PublishInfo:
     if not inputs.parent_id:
         # Create any necessary hierarchy above current asset
         if inputs.sg_entity:
-            parent = create.create_federated_hierarchy(inputs)
+            if inputs.federated:
+                parent = create.create_federated_hierarchy(inputs)
+            else:
+                parent = create.create_default_hierarchy(inputs)
         else:
             parent = create.create_generic_hierarchy(inputs)
     else:
@@ -590,7 +593,7 @@ def _create_generic_workfile_asset(
         type_ids=[type_id],
     )
     # If we're given an sg context, add a component to designate that
-    if inputs.sg_entity and inputs.sg_pipeline_step:
+    if inputs.sg_entity and inputs.sg_pipeline_step and inputs.federated:
         project_id = inputs.am_project_id
         sg_entity = inputs.sg_entity
         sg_pipeline_step = inputs.sg_pipeline_step
