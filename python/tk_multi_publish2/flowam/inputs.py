@@ -28,8 +28,8 @@ class CreateGenericInputs(flowam_utils.BaseInputs):
 
     - **Project level** - leave all ``sg_entity_*`` fields as ``None``.
       The asset lands under a flat ``GENERIC FOLDER`` at the project root.
-    - **Entity level** (Shot, Asset, etc.) - populate ``sg_entity_type``,
-      ``sg_entity_name``, and ``sg_pipeline_step``.
+    - **Entity level** (Shot, Asset, etc.) - populate ``sg_entity``,
+      and ``sg_pipeline_step``.
       The asset lands under the matching entity -> pipeline step -> task
       hierarchy in AM.
 
@@ -39,17 +39,18 @@ class CreateGenericInputs(flowam_utils.BaseInputs):
 
     #: The AM project under which the asset should be added.
     am_project_id: str = ""
+    #: Project is Flow-FPT federated
+    federated: bool = False
     # Create mode determines the source of the initial asset file(s).
     create_mode: create.CreateMode = create.CreateMode.GENERIC
     #: Path(s) to the source file(s) to copy directly to the asset.
     source_path: str | list[str] = ""
-    #: SG entity type (e.g. "Shot", "Asset"). Optional — project-level publish
-    #: when absent.
-    sg_entity_type: str | None = None
-    #: Name of the SG entity.
-    sg_entity_name: str | None = None
-    #: Name/code of the SG pipeline step.
-    sg_pipeline_step: str | None = None
+    #: SG entity object (returned as a dict from SG API)
+    #: Should minimally contain keys: type, name, id
+    sg_entity: dict | None = None
+    #: SG step object (returned as a dict from SG API)
+    #: Should minimally contain keys: name, entity_type
+    sg_pipeline_step: dict | None = None
     #: Description stored with the AM asset.
     description: str = ""
     #: Optional explicit name for the new asset.  When empty, the asset name is
@@ -76,16 +77,38 @@ class CreateGenericInputs(flowam_utils.BaseInputs):
             raise CreateAssetError(
                 data=self.asdict(), details="No source path provided."
             )
-        if self.sg_entity_name and not self.sg_entity_type:
-            raise CreateAssetError(
-                data=self.asdict(),
-                details="sg_entity_name requires sg_entity_type.",
-            )
-        if self.sg_entity_name and not self.sg_pipeline_step:
-            raise CreateAssetError(
-                data=self.asdict(),
-                details="sg_entity_name requires sg_pipeline_step.",
-            )
+        # Ensure sg_entity contains required keys and pipeline step is provided
+        if self.sg_entity:
+            msg = "Incomplete sg_entity dict provided. '%s' key is required."
+            if "name" not in self.sg_entity:
+                msg = msg % "name"
+                raise CreateAssetError(data=self.asdict(), details=msg)
+            elif "id" not in self.sg_entity:
+                msg = msg % "id"
+                raise CreateAssetError(data=self.asdict(), details=msg)
+            elif "type" not in self.sg_entity:
+                msg = msg % "type"
+                raise CreateAssetError(data=self.asdict(), details=msg)
+
+            if not self.sg_pipeline_step:
+                msg = "Incomplete sg context provided. Must provide sg_pipeline_step."
+                raise CreateAssetError(data=self.asdict(), details=msg)
+        # Ensure sg_pipeline_step contains required keys and entity is provided
+        if self.sg_pipeline_step:
+            msg = "Incomplete sg_pipeline_step dict provided. '%s' key is required."
+            if "name" not in self.sg_pipeline_step:
+                msg = msg % "name"
+                raise CreateAssetError(data=self.asdict(), details=msg)
+            if "entity_type" not in self.sg_pipeline_step:
+                msg = msg % "entity_type"
+                raise CreateAssetError(data=self.asdict(), details=msg)
+            if "id" not in self.sg_pipeline_step:
+                msg = msg % "id"
+                raise CreateAssetError(data=self.asdict(), details=msg)
+
+            if not self.sg_entity:
+                msg = "Incomplete sg context provided. Must provide sg_entity."
+                raise CreateAssetError(data=self.asdict(), details=msg)
 
 
 @dataclass

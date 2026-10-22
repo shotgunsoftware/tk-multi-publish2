@@ -1428,22 +1428,34 @@ class BasicFilePublishPlugin(HookBaseClass):
         asset creation. Called by ``_publish_flow_create_asset`` to populate
         ``CreateGenericInputs``.
         """
-        am_project_id = getattr(
-            sgtk.platform.current_engine().context, "flow_project_id", None
-        )
+        context = sgtk.platform.current_engine().context
+        am_project_id = context.flow_project_id
+        federated = context.flow_federated_project
         entity = item.context.entity or item.context.project
         entity_type = entity["type"]
         # When creating from project context, sg entity related parameters are not relevant
-        sg_entity_type = entity_type if entity_type != "Project" else None
-        sg_entity_name = entity["name"] if entity_type != "Project" else None
-        sg_pipeline_step = (
-            item.context.step["name"] if entity_type != "Project" else None
-        )
+        sg_entity = sg_pipeline_step = None
+        if entity_type != "Project":
+            # Create sg entity dict as expected by CreateGenericInputs class
+            sg_entity = {
+                "name": entity["name"],
+                "id": entity["id"],
+                "type": entity_type,
+            }
+            # Must re-query step info to get its entity type
+            sg = sgtk.platform.current_engine().shotgun
+            sg_pipeline_step = sg.find_one(
+                "Step",
+                [["id", "is", item.context.step["id"]]],
+                ["entity_type"],
+            )
+            sg_pipeline_step["name"] = item.context.step["name"]
+            sg_pipeline_step["id"] = item.context.step["id"]
 
         return dict(
             am_project_id=am_project_id,
-            sg_entity_name=sg_entity_name,
-            sg_entity_type=sg_entity_type,
+            federated=federated,
+            sg_entity=sg_entity,
             sg_pipeline_step=sg_pipeline_step,
             source_path=item.get_property("path"),
         )
@@ -1477,6 +1489,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         """
         from tank_vendor.flow_integration_sdk.objects import FlowProject
 
+        context = sgtk.platform.current_engine().context
         parent_id = item.properties.get("flow_parent_id", "")
         asset_id = item.properties.get("flow_asset_id")
         project_id = FlowProject.get_project_id(parent_id)
@@ -1514,6 +1527,7 @@ class BasicFilePublishPlugin(HookBaseClass):
             # Create new generic asset
             flow_args["parent_id"] = parent_id
             flow_args["am_project_id"] = project_id
+            flow_args["federated"] = context.flow_federated_project
             create_inputs = self.parent.flowam.CreateGenericInputs(**flow_args)
 
             self.logger.debug(
