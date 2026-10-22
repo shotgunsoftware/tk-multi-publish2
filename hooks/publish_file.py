@@ -1451,7 +1451,6 @@ class BasicFilePublishPlugin(HookBaseClass):
             )
             sg_pipeline_step["name"] = item.context.step["name"]
             sg_pipeline_step["id"] = item.context.step["id"]
-            self.logger.info(f"PIPELINE STEP: {sg_pipeline_step}")
 
         return dict(
             am_project_id=am_project_id,
