@@ -41,3 +41,9 @@ nosetests.xml
 
 # VSCode
 .vscode/
+
+# IDEs and Editors
+*.swo
+*.swp
+*.swm
+*~

@@ -446,6 +446,28 @@ class TestQtPixmapAvailability(PublishApiTestBase):
         # We should also get a None thumbnail back.
         self.assertIsNone(item.thumbnail)
 
+    def test_rle_tga_thumbnail(self):
+        """
+        Ensures that an RLE-encoded TGA path is preserved for FPT upload
+        even though Qt cannot load RLE TGA natively, and that the UI can
+        still display the thumbnail via a converted QPixmap.
+        """
+        fake_pixmap = self.QtGui.QPixmap(self.image_path)
+        tga_image = self.app.import_module("tk_multi_publish2").utils.tga_image
+        with patch.object(tga_image, "is_tga_rle", return_value=True), patch.object(
+            tga_image, "tga_to_qpixmap", return_value=fake_pixmap
+        ):
+            item = self.PublishItem("test", "test", "test")
+            item.set_thumbnail_from_path(__file__)
+
+            # Assert original RLE TGA path is preserved for FPT upload.
+            self.assertEqual(item.get_thumbnail_as_path(), __file__)
+
+            # Assert UI can still display the thumbnail via the converted QPixmap.
+            thumbnail = item.thumbnail
+            self.assertIsNotNone(thumbnail)
+            self.assertFalse(thumbnail.isNull())
+
     def _reset_pixmap_flag(self, flag_value=None):
         """
         Resets the pixmap availability flag.

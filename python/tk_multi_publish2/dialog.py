@@ -51,11 +51,30 @@ class AppDialog(QtGui.QWidget):
         MULTI_EDIT_NOT_SUPPORTED,
     ) = range(4)
 
-    def __init__(self, parent=None):
+    def __init__(
+        self,
+        parent=None,
+        single_file_mode=False,
+        context=None,
+        root_item_properties=None,
+    ):
         """
         :param parent: The parent QWidget for this control
+        :param context: Optional sgtk.Context for this dialog. When it matches
+            the engine context, it is snapshotted to isolate the dialog from
+            concurrent engine.change_context() calls. When it differs (e.g.
+            Loader passing a Task context into a project-level engine), it is
+            applied as a pre-fill suggestion after collection and remains
+            editable by the user.
+        :param root_item_properties: Optional dict of properties to pre-seed on
+            the root publish item before collection runs (e.g.
+            ``{"am_revision_id": "123"}``). Passed through to
+            :class:`~.api.PublishManager`.
+        :param single_file_mode: If True, the publisher will only accept a single file.
         """
         QtGui.QWidget.__init__(self, parent)
+
+        self._root_item_properties = root_item_properties or {}
 
         # create a settings manager where we can pull and push prefs later
         # prefs in this manager are shared
@@ -71,6 +90,7 @@ class AppDialog(QtGui.QWidget):
 
         self._bundle = sgtk.platform.current_bundle()
         self._validation_run = False
+        self._single_file_mode = single_file_mode
 
         # set up the UI
         self.ui = Ui_Dialog()
@@ -273,8 +293,14 @@ class AppDialog(QtGui.QWidget):
             self.ui.item_settings_label.hide()
             self.ui.item_settings.hide()
 
-        # create a publish manager
-        self._publish_manager = PublishManager(self._progress_handler.logger)
+        # create a publish manager - snapshot the launch context onto the root
+        # item so that this dialog is isolated from concurrent engine.change_context() calls.
+        # An explicit context takes priority over the current engine context.
+        self._publish_manager = PublishManager(
+            self._progress_handler.logger,
+            context=context or self._bundle.context,
+            root_item_properties=self._root_item_properties,
+        )
         self.ui.items_tree.set_publish_manager(self._publish_manager)
 
         # this is the pixmap in the summary thumbnail
@@ -298,6 +324,15 @@ class AppDialog(QtGui.QWidget):
     def manual_load_enabled(self):
         """Returns whether user is allowed to load file to the UI"""
         return self._bundle.get_setting("enable_manual_load")
+
+    @property
+    def single_file_mode(self):
+        """
+        Returns True if the publisher should only accept a single file.
+
+        This is set via the single_file_mode parameter when calling show_dialog().
+        """
+        return self._single_file_mode
 
     def keyPressEvent(self, event):
         """
@@ -872,6 +907,9 @@ class AppDialog(QtGui.QWidget):
         elif num_errors > 0:
             self._progress_handler.logger.error("Errors reported. See log for details.")
 
+        self._publish_manager.apply_pre_fill_context()
+        self._publish_manager.apply_context_lock_gate()
+
         # make sure the ui is up to date
         self._synchronize_tree()
 
@@ -895,6 +933,22 @@ class AppDialog(QtGui.QWidget):
         if not self.manual_load_enabled:
             self._progress_handler.logger.error("Drag & drop disabled.")
             return
+
+        if self.single_file_mode:
+            num_collected_files = len(self._publish_manager.collected_files)
+            if num_collected_files >= 1:
+                self._progress_handler.logger.error(
+                    f"Single file publisher already has "
+                    f"{num_collected_files} collected file(s). "
+                    "Cannot add more files."
+                )
+                return
+            if len(files) > 1:
+                self._progress_handler.logger.warning(
+                    "This instance of the publisher is for a single file and "
+                    "multiple files were dropped. Using only the first file."
+                )
+                files = files[:1]
 
         # add files and rebuild tree
         self._progress_handler.set_phase(self._progress_handler.PHASE_LOAD)
@@ -932,6 +986,9 @@ class AppDialog(QtGui.QWidget):
                 self._progress_handler.logger.error(
                     "%d errors reported. Please see the log for details." % num_errors
                 )
+
+            self._publish_manager.apply_pre_fill_context()
+            self._publish_manager.apply_context_lock_gate()
 
             # rebuild the tree
             self._synchronize_tree()
@@ -1640,7 +1697,11 @@ class AppDialog(QtGui.QWidget):
         else:
             # browse files specifics
             caption = "Browse files to publish"
-            file_mode = QtGui.QFileDialog.ExistingFiles
+            file_mode = (
+                QtGui.QFileDialog.ExistingFile
+                if self.single_file_mode
+                else QtGui.QFileDialog.ExistingFiles
+            )
 
         # create the dialog
         file_dialog = QtGui.QFileDialog(parent=self, caption=caption)
