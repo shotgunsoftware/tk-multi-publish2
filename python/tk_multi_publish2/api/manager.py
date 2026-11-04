@@ -14,6 +14,7 @@ import sgtk
 
 from .tree import PublishTree
 from .plugins import CollectorPluginInstance, PublishPluginInstance
+from .plugins.instance_base import parent_hook_logger
 
 logger = sgtk.platform.get_logger(__name__)
 
@@ -26,6 +27,7 @@ class PublishManager(object):
     __slots__ = [
         "_bundle",
         "_collector_instance",
+        "_hook_logger_parent",
         "_logger",
         "_post_phase_hook",
         "_pre_fill_context",
@@ -78,6 +80,11 @@ class PublishManager(object):
         # a logger to be used by the various collector/publish plugins
         self._logger = publish_logger or logger
 
+        # the hooks log through the supplied publish logger, so that its
+        # handlers (e.g. the Publisher's progress details) see their records.
+        # Without one, the hooks keep their standard hook loggers.
+        self._hook_logger_parent = publish_logger
+
         # the underlying tree representation of the items to publish
         self._tree = PublishTree()
 
@@ -117,6 +124,8 @@ class PublishManager(object):
         self._post_phase_hook = self._bundle.create_hook_instance(
             post_phase_hook_path, base_class=self._bundle.base_hooks.PostPhaseHook
         )
+        if self._hook_logger_parent:
+            parent_hook_logger(self._post_phase_hook, self._hook_logger_parent)
 
     def collect_files(self, file_paths):
         """
@@ -555,7 +564,10 @@ class PublishManager(object):
         collector_settings = self._bundle.get_setting(self.CONFIG_COLLECTOR_SETTINGS)
 
         self._collector_instance = CollectorPluginInstance(
-            collector_hook_path, collector_settings, self.logger
+            collector_hook_path,
+            collector_settings,
+            self.logger,
+            self._hook_logger_parent,
         )
 
     def _load_publish_plugins(self, context):
@@ -629,6 +641,7 @@ class PublishManager(object):
                 publish_plugin_hook_path,
                 publish_plugin_settings,
                 self.logger,
+                self._hook_logger_parent,
             )
             plugins.append(plugin_instance)
             logger.debug("Created publish plugin: %s" % (plugin_instance,))
