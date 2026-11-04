@@ -36,6 +36,7 @@ from tank_vendor.flow_integration_sdk.objects import (
     FlowProject,
     FlowRevision,
     FlowVersion,
+    _get_schema_wildcard,
 )
 from tank.flowam import create, open, utils as flowam_utils
 
@@ -345,11 +346,10 @@ def publish_generic_revision(inputs: GenericPublishInputs) -> PublishInfo:
         comment=inputs.comment,
         type_ids=asset.type_ids,
     )
-    # If a FOR_PIPELINE_STEP_TYPE component exists on the asset
+    # If any version of the FOR_PIPELINE_STEP_TYPE_ID component exists on the asset
     # we must carry it over to maintain its SG context
-    orig_pipestep_comp = asset.find_component(
-        type_id=schema.get_schema_id(globals.FOR_PIPELINE_STEP_TYPE)
-    )
+    for_pipestep_id = _get_schema_wildcard(globals.FOR_PIPELINE_STEP_TYPE_ID)
+    orig_pipestep_comp = asset.find_component(type_id=for_pipestep_id)
     if orig_pipestep_comp:
         deliverable_id = orig_pipestep_comp.properties["targetDeliverable"]
         pipeline_step_id = orig_pipestep_comp.properties["targetStep"]
