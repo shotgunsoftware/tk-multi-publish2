@@ -1313,8 +1313,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         return os.path.basename(path)
 
     def _flow_asset_name(self, settings, item=None):
-        """
-        Return the trimmed ``Asset Name`` UI value, falling back to the input
+        """Return the trimmed ``Asset Name`` UI value, falling back to the input
         file's name when the field was never populated.
         """
         setting = settings.get("Asset Name") if settings else None
