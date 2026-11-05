@@ -972,7 +972,10 @@ class BasicFilePublishPlugin(HookBaseClass):
         finally:
             combo.blockSignals(False)
 
-        widget.flowam_asset_name_edit.setText(settings.get("Asset Name") or "")
+        asset_name = settings.get("Asset Name") or ""
+        if not asset_name and items:
+            asset_name = self._flow_default_asset_name(items[0])
+        widget.flowam_asset_name_edit.setText(asset_name)
         self._flow_update_asset_name_visibility(widget)
 
     ############################################################################
@@ -1304,11 +1307,20 @@ class BasicFilePublishPlugin(HookBaseClass):
             return item.parent.properties.get("am_revision_id") or ""
         return ""
 
-    def _flow_asset_name(self, settings):
-        """Return the trimmed ``Asset Name`` UI value, or ""."""
+    def _flow_default_asset_name(self, item):
+        """Return the default ``Asset Name``: the input file's name, or ""."""
+        path = item.get_property("path") or ""
+        return os.path.basename(path)
+
+    def _flow_asset_name(self, settings, item=None):
+        """Return the trimmed ``Asset Name`` UI value, falling back to the input
+        file's name when the field was never populated.
+        """
         setting = settings.get("Asset Name") if settings else None
-        name = (setting.value if setting else "") or ""
-        return name.strip()
+        name = ((setting.value if setting else "") or "").strip()
+        if not name and item is not None:
+            name = self._flow_default_asset_name(item)
+        return name
 
     @property
     def _flow_draft_id(self):
@@ -1349,7 +1361,7 @@ class BasicFilePublishPlugin(HookBaseClass):
                         },
                     )
                     return False
-            elif not self._flow_asset_name(settings):
+            elif not self._flow_asset_name(settings, item):
                 # Creating a new generic asset requires an asset name. Raise so
                 # the reason is surfaced on the task (not just buried in the log).
                 error_msg = (
@@ -1604,7 +1616,7 @@ class BasicFilePublishPlugin(HookBaseClass):
         create_args.update(
             {
                 "comment": flow_args.get("comment", ""),
-                "name": self._flow_asset_name(settings),
+                "name": self._flow_asset_name(settings, item),
                 "thumbnail_path": flow_args.get("thumbnail_path", ""),
             }
         )
