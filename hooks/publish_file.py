@@ -1309,7 +1309,7 @@ class BasicFilePublishPlugin(HookBaseClass):
 
     def _flow_default_asset_name(self, item):
         """Return the default ``Asset Name``: the input file's name, or ""."""
-        path = item.properties.get("path") or ""
+        path = item.get_property("path") or ""
         return os.path.basename(path)
 
     def _flow_asset_name(self, settings, item=None):
