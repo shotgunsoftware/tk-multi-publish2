@@ -14,6 +14,21 @@ from .setting import PluginSetting
 logger = sgtk.platform.get_logger(__name__)
 
 
+def parent_hook_logger(hook, parent_logger):
+    """
+    Make a hook log through a child of the given logger.
+
+    The child is named after the hook file, like the standard hook logger, e.g.
+    ``<parent_logger>.publish_session``, so its records reach the handlers of
+    ``parent_logger``.
+
+    :param hook: Hook instance deriving from one of the base hooks
+    :param parent_logger: Logger to parent the hook's logger under
+    """
+    hook_name = hook.logger.name.rsplit(".", 1)[-1]
+    hook.logger = parent_logger.getChild(hook_name)
+
+
 class PluginInstanceBase(object):
     """
     A base class for functionality common to plugin hooks (collectors and
@@ -22,13 +37,15 @@ class PluginInstanceBase(object):
     Each object reflects an instance in the app configuration.
     """
 
-    def __init__(self, path, settings, publish_logger):
+    def __init__(self, path, settings, publish_logger, hook_logger_parent=None):
         """
         Initialize a plugin instance.
 
         :param path: Path to the collector hook
         :param settings: Dictionary of collector-specific settings
         :param publish_logger: a logger object that will be used by the hook
+        :param hook_logger_parent: Optional logger to parent the hook's logger
+            under. If not supplied, the hook uses the standard hook logger.
         """
 
         super().__init__()
@@ -46,6 +63,8 @@ class PluginInstanceBase(object):
 
         # create an instance of the hook
         self._hook_instance = self._create_hook_instance(self._path)
+        if hook_logger_parent:
+            parent_hook_logger(self._hook_instance, hook_logger_parent)
 
         # kick things off
         self._validate_and_resolve_config()
