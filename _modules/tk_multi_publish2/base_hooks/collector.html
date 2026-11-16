@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>tk_multi_publish2.base_hooks.collector &mdash; tk-multi-publish2 v2.11.2 documentation</title>
+  <title>tk_multi_publish2.base_hooks.collector &mdash; tk-multi-publish2 v2.11.3 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
@@ -83,7 +83,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.11.2.<br>
+    <b>tk-multi-publish2</b> v2.11.3.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -150,6 +150,9 @@
 <span class="sd">    to gather items to be published within the current DCC session.</span>
 <span class="sd">    """</span>
 
+    <span class="c1"># set by the publisher so that records reach its log handler</span>
+    <span class="n">_publish_logger</span> <span class="o">=</span> <span class="kc">None</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -163,6 +166,23 @@
 <span class="sd">        Allows to set the unique string identifying this plugin.</span>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">new_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">logger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Standard python :class:`~logging.Logger` for this plugin.</span>
+
+<span class="sd">        When run by the Publisher, records logged here are displayed in its</span>
+<span class="sd">        progress details.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_publish_logger</span> <span class="ow">or</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">logger</span>
+
+    <span class="nd">@logger</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">logger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_logger</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Allows to set the logger used by this plugin.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_publish_logger</span> <span class="o">=</span> <span class="n">new_logger</span>
 
     <span class="c1">############################################################################</span>
     <span class="c1"># Collector properties</span>

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>tk_multi_publish2.api.manager &mdash; tk-multi-publish2 v2.11.2 documentation</title>
+  <title>tk_multi_publish2.api.manager &mdash; tk-multi-publish2 v2.11.3 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
@@ -83,7 +83,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.11.2.<br>
+    <b>tk-multi-publish2</b> v2.11.3.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -143,6 +143,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">PublishTree</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">CollectorPluginInstance</span><span class="p">,</span> <span class="n">PublishPluginInstance</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.plugins.instance_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">parent_hook_logger</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -155,6 +156,7 @@
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s2">"_bundle"</span><span class="p">,</span>
         <span class="s2">"_collector_instance"</span><span class="p">,</span>
+        <span class="s2">"_hook_logger_parent"</span><span class="p">,</span>
         <span class="s2">"_logger"</span><span class="p">,</span>
         <span class="s2">"_post_phase_hook"</span><span class="p">,</span>
         <span class="s2">"_pre_fill_context"</span><span class="p">,</span>
@@ -207,6 +209,11 @@
         <span class="c1"># a logger to be used by the various collector/publish plugins</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">publish_logger</span> <span class="ow">or</span> <span class="n">logger</span>
 
+        <span class="c1"># the hooks log through the supplied publish logger, so that its</span>
+        <span class="c1"># handlers (e.g. the Publisher's progress details) see their records.</span>
+        <span class="c1"># Without one, the hooks keep their standard hook loggers.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hook_logger_parent</span> <span class="o">=</span> <span class="n">publish_logger</span>
+
         <span class="c1"># the underlying tree representation of the items to publish</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span> <span class="o">=</span> <span class="n">PublishTree</span><span class="p">()</span>
 
@@ -246,6 +253,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_post_phase_hook</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">create_hook_instance</span><span class="p">(</span>
             <span class="n">post_phase_hook_path</span><span class="p">,</span> <span class="n">base_class</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">base_hooks</span><span class="o">.</span><span class="n">PostPhaseHook</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hook_logger_parent</span><span class="p">:</span>
+            <span class="n">parent_hook_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_post_phase_hook</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hook_logger_parent</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PublishManager.collect_files"><a class="viewcode-back" href="../../../api.html#tk_multi_publish2.api.PublishManager.collect_files">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">collect_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_paths</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -684,7 +693,10 @@
         <span class="n">collector_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_COLLECTOR_SETTINGS</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_collector_instance</span> <span class="o">=</span> <span class="n">CollectorPluginInstance</span><span class="p">(</span>
-            <span class="n">collector_hook_path</span><span class="p">,</span> <span class="n">collector_settings</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
+            <span class="n">collector_hook_path</span><span class="p">,</span>
+            <span class="n">collector_settings</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_hook_logger_parent</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_load_publish_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
@@ -758,6 +770,7 @@
                 <span class="n">publish_plugin_hook_path</span><span class="p">,</span>
                 <span class="n">publish_plugin_settings</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_hook_logger_parent</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">plugins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plugin_instance</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Created publish plugin: </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">plugin_instance</span><span class="p">,))</span>

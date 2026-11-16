@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>app &mdash; tk-multi-publish2 v2.11.2 documentation</title>
+  <title>app &mdash; tk-multi-publish2 v2.11.3 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -83,7 +83,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-multi-publish2</b> v2.11.2.<br>
+    <b>tk-multi-publish2</b> v2.11.3.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -182,6 +182,9 @@
 
         <span class="n">pre_publish_hook_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_PRE_PUBLISH_HOOK_PATH</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pre_publish_hook</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_hook_instance</span><span class="p">(</span><span class="n">pre_publish_hook_path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">has_ui</span><span class="p">:</span>
+            <span class="k">return</span>
 
         <span class="c1"># register command</span>
         <span class="n">cb</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">tk_multi_publish2</span><span class="o">.</span><span class="n">show_dialog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
