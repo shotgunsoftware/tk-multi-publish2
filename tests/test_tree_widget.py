@@ -8,11 +8,11 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-from publish_api_test_base import PublishApiTestBase
+from publish_api_test_base import PublishTreeWidgetTestBase
 from tank_test.tank_test_base import setUpModule  # noqa
 
 
-class TestPublishTreeWidget(PublishApiTestBase):
+class TestPublishTreeWidget(PublishTreeWidgetTestBase):
     def test_parent_partially_checked(self):
         """
         If we have a bunch of active tasks followed by a bunch of inactive tasks, the addition

@@ -74,11 +74,6 @@ class PublishApiTestBase(TankTestBase):
         self.PublishManager = self.api.PublishManager
         self.PublishPluginInstance = self.api.plugins.PublishPluginInstance
 
-        publish_tree_widget = self.app.import_module(
-            "tk_multi_publish2"
-        ).publish_tree_widget
-        self.PublishTreeWidget = publish_tree_widget.PublishTreeWidget
-
         self.image_path = os.path.join(repo_root, "icon_256.png")
         self.dark_image_path = os.path.join(repo_root, "icon_256_dark.png")
 
@@ -105,3 +100,23 @@ class PublishApiTestBase(TankTestBase):
 
         # important to call base class so it can clean up memory
         super().tearDown()
+
+
+class PublishTreeWidgetTestBase(PublishApiTestBase):
+    """
+    Base class for tests that need the publish tree widget UI module.
+
+    The widget is loaded on demand so importing ``tk_multi_publish2`` in
+    non-UI mode does not pull in Qt UI code.
+    """
+
+    def setUp(self):
+        import importlib
+
+        super().setUp()
+
+        pkg = self.app.import_module("tk_multi_publish2")
+        publish_tree_widget = importlib.import_module(
+            ".publish_tree_widget", pkg.__name__
+        )
+        self.PublishTreeWidget = publish_tree_widget.PublishTreeWidget
